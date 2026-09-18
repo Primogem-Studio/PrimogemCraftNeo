@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a",
+    "ab",
+    " c"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:nagadus_emerald_sliver"
+    },
+    "b": {
+      "item": "primogemcraft:trash"
+    },
+    "c": {
+      "tag": "minecraft:dirt"
+    }
+  },
+  "result": {
+    "id": "minecraft:apple",
+    "count": 3
+  }
+}

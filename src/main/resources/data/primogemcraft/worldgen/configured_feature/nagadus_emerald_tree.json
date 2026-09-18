@@ -1,0 +1,16 @@
+{
+  "type": "primogemcraft:structure_template",
+  "config": {
+    "structure": "primogemcraft:nagadus_emerald_tree",
+    "random_rotation": true,
+    "random_mirror": true,
+    "ignored_blocks": [
+      "minecraft:air"
+    ],
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  }
+}

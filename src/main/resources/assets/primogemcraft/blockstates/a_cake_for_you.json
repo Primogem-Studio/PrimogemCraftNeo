@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "primogemcraft:block/a_cake_for_you"
+    },
+    "facing=east": {
+      "model": "primogemcraft:block/a_cake_for_you",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "primogemcraft:block/a_cake_for_you",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "primogemcraft:block/a_cake_for_you",
+      "y": 270
+    }
+  }
+}

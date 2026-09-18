@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "cde",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:paper"
+    },
+    "b": {
+      "tag": "minecraft:planks"
+    },
+    "c": {
+      "item": "minecraft:orange_dye"
+    },
+    "d": {
+      "item": "primogemcraft:prithiva_topaz_sliver"
+    },
+    "e": {
+      "item": "minecraft:yellow_dye"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:xiao_lantern",
+    "count": 3
+  }
+}

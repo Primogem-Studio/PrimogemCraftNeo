@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/cheap_netherite_block",
+    "up": "primogemcraft:block/cheap_netherite_block",
+    "north": "primogemcraft:block/cheap_netherite_block",
+    "east": "primogemcraft:block/cheap_netherite_block",
+    "south": "primogemcraft:block/cheap_netherite_block",
+    "west": "primogemcraft:block/cheap_netherite_block",
+    "particle": "primogemcraft:block/cheap_netherite_block"
+  },
+  "render_type": "solid"
+}

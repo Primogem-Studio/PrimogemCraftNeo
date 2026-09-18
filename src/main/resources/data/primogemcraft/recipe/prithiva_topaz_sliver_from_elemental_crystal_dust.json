@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:elemental_crystal_dust"
+    },
+    {
+      "item": "primogemcraft:prithiva_topaz_fragment"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:prithiva_topaz_sliver",
+    "count": 5
+  }
+}

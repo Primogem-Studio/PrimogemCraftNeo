@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "primogemcraft:item/hewn_edge_blade_held"
+  }
+}

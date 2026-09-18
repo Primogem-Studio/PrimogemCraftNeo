@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcd",
+    " e "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:otherworldly_moon_gold"
+    },
+    "b": {
+      "item": "minecraft:blue_wool"
+    },
+    "c": {
+      "item": "primogemcraft:genesis_crystal"
+    },
+    "d": {
+      "item": "minecraft:lime_wool"
+    },
+    "e": {
+      "item": "minecraft:bowl"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:blessing_of_the_welkin_moon",
+    "count": 1
+  }
+}

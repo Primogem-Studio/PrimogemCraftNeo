@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:fine_forged_ore_fusion_block"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:mystic_enhancement_ore",
+    "count": 9
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "genshincraft"
+    }
+  ],
+  "type": "primogemcraft:stellar_converter",
+  "first": {
+    "id": "primogemcraft:primogem",
+    "count": 6
+  },
+  "second": {
+    "id": "genshincraft:primogems",
+    "count": 1
+  },
+  "cost": 2
+}

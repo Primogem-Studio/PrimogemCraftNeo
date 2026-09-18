@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/varunada_lazurite_block",
+    "up": "primogemcraft:block/varunada_lazurite_block",
+    "north": "primogemcraft:block/varunada_lazurite_block",
+    "east": "primogemcraft:block/varunada_lazurite_block",
+    "south": "primogemcraft:block/varunada_lazurite_block",
+    "west": "primogemcraft:block/varunada_lazurite_block",
+    "particle": "primogemcraft:block/varunada_lazurite_block"
+  },
+  "render_type": "solid"
+}

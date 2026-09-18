@@ -1,0 +1,9 @@
+{
+  "parent": "block/template_glass_pane_post",
+  "textures": {
+    "particle": "primogemcraft:block/rusty_iron_fence",
+    "pane": "primogemcraft:block/rusty_iron_fence",
+    "edge": "primogemcraft:block/rusty_iron_fence"
+  },
+  "render_type": "cutout"
+}

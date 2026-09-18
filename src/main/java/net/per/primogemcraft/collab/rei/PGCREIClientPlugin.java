@@ -1,0 +1,47 @@
+package net.per.primogemcraft.collab.rei;
+
+import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
+import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
+import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
+import me.shedaniel.rei.api.common.util.EntryIngredients;
+import me.shedaniel.rei.api.common.util.EntryStacks;
+import me.shedaniel.rei.forge.REIPluginClient;
+import net.minecraft.world.item.Item;
+import net.per.primogemcraft.recipe.StellarConverterRecipe;
+import net.per.primogemcraft.registry.PGCItems;
+import net.per.primogemcraft.registry.PGCRecipeTypes;
+import net.per.primogemcraft.system.wish.WishBanner;
+import net.per.primogemcraft.system.wish.WishDrops;
+import net.per.primogemcraft.system.wish.WishRarity;
+
+import java.util.LinkedHashSet;
+import java.util.List;
+
+@REIPluginClient
+public class PGCREIClientPlugin implements REIClientPlugin {
+    @Override
+    public void registerCategories(CategoryRegistry registry) {
+        registry.add(new WishCategory());
+        registry.add(new ConversionCategory());
+        registry.addWorkstations(PGCREIPlugin.WISH, EntryStacks.of(PGCItems.ACQUAINT_FATE.get()), EntryStacks.of(PGCItems.INTERTWINED_FATE.get()));
+        registry.addWorkstations(PGCREIPlugin.CONVERSION, EntryStacks.of(PGCItems.STELLAR_CONVERTER.get()));
+    }
+
+    @Override
+    public void registerDisplays(DisplayRegistry registry) {
+        registry.registerRecipeFiller(StellarConverterRecipe.class, PGCRecipeTypes.STELLAR_CONVERTER.get(), ConversionDisplay::new);
+        for (var rarity : WishRarity.values()) addDisplays(registry, rarity);
+    }
+
+    private void addDisplays(DisplayRegistry registry, WishRarity rarity) {
+        for (var item : itemsOf(rarity)) {
+            registry.add(new WishDisplay(rarity, List.of(EntryIngredients.of(item))));
+        }
+    }
+
+    private static List<Item> itemsOf(WishRarity rarity) {
+        var items = new LinkedHashSet<Item>();
+        for (var banner : WishBanner.values()) items.addAll(WishDrops.of(banner, rarity));
+        return List.copyOf(items);
+    }
+}

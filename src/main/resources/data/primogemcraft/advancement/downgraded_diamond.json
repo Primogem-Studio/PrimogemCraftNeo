@@ -1,0 +1,40 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:primogem_pickaxe"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.downgraded_diamond.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.downgraded_diamond.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "downgraded_diamond": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:primogem_sword",
+              "primogemcraft:primogem_pickaxe",
+              "primogemcraft:primogem_axe",
+              "primogemcraft:primogem_shovel",
+              "primogemcraft:primogem_hoe"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:primo"
+}

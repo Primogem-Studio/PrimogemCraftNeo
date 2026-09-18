@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:elemental_dissolving_bead_dust"
+    },
+    "b": {
+      "item": "primogemcraft:elemental_molten_bead_fragment"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:elemental_molten_bead_fragment",
+    "count": 2
+  }
+}

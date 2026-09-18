@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:equilibrium_tablet_2"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.max_level_big_shot.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.max_level_big_shot.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "max_level_big_shot": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:equilibrium_tablet_2"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:exquisite_forging"
+}

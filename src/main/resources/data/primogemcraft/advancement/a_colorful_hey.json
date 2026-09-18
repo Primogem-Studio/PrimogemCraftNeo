@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:elemental_crystal_enhancement_smithing_template"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.a_colorful_hey.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.a_colorful_hey.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "a_colorful_hey": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "#primogemcraft:weapon/tool"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:downgraded_diamond"
+}

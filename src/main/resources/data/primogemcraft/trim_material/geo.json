@@ -1,0 +1,9 @@
+{
+  "asset_name": "geo",
+  "description": {
+    "color": "#F2D258",
+    "translate": "trim_material.primogemcraft.geo"
+  },
+  "ingredient": "primogemcraft:sturdy_metal",
+  "item_model_index": 1
+}

@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "primogemcraft:mora_ruins",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 23074521,
+    "spacing": 8,
+    "separation": 3
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "primogemcraft:stellar_converter",
+  "first": {
+    "id": "primogemcraft:elemental_dissolving_bead_dust",
+    "count": 1
+  },
+  "second": {
+    "id": "primogemcraft:elemental_dissolving_bead_dust",
+    "count": 2
+  },
+  "cost": 330
+}

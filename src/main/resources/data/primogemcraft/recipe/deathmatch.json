@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " ab",
+    " ca",
+    "c  "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:fine_enhancement_ore"
+    },
+    "b": {
+      "item": "primogemcraft:agnidus_agate_fragment"
+    },
+    "c": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:deathmatch",
+    "count": 1
+  }
+}

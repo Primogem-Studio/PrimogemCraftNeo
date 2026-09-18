@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:elemental_crystal_enhancement_smithing_template"
+  },
+  "base": {
+    "item": "primogemcraft:primogem_axe"
+  },
+  "addition": {
+    "item": "primogemcraft:vayuda_turquoise_chunk"
+  },
+  "result": {
+    "id": "primogemcraft:vayuda_turquoise_axe"
+  }
+}

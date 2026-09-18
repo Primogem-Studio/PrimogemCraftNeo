@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "aca"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:fine_enhancement_ore"
+    },
+    "b": {
+      "item": "primogemcraft:vajrada_amethyst_fragment"
+    },
+    "c": {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:eternal_metal",
+    "count": 1
+  }
+}

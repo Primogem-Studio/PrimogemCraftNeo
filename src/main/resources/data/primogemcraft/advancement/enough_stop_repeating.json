@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:march_7th_statue"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.enough_stop_repeating.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.enough_stop_repeating.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "enough_stop_repeating": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "primogemcraft:repeat_maiden"
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:stone_bricks"
+    },
+    "b": {
+      "item": "minecraft:bricks"
+    },
+    "c": {
+      "item": "primogemcraft:mora_block"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:cheap_mora_block",
+    "count": 32
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:crude_white_iron_block"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:white_iron_ore",
+    "count": 9
+  }
+}

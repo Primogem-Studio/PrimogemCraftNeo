@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:otherworld_log_planks"
+    }
+  ],
+  "result": {
+    "id": "minecraft:oak_planks",
+    "count": 2
+  }
+}

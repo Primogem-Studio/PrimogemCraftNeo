@@ -1,0 +1,8 @@
+{
+  "parent": "block/cross",
+  "textures": {
+    "cross": "primogemcraft:block/otherworld_crystal_cluster",
+    "particle": "primogemcraft:block/otherworld_crystal_cluster"
+  },
+  "render_type": "cutout"
+}

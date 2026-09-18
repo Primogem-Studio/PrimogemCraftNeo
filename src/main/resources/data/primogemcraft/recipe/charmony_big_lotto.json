@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:cosmic_big_lotto"
+    },
+    "c": {
+      "item": "primogemcraft:triangular_drum_roll_device"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:charmony_big_lotto",
+    "count": 1
+  }
+}

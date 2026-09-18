@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type":"minecraft:item","name":"primogemcraft:cosmic_big_lotto","weight":20,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:faith_bond","weight":30,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:society_ticket","weight":30,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:interastral_big_lotto","weight":20,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:omniscient_capsule","weight":30,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:ambergris_cheese","weight":30,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:typical_genius_society_gossip","weight":20,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:rupert_empire_mechanical_gear","weight":30,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:bug_net","weight":30,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:quantum_big_lotto","weight":20,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:triangular_drum_roll_device","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:freedom_wax_seal","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:contract_wax_seal","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:eternal_wax_seal","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]}
+      ]
+    }
+  ],
+  "random_sequence": "primogemcraft:herta_shop/curio_01"
+}

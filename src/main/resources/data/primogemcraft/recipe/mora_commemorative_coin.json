@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:packed_mora_pile"
+    },
+    {
+      "item": "primogemcraft:packed_mora_pile"
+    },
+    {
+      "item": "primogemcraft:packed_mora_pile"
+    },
+    {
+      "item": "primogemcraft:packed_mora_pile"
+    },
+    {
+      "item": "primogemcraft:packed_mora_pile"
+    },
+    {
+      "item": "primogemcraft:packed_mora_pile"
+    },
+    {
+      "item": "primogemcraft:packed_mora_pile"
+    },
+    {
+      "item": "primogemcraft:packed_mora_pile"
+    },
+    {
+      "item": "primogemcraft:packed_mora_pile"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:mora_commemorative_coin",
+    "count": 1
+  }
+}

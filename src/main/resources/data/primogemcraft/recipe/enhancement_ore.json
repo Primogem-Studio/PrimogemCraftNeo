@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:stellar_jade"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:enhancement_ore",
+    "count": 1
+  }
+}

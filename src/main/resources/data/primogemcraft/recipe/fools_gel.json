@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:fools_mask"
+    },
+    "c": {
+      "item": "primogemcraft:fortune_glue"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:fools_gel",
+    "count": 1
+  }
+}

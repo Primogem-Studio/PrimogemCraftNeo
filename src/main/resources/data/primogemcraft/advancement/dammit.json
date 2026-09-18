@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:netherite_ingot"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.dammit.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.dammit.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "dammit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:netherite_ingot"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:back_from_the_dead"
+}

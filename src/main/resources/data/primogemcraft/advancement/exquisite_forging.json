@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:gorgeous_smithing_table"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.exquisite_forging.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.exquisite_forging.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "exquisite_forging": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:gorgeous_smithing_table"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:trash_recycling"
+}

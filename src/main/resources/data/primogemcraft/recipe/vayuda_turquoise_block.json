@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:vayuda_turquoise_sliver"
+    },
+    "b": {
+      "item": "primogemcraft:vayuda_turquoise_gemstone"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:vayuda_turquoise_block",
+    "count": 1
+  }
+}

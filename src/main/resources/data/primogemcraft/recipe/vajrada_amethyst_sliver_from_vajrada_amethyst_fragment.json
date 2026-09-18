@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:vajrada_amethyst_fragment"
+    },
+    {
+      "item": "primogemcraft:elemental_crystal_dust"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:vajrada_amethyst_sliver",
+    "count": 5
+  }
+}

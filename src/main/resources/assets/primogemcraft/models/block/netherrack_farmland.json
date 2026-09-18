@@ -1,0 +1,10 @@
+{
+  "parent": "primogemcraft:block/netherrack_farmland_model",
+  "textures": {
+    "all": "primogemcraft:block/netherrack_farmland",
+    "particle": "primogemcraft:block/netherrack_farmland",
+    "1": "primogemcraft:block/netherrack_farmland",
+    "2": "primogemcraft:block/netherrack_farmland_top"
+  },
+  "render_type": "solid"
+}

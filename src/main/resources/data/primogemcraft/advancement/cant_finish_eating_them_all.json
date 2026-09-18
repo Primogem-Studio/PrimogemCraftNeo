@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:a_cake_for_you"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.cant_finish_eating_them_all.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.cant_finish_eating_them_all.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "cant_finish_eating_them_all": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:a_cake_for_you"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:everything_starts_with_primo"
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/packed_mora_pile_bottom",
+    "up": "primogemcraft:block/packed_mora_pile_top",
+    "north": "primogemcraft:block/packed_mora_pile_north",
+    "east": "primogemcraft:block/packed_mora_pile_east",
+    "south": "primogemcraft:block/packed_mora_pile_south",
+    "west": "primogemcraft:block/packed_mora_pile_west",
+    "particle": "primogemcraft:block/packed_mora_pile_bottom"
+  },
+  "render_type": "solid"
+}

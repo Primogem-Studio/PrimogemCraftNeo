@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:compassion_metal_grain"
+    },
+    {
+      "item": "primogemcraft:compassion_metal_grain"
+    },
+    {
+      "item": "primogemcraft:compassion_metal_grain"
+    },
+    {
+      "item": "primogemcraft:compassion_metal_grain"
+    },
+    {
+      "item": "primogemcraft:compassion_metal_grain"
+    },
+    {
+      "item": "primogemcraft:compassion_metal_grain"
+    },
+    {
+      "item": "primogemcraft:compassion_metal_grain"
+    },
+    {
+      "item": "primogemcraft:compassion_metal_grain"
+    },
+    {
+      "item": "primogemcraft:compassion_metal_grain"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:compassion_metal",
+    "count": 1
+  }
+}

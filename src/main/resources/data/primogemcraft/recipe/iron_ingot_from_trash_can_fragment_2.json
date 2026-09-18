@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:trash_can_fragment"
+    },
+    "b": {
+      "item": "primogemcraft:dust_of_azoth"
+    }
+  },
+  "result": {
+    "id": "minecraft:iron_ingot",
+    "count": 4
+  }
+}

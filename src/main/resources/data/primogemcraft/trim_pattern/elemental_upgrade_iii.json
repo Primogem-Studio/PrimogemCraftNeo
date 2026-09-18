@@ -1,0 +1,8 @@
+{
+  "asset_id": "primogemcraft:elemental_upgrade_iii",
+  "decal": false,
+  "description": {
+    "translate": "trim_pattern.primogemcraft.elemental_upgrade_iii"
+  },
+  "template_item": "primogemcraft:elemental_crystal_enhancement_smithing_template"
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa",
+    "b "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:nagadus_emerald_sliver"
+    },
+    "b": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "id": "minecraft:cactus",
+    "count": 2
+  }
+}

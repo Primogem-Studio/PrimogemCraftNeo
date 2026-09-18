@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "primogemcraft:block/dendro_blessing",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "primogemcraft:block/dendro_blessing"
+    },
+    "axis=z": {
+      "model": "primogemcraft:block/dendro_blessing",
+      "x": 90
+    }
+  }
+}

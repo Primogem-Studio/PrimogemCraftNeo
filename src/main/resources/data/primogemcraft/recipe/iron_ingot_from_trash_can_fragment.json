@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "experience": 1,
+  "cookingtime": 8000,
+  "ingredient": {
+    "item": "primogemcraft:trash_can_fragment"
+  },
+  "result": {
+    "id": "minecraft:iron_ingot"
+  }
+}

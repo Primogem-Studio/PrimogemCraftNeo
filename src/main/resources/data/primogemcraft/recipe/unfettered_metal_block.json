@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:unfettered_metal"
+    },
+    {
+      "item": "primogemcraft:unfettered_metal"
+    },
+    {
+      "item": "primogemcraft:unfettered_metal"
+    },
+    {
+      "item": "primogemcraft:unfettered_metal"
+    },
+    {
+      "item": "primogemcraft:unfettered_metal"
+    },
+    {
+      "item": "primogemcraft:unfettered_metal"
+    },
+    {
+      "item": "primogemcraft:unfettered_metal"
+    },
+    {
+      "item": "primogemcraft:unfettered_metal"
+    },
+    {
+      "item": "primogemcraft:unfettered_metal"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:unfettered_metal_block",
+    "count": 1
+  }
+}

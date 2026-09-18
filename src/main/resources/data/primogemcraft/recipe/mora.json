@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:packed_mora_pile"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:mora",
+    "count": 64
+  }
+}

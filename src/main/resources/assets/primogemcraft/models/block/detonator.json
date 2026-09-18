@@ -1,0 +1,9 @@
+{
+  "parent": "primogemcraft:block/detonator_model",
+  "textures": {
+    "all": "primogemcraft:block/detonator",
+    "particle": "primogemcraft:block/detonator",
+    "0": "primogemcraft:block/detonator"
+  },
+  "render_type": "solid"
+}

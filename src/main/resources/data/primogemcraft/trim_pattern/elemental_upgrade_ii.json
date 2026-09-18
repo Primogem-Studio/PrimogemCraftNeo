@@ -1,0 +1,8 @@
+{
+  "asset_id": "primogemcraft:elemental_upgrade_ii",
+  "decal": false,
+  "description": {
+    "translate": "trim_pattern.primogemcraft.elemental_upgrade_ii"
+  },
+  "template_item": "primogemcraft:mora_upgrade_smithing_template"
+}

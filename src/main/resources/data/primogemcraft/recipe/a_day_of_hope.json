@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "tag": "minecraft:music_discs"
+  },
+  "base": {
+    "item": "primogemcraft:intertwined_fate"
+  },
+  "addition": {
+    "item": "primogemcraft:otherworld_wind_catcher"
+  },
+  "result": {
+    "id": "primogemcraft:a_day_of_hope"
+  }
+}

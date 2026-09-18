@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/intertwined_fate_block_bottom",
+    "up": "primogemcraft:block/intertwined_fate_block_top",
+    "north": "primogemcraft:block/intertwined_fate_block_side",
+    "east": "primogemcraft:block/intertwined_fate_block_side",
+    "south": "primogemcraft:block/intertwined_fate_block_side",
+    "west": "primogemcraft:block/intertwined_fate_block_side",
+    "particle": "primogemcraft:block/intertwined_fate_block_bottom"
+  },
+  "render_type": "solid"
+}

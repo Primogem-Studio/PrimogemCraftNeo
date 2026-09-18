@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:vayuda_turquoise_gemstone"
+  },
+  "result": {
+    "id": "primogemcraft:vayuda_turquoise_sliver",
+    "count": 64
+  }
+}

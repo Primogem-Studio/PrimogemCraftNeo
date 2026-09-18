@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "primogemcraft:item/specially_treated_fine_ore"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "primogemcraft:weapon_recovery": 1
+      },
+      "model": "primogemcraft:item/loaded_specially_treated_fine_ore"
+    }
+  ]
+}

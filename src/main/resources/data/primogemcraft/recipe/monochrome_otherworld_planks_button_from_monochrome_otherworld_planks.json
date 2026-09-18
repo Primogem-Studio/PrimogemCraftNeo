@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:monochrome_otherworld_planks"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:monochrome_otherworld_planks_button",
+    "count": 1
+  }
+}

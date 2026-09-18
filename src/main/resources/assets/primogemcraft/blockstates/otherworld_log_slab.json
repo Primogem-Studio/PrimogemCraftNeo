@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "primogemcraft:block/otherworld_log_slab"
+    },
+    "type=top": {
+      "model": "primogemcraft:block/otherworld_log_slab_top"
+    },
+    "type=double": {
+      "model": "primogemcraft:block/otherworld_log_slab_full"
+    }
+  }
+}

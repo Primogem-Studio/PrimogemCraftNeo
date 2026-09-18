@@ -1,0 +1,10 @@
+{
+  "parent": "block/stairs",
+  "textures": {
+    "particle": "primogemcraft:block/dendro_core_planks",
+    "bottom": "primogemcraft:block/dendro_core_planks",
+    "top": "primogemcraft:block/dendro_core_planks",
+    "side": "primogemcraft:block/dendro_core_planks"
+  },
+  "render_type": "solid"
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:agnidus_agate_block"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:agnidus_agate_fragment",
+    "count": 18
+  }
+}

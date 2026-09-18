@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:elemental_crystal_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "primogemcraft:philosophies_of_diligence"
+  },
+  "addition": {
+    "item": "primogemcraft:custom_superimposer"
+  },
+  "result": {
+    "id": "primogemcraft:intertwined_fate_pickaxe"
+  }
+}

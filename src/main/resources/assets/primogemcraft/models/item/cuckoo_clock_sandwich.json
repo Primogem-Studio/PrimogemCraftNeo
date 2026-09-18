@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "primogemcraft:item/cuckoo_clock_sandwich"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "asset_name": "pyro",
+  "description": {
+    "color": "#FEA76C",
+    "translate": "trim_material.primogemcraft.pyro"
+  },
+  "ingredient": "primogemcraft:burning_wish_metal",
+  "item_model_index": 1
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "aca",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:cosmic_fragment"
+    },
+    "b": {
+      "item": "primogemcraft:dust_of_azoth"
+    },
+    "c": {
+      "item": "minecraft:allium"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:enigmata_petal",
+    "count": 1
+  }
+}

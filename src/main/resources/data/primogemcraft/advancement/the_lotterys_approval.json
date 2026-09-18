@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:cosmic_big_lotto"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.the_lotterys_approval.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.the_lotterys_approval.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "the_lotterys_approval": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "primogemcraft:ultimate_bad_luck"
+}

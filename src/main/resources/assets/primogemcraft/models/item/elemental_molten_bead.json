@@ -1,0 +1,50 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "primogemcraft:item/elemental_molten_bead"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "primogemcraft:element_type": 0.125
+      },
+      "model": "primogemcraft:item/elemental_molten_bead_anemo"
+    },
+    {
+      "predicate": {
+        "primogemcraft:element_type": 0.25
+      },
+      "model": "primogemcraft:item/elemental_molten_bead_geo"
+    },
+    {
+      "predicate": {
+        "primogemcraft:element_type": 0.375
+      },
+      "model": "primogemcraft:item/elemental_molten_bead_electro"
+    },
+    {
+      "predicate": {
+        "primogemcraft:element_type": 0.5
+      },
+      "model": "primogemcraft:item/elemental_molten_bead_dendro"
+    },
+    {
+      "predicate": {
+        "primogemcraft:element_type": 0.625
+      },
+      "model": "primogemcraft:item/elemental_molten_bead_hydro"
+    },
+    {
+      "predicate": {
+        "primogemcraft:element_type": 0.75
+      },
+      "model": "primogemcraft:item/elemental_molten_bead_pyro"
+    },
+    {
+      "predicate": {
+        "primogemcraft:element_type": 0.875
+      },
+      "model": "primogemcraft:item/elemental_molten_bead_cryo"
+    }
+  ]
+}

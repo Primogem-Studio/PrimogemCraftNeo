@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "minecraft:lava_bucket"
+  },
+  "base": {
+    "item": "primogemcraft:large_refined_mora"
+  },
+  "addition": {
+    "item": "minecraft:quartz"
+  },
+  "result": {
+    "id": "primogemcraft:refined_mora_block"
+  }
+}

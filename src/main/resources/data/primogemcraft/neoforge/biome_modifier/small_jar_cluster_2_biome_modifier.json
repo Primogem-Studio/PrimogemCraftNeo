@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": "primogemcraft:small_jar_cluster_2",
+  "step": "surface_structures"
+}

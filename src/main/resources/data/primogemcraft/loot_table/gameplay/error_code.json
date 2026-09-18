@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "primogemcraft:messy_code", "weight": 1},
+        {"type": "minecraft:item", "name": "primogemcraft:slightly_odd_code", "weight": 1},
+        {"type": "minecraft:item", "name": "primogemcraft:conventional_code", "weight": 1},
+        {"type": "minecraft:item", "name": "primogemcraft:precise_elegant_code", "weight": 1},
+        {"type": "minecraft:item", "name": "primogemcraft:uncommented_code", "weight": 1},
+        {"type": "minecraft:item", "name": "primogemcraft:infinitely_recursive_code", "weight": 1}
+      ]
+    }
+  ],
+  "random_sequence": "primogemcraft:gameplay/error_code"
+}

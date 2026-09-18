@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:mystic_enhancement_ore"
+  },
+  "result": {
+    "id": "primogemcraft:enhancement_ore",
+    "count": 36
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:cosmic_fragment"
+    },
+    {
+      "item": "primogemcraft:dust_of_azoth"
+    },
+    {
+      "item": "primogemcraft:curio_fusion_agent"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:curio_synthesis_reagent",
+    "count": 1
+  }
+}

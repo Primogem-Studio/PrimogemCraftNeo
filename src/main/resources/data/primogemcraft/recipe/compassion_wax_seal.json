@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abc",
+    "def",
+    "ghi"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:unfettered_metal"
+    },
+    "b": {
+      "item": "primogemcraft:genesis_crystal"
+    },
+    "c": {
+      "item": "primogemcraft:wisdom_metal"
+    },
+    "d": {
+      "item": "primogemcraft:sturdy_metal"
+    },
+    "e": {
+      "item": "primogemcraft:compassion_metal"
+    },
+    "f": {
+      "item": "primogemcraft:justice_metal"
+    },
+    "g": {
+      "item": "primogemcraft:eternal_metal"
+    },
+    "h": {
+      "item": "minecraft:nether_star"
+    },
+    "i": {
+      "item": "primogemcraft:burning_wish_metal"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:compassion_wax_seal",
+    "count": 1
+  }
+}

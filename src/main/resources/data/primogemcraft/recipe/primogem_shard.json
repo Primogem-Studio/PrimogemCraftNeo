@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:primogem_dust"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:primogem_shard",
+    "count": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "cdc",
+    " c "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:gold_ingot"
+    },
+    "b": {
+      "item": "minecraft:light_weighted_pressure_plate"
+    },
+    "c": {
+      "item": "primogemcraft:refined_mora"
+    },
+    "d": {
+      "item": "primogemcraft:iron_trash_can_lid"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:shield_of_wealth_and_hope",
+    "count": 1
+  }
+}

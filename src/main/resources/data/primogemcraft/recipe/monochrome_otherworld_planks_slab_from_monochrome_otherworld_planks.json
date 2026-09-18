@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:monochrome_otherworld_planks"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:monochrome_otherworld_planks_slab",
+    "count": 6
+  }
+}

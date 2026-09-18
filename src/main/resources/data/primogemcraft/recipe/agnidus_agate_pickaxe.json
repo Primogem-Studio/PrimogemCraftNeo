@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:elemental_crystal_enhancement_smithing_template"
+  },
+  "base": {
+    "item": "primogemcraft:primogem_pickaxe"
+  },
+  "addition": {
+    "item": "primogemcraft:agnidus_agate_chunk"
+  },
+  "result": {
+    "id": "primogemcraft:agnidus_agate_pickaxe"
+  }
+}

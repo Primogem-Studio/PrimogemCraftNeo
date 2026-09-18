@@ -1,0 +1,8 @@
+{
+  "parent": "block/template_glass_pane_noside_alt",
+  "textures": {
+    "pane": "primogemcraft:block/solid_crystal_plate",
+    "particle": "primogemcraft:block/solid_crystal_plate"
+  },
+  "render_type": "translucent"
+}

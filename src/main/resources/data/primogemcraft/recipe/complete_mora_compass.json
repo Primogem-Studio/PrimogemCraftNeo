@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abc",
+    "def",
+    "ghi"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:vayuda_turquoise_gemstone"
+    },
+    "b": {
+      "item": "primogemcraft:elemental_crystal"
+    },
+    "c": {
+      "item": "primogemcraft:shivada_jade_gemstone"
+    },
+    "d": {
+      "item": "primogemcraft:prithiva_topaz_gemstone"
+    },
+    "e": {
+      "item": "primogemcraft:netherite_mora_compass"
+    },
+    "f": {
+      "item": "primogemcraft:varunada_lazurite_gemstone"
+    },
+    "g": {
+      "item": "primogemcraft:vajrada_amethyst_gemstone"
+    },
+    "h": {
+      "item": "primogemcraft:nagadus_emerald_gemstone"
+    },
+    "i": {
+      "item": "primogemcraft:agnidus_agate_gemstone"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:complete_mora_compass",
+    "count": 1
+  }
+}

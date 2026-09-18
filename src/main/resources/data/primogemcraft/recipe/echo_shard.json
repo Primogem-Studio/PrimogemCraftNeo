@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abc",
+    "def",
+    "ghi"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:sturdy_metal_grain"
+    },
+    "b": {
+      "item": "primogemcraft:unfettered_metal_grain"
+    },
+    "c": {
+      "item": "primogemcraft:compassion_metal_grain"
+    },
+    "d": {
+      "item": "primogemcraft:eternal_metal_grain"
+    },
+    "e": {
+      "item": "minecraft:sculk_catalyst"
+    },
+    "f": {
+      "item": "primogemcraft:burning_wish_metal_grain"
+    },
+    "g": {
+      "item": "primogemcraft:wisdom_metal_grain"
+    },
+    "h": {
+      "item": "minecraft:echo_shard"
+    },
+    "i": {
+      "item": "primogemcraft:justice_metal_grain"
+    }
+  },
+  "result": {
+    "id": "minecraft:echo_shard",
+    "count": 2
+  }
+}

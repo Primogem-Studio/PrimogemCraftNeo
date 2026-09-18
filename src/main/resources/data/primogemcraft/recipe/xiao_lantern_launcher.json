@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "cdc",
+    "ecf"
+  ],
+  "key": {
+    "a": {
+      "tag": "minecraft:planks"
+    },
+    "b": {
+      "item": "minecraft:dispenser"
+    },
+    "c": {
+      "item": "minecraft:obsidian"
+    },
+    "d": {
+      "item": "primogemcraft:prithiva_topaz_gemstone"
+    },
+    "e": {
+      "item": "minecraft:yellow_concrete"
+    },
+    "f": {
+      "item": "minecraft:orange_concrete"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:xiao_lantern_launcher",
+    "count": 1
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "tag": "minecraft:music_discs"
+  },
+  "base": {
+    "item": "primogemcraft:intertwined_fate"
+  },
+  "addition": {
+    "item": "minecraft:water_bucket"
+  },
+  "result": {
+    "id": "primogemcraft:ballad_of_many_waters"
+  }
+}

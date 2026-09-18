@@ -1,0 +1,23 @@
+{
+  "display": {
+    "background": "minecraft:textures/block/stone.png",
+    "icon": {
+      "id": "primogemcraft:primogem"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.primogem_craft.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.primogem_craft.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "primogem_craft": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:refined_mora"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.otherworld_mint.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.otherworld_mint.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "otherworld_mint": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:refined_mora"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:as_expected_i_didnt_bring_it"
+}

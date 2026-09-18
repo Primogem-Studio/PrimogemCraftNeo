@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": "primogemcraft:prithiva_topaz_ore",
+  "step": "underground_ores"
+}

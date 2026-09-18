@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/deepslate_prithiva_topaz_ore",
+    "up": "primogemcraft:block/deepslate_prithiva_topaz_ore",
+    "north": "primogemcraft:block/deepslate_prithiva_topaz_ore",
+    "east": "primogemcraft:block/deepslate_prithiva_topaz_ore",
+    "south": "primogemcraft:block/deepslate_prithiva_topaz_ore",
+    "west": "primogemcraft:block/deepslate_prithiva_topaz_ore",
+    "particle": "primogemcraft:block/deepslate_prithiva_topaz_ore"
+  },
+  "render_type": "solid"
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "primogemcraft:block/lucky_statue"
+    },
+    "facing=east": {
+      "model": "primogemcraft:block/lucky_statue",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "primogemcraft:block/lucky_statue",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "primogemcraft:block/lucky_statue",
+      "y": 270
+    }
+  }
+}

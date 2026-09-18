@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "values": [
+    "primogemcraft:mora_helmet",
+    "primogemcraft:mora_chestplate",
+    "primogemcraft:mora_leggings",
+    "primogemcraft:mora_boots",
+    "primogemcraft:mora_prototype",
+    "primogemcraft:mora_sword",
+    "primogemcraft:mora_axe",
+    "primogemcraft:mora_pickaxe",
+    "primogemcraft:mora_shovel",
+    "primogemcraft:mora_hoe",
+    "primogemcraft:refined_mora",
+    "primogemcraft:small_refined_mora",
+    "primogemcraft:large_refined_mora",
+    "primogemcraft:refined_mora_block",
+    "primogemcraft:mora_block"
+  ]
+}

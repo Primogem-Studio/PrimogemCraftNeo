@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:firearm_fragment"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:intertwined_fate",
+    "count": 2
+  }
+}

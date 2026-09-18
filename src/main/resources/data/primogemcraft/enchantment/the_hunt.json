@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.primogemcraft.the_hunt"
+  },
+  "supported_items": "#c:tools",
+  "weight": 3,
+  "max_level": 5,
+  "min_cost": {
+    "base": 1,
+    "per_level_above_first": 10
+  },
+  "max_cost": {
+    "base": 6,
+    "per_level_above_first": 10
+  },
+  "anvil_cost": 5,
+  "slots": [
+    "mainhand"
+  ],
+  "exclusive_set": "primogemcraft:ambrosial_arbor_attachment"
+}

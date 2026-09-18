@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:geomarrow_crystal_block"
+    },
+    {
+      "item": "primogemcraft:geomarrow_crystal_block"
+    },
+    {
+      "item": "primogemcraft:geomarrow_crystal_block"
+    },
+    {
+      "item": "primogemcraft:geomarrow_crystal_block"
+    },
+    {
+      "item": "primogemcraft:geomarrow_crystal_block"
+    },
+    {
+      "item": "primogemcraft:geomarrow_crystal_block"
+    },
+    {
+      "item": "primogemcraft:geomarrow_crystal_block"
+    },
+    {
+      "item": "primogemcraft:geomarrow_crystal_block"
+    },
+    {
+      "item": "primogemcraft:geomarrow_crystal_block"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:geomarrow_crystal_cluster",
+    "count": 1
+  }
+}

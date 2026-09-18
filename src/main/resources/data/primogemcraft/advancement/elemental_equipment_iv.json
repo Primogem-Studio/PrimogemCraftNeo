@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:elemental_crystal_upgrade_smithing_template"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.elemental_equipment_iv.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.elemental_equipment_iv.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "elemental_equipment_iv": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:elemental_crystal_upgrade_smithing_template"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:elemental_equipment_iii"
+}

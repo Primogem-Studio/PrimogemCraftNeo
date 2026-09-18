@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:cosmic_big_lotto"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.the_gamblers_curio.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.the_gamblers_curio.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "the_gamblers_curio": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:cosmic_big_lotto"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:just_keep_pulling"
+}

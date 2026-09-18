@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:large_refined_mora"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:small_refined_mora",
+    "count": 3
+  }
+}

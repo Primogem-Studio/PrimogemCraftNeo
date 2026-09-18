@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "primogemcraft:item/invalid_thought_code_machine"
+  }
+}

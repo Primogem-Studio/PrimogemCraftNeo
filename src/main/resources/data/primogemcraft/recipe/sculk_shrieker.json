@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    " c ",
+    " d "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:sculk"
+    },
+    "b": {
+      "item": "primogemcraft:dust_of_azoth"
+    },
+    "c": {
+      "item": "minecraft:sculk_catalyst"
+    },
+    "d": {
+      "item": "primogemcraft:vayuda_turquoise_fragment"
+    }
+  },
+  "result": {
+    "id": "minecraft:sculk_shrieker",
+    "count": 1
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:void_wick_trimmer"
+    },
+    "c": {
+      "item": "primogemcraft:thalan_toxi_flame"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:empty_candle_flame",
+    "count": 1
+  }
+}

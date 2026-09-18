@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:prithiva_topaz_sliver"
+    },
+    "b": {
+      "item": "primogemcraft:prithiva_topaz_gemstone"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:prithiva_topaz_block",
+    "count": 1
+  }
+}

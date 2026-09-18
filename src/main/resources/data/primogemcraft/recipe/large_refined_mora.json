@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:refined_mora"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:large_refined_mora",
+    "count": 1
+  }
+}

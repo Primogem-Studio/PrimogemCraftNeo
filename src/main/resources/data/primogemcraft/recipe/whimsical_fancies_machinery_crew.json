@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:whimsical_fancies_machinery_crew"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:whimsical_fancies_machinery_crew",
+    "count": 1
+  }
+}

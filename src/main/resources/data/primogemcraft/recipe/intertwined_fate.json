@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:acquaint_fate"
+  },
+  "base": {
+    "tag": "primogemcraft:wish_cores"
+  },
+  "addition": {
+    "item": "primogemcraft:masterless_starglitter"
+  },
+  "result": {
+    "id": "primogemcraft:intertwined_fate"
+  }
+}

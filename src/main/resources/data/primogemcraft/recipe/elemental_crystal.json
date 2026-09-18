@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:elemental_crystal_block"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:elemental_crystal",
+    "count": 1
+  }
+}

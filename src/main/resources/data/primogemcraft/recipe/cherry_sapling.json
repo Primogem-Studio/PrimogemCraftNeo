@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:nagadus_emerald_sliver"
+    },
+    {
+      "tag": "minecraft:saplings"
+    },
+    {
+      "item": "primogemcraft:vajrada_amethyst_sliver"
+    }
+  ],
+  "result": {
+    "id": "minecraft:cherry_sapling",
+    "count": 1
+  }
+}

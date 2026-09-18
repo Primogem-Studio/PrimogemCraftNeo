@@ -1,0 +1,30 @@
+{
+  "type": "primogemcraft:crafting_shaped_with_components",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcd",
+    " b "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:gorgeous_silk_thread"
+    },
+    "b": {
+      "item": "primogemcraft:acquaint_fate"
+    },
+    "c": {
+      "item": "primogemcraft:adventurers_pouch"
+    },
+    "d": {
+      "item": "primogemcraft:intertwined_fate"
+    }
+  },
+  "source": {
+    "item": "primogemcraft:adventurers_pouch"
+  },
+  "result": {
+    "id": "primogemcraft:foreigners_pouch",
+    "count": 1
+  }
+}

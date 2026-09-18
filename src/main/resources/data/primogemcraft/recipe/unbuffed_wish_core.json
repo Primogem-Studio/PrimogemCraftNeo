@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "tag": "primogemcraft:wish_core_materials"
+    },
+    "b": {
+      "item": "primogemcraft:primogem_shard"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:unbuffed_wish_core",
+    "count": 1
+  }
+}

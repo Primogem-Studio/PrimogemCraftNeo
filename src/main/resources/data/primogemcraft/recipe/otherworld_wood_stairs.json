@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a  ",
+    "aa ",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:otherworld_log_planks"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:otherworld_wood_stairs",
+    "count": 6
+  }
+}

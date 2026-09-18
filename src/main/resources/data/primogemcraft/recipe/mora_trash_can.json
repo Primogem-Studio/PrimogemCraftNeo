@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "aca",
+    "ada"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:mora"
+    },
+    "b": {
+      "item": "minecraft:light_weighted_pressure_plate"
+    },
+    "c": {
+      "item": "primogemcraft:clean_trash_can"
+    },
+    "d": {
+      "item": "primogemcraft:refined_mora"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:mora_trash_can",
+    "count": 1
+  }
+}

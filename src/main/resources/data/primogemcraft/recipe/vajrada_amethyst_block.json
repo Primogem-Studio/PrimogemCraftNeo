@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:vajrada_amethyst_sliver"
+    },
+    "b": {
+      "item": "primogemcraft:vajrada_amethyst_gemstone"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:vajrada_amethyst_block",
+    "count": 1
+  }
+}

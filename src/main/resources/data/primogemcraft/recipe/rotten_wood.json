@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "tag": "minecraft:planks"
+    },
+    "b": {
+      "item": "primogemcraft:geomarrow_crystal_block"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:rotten_wood",
+    "count": 8
+  }
+}

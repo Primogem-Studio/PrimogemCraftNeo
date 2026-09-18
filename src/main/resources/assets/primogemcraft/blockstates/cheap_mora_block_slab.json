@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "primogemcraft:block/cheap_mora_block_slab"
+    },
+    "type=top": {
+      "model": "primogemcraft:block/cheap_mora_block_slab_top"
+    },
+    "type=double": {
+      "model": "primogemcraft:block/cheap_mora_block_slab_full"
+    }
+  }
+}

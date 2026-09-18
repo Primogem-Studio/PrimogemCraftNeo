@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:cosmic_big_lotto"
+    },
+    "c": {
+      "item": "primogemcraft:quantum_big_lotto"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:mystery_lottery",
+    "count": 1
+  }
+}

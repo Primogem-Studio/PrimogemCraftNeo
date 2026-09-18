@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:march_7th_statue"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.it_became_a_spirit.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.it_became_a_spirit.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "it_became_a_spirit": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:march_7th_statue"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:just_keep_pulling"
+}

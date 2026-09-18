@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/sturdy_metal_block",
+    "up": "primogemcraft:block/sturdy_metal_block",
+    "north": "primogemcraft:block/sturdy_metal_block",
+    "east": "primogemcraft:block/sturdy_metal_block",
+    "south": "primogemcraft:block/sturdy_metal_block",
+    "west": "primogemcraft:block/sturdy_metal_block",
+    "particle": "primogemcraft:block/sturdy_metal_block"
+  },
+  "render_type": "solid"
+}

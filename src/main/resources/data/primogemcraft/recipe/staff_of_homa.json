@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "aba",
+    " c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:lucent_afterglow"
+    },
+    "b": {
+      "item": "primogemcraft:agnidus_agate_fragment"
+    },
+    "c": {
+      "item": "primogemcraft:beginners_protector"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:staff_of_homa",
+    "count": 1
+  }
+}

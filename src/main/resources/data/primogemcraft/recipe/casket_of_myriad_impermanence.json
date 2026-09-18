@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:casket_of_inaccuracy"
+    },
+    "c": {
+      "item": "primogemcraft:entropic_die"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:casket_of_myriad_impermanence",
+    "count": 1
+  }
+}

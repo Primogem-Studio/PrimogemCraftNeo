@@ -1,0 +1,10 @@
+{
+  "item": "primogemcraft:elemental_molten_bead_fragment",
+  "effect": "primogemcraft:permanence",
+  "pharm": 0,
+  "stability": 0,
+  "colors": [
+    4294933061
+  ],
+  "description": "item.elixir.material.desc.primogemcraft.main.permanence"
+}

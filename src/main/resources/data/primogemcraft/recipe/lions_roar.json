@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "  a",
+    " ab",
+    "cb "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:fine_enhancement_ore"
+    },
+    "b": {
+      "item": "primogemcraft:prithiva_topaz_fragment"
+    },
+    "c": {
+      "item": "minecraft:blaze_rod"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:lions_roar",
+    "count": 1
+  }
+}

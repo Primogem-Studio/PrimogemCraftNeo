@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a a",
+    "a a",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:trash_can_fragment"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:trash_can",
+    "count": 1
+  }
+}

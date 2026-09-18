@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:vajrada_amethyst_fragment"
+    },
+    "b": {
+      "item": "primogemcraft:eternal_metal"
+    },
+    "c": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:eternal_wax_seal",
+    "count": 1
+  }
+}

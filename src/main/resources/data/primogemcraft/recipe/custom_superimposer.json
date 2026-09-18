@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:solid_crystal_plate"
+  },
+  "base": {
+    "item": "primogemcraft:enigmata_faction_bond"
+  },
+  "addition": {
+    "item": "primogemcraft:enigmata_faction_bond"
+  },
+  "result": {
+    "id": "primogemcraft:custom_superimposer"
+  }
+}

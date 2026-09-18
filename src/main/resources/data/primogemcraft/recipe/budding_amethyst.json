@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "b": {
+      "item": "primogemcraft:prithiva_topaz_chunk"
+    }
+  },
+  "result": {
+    "id": "minecraft:budding_amethyst",
+    "count": 1
+  }
+}

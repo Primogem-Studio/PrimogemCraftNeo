@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "experience": 10,
+  "cookingtime": 300,
+  "ingredient": {
+    "item": "primogemcraft:heavy_flavored_iron_ingot"
+  },
+  "result": {
+    "id": "primogemcraft:sanctity_of_the_trashcan"
+  }
+}

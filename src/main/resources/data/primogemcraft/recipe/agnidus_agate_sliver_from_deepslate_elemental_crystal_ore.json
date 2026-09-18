@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:deepslate_elemental_crystal_ore"
+  },
+  "result": {
+    "id": "primogemcraft:agnidus_agate_sliver",
+    "count": 4
+  }
+}

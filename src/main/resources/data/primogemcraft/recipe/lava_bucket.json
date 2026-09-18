@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:agnidus_agate_sliver"
+    },
+    {
+      "item": "primogemcraft:prithiva_topaz_sliver"
+    },
+    {
+      "item": "minecraft:bucket"
+    }
+  ],
+  "result": {
+    "id": "minecraft:lava_bucket",
+    "count": 1
+  }
+}

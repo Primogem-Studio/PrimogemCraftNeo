@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/vajrada_amethyst_ore",
+    "up": "primogemcraft:block/vajrada_amethyst_ore",
+    "north": "primogemcraft:block/vajrada_amethyst_ore",
+    "east": "primogemcraft:block/vajrada_amethyst_ore",
+    "south": "primogemcraft:block/vajrada_amethyst_ore",
+    "west": "primogemcraft:block/vajrada_amethyst_ore",
+    "particle": "primogemcraft:block/vajrada_amethyst_ore"
+  },
+  "render_type": "solid"
+}

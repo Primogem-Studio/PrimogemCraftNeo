@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:intertwined_fate"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.capture_tomorrows_starlight.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.capture_tomorrows_starlight.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "capture_tomorrows_starlight": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "primogemcraft:pre_registrations_reached"
+}

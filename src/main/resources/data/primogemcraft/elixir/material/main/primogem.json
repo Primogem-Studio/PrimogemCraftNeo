@@ -1,0 +1,13 @@
+{
+  "item": "primogemcraft:primogem",
+  "effect": "primogemcraft:primogem",
+  "pharm": 10,
+  "stability": -10,
+  "colors": [
+    4294436800,
+    4294566652,
+    4287095038,
+    4281942777
+  ],
+  "description": "item.elixir.material.desc.primogemcraft.main.primogem"
+}

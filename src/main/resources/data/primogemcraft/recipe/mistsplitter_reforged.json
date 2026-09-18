@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "aba",
+    " c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:lucent_afterglow"
+    },
+    "b": {
+      "item": "primogemcraft:eternal_metal"
+    },
+    "c": {
+      "item": "primogemcraft:primogem_sword"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:mistsplitter_reforged",
+    "count": 1
+  }
+}

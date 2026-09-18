@@ -1,0 +1,56 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "primogemcraft:item/primogem_shard"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "primogemcraft:count": 2
+      },
+      "model": "primogemcraft:item/primogem_shard_2"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 3
+      },
+      "model": "primogemcraft:item/primogem_shard_3"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 4
+      },
+      "model": "primogemcraft:item/primogem_shard_4"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 5
+      },
+      "model": "primogemcraft:item/primogem_shard_5"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 6
+      },
+      "model": "primogemcraft:item/primogem_shard_6"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 7
+      },
+      "model": "primogemcraft:item/primogem_shard_7"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 8
+      },
+      "model": "primogemcraft:item/primogem_shard_8"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 9
+      },
+      "model": "primogemcraft:item/primogem_shard_9"
+    }
+  ]
+}

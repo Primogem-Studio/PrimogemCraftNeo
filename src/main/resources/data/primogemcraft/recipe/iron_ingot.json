@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "experience": 1,
+  "cookingtime": 1200,
+  "ingredient": {
+    "item": "primogemcraft:rusty_iron_block"
+  },
+  "result": {
+    "id": "minecraft:iron_ingot"
+  }
+}

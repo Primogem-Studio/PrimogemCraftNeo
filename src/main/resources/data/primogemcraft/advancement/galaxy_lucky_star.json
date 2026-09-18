@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:stellar_jade"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.galaxy_lucky_star.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.galaxy_lucky_star.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "galaxy_lucky_star": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 500
+  },
+  "parent": "primogemcraft:galaxy_gambler"
+}

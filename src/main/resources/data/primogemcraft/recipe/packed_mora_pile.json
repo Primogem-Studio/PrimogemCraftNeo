@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:mora_commemorative_coin"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:packed_mora_pile",
+    "count": 9
+  }
+}

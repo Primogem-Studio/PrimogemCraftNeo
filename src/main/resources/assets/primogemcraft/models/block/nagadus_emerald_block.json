@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/nagadus_emerald_block",
+    "up": "primogemcraft:block/nagadus_emerald_block",
+    "north": "primogemcraft:block/nagadus_emerald_block",
+    "east": "primogemcraft:block/nagadus_emerald_block",
+    "south": "primogemcraft:block/nagadus_emerald_block",
+    "west": "primogemcraft:block/nagadus_emerald_block",
+    "particle": "primogemcraft:block/nagadus_emerald_block"
+  },
+  "render_type": "solid"
+}

@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:diamond_shard"
+    },
+    {
+      "item": "primogemcraft:diamond_shard"
+    },
+    {
+      "item": "primogemcraft:diamond_shard"
+    },
+    {
+      "item": "primogemcraft:diamond_shard"
+    },
+    {
+      "item": "primogemcraft:diamond_shard"
+    },
+    {
+      "item": "primogemcraft:diamond_shard"
+    },
+    {
+      "item": "primogemcraft:diamond_shard"
+    },
+    {
+      "item": "primogemcraft:diamond_shard"
+    },
+    {
+      "item": "primogemcraft:diamond_shard"
+    }
+  ],
+  "result": {
+    "id": "minecraft:diamond",
+    "count": 1
+  }
+}

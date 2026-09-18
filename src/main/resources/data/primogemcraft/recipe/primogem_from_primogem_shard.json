@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:primogem_shard"
+    },
+    {
+      "item": "primogemcraft:primogem_shard"
+    },
+    {
+      "item": "primogemcraft:primogem_shard"
+    },
+    {
+      "item": "primogemcraft:primogem_shard"
+    },
+    {
+      "item": "primogemcraft:primogem_shard"
+    },
+    {
+      "item": "primogemcraft:primogem_shard"
+    },
+    {
+      "item": "primogemcraft:primogem_shard"
+    },
+    {
+      "item": "primogemcraft:primogem_shard"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:primogem",
+    "count": 1
+  }
+}

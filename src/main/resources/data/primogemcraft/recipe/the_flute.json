@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "  a",
+    " b ",
+    "c  "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:note_block"
+    },
+    "b": {
+      "item": "minecraft:bamboo"
+    },
+    "c": {
+      "item": "primogemcraft:fine_enhancement_ore"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:the_flute",
+    "count": 1
+  }
+}

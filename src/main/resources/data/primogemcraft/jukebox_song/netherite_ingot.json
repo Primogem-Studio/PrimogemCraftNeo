@@ -1,0 +1,8 @@
+{
+  "comparator_output": 15,
+  "description": {
+    "translate": "item.primogemcraft.netherite_ingot.desc"
+  },
+  "length_in_seconds": 60,
+  "sound_event": "primogemcraft:scam"
+}

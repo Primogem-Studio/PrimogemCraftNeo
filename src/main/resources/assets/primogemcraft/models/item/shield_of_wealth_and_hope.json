@@ -1,0 +1,15 @@
+{
+  "parent": "primogemcraft:custom/trash_can_lid_3",
+  "textures": {
+    "2": "primogemcraft:block/trash_can_lid_3",
+    "particle": "primogemcraft:item/shield_of_wealth_and_hope"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "blocking": 1
+      },
+      "model": "primogemcraft:item/shield_of_wealth_and_hope_blocking"
+    }
+  ]
+}

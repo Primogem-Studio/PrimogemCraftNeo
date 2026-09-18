@@ -1,0 +1,9 @@
+{
+  "parent": "primogemcraft:block/suspicious_bomb_model",
+  "textures": {
+    "all": "primogemcraft:block/suspicious_bomb",
+    "particle": "primogemcraft:block/suspicious_bomb",
+    "2": "primogemcraft:block/suspicious_bomb"
+  },
+  "render_type": "cutout"
+}

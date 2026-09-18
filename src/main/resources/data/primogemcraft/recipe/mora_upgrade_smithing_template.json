@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aca"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:mora"
+    },
+    "b": {
+      "item": "primogemcraft:mora_upgrade_smithing_template"
+    },
+    "c": {
+      "tag": "c:stones"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:mora_upgrade_smithing_template",
+    "count": 2
+  }
+}

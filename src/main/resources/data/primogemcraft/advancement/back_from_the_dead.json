@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:dream_sakura"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.back_from_the_dead.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.back_from_the_dead.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "back_from_the_dead": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "primogemcraft:shes_really_pretty"
+}

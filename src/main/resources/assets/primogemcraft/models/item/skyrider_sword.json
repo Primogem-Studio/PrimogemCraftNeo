@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "primogemcraft:item/skyrider_sword_held"
+  }
+}

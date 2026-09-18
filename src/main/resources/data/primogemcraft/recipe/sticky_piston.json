@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:nagadus_emerald_sliver"
+    },
+    "b": {
+      "item": "minecraft:piston"
+    },
+    "c": {
+      "item": "primogemcraft:mora"
+    }
+  },
+  "result": {
+    "id": "minecraft:sticky_piston",
+    "count": 1
+  }
+}

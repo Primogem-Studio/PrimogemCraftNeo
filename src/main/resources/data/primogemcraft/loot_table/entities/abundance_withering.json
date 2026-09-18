@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 1000
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:unknown_leaf",
+          "weight": 1000,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 1}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:fruit_of_the_alien_tree",
+          "weight": 10,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 1}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:the_black_sword",
+          "weight": 1,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 1}}
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "primogemcraft:entities/abundance_withering"
+}

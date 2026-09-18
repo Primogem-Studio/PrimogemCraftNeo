@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:heavy_flavored_iron_ingot"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.heavy_flavor.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.heavy_flavor.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "heavy_flavor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:heavy_flavored_iron_ingot"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:why_so_stinky"
+}

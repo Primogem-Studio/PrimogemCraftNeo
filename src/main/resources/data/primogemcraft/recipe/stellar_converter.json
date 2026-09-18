@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "cdc",
+    "ece"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:iron_block"
+    },
+    "b": {
+      "item": "primogemcraft:elemental_crystal"
+    },
+    "c": {
+      "item": "primogemcraft:otherworldly_moon_gold"
+    },
+    "d": {
+      "item": "primogemcraft:dust_of_azoth"
+    },
+    "e": {
+      "item": "minecraft:furnace"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:stellar_converter",
+    "count": 1
+  }
+}

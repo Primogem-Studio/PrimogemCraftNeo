@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/weathered_stone_bricks",
+    "up": "primogemcraft:block/weathered_stone_bricks",
+    "north": "primogemcraft:block/weathered_stone_bricks",
+    "east": "primogemcraft:block/weathered_stone_bricks",
+    "south": "primogemcraft:block/weathered_stone_bricks",
+    "west": "primogemcraft:block/weathered_stone_bricks",
+    "particle": "primogemcraft:block/weathered_stone_bricks"
+  },
+  "render_type": "solid"
+}

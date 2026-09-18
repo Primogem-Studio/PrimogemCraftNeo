@@ -1,0 +1,39 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:primogem"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.everything_starts_with_primo.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.everything_starts_with_primo.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "everything_starts_with_primo": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:primogem"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 0
+  },
+  "parent": "primogemcraft:primogem_craft"
+}

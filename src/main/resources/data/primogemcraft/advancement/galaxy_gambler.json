@@ -1,0 +1,39 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:lucky_special_ticket"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.galaxy_gambler.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.galaxy_gambler.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "galaxy_gambler": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:lucky_special_ticket"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 1
+  },
+  "parent": "primogemcraft:everything_starts_with_primo"
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": {"min":0,"max":2},
+      "entries": [
+        {"type":"minecraft:item","name":"primogemcraft:unknown_leaf","weight":100,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:xiao_lantern","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]}
+      ]
+    },
+    {
+      "rolls": {"min":0,"max":1},
+      "entries": [
+        {"type":"minecraft:item","name":"minecraft:rotten_flesh","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":2}}]}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:elemental_crystal_enhancement_smithing_template"
+  },
+  "base": {
+    "item": "primogemcraft:primogem_hoe"
+  },
+  "addition": {
+    "item": "primogemcraft:vajrada_amethyst_chunk"
+  },
+  "result": {
+    "id": "primogemcraft:vajrada_amethyst_hoe"
+  }
+}

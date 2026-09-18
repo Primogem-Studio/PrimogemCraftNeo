@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aab",
+    "bbb",
+    "bbb"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:prithiva_topaz_fragment"
+    },
+    "b": {
+      "item": "minecraft:netherite_scrap"
+    }
+  },
+  "result": {
+    "id": "minecraft:netherite_ingot",
+    "count": 2
+  }
+}

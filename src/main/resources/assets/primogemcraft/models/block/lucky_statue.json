@@ -1,0 +1,9 @@
+{
+  "parent": "primogemcraft:block/lucky_statue_model",
+  "textures": {
+    "all": "primogemcraft:block/lucky_statue",
+    "particle": "primogemcraft:block/lucky_statue",
+    "1": "primogemcraft:block/lucky_statue"
+  },
+  "render_type": "solid"
+}

@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:shield_of_wealth_and_hope"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.money_means_hope.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.money_means_hope.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "money_means_hope": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:shield_of_wealth_and_hope"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:radiant_will"
+}

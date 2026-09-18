@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:creative_xiao_lantern_launcher"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.creative_mode.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.creative_mode.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "creative_mode": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:creative_xiao_lantern_launcher"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:xiao_lanterns_are_here"
+}

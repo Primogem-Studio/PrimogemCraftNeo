@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "bcd",
+    "eee"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:gold_nugget"
+    },
+    "b": {
+      "item": "primogemcraft:cosmic_fragment"
+    },
+    "c": {
+      "tag": "c:curio"
+    },
+    "d": {
+      "item": "primogemcraft:dust_of_azoth"
+    },
+    "e": {
+      "item": "minecraft:glass_bottle"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:curio_fusion_agent",
+    "count": 3
+  }
+}

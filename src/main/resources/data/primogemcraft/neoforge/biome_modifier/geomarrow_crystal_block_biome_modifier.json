@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#primogemcraft:is_snowy",
+  "features": "primogemcraft:geomarrow_crystal_block",
+  "step": "underground_ores"
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:elemental_crystal_enhancement_smithing_template"
+  },
+  "base": {
+    "item": "primogemcraft:primogem_hoe"
+  },
+  "addition": {
+    "item": "primogemcraft:prithiva_topaz_gemstone"
+  },
+  "result": {
+    "id": "primogemcraft:prithiva_topaz_hoe"
+  }
+}

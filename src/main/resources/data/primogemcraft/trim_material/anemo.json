@@ -1,0 +1,9 @@
+{
+  "asset_name": "anemo",
+  "description": {
+    "color": "#73F9CC",
+    "translate": "trim_material.primogemcraft.anemo"
+  },
+  "ingredient": "primogemcraft:unfettered_metal",
+  "item_model_index": 1
+}

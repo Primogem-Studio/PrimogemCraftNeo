@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/otherworld_crystal_ore",
+    "up": "primogemcraft:block/otherworld_crystal_ore",
+    "north": "primogemcraft:block/otherworld_crystal_ore",
+    "east": "primogemcraft:block/otherworld_crystal_ore",
+    "south": "primogemcraft:block/otherworld_crystal_ore",
+    "west": "primogemcraft:block/otherworld_crystal_ore",
+    "particle": "primogemcraft:block/otherworld_crystal_ore"
+  },
+  "render_type": "solid"
+}

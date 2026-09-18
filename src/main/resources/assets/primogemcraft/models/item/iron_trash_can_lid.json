@@ -1,0 +1,15 @@
+{
+  "parent": "primogemcraft:custom/trash_can_lid_2",
+  "textures": {
+    "1": "primogemcraft:block/trash_can_lid_2",
+    "particle": "primogemcraft:item/iron_trash_can_lid"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "blocking": 1
+      },
+      "model": "primogemcraft:item/iron_trash_can_lid_blocking"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:compassion_metal_block"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:compassion_metal",
+    "count": 9
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "primogemcraft:blocks/fine_forged_ore_fusion_block",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:fine_forged_ore_fusion_block"
+        }
+      ]
+    }
+  ]
+}

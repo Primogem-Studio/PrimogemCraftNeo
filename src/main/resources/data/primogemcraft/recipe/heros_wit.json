@@ -1,0 +1,24 @@
+{
+  "type": "primogemcraft:crafting_shaped_with_components",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    },
+    "b": {
+      "item": "primogemcraft:adventurers_experience"
+    }
+  },
+  "source": {
+    "item": "primogemcraft:adventurers_experience"
+  },
+  "result": {
+    "id": "primogemcraft:heros_wit",
+    "count": 1
+  }
+}

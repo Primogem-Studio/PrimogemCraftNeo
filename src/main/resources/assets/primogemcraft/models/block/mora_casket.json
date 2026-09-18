@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/mora_casket",
+    "up": "primogemcraft:block/mora_casket",
+    "north": "primogemcraft:block/mora_casket",
+    "east": "primogemcraft:block/mora_casket",
+    "south": "primogemcraft:block/mora_casket",
+    "west": "primogemcraft:block/mora_casket",
+    "particle": "primogemcraft:block/mora_casket"
+  },
+  "render_type": "solid"
+}

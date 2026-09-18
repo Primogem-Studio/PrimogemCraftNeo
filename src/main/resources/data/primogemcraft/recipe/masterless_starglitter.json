@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abb",
+    "bbb",
+    "bbb"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:dust_of_azoth"
+    },
+    "b": {
+      "item": "primogemcraft:masterless_stardust"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:masterless_starglitter",
+    "count": 1
+  }
+}

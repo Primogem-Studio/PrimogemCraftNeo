@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:unlucky_voucher"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.ultimate_bad_luck.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.ultimate_bad_luck.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "ultimate_bad_luck": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:unlucky_voucher"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:the_gamblers_curio"
+}

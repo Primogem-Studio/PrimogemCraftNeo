@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:fine_enhancement_ore",
+    "count": 4
+  }
+}

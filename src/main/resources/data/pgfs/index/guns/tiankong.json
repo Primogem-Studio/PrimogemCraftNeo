@@ -1,0 +1,9 @@
+{
+  "name": "pgfs.gun.tiankong.name",
+  "tooltip": "pgfs.gun.tiankong.desc",
+  "display": "pgfs:tiankong_display",
+  "data": "pgfs:tiankong_data",
+  "type": "rifle",
+  "item_type": "modern_kinetic",
+  "sort": 1
+}

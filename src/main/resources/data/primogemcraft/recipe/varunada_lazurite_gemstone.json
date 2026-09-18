@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:varunada_lazurite_chunk"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:varunada_lazurite_gemstone",
+    "count": 1
+  }
+}

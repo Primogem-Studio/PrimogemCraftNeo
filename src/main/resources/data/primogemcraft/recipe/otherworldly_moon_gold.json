@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "b": {
+      "item": "minecraft:popped_chorus_fruit"
+    },
+    "c": {
+      "item": "minecraft:amethyst_shard"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:otherworldly_moon_gold",
+    "count": 1
+  }
+}

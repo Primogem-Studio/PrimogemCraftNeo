@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:fruit_of_the_alien_tree"
+    },
+    "c": {
+      "item": "primogemcraft:ambergris_cheese"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:scented_dried_fruit",
+    "count": 1
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:iron_ingot"
+    },
+    "b": {
+      "item": "primogemcraft:geomarrow_crystal_block"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:rusty_iron_block",
+    "count": 8
+  }
+}

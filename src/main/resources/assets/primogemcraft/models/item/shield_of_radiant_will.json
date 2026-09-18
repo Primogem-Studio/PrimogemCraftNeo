@@ -1,0 +1,15 @@
+{
+  "parent": "primogemcraft:custom/trash_can_lid_1",
+  "textures": {
+    "2": "primogemcraft:block/trash_can_lid_1",
+    "particle": "primogemcraft:item/shield_of_radiant_will"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "blocking": 1
+      },
+      "model": "primogemcraft:item/shield_of_radiant_will_blocking"
+    }
+  ]
+}

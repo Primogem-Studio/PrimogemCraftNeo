@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:elemental_crystal_enhancement_smithing_template"
+  },
+  "base": {
+    "item": "primogemcraft:primogem_shovel"
+  },
+  "addition": {
+    "item": "primogemcraft:shivada_jade_fragment"
+  },
+  "result": {
+    "id": "primogemcraft:shivada_jade_shovel"
+  }
+}

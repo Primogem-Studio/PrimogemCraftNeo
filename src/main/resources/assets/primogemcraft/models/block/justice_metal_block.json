@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/justice_metal_block",
+    "up": "primogemcraft:block/justice_metal_block",
+    "north": "primogemcraft:block/justice_metal_block",
+    "east": "primogemcraft:block/justice_metal_block",
+    "south": "primogemcraft:block/justice_metal_block",
+    "west": "primogemcraft:block/justice_metal_block",
+    "particle": "primogemcraft:block/justice_metal_block"
+  },
+  "render_type": "solid"
+}

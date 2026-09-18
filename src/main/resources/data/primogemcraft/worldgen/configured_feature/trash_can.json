@@ -1,0 +1,16 @@
+{
+  "type": "primogemcraft:structure_template",
+  "config": {
+    "structure": "primogemcraft:trash_can",
+    "random_rotation": false,
+    "random_mirror": false,
+    "ignored_blocks": [
+      "minecraft:structure_block"
+    ],
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  }
+}

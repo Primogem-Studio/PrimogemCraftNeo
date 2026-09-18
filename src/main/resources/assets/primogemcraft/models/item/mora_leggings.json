@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "primogemcraft:item/mora_leggings"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "trim_type": 1
+      },
+      "model": "primogemcraft:item/mora_leggings_trimmed"
+    }
+  ]
+}

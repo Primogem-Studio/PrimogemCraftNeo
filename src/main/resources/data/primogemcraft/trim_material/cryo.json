@@ -1,0 +1,9 @@
+{
+  "asset_name": "cryo",
+  "description": {
+    "color": "#7AE7E0",
+    "translate": "trim_material.primogemcraft.cryo"
+  },
+  "ingredient": "primogemcraft:compassion_metal",
+  "item_model_index": 1
+}

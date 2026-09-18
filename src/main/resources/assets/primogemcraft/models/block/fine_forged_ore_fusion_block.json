@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/fine_forged_ore_fusion_block",
+    "up": "primogemcraft:block/fine_forged_ore_fusion_block",
+    "north": "primogemcraft:block/fine_forged_ore_fusion_block",
+    "east": "primogemcraft:block/fine_forged_ore_fusion_block",
+    "south": "primogemcraft:block/fine_forged_ore_fusion_block",
+    "west": "primogemcraft:block/fine_forged_ore_fusion_block",
+    "particle": "primogemcraft:block/fine_forged_ore_fusion_block"
+  },
+  "render_type": "solid"
+}

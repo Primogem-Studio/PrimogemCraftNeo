@@ -1,0 +1,34 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:random_event_error_code"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.star_enchanting_method.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.star_enchanting_method.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "parent": "primogemcraft:everything_starts_with_primo",
+  "criteria": {
+    "star_enchanting_method": {
+      "trigger": "minecraft:player_interacted_with_entity",
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "primogemcraft:random_event"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

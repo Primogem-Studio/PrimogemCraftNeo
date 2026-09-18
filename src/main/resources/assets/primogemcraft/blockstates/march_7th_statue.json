@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "primogemcraft:block/march_7th_statue"
+    },
+    "facing=east": {
+      "model": "primogemcraft:block/march_7th_statue",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "primogemcraft:block/march_7th_statue",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "primogemcraft:block/march_7th_statue",
+      "y": 270
+    }
+  }
+}

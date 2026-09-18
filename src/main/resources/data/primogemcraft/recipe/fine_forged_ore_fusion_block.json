@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:fine_forged_ore_fusion_block",
+    "count": 1
+  }
+}

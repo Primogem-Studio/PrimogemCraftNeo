@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:shivada_jade_sliver"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:shivada_jade_fragment",
+    "count": 1
+  }
+}

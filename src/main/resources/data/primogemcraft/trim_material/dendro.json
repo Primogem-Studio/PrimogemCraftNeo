@@ -1,0 +1,9 @@
+{
+  "asset_name": "dendro",
+  "description": {
+    "color": "#94CC12",
+    "translate": "trim_material.primogemcraft.dendro"
+  },
+  "ingredient": "primogemcraft:wisdom_metal",
+  "item_model_index": 1
+}

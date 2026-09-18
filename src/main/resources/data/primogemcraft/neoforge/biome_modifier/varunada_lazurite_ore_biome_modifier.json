@@ -1,0 +1,17 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "cold_ocean",
+    "deep_cold_ocean",
+    "deep_frozen_ocean",
+    "deep_lukewarm_ocean",
+    "deep_ocean",
+    "plains",
+    "frozen_ocean",
+    "lukewarm_ocean",
+    "warm_ocean",
+    "ocean"
+  ],
+  "features": "primogemcraft:varunada_lazurite_ore",
+  "step": "underground_ores"
+}

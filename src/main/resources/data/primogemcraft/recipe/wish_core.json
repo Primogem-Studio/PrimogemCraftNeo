@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:unbuffed_wish_core"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:wish_core",
+    "count": 1
+  }
+}

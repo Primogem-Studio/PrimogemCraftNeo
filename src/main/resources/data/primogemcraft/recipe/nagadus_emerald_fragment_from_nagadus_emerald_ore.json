@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:nagadus_emerald_ore"
+  },
+  "result": {
+    "id": "primogemcraft:nagadus_emerald_fragment",
+    "count": 1
+  }
+}

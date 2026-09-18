@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:otherworld_wind_catcher_empty"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:otherworld_wind_catcher",
+    "count": 1
+  }
+}

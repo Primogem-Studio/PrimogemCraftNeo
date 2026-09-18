@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "tag": "minecraft:music_discs"
+  },
+  "base": {
+    "item": "primogemcraft:intertwined_fate"
+  },
+  "addition": {
+    "item": "primogemcraft:mora"
+  },
+  "result": {
+    "id": "primogemcraft:the_village_no_longer_young"
+  }
+}

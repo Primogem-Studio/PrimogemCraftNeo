@@ -1,0 +1,9 @@
+{
+  "parent": "primogemcraft:block/trash_can_model",
+  "textures": {
+    "all": "primogemcraft:block/trash_can",
+    "particle": "primogemcraft:block/trash_can",
+    "3": "primogemcraft:block/trash_can"
+  },
+  "render_type": "solid"
+}

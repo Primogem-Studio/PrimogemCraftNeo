@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "experience": 0,
+  "cookingtime": 100,
+  "ingredient": {
+    "item": "primogemcraft:rusty_iron_fence"
+  },
+  "result": {
+    "id": "minecraft:iron_nugget"
+  }
+}

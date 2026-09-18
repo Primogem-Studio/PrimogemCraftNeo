@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "primogemcraft:block/trash_can"
+    },
+    "facing=east": {
+      "model": "primogemcraft:block/trash_can",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "primogemcraft:block/trash_can",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "primogemcraft:block/trash_can",
+      "y": 270
+    }
+  }
+}

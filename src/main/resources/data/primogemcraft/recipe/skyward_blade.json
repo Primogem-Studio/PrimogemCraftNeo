@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "aba",
+    " c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:lucent_afterglow"
+    },
+    "b": {
+      "item": "primogemcraft:unfettered_metal"
+    },
+    "c": {
+      "item": "primogemcraft:primogem_sword"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:skyward_blade",
+    "count": 1
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abc",
+    "ddd",
+    "efg"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:messy_code"
+    },
+    "b": {
+      "item": "primogemcraft:slightly_odd_code"
+    },
+    "c": {
+      "item": "primogemcraft:conventional_code"
+    },
+    "d": {
+      "item": "primogemcraft:potent_curio_fusion_agent"
+    },
+    "e": {
+      "item": "primogemcraft:infinitely_recursive_code"
+    },
+    "f": {
+      "item": "primogemcraft:precise_elegant_code"
+    },
+    "g": {
+      "item": "primogemcraft:uncommented_code"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:integrated_code",
+    "count": 1
+  }
+}

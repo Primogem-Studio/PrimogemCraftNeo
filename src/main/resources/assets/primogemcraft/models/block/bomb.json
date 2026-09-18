@@ -1,0 +1,9 @@
+{
+  "parent": "primogemcraft:block/bomb_model",
+  "textures": {
+    "all": "primogemcraft:block/bomb",
+    "particle": "primogemcraft:block/bomb",
+    "1": "primogemcraft:block/bomb"
+  },
+  "render_type": "cutout"
+}

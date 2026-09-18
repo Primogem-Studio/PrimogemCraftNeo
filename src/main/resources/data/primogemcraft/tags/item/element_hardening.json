@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "primogemcraft:unfettered_metal",
+    "primogemcraft:sturdy_metal",
+    "primogemcraft:eternal_metal",
+    "primogemcraft:wisdom_metal",
+    "primogemcraft:justice_metal",
+    "primogemcraft:burning_wish_metal",
+    "primogemcraft:compassion_metal",
+    "primogemcraft:primogem"
+  ]
+}

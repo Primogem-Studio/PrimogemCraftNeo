@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:stick"
+    },
+    "b": {
+      "item": "primogemcraft:monochrome_otherworld_planks"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:monochrome_otherworld_planks_fence_gate",
+    "count": 1
+  }
+}

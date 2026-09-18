@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "primogemcraft:block/unidentified_doll"
+    },
+    "lit=true": {
+      "model": "primogemcraft:block/bomb"
+    }
+  }
+}

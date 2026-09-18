@@ -1,0 +1,31 @@
+{
+  "values": {
+    "primogemcraft:charcoal_block": {
+      "burn_time": 16000
+    },
+    "primogemcraft:geomarrow": {
+      "burn_time": 2000
+    },
+    "primogemcraft:geomarrow_crystal_block": {
+      "burn_time": 40
+    },
+    "primogemcraft:geomarrow_crystal_cluster": {
+      "burn_time": 1600
+    },
+    "primogemcraft:agnidus_agate_block": {
+      "burn_time": 16000
+    },
+    "primogemcraft:agnidus_agate_gemstone": {
+      "burn_time": 1600
+    },
+    "primogemcraft:agnidus_agate_chunk": {
+      "burn_time": 800
+    },
+    "primogemcraft:agnidus_agate_fragment": {
+      "burn_time": 400
+    },
+    "primogemcraft:agnidus_agate_sliver": {
+      "burn_time": 200
+    }
+  }
+}

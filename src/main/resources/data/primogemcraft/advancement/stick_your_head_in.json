@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:emergency_storage_pouch"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.stick_your_head_in.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.stick_your_head_in.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "stick_your_head_in": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:emergency_storage_pouch"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:everything_starts_with_primo"
+}

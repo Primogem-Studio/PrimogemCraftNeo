@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "aca"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:fine_enhancement_ore"
+    },
+    "b": {
+      "item": "primogemcraft:shivada_jade_fragment"
+    },
+    "c": {
+      "item": "primogemcraft:mystic_enhancement_ore"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:compassion_metal",
+    "count": 1
+  }
+}

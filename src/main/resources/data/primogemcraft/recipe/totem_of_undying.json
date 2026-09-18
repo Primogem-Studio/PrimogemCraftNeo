@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "cdc",
+    "efe"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:unknown_leaf"
+    },
+    "b": {
+      "item": "primogemcraft:refined_mora"
+    },
+    "c": {
+      "item": "minecraft:emerald"
+    },
+    "d": {
+      "item": "primogemcraft:dust_of_azoth"
+    },
+    "e": {
+      "item": "minecraft:gold_ingot"
+    },
+    "f": {
+      "item": "minecraft:gold_block"
+    }
+  },
+  "result": {
+    "id": "minecraft:totem_of_undying",
+    "count": 1
+  }
+}

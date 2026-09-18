@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bab",
+    " b "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "b": {
+      "item": "primogemcraft:primogem"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:genesis_crystal",
+    "count": 1
+  }
+}

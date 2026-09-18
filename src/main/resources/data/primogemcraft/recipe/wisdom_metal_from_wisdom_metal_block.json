@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:wisdom_metal_block"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:wisdom_metal",
+    "count": 9
+  }
+}

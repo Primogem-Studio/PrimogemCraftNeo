@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:enigmata_magnetism"
+    },
+    "c": {
+      "item": "primogemcraft:fruit_of_the_alien_tree"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:magnetic_fruit",
+    "count": 1
+  }
+}

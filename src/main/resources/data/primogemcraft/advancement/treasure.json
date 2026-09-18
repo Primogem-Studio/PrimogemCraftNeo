@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:pleasant_looking_trash"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.treasure.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.treasure.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "treasure": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:pleasant_looking_trash"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:once_you_set_foot_on_this_path"
+}

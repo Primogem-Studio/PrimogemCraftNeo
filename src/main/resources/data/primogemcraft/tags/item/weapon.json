@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#primogemcraft:weapon/one_handed_sword",
+      "required": false
+    },
+    {
+      "id": "#primogemcraft:weapon/polearm",
+      "required": false
+    },
+    {
+      "id": "#primogemcraft:weapon/claymore",
+      "required": false
+    },
+    {
+      "id": "#primogemcraft:weapon/shield",
+      "required": false
+    },
+    {
+      "id": "#primogemcraft:weapon/tool",
+      "required": false
+    }
+  ]
+}

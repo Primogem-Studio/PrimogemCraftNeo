@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/rotten_wood",
+    "up": "primogemcraft:block/rotten_wood",
+    "north": "primogemcraft:block/rotten_wood",
+    "east": "primogemcraft:block/rotten_wood",
+    "south": "primogemcraft:block/rotten_wood",
+    "west": "primogemcraft:block/rotten_wood",
+    "particle": "primogemcraft:block/rotten_wood"
+  },
+  "render_type": "solid"
+}

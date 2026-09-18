@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:enhancement_ore"
+    },
+    {
+      "item": "primogemcraft:enhancement_ore"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:fine_enhancement_ore",
+    "count": 1
+  }
+}

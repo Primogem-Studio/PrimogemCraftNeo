@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcb",
+    " b "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:heavy_weighted_pressure_plate"
+    },
+    "b": {
+      "item": "minecraft:iron_ingot"
+    },
+    "c": {
+      "item": "primogemcraft:shield_of_radiant_will"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:iron_trash_can_lid",
+    "count": 1
+  }
+}

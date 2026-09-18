@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:shield_of_radiant_will"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.radiant_will.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.radiant_will.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "radiant_will": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:shield_of_radiant_will"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:once_you_set_foot_on_this_path"
+}

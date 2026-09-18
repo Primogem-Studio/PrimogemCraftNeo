@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:archaic_stone"
+  },
+  "base": {
+    "item": "primogemcraft:mora_upgrade_smithing_template"
+  },
+  "addition": {
+    "item": "primogemcraft:primogem"
+  },
+  "result": {
+    "id": "primogemcraft:elemental_crystal_enhancement_smithing_template"
+  }
+}

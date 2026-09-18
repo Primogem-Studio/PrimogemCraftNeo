@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:unbuffed_wish_core"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:wish_core",
+    "count": 1
+  }
+}

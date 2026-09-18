@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:potent_curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:space_time_prism"
+    },
+    "c": {
+      "item": "primogemcraft:triangular_drum_roll_device"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:space_time_triangle",
+    "count": 1
+  }
+}

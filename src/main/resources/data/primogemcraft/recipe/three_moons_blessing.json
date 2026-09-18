@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abc",
+    "ded",
+    "cda"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:pink_dye"
+    },
+    "b": {
+      "item": "primogemcraft:dust_of_azoth"
+    },
+    "c": {
+      "item": "minecraft:light_blue_dye"
+    },
+    "d": {
+      "item": "primogemcraft:otherworldly_moon_gold"
+    },
+    "e": {
+      "item": "primogemcraft:march_7th_statue"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:three_moons_blessing",
+    "count": 1
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "#c:curio/negative",
+    "#c:curio/other",
+    "#c:curio/tianhuihejin",
+    "#c:curio/normal",
+    "#c:curio/fusion",
+    "#c:curio/special"
+  ]
+}

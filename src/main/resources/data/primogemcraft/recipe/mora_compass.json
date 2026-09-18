@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:mora_block"
+    },
+    "b": {
+      "item": "primogemcraft:primogem_shard"
+    },
+    "c": {
+      "item": "primogemcraft:primogem"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:mora_compass",
+    "count": 1
+  }
+}

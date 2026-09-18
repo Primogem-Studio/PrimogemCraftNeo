@@ -1,0 +1,9 @@
+{
+  "parent": "primogemcraft:block/march_7th_statue_model",
+  "textures": {
+    "all": "primogemcraft:block/march_7th_statue",
+    "particle": "primogemcraft:block/march_7th_statue_particle",
+    "0": "primogemcraft:block/march_7th_statue"
+  },
+  "render_type": "solid"
+}

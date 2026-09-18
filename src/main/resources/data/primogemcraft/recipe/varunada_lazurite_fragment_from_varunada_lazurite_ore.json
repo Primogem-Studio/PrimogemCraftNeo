@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:varunada_lazurite_ore"
+  },
+  "result": {
+    "id": "primogemcraft:varunada_lazurite_fragment",
+    "count": 1
+  }
+}

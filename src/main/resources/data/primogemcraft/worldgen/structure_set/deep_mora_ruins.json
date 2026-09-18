@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "primogemcraft:deep_mora_ruins",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 47189632,
+    "spacing": 18,
+    "separation": 8
+  }
+}

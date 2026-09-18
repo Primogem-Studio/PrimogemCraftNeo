@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "#minecraft:is_overworld",
+  "features": "primogemcraft:white_iron_ore_block",
+  "step": "underground_ores"
+}

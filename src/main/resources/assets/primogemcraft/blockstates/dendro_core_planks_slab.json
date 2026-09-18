@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "primogemcraft:block/dendro_core_planks_slab"
+    },
+    "type=top": {
+      "model": "primogemcraft:block/dendro_core_planks_slab_top"
+    },
+    "type=double": {
+      "model": "primogemcraft:block/dendro_core_planks_slab_full"
+    }
+  }
+}

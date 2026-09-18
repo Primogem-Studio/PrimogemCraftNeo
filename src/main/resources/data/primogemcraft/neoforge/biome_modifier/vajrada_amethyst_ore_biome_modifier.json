@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": [
+    "beach",
+    "river",
+    "lukewarm_ocean"
+  ],
+  "features": "primogemcraft:vajrada_amethyst_ore",
+  "step": "underground_ores"
+}

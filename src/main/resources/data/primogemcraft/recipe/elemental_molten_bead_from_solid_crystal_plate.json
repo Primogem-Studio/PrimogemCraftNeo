@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:solid_crystal_plate"
+    },
+    "b": {
+      "item": "primogemcraft:elemental_molten_bead_fragment"
+    },
+    "c": {
+      "item": "primogemcraft:shivada_jade_gemstone"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:elemental_molten_bead",
+    "count": 1
+  }
+}

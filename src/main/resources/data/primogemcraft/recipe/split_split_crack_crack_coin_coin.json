@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:gold_coin_of_discord"
+    },
+    "c": {
+      "item": "primogemcraft:silver_coin_of_discord"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:split_split_crack_crack_coin_coin",
+    "count": 1
+  }
+}

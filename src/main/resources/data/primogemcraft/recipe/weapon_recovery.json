@@ -1,0 +1,16 @@
+{
+  "type": "primogemcraft:weapon_recovery",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "primogemcraft:weapon"
+    },
+    {
+      "item": "primogemcraft:specially_treated_fine_ore"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:specially_treated_fine_ore",
+    "count": 1
+  }
+}

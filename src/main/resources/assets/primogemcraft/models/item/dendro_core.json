@@ -1,0 +1,7 @@
+{
+  "parent": "primogemcraft:custom/dendro_core",
+  "textures": {
+    "0": "primogemcraft:block/dendro_core",
+    "particle": "primogemcraft:item/dendro_core"
+  }
+}

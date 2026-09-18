@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "tag": "minecraft:music_discs"
+  },
+  "base": {
+    "item": "minecraft:nether_star"
+  },
+  "addition": {
+    "item": "minecraft:orange_dye"
+  },
+  "result": {
+    "id": "primogemcraft:chasing_starlight_with_you"
+  }
+}

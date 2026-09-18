@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:enigmata_magnetism"
+    },
+    "c": {
+      "item": "primogemcraft:thalan_toxi_flame"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:magnetic_flame",
+    "count": 1
+  }
+}

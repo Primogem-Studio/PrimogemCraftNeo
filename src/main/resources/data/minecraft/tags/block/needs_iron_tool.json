@@ -1,0 +1,19 @@
+{
+  "replace": false,
+  "values": [
+    "primogemcraft:deepslate_elemental_crystal_ore",
+    "primogemcraft:deepslate_prithiva_topaz_ore",
+    "primogemcraft:elemental_crystal_ore",
+    "primogemcraft:fine_forged_ore_fusion_block",
+    "primogemcraft:geomarrow_crystal_block",
+    "primogemcraft:nagadus_emerald_ore",
+    "primogemcraft:primogem_ore",
+    "primogemcraft:prithiva_topaz_ore",
+    "primogemcraft:shivada_jade_ore",
+    "primogemcraft:vajrada_amethyst_ore",
+    "primogemcraft:varunada_lazurite_block",
+    "primogemcraft:varunada_lazurite_ore",
+    "primogemcraft:vayuda_turquoise_block",
+    "primogemcraft:vayuda_turquoise_ore"
+  ]
+}

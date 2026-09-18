@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "aba",
+    " a "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:primogem"
+    },
+    "b": {
+      "item": "primogemcraft:star_rail_special_pass"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:lucky_special_ticket",
+    "count": 5
+  }
+}

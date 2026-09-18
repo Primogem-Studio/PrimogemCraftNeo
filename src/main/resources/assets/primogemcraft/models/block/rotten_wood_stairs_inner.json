@@ -1,0 +1,10 @@
+{
+  "parent": "block/inner_stairs",
+  "textures": {
+    "particle": "primogemcraft:block/rotten_wood",
+    "bottom": "primogemcraft:block/rotten_wood",
+    "top": "primogemcraft:block/rotten_wood",
+    "side": "primogemcraft:block/rotten_wood"
+  },
+  "render_type": "solid"
+}

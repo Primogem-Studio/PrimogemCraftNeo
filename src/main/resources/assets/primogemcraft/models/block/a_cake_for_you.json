@@ -1,0 +1,9 @@
+{
+  "parent": "primogemcraft:block/a_cake_for_you_model",
+  "textures": {
+    "all": "primogemcraft:block/a_cake_for_you",
+    "particle": "primogemcraft:block/a_cake_for_you",
+    "6": "primogemcraft:block/a_cake_for_you"
+  },
+  "render_type": "solid"
+}

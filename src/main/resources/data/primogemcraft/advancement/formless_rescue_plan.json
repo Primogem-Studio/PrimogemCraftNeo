@@ -1,0 +1,65 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:elemental_crystal_dust"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.formless_rescue_plan.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.formless_rescue_plan.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "formless_rescue_plan": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:agnidus_agate_sliver",
+              "primogemcraft:agnidus_agate_fragment",
+              "primogemcraft:agnidus_agate_chunk",
+              "primogemcraft:agnidus_agate_gemstone",
+              "primogemcraft:varunada_lazurite_sliver",
+              "primogemcraft:varunada_lazurite_fragment",
+              "primogemcraft:varunada_lazurite_chunk",
+              "primogemcraft:varunada_lazurite_gemstone",
+              "primogemcraft:nagadus_emerald_sliver",
+              "primogemcraft:nagadus_emerald_fragment",
+              "primogemcraft:nagadus_emerald_chunk",
+              "primogemcraft:nagadus_emerald_gemstone",
+              "primogemcraft:vayuda_turquoise_sliver",
+              "primogemcraft:vayuda_turquoise_fragment",
+              "primogemcraft:vayuda_turquoise_chunk",
+              "primogemcraft:vayuda_turquoise_gemstone",
+              "primogemcraft:shivada_jade_sliver",
+              "primogemcraft:shivada_jade_fragment",
+              "primogemcraft:shivada_jade_chunk",
+              "primogemcraft:shivada_jade_gemstone",
+              "primogemcraft:vajrada_amethyst_sliver",
+              "primogemcraft:vajrada_amethyst_fragment",
+              "primogemcraft:vajrada_amethyst_chunk",
+              "primogemcraft:vajrada_amethyst_gemstone",
+              "primogemcraft:prithiva_topaz_sliver",
+              "primogemcraft:prithiva_topaz_fragment",
+              "primogemcraft:prithiva_topaz_chunk",
+              "primogemcraft:prithiva_topaz_gemstone",
+              "primogemcraft:elemental_crystal",
+              "primogemcraft:elemental_crystal_dust"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:mihoyo_style_gear"
+}

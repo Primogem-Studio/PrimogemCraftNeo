@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:jigsaw",
+  "biomes": "#minecraft:is_overworld",
+  "spawn_overrides": {},
+  "step": "underground_structures",
+  "terrain_adaptation": "beard_thin",
+  "start_pool": "primogemcraft:deep_mora_ruins",
+  "size": 1,
+  "start_height": {
+    "type": "minecraft:uniform",
+    "min_inclusive": {
+      "above_bottom": 0
+    },
+    "max_inclusive": {
+      "absolute": 16
+    }
+  },
+  "use_expansion_hack": false,
+  "max_distance_from_center": 32
+}

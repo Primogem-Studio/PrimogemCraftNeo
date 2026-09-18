@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "abc",
+    " d ",
+    " d "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:mora_prototype"
+    },
+    "b": {
+      "item": "primogemcraft:primogem"
+    },
+    "c": {
+      "item": "primogemcraft:refined_mora_block"
+    },
+    "d": {
+      "item": "primogemcraft:otherworld_wood_stick"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:philosophies_of_diligence",
+    "count": 1
+  }
+}

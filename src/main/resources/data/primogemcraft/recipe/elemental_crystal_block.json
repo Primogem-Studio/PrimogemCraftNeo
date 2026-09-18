@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:elemental_crystal_dust"
+    },
+    "b": {
+      "item": "primogemcraft:elemental_crystal"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:elemental_crystal_block",
+    "count": 1
+  }
+}

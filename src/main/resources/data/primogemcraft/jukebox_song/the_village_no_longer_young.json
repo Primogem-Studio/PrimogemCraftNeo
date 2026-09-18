@@ -1,0 +1,8 @@
+{
+  "comparator_output": 10,
+  "description": {
+    "translate": "item.primogemcraft.the_village_no_longer_young.desc"
+  },
+  "length_in_seconds": 250,
+  "sound_event": "primogemcraft:the_village_no_longer_young"
+}

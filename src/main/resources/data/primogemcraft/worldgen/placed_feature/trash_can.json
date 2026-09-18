@@ -1,0 +1,27 @@
+{
+  "feature": "primogemcraft:trash_can",
+  "placement": [
+    {
+      "type": "minecraft:rarity_filter",
+      "chance": 75
+    },
+    {
+      "type": "minecraft:count",
+      "count": {
+        "type": "uniform",
+        "min_inclusive": 1,
+        "max_inclusive": 6
+      }
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:heightmap",
+      "heightmap": "OCEAN_FLOOR_WG"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

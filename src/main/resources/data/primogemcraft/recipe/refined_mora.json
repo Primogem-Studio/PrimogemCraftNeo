@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aab",
+    "aa "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:mora"
+    },
+    "b": {
+      "item": "primogemcraft:primogem_shard"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:refined_mora",
+    "count": 1
+  }
+}

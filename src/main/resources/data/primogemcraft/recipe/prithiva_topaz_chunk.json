@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:prithiva_topaz_fragment"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:prithiva_topaz_chunk",
+    "count": 1
+  }
+}

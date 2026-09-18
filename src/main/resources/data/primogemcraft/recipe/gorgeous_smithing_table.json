@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "b"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:smithing_table"
+    },
+    "b": {
+      "item": "primogemcraft:otherworld_log_planks"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:gorgeous_smithing_table",
+    "count": 1
+  }
+}

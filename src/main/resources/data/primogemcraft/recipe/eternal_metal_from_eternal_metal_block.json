@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:eternal_metal_block"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:eternal_metal",
+    "count": 9
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:dream_sakura"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:broken_dream_sakura",
+    "count": 1
+  }
+}

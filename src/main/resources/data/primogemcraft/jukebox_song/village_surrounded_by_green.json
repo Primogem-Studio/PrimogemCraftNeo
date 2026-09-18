@@ -1,0 +1,8 @@
+{
+  "comparator_output": 10,
+  "description": {
+    "translate": "item.primogemcraft.village_surrounded_by_green.desc"
+  },
+  "length_in_seconds": 250,
+  "sound_event": "primogemcraft:village_surrounded_by_green"
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/white_iron_ore",
+    "up": "primogemcraft:block/white_iron_ore",
+    "north": "primogemcraft:block/white_iron_ore",
+    "east": "primogemcraft:block/white_iron_ore",
+    "south": "primogemcraft:block/white_iron_ore",
+    "west": "primogemcraft:block/white_iron_ore",
+    "particle": "primogemcraft:block/white_iron_ore"
+  },
+  "render_type": "solid"
+}

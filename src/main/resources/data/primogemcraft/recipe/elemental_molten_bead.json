@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:elemental_molten_bead"
+  },
+  "base": {
+    "item": "primogemcraft:star_rail_special_pass"
+  },
+  "addition": {
+    "item": "primogemcraft:dust_of_azoth"
+  },
+  "result": {
+    "id": "primogemcraft:elemental_molten_bead"
+  }
+}

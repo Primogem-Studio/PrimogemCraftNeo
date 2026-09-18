@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:elemental_crystal_dust"
+    },
+    {
+      "item": "primogemcraft:shivada_jade_fragment"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:shivada_jade_sliver",
+    "count": 5
+  }
+}

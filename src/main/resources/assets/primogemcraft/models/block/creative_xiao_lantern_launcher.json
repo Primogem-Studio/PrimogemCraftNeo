@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/xiao_lantern_launcher_bottom",
+    "up": "primogemcraft:block/creative_xiao_lantern_launcher_top",
+    "north": "primogemcraft:block/xiao_lantern_launcher_side",
+    "east": "primogemcraft:block/xiao_lantern_launcher_side",
+    "south": "primogemcraft:block/xiao_lantern_launcher_side",
+    "west": "primogemcraft:block/xiao_lantern_launcher_side",
+    "particle": "primogemcraft:block/xiao_lantern_launcher_bottom"
+  },
+  "render_type": "solid"
+}

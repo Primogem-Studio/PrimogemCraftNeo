@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/cosmic_casket",
+    "up": "primogemcraft:block/cosmic_casket",
+    "north": "primogemcraft:block/cosmic_casket",
+    "east": "primogemcraft:block/cosmic_casket",
+    "south": "primogemcraft:block/cosmic_casket",
+    "west": "primogemcraft:block/cosmic_casket",
+    "particle": "primogemcraft:block/cosmic_casket"
+  },
+  "render_type": "solid"
+}

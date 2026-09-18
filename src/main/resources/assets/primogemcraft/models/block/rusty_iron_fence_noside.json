@@ -1,0 +1,8 @@
+{
+  "parent": "block/template_glass_pane_noside",
+  "textures": {
+    "pane": "primogemcraft:block/rusty_iron_fence",
+    "particle": "primogemcraft:block/rusty_iron_fence"
+  },
+  "render_type": "cutout"
+}

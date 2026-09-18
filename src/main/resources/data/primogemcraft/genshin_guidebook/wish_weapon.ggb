@@ -1,0 +1,26 @@
+<category name=common>
+<title>祈愿武器</title>
+<item-tag>primogemcraft:weapon</item-tag>
+这些异世界武器，统称<color value=ffb915>祈愿武器</color>，在原作中五星的武器在此可
+通过<color value=00ffff>祈愿</color>获取，除此之外的<color value=ffb915>祈愿武器</color>可通过制作或宝箱中获取。
+
+祈愿武器允许<color value=00ff00>升级</color>和<color value=ffff44>强化</color>，使用<item name=true>primogemcraft:custom_superimposer</item>来精炼祈愿武器，提
+升被动效果和技能效果的倍率，使用
+<items>
+    <item>primogemcraft:enhancement_ore</item>
+    <item>primogemcraft:fine_enhancement_ore</item>
+    <item>primogemcraft:mystic_enhancement_ore</item>
+</items>
+来升级祈愿武器，提升基础
+攻击力，初始玩家的强化加成有限，使用
+<items name=true>
+    <item>primogemcraft:equilibrium_tablet</item>
+    <item>primogemcraft:equilibrium_tablet_1</item>
+    <item>primogemcraft:equilibrium_tablet_2</item>
+</items>
+来突破这一上
+限，获得高额攻击力加成。
+
+修改配置文件或提升精炼可以调整<color value=ffff44>强化</color>倍率和等级上限：\n
+<color value=ffff00>当精炼等级大于等于<color value=00ffff>5</color>时，提升额外强化等级，提升值相当于基本上
+限的<color value=00ffff>九分之一</color></color>\n

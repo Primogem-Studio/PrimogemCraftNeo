@@ -1,0 +1,75 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:shivada_jade_sliver",
+          "weight": 1,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 64}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:prithiva_topaz_sliver",
+          "weight": 1,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 64}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:vajrada_amethyst_sliver",
+          "weight": 1,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 64}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:nagadus_emerald_sliver",
+          "weight": 1,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 64}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:varunada_lazurite_sliver",
+          "weight": 1,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 64}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:agnidus_agate_sliver",
+          "weight": 1,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 64}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:vayuda_turquoise_sliver",
+          "weight": 1,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 64}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:primogem_shard",
+          "weight": 1,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 64}}
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "primogemcraft:encounter/wondrous_encounter"
+}

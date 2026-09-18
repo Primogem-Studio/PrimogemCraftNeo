@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:curio_fusion_agent"
+  },
+  "base": {
+    "item": "primogemcraft:void_wick_trimmer"
+  },
+  "addition": {
+    "item": "primogemcraft:omniscient_capsule"
+  },
+  "result": {
+    "id": "primogemcraft:omniscient_wick_trimmer"
+  }
+}

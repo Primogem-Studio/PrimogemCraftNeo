@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:mistsplitter_reforged"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.mistsplitter_reforged_youth_edition.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.mistsplitter_reforged_youth_edition.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "mistsplitter_reforged_youth_edition": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:mistsplitter_reforged"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:eternal_metal"
+}

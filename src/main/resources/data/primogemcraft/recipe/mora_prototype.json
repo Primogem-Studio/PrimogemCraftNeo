@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "cdc",
+    "aea"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:large_refined_mora"
+    },
+    "b": {
+      "item": "primogemcraft:agnidus_agate_fragment"
+    },
+    "c": {
+      "item": "primogemcraft:small_refined_mora"
+    },
+    "d": {
+      "item": "primogemcraft:sturdy_metal"
+    },
+    "e": {
+      "item": "primogemcraft:mora_block"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:mora_prototype",
+    "count": 1
+  }
+}

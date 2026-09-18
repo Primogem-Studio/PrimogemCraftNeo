@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:gold_coin_of_discord"
+    },
+    "c": {
+      "item": "primogemcraft:cosmic_big_lotto"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:splintered_galactic_mega_coin",
+    "count": 1
+  }
+}

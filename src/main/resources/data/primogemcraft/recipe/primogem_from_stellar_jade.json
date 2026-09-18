@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "aaa",
+    " a "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:stellar_jade"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:primogem",
+    "count": 3
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "aba",
+    " a "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:emerald"
+    },
+    "b": {
+      "item": "primogemcraft:prithiva_topaz_fragment"
+    }
+  },
+  "result": {
+    "id": "minecraft:emerald_ore",
+    "count": 1
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "transform": {
+    "scale": {
+      "thirdperson": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "ground": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "fixed": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  },
+  "muzzle_flash": {
+    "texture": "tacz:flash/common_muzzle_flash",
+    "scale": 1
+  },
+  "animation": "pgfs:tiankong",
+  "use_default_animation": "rifle",
+  "sounds": {
+    "shoot": "pgfs:tiankong/tiankong_shoot",
+    "dry_fire": "pgfs:tiankong/tiankong_dry_fire",
+    "reload_empty": "pgfs:tiankong/tiankong_reload_empty",
+    "put_away": "pgfs:tiankong/m95_reload_empty_drop",
+    "draw": "pgfs:tiankong/m95_put_away",
+    "reload_tactical": "pgfs:tiankong/tiankong_reload_tactical"
+  },
+  "model": "pgfs:gun/tiankong_geo",
+  "texture": "pgfs:gun/uv/tiankong",
+  "slot": "pgfs:gun/slot/tiankong",
+  "hud": "pgfs:gun/hud/tiankong",
+  "third_person_animation": "default",
+  "render_type": "translucent"
+}

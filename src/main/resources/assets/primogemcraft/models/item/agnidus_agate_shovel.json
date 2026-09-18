@@ -1,0 +1,6 @@
+﻿{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "primogemcraft:item/agnidus_agate_shovel_held"
+  }
+}

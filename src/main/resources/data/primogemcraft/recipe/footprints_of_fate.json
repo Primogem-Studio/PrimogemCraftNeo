@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:footprints_of_fate"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:footprints_of_fate",
+    "count": 1
+  }
+}

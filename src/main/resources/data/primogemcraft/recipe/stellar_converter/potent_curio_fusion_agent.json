@@ -1,0 +1,12 @@
+{
+  "type": "primogemcraft:stellar_converter",
+  "first": {
+    "id": "primogemcraft:curio_fusion_agent",
+    "count": 1
+  },
+  "second": {
+    "id": "primogemcraft:potent_curio_fusion_agent",
+    "count": 1
+  },
+  "cost": 10
+}

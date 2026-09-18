@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "primogemcraft:block/primogem_ore",
+    "particle": "primogemcraft:block/primogem_ore_particle"
+  },
+  "render_type": "solid"
+}

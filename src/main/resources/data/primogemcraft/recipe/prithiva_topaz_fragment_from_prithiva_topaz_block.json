@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:prithiva_topaz_block"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:prithiva_topaz_fragment",
+    "count": 18
+  }
+}

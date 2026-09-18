@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:breeze_rod"
+    },
+    "b": {
+      "item": "primogemcraft:otherworld_wood_stick"
+    },
+    "c": {
+      "item": "primogemcraft:vayuda_turquoise_fragment"
+    }
+  },
+  "result": {
+    "id": "minecraft:breeze_rod",
+    "count": 2
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/stellar_converter_bottom",
+    "up": "primogemcraft:block/stellar_converter_top",
+    "north": "primogemcraft:block/stellar_converter_side",
+    "east": "primogemcraft:block/stellar_converter_east",
+    "south": "primogemcraft:block/stellar_converter_side",
+    "west": "primogemcraft:block/stellar_converter_west",
+    "particle": "primogemcraft:block/stellar_converter_bottom"
+  },
+  "render_type": "solid"
+}

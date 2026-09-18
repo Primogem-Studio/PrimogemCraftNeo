@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:nagadus_emerald_fragment"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:nagadus_emerald_chunk",
+    "count": 1
+  }
+}

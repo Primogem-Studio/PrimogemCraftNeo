@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:compassion_metal"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:compassion_metal_grain",
+    "count": 9
+  }
+}

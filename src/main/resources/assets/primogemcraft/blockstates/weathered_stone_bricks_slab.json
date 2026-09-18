@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "primogemcraft:block/weathered_stone_bricks_slab"
+    },
+    "type=top": {
+      "model": "primogemcraft:block/weathered_stone_bricks_slab_top"
+    },
+    "type=double": {
+      "model": "primogemcraft:block/weathered_stone_bricks_slab_full"
+    }
+  }
+}

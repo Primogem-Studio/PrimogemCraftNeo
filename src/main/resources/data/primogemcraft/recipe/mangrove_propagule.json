@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:nagadus_emerald_sliver"
+    },
+    {
+      "tag": "minecraft:saplings"
+    },
+    {
+      "item": "minecraft:tadpole_bucket"
+    }
+  ],
+  "result": {
+    "id": "minecraft:mangrove_propagule",
+    "count": 1
+  }
+}

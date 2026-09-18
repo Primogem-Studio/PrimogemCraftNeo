@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:varunada_lazurite_sliver"
+    },
+    {
+      "item": "primogemcraft:varunada_lazurite_sliver"
+    },
+    {
+      "item": "primogemcraft:varunada_lazurite_sliver"
+    },
+    {
+      "item": "primogemcraft:varunada_lazurite_sliver"
+    },
+    {
+      "item": "primogemcraft:varunada_lazurite_gemstone"
+    },
+    {
+      "item": "primogemcraft:varunada_lazurite_sliver"
+    },
+    {
+      "item": "primogemcraft:varunada_lazurite_sliver"
+    },
+    {
+      "item": "primogemcraft:varunada_lazurite_sliver"
+    },
+    {
+      "item": "primogemcraft:varunada_lazurite_sliver"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:varunada_lazurite_block",
+    "count": 1
+  }
+}

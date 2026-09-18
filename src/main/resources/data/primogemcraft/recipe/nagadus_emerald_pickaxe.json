@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:elemental_crystal_enhancement_smithing_template"
+  },
+  "base": {
+    "item": "primogemcraft:primogem_pickaxe"
+  },
+  "addition": {
+    "item": "primogemcraft:nagadus_emerald_fragment"
+  },
+  "result": {
+    "id": "primogemcraft:nagadus_emerald_pickaxe"
+  }
+}

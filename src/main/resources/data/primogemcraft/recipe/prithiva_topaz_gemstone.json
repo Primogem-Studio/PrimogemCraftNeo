@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:prithiva_topaz_chunk"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:prithiva_topaz_gemstone",
+    "count": 1
+  }
+}

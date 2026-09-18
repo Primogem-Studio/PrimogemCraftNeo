@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/prithiva_topaz_ore",
+    "up": "primogemcraft:block/prithiva_topaz_ore",
+    "north": "primogemcraft:block/prithiva_topaz_ore",
+    "east": "primogemcraft:block/prithiva_topaz_ore",
+    "south": "primogemcraft:block/prithiva_topaz_ore",
+    "west": "primogemcraft:block/prithiva_topaz_ore",
+    "particle": "primogemcraft:block/prithiva_topaz_ore"
+  },
+  "render_type": "solid"
+}

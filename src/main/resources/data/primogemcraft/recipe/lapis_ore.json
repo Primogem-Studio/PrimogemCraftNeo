@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "b": {
+      "item": "primogemcraft:prithiva_topaz_fragment"
+    }
+  },
+  "result": {
+    "id": "minecraft:lapis_ore",
+    "count": 1
+  }
+}

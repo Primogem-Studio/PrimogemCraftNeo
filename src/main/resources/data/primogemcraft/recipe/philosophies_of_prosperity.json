@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:mora_prototype"
+    },
+    "b": {
+      "item": "primogemcraft:otherworld_wood_stick"
+    },
+    "c": {
+      "item": "primogemcraft:primogem"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:philosophies_of_prosperity",
+    "count": 1
+  }
+}

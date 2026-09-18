@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "bcd",
+    "eee"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:trash"
+    },
+    "b": {
+      "item": "minecraft:fermented_spider_eye"
+    },
+    "c": {
+      "item": "minecraft:water_bucket"
+    },
+    "d": {
+      "item": "minecraft:rotten_flesh"
+    },
+    "e": {
+      "item": "minecraft:glass_bottle"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:stinking_solution",
+    "count": 3
+  }
+}

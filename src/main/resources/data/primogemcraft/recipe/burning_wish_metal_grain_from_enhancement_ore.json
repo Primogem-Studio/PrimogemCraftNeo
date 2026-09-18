@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:enhancement_ore"
+    },
+    "b": {
+      "item": "primogemcraft:agnidus_agate_sliver"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:burning_wish_metal_grain",
+    "count": 1
+  }
+}

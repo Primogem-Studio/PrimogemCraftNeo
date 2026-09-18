@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:dust_of_azoth"
+    },
+    {
+      "item": "primogemcraft:vajrada_amethyst_sliver"
+    },
+    {
+      "item": "primogemcraft:prithiva_topaz_sliver"
+    }
+  ],
+  "result": {
+    "id": "minecraft:redstone",
+    "count": 16
+  }
+}

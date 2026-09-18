@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:vayuda_turquoise_fragment"
+    },
+    "b": {
+      "item": "primogemcraft:unfettered_metal"
+    },
+    "c": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:freedom_wax_seal",
+    "count": 1
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:nagadus_emerald_sliver"
+    },
+    {
+      "item": "minecraft:totem_of_undying"
+    },
+    {
+      "item": "primogemcraft:varunada_lazurite_sliver"
+    },
+    {
+      "item": "minecraft:bucket"
+    }
+  ],
+  "result": {
+    "id": "minecraft:tadpole_bucket",
+    "count": 1
+  }
+}

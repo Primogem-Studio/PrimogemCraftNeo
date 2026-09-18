@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "primogemcraft:blocks/rusty_iron_block",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:rusty_iron_block"
+        }
+      ]
+    }
+  ]
+}

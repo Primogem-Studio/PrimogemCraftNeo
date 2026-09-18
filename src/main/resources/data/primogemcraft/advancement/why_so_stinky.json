@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:stinking_solution"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.why_so_stinky.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.why_so_stinky.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "why_so_stinky": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:stinking_solution"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:take_a_taste"
+}

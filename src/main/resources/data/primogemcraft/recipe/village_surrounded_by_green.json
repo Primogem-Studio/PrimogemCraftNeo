@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "tag": "minecraft:music_discs"
+  },
+  "base": {
+    "item": "primogemcraft:intertwined_fate"
+  },
+  "addition": {
+    "tag": "minecraft:saplings"
+  },
+  "result": {
+    "id": "primogemcraft:village_surrounded_by_green"
+  }
+}

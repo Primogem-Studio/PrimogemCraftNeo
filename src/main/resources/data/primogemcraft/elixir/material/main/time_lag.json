@@ -1,0 +1,10 @@
+{
+  "item": "primogemcraft:curio_fusion_agent",
+  "effect": "primogemcraft:time_lag",
+  "pharm": 3,
+  "stability": -50,
+  "colors": [
+    4282434720
+  ],
+  "description": "item.elixir.material.desc.primogemcraft.main.time_lag"
+}

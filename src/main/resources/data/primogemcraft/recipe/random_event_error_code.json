@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "bcb",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "tag": "c:curio"
+    },
+    "b": {
+      "item": "primogemcraft:cosmic_fragment"
+    },
+    "c": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:random_event_error_code",
+    "count": 1
+  }
+}

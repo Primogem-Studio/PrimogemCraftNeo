@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:justice_metal"
+    },
+    {
+      "item": "primogemcraft:justice_metal"
+    },
+    {
+      "item": "primogemcraft:justice_metal"
+    },
+    {
+      "item": "primogemcraft:justice_metal"
+    },
+    {
+      "item": "primogemcraft:justice_metal"
+    },
+    {
+      "item": "primogemcraft:justice_metal"
+    },
+    {
+      "item": "primogemcraft:justice_metal"
+    },
+    {
+      "item": "primogemcraft:justice_metal"
+    },
+    {
+      "item": "primogemcraft:justice_metal"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:justice_metal_block",
+    "count": 1
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "item.elixir.action.primogemcraft.primogem": "Primogem",
+  "item.elixir.action.primogemcraft.time_lag": "Time Lag",
+  "item.elixir.action.primogemcraft.transmutation": "Transmutation",
+  "item.elixir.action.primogemcraft.crystallization": "Crystallization",
+  "item.elixir.action.primogemcraft.permanence": "Permanence",
+  "item.elixir.action.primogemcraft.recall": "Recall",
+  "item.elixir.prefix.diminishing": "Diminishing",
+  "item.elixir.material.desc.primogemcraft.main.primogem": "Summons wish entities above 1 pharm, otherwise drops primogems at your feet (mod-added effect)",
+  "item.elixir.material.desc.primogemcraft.main.time_lag": "Extends the duration of every living item when pharm is positive and shortens it when negative; the result stays between 3 and 8 seconds (mod-added effect)",
+  "item.elixir.material.desc.primogemcraft.main.transmutation": "Turns the offhand item into a living item when pharm is positive, lasting longer the higher the pharm; sets the duration of every living item to zero when negative (mod-added effect)",
+  "item.elixir.material.desc.primogemcraft.main.crystallization": "Positive pharm turns the 27 inventory slots outside the hotbar into living items; negative pharm turns every item into one, hotbar and armour included. The duration ignores pharm (mod-added effect)",
+  "item.elixir.material.desc.primogemcraft.main.permanence": "Turns the offhand item into a permanent living item, unaffected by pharm; recalling it by hand returns the item, and it takes another brewing to transmute it again (mod-added effect)",
+  "item.elixir.material.desc.primogemcraft.main.recall": "Recalls every dropped living item to the player's position (mod-added effect)",
+  "item.elixir.material.desc.primogemcraft.off.fine_enhancement_ore": "Off material: diminishing calculation — the contribution is the base value minus the absolute pharm, never below 0, so the more pharm the less it adds (mod custom calculation)"
+}

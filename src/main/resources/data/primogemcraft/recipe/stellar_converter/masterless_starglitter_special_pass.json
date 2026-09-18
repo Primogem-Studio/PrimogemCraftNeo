@@ -1,0 +1,12 @@
+{
+  "type": "primogemcraft:stellar_converter",
+  "first": {
+    "id": "primogemcraft:masterless_starglitter",
+    "count": 64
+  },
+  "second": {
+    "id": "primogemcraft:star_rail_special_pass",
+    "count": 1
+  },
+  "cost": 100
+}

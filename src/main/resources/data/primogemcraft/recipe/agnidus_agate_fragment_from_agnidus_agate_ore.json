@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:agnidus_agate_ore"
+  },
+  "result": {
+    "id": "primogemcraft:agnidus_agate_fragment",
+    "count": 1
+  }
+}

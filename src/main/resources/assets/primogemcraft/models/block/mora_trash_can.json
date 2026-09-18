@@ -1,0 +1,9 @@
+{
+  "parent": "primogemcraft:block/mora_trash_can_model",
+  "textures": {
+    "all": "primogemcraft:block/mora_trash_can",
+    "particle": "primogemcraft:block/mora_trash_can",
+    "4": "primogemcraft:block/mora_trash_can"
+  },
+  "render_type": "solid"
+}

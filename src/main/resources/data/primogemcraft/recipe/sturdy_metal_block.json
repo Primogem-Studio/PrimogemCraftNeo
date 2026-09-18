@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:sturdy_metal"
+    },
+    {
+      "item": "primogemcraft:sturdy_metal"
+    },
+    {
+      "item": "primogemcraft:sturdy_metal"
+    },
+    {
+      "item": "primogemcraft:sturdy_metal"
+    },
+    {
+      "item": "primogemcraft:sturdy_metal"
+    },
+    {
+      "item": "primogemcraft:sturdy_metal"
+    },
+    {
+      "item": "primogemcraft:sturdy_metal"
+    },
+    {
+      "item": "primogemcraft:sturdy_metal"
+    },
+    {
+      "item": "primogemcraft:sturdy_metal"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:sturdy_metal_block",
+    "count": 1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "primogemcraft:stellar_converter",
+  "first": {
+    "id": "primogemcraft:primogem",
+    "count": 2
+  },
+  "second": {
+    "id": "minecraft:diamond",
+    "count": 1
+  },
+  "cost": 8
+}

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:void_wick_trimmer"
+    },
+    "c": {
+      "item": "primogemcraft:bug_net"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:void_wick_net",
+    "count": 1
+  }
+}

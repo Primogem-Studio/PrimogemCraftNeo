@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/primogem_casket",
+    "up": "primogemcraft:block/primogem_casket",
+    "north": "primogemcraft:block/primogem_casket",
+    "east": "primogemcraft:block/primogem_casket",
+    "south": "primogemcraft:block/primogem_casket",
+    "west": "primogemcraft:block/primogem_casket",
+    "particle": "primogemcraft:block/primogem_casket"
+  },
+  "render_type": "solid"
+}

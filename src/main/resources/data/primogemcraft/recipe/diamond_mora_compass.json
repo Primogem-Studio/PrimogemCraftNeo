@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:mora_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "primogemcraft:mora_compass"
+  },
+  "addition": {
+    "item": "minecraft:diamond"
+  },
+  "result": {
+    "id": "primogemcraft:diamond_mora_compass"
+  }
+}

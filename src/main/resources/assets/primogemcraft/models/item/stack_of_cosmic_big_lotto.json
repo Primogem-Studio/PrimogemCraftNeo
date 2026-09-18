@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "primogemcraft:item/stack_of_cosmic_big_lotto_2"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "primogemcraft:lotto_count": 3
+      },
+      "model": "primogemcraft:item/stack_of_cosmic_big_lotto_3"
+    },
+    {
+      "predicate": {
+        "primogemcraft:lotto_count": 4
+      },
+      "model": "primogemcraft:item/stack_of_cosmic_big_lotto_4"
+    },
+    {
+      "predicate": {
+        "primogemcraft:lotto_count": 5
+      },
+      "model": "primogemcraft:item/stack_of_cosmic_big_lotto_5"
+    }
+  ]
+}

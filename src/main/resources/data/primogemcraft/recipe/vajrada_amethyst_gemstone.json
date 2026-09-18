@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:vajrada_amethyst_chunk"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:vajrada_amethyst_gemstone",
+    "count": 1
+  }
+}

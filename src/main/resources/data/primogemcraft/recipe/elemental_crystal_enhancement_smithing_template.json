@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aca"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:primogem"
+    },
+    "b": {
+      "item": "primogemcraft:elemental_crystal_enhancement_smithing_template"
+    },
+    "c": {
+      "item": "primogemcraft:mora_block"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:elemental_crystal_enhancement_smithing_template",
+    "count": 2
+  }
+}

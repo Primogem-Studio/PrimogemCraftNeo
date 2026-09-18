@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:omniscient_capsule"
+    },
+    "c": {
+      "item": "primogemcraft:ambergris_cheese"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:omniscient_cheese",
+    "count": 1
+  }
+}

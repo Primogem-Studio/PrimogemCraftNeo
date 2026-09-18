@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:nagadus_emerald_block"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:nagadus_emerald_fragment",
+    "count": 18
+  }
+}

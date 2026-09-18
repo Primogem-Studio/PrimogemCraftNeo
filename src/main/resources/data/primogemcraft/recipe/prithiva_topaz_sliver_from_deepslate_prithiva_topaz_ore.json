@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:deepslate_prithiva_topaz_ore"
+  },
+  "result": {
+    "id": "primogemcraft:prithiva_topaz_sliver",
+    "count": 4
+  }
+}

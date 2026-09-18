@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/wisdom_metal_block",
+    "up": "primogemcraft:block/wisdom_metal_block",
+    "north": "primogemcraft:block/wisdom_metal_block",
+    "east": "primogemcraft:block/wisdom_metal_block",
+    "south": "primogemcraft:block/wisdom_metal_block",
+    "west": "primogemcraft:block/wisdom_metal_block",
+    "particle": "primogemcraft:block/wisdom_metal_block"
+  },
+  "render_type": "solid"
+}

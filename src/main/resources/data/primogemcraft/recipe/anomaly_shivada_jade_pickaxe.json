@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:elemental_crystal_enhancement_smithing_template"
+  },
+  "base": {
+    "item": "primogemcraft:shivada_jade_pickaxe"
+  },
+  "addition": {
+    "item": "primogemcraft:elemental_crystal"
+  },
+  "result": {
+    "id": "primogemcraft:anomaly_shivada_jade_pickaxe"
+  }
+}

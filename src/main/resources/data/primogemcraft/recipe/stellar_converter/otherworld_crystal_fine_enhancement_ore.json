@@ -1,0 +1,12 @@
+{
+  "type": "primogemcraft:stellar_converter",
+  "first": {
+    "id": "primogemcraft:otherworld_crystal",
+    "count": 1
+  },
+  "second": {
+    "id": "primogemcraft:fine_enhancement_ore",
+    "count": 1
+  },
+  "cost": 25
+}

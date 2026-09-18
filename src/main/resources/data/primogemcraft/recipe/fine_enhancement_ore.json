@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "experience": 9,
+  "cookingtime": 2880,
+  "ingredient": {
+    "item": "primogemcraft:crude_white_iron_block"
+  },
+  "result": {
+    "id": "primogemcraft:fine_enhancement_ore"
+  }
+}

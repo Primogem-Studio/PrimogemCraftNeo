@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/dendro_core_planks",
+    "up": "primogemcraft:block/dendro_core_planks",
+    "north": "primogemcraft:block/dendro_core_planks",
+    "east": "primogemcraft:block/dendro_core_planks",
+    "south": "primogemcraft:block/dendro_core_planks",
+    "west": "primogemcraft:block/dendro_core_planks",
+    "particle": "primogemcraft:block/dendro_core_planks"
+  },
+  "render_type": "solid"
+}

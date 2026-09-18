@@ -1,0 +1,8 @@
+{
+  "comparator_output": 10,
+  "description": {
+    "translate": "item.primogemcraft.a_day_of_hope.desc"
+  },
+  "length_in_seconds": 250,
+  "sound_event": "primogemcraft:a_day_of_hope"
+}

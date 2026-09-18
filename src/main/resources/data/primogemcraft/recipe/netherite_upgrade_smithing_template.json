@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "aba",
+    " c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:dust_of_azoth"
+    },
+    "b": {
+      "item": "minecraft:snout_armor_trim_smithing_template"
+    },
+    "c": {
+      "item": "primogemcraft:prithiva_topaz_chunk"
+    }
+  },
+  "result": {
+    "id": "minecraft:netherite_upgrade_smithing_template",
+    "count": 1
+  }
+}

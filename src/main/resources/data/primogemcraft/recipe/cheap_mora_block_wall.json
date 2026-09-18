@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:cheap_mora_block"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:cheap_mora_block_wall",
+    "count": 4
+  }
+}

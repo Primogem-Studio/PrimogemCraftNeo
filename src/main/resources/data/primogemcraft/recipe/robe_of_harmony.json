@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:potent_curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:family_ties"
+    },
+    "c": {
+      "item": "primogemcraft:robe_of_the_beauty"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:robe_of_harmony",
+    "count": 1
+  }
+}

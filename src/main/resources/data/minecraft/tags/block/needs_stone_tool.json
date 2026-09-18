@@ -1,0 +1,30 @@
+{
+  "replace": false,
+  "values": [
+    "primogemcraft:agnidus_agate_block",
+    "primogemcraft:agnidus_agate_ore",
+    "primogemcraft:burning_wish_metal_block",
+    "primogemcraft:charcoal_block",
+    "primogemcraft:cheap_mora_block",
+    "primogemcraft:cheap_netherite_block",
+    "primogemcraft:clean_trash_can",
+    "primogemcraft:compassion_metal_block",
+    "primogemcraft:deepslate_primogem_ore",
+    "primogemcraft:deepslate_white_iron_ore_block",
+    "primogemcraft:dendro_core_block",
+    "primogemcraft:eternal_metal_block",
+    "primogemcraft:geomarrow_crystal_cluster",
+    "primogemcraft:justice_metal_block",
+    "primogemcraft:march_7th_statue",
+    "primogemcraft:mora_block",
+    "primogemcraft:netherrack_farmland",
+    "primogemcraft:packed_mora_pile",
+    "primogemcraft:refined_mora_block",
+    "primogemcraft:rusty_iron_block",
+    "primogemcraft:shivada_jade_block",
+    "primogemcraft:sturdy_metal_block",
+    "primogemcraft:unfettered_metal_block",
+    "primogemcraft:white_iron_ore_block",
+    "primogemcraft:wisdom_metal_block"
+  ]
+}

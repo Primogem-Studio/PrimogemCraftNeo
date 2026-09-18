@@ -1,0 +1,17 @@
+{
+  "type": "primogemcraft:structure_template",
+  "config": {
+    "structure": "primogemcraft:medium_jar_cluster",
+    "random_rotation": true,
+    "random_mirror": true,
+    "ignored_blocks": [
+      "minecraft:structure_block",
+      "minecraft:air"
+    ],
+    "offset": [
+      0,
+      1,
+      0
+    ]
+  }
+}

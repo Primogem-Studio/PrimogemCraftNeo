@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/gorgeous_smithing_table_bottom",
+    "up": "primogemcraft:block/gorgeous_smithing_table_top",
+    "north": "primogemcraft:block/gorgeous_smithing_table_side",
+    "east": "primogemcraft:block/gorgeous_smithing_table_front",
+    "south": "primogemcraft:block/gorgeous_smithing_table_side",
+    "west": "primogemcraft:block/gorgeous_smithing_table_front",
+    "particle": "primogemcraft:block/gorgeous_smithing_table_bottom"
+  },
+  "render_type": "solid"
+}

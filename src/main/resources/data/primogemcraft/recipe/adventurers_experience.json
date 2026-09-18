@@ -1,0 +1,24 @@
+{
+  "type": "primogemcraft:crafting_shaped_with_components",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:fine_enhancement_ore"
+    },
+    "b": {
+      "item": "primogemcraft:wanderers_advice"
+    }
+  },
+  "source": {
+    "item": "primogemcraft:wanderers_advice"
+  },
+  "result": {
+    "id": "primogemcraft:adventurers_experience",
+    "count": 1
+  }
+}

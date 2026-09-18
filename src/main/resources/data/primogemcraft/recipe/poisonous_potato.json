@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:potato"
+    },
+    "b": {
+      "item": "primogemcraft:nagadus_emerald_sliver"
+    }
+  },
+  "result": {
+    "id": "minecraft:poisonous_potato",
+    "count": 8
+  }
+}

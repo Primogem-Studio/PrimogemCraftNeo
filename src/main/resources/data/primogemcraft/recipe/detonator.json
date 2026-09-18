@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "cdc",
+    "ccc"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:redstone"
+    },
+    "b": {
+      "item": "primogemcraft:monochrome_otherworld_planks_button"
+    },
+    "c": {
+      "item": "minecraft:redstone_block"
+    },
+    "d": {
+      "item": "primogemcraft:agnidus_agate_sliver"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:detonator",
+    "count": 2
+  }
+}

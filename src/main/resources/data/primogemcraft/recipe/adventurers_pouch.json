@@ -1,0 +1,26 @@
+{
+  "type": "primogemcraft:crafting_shaped_with_components",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    " c "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:leather"
+    },
+    "b": {
+      "item": "primogemcraft:wanderers_pouch"
+    },
+    "c": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "source": {
+    "item": "primogemcraft:wanderers_pouch"
+  },
+  "result": {
+    "id": "primogemcraft:adventurers_pouch",
+    "count": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "item": "primogemcraft:stellar_jade",
+  "effect": "primogemcraft:recall",
+  "pharm": 8,
+  "stability": -10,
+  "colors": [
+    4284055551
+  ],
+  "description": "item.elixir.material.desc.primogemcraft.main.recall"
+}

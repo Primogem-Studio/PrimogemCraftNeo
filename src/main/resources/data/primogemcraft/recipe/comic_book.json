@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:fools_mask"
+    },
+    "c": {
+      "item": "primogemcraft:written_in_water"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:comic_book",
+    "count": 1
+  }
+}

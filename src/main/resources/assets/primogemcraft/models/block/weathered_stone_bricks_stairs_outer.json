@@ -1,0 +1,10 @@
+{
+  "parent": "block/outer_stairs",
+  "textures": {
+    "particle": "primogemcraft:block/weathered_stone_bricks",
+    "bottom": "primogemcraft:block/weathered_stone_bricks",
+    "top": "primogemcraft:block/weathered_stone_bricks",
+    "side": "primogemcraft:block/weathered_stone_bricks"
+  },
+  "render_type": "solid"
+}

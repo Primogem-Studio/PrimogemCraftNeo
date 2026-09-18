@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:invalid_thought_code_machine"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:invalid_thought_code_machine",
+    "count": 1
+  }
+}

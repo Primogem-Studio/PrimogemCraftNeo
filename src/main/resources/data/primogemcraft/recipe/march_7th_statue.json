@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "b",
+    "c"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:intertwined_fate"
+    },
+    "b": {
+      "item": "primogemcraft:acquaint_fate"
+    },
+    "c": {
+      "tag": "minecraft:terracotta"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:march_7th_statue",
+    "count": 1
+  }
+}

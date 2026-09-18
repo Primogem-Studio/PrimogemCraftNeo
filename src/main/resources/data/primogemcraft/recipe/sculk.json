@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "cd"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:dust_of_azoth"
+    },
+    "b": {
+      "item": "primogemcraft:cosmic_fragment"
+    },
+    "c": {
+      "item": "minecraft:grass_block"
+    },
+    "d": {
+      "item": "primogemcraft:nagadus_emerald_sliver"
+    }
+  },
+  "result": {
+    "id": "minecraft:sculk",
+    "count": 5
+  }
+}

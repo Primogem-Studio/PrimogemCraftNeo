@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:primogem_billet"
+  },
+  "base": {
+    "item": "primogemcraft:varunada_lazurite_pickaxe"
+  },
+  "addition": {
+    "item": "primogemcraft:nagadus_emerald_pickaxe"
+  },
+  "result": {
+    "id": "primogemcraft:varunada_lazurite_blossom_pickaxe"
+  }
+}

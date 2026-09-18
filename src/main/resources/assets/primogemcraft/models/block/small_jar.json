@@ -1,0 +1,9 @@
+{
+  "parent": "primogemcraft:block/small_jar_model",
+  "textures": {
+    "all": "primogemcraft:block/small_jar",
+    "particle": "primogemcraft:block/small_jar",
+    "0": "primogemcraft:block/small_jar"
+  },
+  "render_type": "solid"
+}

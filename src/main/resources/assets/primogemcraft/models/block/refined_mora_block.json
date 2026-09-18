@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/refined_mora_block",
+    "up": "primogemcraft:block/refined_mora_block",
+    "north": "primogemcraft:block/refined_mora_block",
+    "east": "primogemcraft:block/refined_mora_block",
+    "south": "primogemcraft:block/refined_mora_block",
+    "west": "primogemcraft:block/refined_mora_block",
+    "particle": "primogemcraft:block/refined_mora_block"
+  },
+  "render_type": "solid"
+}

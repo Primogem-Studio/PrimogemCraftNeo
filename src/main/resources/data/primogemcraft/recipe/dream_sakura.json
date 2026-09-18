@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:broken_dream_sakura"
+    },
+    "b": {
+      "item": "primogemcraft:vajrada_amethyst_fragment"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:dream_sakura",
+    "count": 1
+  }
+}

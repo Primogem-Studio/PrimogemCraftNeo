@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:trash_can"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.once_you_set_foot_on_this_path.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.once_you_set_foot_on_this_path.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "once_you_set_foot_on_this_path": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "primogemcraft:everything_starts_with_primo"
+}

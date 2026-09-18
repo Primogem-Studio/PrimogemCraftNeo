@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:march_7th_statue"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.repeat_maiden.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.repeat_maiden.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "repeat_maiden": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "primogemcraft:it_became_a_spirit"
+}

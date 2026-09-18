@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "primogemcraft:blocks/solid_crystal_plate",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:solid_crystal_plate"
+        }
+      ]
+    }
+  ]
+}

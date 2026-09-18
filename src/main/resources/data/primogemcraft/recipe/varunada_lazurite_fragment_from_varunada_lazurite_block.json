@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:varunada_lazurite_block"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:varunada_lazurite_fragment",
+    "count": 18
+  }
+}

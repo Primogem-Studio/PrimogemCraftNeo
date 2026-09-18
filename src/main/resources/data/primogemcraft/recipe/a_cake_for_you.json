@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcb",
+    "ded"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:gold_ingot"
+    },
+    "b": {
+      "item": "primogemcraft:sturdy_metal_grain"
+    },
+    "c": {
+      "item": "minecraft:cake"
+    },
+    "d": {
+      "item": "minecraft:iron_nugget"
+    },
+    "e": {
+      "item": "primogemcraft:mora_block"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:a_cake_for_you",
+    "count": 1
+  }
+}

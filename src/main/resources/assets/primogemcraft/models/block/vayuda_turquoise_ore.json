@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "primogemcraft:block/vayuda_turquoise_ore",
+    "particle": "primogemcraft:block/vayuda_turquoise_ore"
+  },
+  "render_type": "solid"
+}

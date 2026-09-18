@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:curio_fusion_agent"
+    },
+    "b": {
+      "item": "primogemcraft:society_ticket"
+    },
+    "c": {
+      "item": "primogemcraft:faith_bond"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:club_faith_voucher",
+    "count": 1
+  }
+}

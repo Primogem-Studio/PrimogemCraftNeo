@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "primogemcraft:item/elemental_molten_bead_fragment"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "primogemcraft:count": 2
+      },
+      "model": "primogemcraft:item/elemental_molten_bead_fragment_2"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 3
+      },
+      "model": "primogemcraft:item/elemental_molten_bead_fragment_3"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 4
+      },
+      "model": "primogemcraft:item/elemental_molten_bead_fragment_4"
+    }
+  ]
+}

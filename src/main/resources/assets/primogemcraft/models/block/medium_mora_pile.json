@@ -1,0 +1,9 @@
+{
+  "parent": "primogemcraft:block/medium_mora_pile_model",
+  "textures": {
+    "all": "primogemcraft:block/mora_pile",
+    "particle": "primogemcraft:block/mora_pile",
+    "0": "primogemcraft:block/mora_pile"
+  },
+  "render_type": "solid"
+}

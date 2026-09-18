@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "aba",
+    " c "
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:lucent_afterglow"
+    },
+    "b": {
+      "item": "primogemcraft:vayuda_turquoise_fragment"
+    },
+    "c": {
+      "item": "primogemcraft:beginners_protector"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:primordial_jade_winged_spear",
+    "count": 1
+  }
+}

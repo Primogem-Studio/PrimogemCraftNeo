@@ -1,0 +1,9 @@
+{
+  "asset_name": "hydro",
+  "description": {
+    "color": "#169FCC",
+    "translate": "trim_material.primogemcraft.hydro"
+  },
+  "ingredient": "primogemcraft:justice_metal",
+  "item_model_index": 1
+}

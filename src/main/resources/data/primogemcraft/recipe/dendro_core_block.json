@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:dendro_core"
+    },
+    "b": {
+      "item": "primogemcraft:vajrada_amethyst_sliver"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:dendro_core_block",
+    "count": 1
+  }
+}

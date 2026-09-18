@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:intertwined_fate_block"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:intertwined_fate",
+    "count": 9
+  }
+}

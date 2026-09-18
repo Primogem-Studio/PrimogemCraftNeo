@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "plains",
+  "features": "primogemcraft:vayuda_turquoise_ore",
+  "step": "underground_ores"
+}

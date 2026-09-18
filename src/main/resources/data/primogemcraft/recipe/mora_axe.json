@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ab",
+    "ac",
+    " c"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:small_refined_mora"
+    },
+    "b": {
+      "item": "primogemcraft:large_refined_mora"
+    },
+    "c": {
+      "item": "minecraft:stick"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:mora_axe",
+    "count": 1
+  }
+}

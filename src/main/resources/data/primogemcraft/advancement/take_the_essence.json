@@ -1,0 +1,39 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:void_candle_fruit"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.take_the_essence.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.take_the_essence.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "take_the_essence": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "#c:curio/fusion"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "parent": "primogemcraft:the_art_of_stitching"
+}

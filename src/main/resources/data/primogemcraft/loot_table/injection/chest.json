@@ -1,0 +1,115 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:primogem",
+          "weight": 10,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 3}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:enigmata_gift_box",
+          "weight": 3,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 1}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:enhancement_ore",
+          "weight": 10,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 9}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:fine_enhancement_ore",
+          "weight": 10,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 3}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:adventurers_experience_reward",
+          "weight": 5,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 1}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:wanderers_advice_reward",
+          "weight": 5,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 1}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:acquaint_fate",
+          "weight": 2,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 2}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:intertwined_fate",
+          "weight": 2,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 1}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:wish_core",
+          "weight": 2,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 1}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:unidentified_doll",
+          "weight": 4,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 1}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:footprints_of_fate",
+          "weight": 3,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 1}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:lucky_special_ticket",
+          "weight": 1,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 1}}
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:colorful_sunglasses",
+          "weight": 3,
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"min": 1, "max": 1}}
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "primogemcraft:injection/chest"
+}

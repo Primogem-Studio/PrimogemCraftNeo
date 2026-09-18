@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:burning_wish_metal"
+    },
+    {
+      "item": "primogemcraft:burning_wish_metal"
+    },
+    {
+      "item": "primogemcraft:burning_wish_metal"
+    },
+    {
+      "item": "primogemcraft:burning_wish_metal"
+    },
+    {
+      "item": "primogemcraft:burning_wish_metal"
+    },
+    {
+      "item": "primogemcraft:burning_wish_metal"
+    },
+    {
+      "item": "primogemcraft:burning_wish_metal"
+    },
+    {
+      "item": "primogemcraft:burning_wish_metal"
+    },
+    {
+      "item": "primogemcraft:burning_wish_metal"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:burning_wish_metal_block",
+    "count": 1
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:enhancement_ore"
+    },
+    "b": {
+      "item": "primogemcraft:vayuda_turquoise_sliver"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:unfettered_metal_grain",
+    "count": 1
+  }
+}

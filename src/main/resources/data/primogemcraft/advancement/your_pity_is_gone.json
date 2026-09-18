@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:intertwined_fate"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.your_pity_is_gone.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.your_pity_is_gone.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "your_pity_is_gone": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "parent": "primogemcraft:the_lotterys_approval"
+}

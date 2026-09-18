@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:sanctity_of_the_trashcan"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.pro_player.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.pro_player.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "pro_player": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:sanctity_of_the_trashcan"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:heavy_flavor"
+}

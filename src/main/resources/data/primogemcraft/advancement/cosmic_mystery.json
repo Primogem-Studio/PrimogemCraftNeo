@@ -1,0 +1,39 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:cosmic_fragment"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.cosmic_mystery.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.cosmic_mystery.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "cosmic_mystery": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:cosmic_fragment"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 1
+  },
+  "parent": "primogemcraft:everything_starts_with_primo"
+}

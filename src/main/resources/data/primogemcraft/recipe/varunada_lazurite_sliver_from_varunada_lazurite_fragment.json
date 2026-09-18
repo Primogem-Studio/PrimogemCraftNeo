@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:varunada_lazurite_fragment"
+    },
+    {
+      "item": "primogemcraft:elemental_crystal_dust"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:varunada_lazurite_sliver",
+    "count": 5
+  }
+}

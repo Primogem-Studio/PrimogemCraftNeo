@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/shivada_jade_block",
+    "up": "primogemcraft:block/shivada_jade_block",
+    "north": "primogemcraft:block/shivada_jade_block",
+    "east": "primogemcraft:block/shivada_jade_block",
+    "south": "primogemcraft:block/shivada_jade_block",
+    "west": "primogemcraft:block/shivada_jade_block",
+    "particle": "primogemcraft:block/shivada_jade_block"
+  },
+  "render_type": "solid"
+}

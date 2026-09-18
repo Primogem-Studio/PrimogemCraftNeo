@@ -1,0 +1,9 @@
+{
+  "asset_name": "electro",
+  "description": {
+    "color": "#9B66C4",
+    "translate": "trim_material.primogemcraft.electro"
+  },
+  "ingredient": "primogemcraft:eternal_metal",
+  "item_model_index": 1
+}

@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "facing=north,tier=0": {
+      "model": "primogemcraft:block/mora_pile"
+    },
+    "facing=east,tier=0": {
+      "model": "primogemcraft:block/mora_pile",
+      "y": 90
+    },
+    "facing=south,tier=0": {
+      "model": "primogemcraft:block/mora_pile",
+      "y": 180
+    },
+    "facing=west,tier=0": {
+      "model": "primogemcraft:block/mora_pile",
+      "y": 270
+    },
+    "facing=north,tier=1": {
+      "model": "primogemcraft:block/small_mora_pile"
+    },
+    "facing=east,tier=1": {
+      "model": "primogemcraft:block/small_mora_pile",
+      "y": 90
+    },
+    "facing=south,tier=1": {
+      "model": "primogemcraft:block/small_mora_pile",
+      "y": 180
+    },
+    "facing=west,tier=1": {
+      "model": "primogemcraft:block/small_mora_pile",
+      "y": 270
+    },
+    "facing=north,tier=2": {
+      "model": "primogemcraft:block/medium_mora_pile"
+    },
+    "facing=east,tier=2": {
+      "model": "primogemcraft:block/medium_mora_pile",
+      "y": 90
+    },
+    "facing=south,tier=2": {
+      "model": "primogemcraft:block/medium_mora_pile",
+      "y": 180
+    },
+    "facing=west,tier=2": {
+      "model": "primogemcraft:block/medium_mora_pile",
+      "y": 270
+    },
+    "facing=north,tier=3": {
+      "model": "primogemcraft:block/large_mora_pile"
+    },
+    "facing=east,tier=3": {
+      "model": "primogemcraft:block/large_mora_pile",
+      "y": 90
+    },
+    "facing=south,tier=3": {
+      "model": "primogemcraft:block/large_mora_pile",
+      "y": 180
+    },
+    "facing=west,tier=3": {
+      "model": "primogemcraft:block/large_mora_pile",
+      "y": 270
+    }
+  }
+}

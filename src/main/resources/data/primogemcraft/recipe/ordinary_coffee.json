@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:ambergris_cheese"
+    },
+    {
+      "item": "primogemcraft:ambergris_cheese"
+    },
+    {
+      "item": "primogemcraft:ambergris_cheese"
+    },
+    {
+      "item": "primogemcraft:space_time_prism"
+    },
+    {
+      "item": "minecraft:cocoa_beans"
+    },
+    {
+      "item": "minecraft:milk_bucket"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:ordinary_coffee",
+    "count": 1
+  }
+}

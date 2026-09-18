@@ -1,0 +1,6 @@
+﻿{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "primogemcraft:item/varunada_lazurite_axe_held"
+  }
+}

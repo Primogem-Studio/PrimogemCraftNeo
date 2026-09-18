@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:dendro_core_planks"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:dendro_core_planks_button",
+    "count": 1
+  }
+}

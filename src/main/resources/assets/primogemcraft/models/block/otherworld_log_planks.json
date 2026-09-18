@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/otherworld_wood_end",
+    "up": "primogemcraft:block/otherworld_wood_top",
+    "north": "primogemcraft:block/otherworld_wood_side",
+    "east": "primogemcraft:block/otherworld_wood_side",
+    "south": "primogemcraft:block/otherworld_wood_side",
+    "west": "primogemcraft:block/otherworld_wood_side",
+    "particle": "primogemcraft:block/otherworld_wood_end"
+  },
+  "render_type": "solid"
+}

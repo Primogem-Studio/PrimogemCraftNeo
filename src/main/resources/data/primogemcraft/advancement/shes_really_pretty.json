@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:enigmata_petal"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.shes_really_pretty.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.shes_really_pretty.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "shes_really_pretty": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:enigmata_petal"
+            ],
+            "count": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:stick_your_head_in"
+}

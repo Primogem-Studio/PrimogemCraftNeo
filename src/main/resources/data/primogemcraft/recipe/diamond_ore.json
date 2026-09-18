@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "aba",
+    " a "
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:diamond"
+    },
+    "b": {
+      "item": "primogemcraft:prithiva_topaz_fragment"
+    }
+  },
+  "result": {
+    "id": "minecraft:diamond_ore",
+    "count": 1
+  }
+}

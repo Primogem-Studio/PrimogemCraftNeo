@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "primogemcraft:war_wax_seal",
+    "primogemcraft:freedom_wax_seal",
+    "primogemcraft:contract_wax_seal",
+    "primogemcraft:justice_wax_seal",
+    "primogemcraft:compassion_wax_seal",
+    "primogemcraft:eternal_wax_seal",
+    "primogemcraft:wisdom_wax_seal"
+  ]
+}

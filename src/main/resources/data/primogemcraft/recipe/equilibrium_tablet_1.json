@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aba",
+    "cde",
+    "aba"
+  ],
+  "key": {
+    "a": {
+      "item": "minecraft:diamond"
+    },
+    "b": {
+      "item": "minecraft:blaze_rod"
+    },
+    "c": {
+      "item": "minecraft:wither_skeleton_skull"
+    },
+    "d": {
+      "item": "primogemcraft:praise_of_high_morals"
+    },
+    "e": {
+      "item": "minecraft:netherite_ingot"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:equilibrium_tablet_1",
+    "count": 1
+  }
+}

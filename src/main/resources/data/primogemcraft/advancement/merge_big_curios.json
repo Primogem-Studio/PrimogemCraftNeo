@@ -1,0 +1,36 @@
+{
+  "display": {
+    "icon": {
+      "id": "primogemcraft:cosmic_casket"
+    },
+    "title": {
+      "translate": "advancements.primogemcraft.merge_big_curios.title"
+    },
+    "description": {
+      "translate": "advancements.primogemcraft.merge_big_curios.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "merge_big_curios": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "primogemcraft:cosmic_casket"
+            ],
+            "count": {
+              "min": 1,
+              "max": 64
+            }
+          }
+        ]
+      }
+    }
+  },
+  "parent": "primogemcraft:cosmos_502"
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:celesticomet_alloy"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:celesticomet_alloy_type_iii",
+    "count": 1
+  }
+}

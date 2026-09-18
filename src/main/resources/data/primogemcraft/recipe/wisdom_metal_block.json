@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:wisdom_metal"
+    },
+    {
+      "item": "primogemcraft:wisdom_metal"
+    },
+    {
+      "item": "primogemcraft:wisdom_metal"
+    },
+    {
+      "item": "primogemcraft:wisdom_metal"
+    },
+    {
+      "item": "primogemcraft:wisdom_metal"
+    },
+    {
+      "item": "primogemcraft:wisdom_metal"
+    },
+    {
+      "item": "primogemcraft:wisdom_metal"
+    },
+    {
+      "item": "primogemcraft:wisdom_metal"
+    },
+    {
+      "item": "primogemcraft:wisdom_metal"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:wisdom_metal_block",
+    "count": 1
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "primogemcraft:surface_mora_ruins",
+        "processors": {
+          "processors": [
+            {
+              "processor_type": "minecraft:block_ignore",
+              "blocks": [
+                { "Name": "minecraft:barrier" },
+                { "Name": "minecraft:structure_block" }
+              ]
+            }
+          ]
+        },
+        "projection": "rigid"
+      },
+      "weight": 1
+    }
+  ]
+}

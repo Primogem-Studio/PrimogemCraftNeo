@@ -1,0 +1,28 @@
+{
+  "replace": false,
+  "values": [
+    "primogemcraft:dendro_core_planks",
+    "primogemcraft:dendro_core_planks_button",
+    "primogemcraft:dendro_core_planks_fence",
+    "primogemcraft:dendro_core_planks_fence_gate",
+    "primogemcraft:dendro_core_planks_pressure_plate",
+    "primogemcraft:dendro_core_planks_slab",
+    "primogemcraft:dendro_core_planks_stairs",
+    "primogemcraft:gorgeous_smithing_table",
+    "primogemcraft:monochrome_otherworld_planks",
+    "primogemcraft:monochrome_otherworld_planks_button",
+    "primogemcraft:monochrome_otherworld_planks_fence",
+    "primogemcraft:monochrome_otherworld_planks_fence_gate",
+    "primogemcraft:monochrome_otherworld_planks_pressure_plate",
+    "primogemcraft:monochrome_otherworld_planks_slab",
+    "primogemcraft:monochrome_otherworld_planks_stairs",
+    "primogemcraft:otherworld_log_planks",
+    "primogemcraft:otherworld_log_slab",
+    "primogemcraft:otherworld_wood_fence",
+    "primogemcraft:otherworld_wood_fence_gate",
+    "primogemcraft:otherworld_wood_stairs",
+    "primogemcraft:rotten_wood",
+    "primogemcraft:rotten_wood_fence",
+    "primogemcraft:rotten_wood_stairs"
+  ]
+}

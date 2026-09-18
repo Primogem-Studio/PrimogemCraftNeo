@@ -1,0 +1,9 @@
+{
+  "item": "primogemcraft:fine_enhancement_ore",
+  "calc": "primogemcraft:diminishing",
+  "prefix": "item.elixir.prefix.diminishing",
+  "pharm": 40,
+  "base": 40,
+  "stability": -50,
+  "description": "item.elixir.material.desc.primogemcraft.off.fine_enhancement_ore"
+}

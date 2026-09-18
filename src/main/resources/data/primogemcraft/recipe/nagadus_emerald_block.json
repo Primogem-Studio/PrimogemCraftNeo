@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aaa",
+    "aba",
+    "aaa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:nagadus_emerald_sliver"
+    },
+    "b": {
+      "item": "primogemcraft:nagadus_emerald_gemstone"
+    }
+  },
+  "result": {
+    "id": "primogemcraft:nagadus_emerald_block",
+    "count": 1
+  }
+}

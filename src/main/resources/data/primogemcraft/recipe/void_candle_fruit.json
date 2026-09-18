@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:curio_fusion_agent"
+  },
+  "base": {
+    "item": "primogemcraft:void_wick_trimmer"
+  },
+  "addition": {
+    "item": "primogemcraft:fruit_of_the_alien_tree"
+  },
+  "result": {
+    "id": "primogemcraft:void_candle_fruit"
+  }
+}

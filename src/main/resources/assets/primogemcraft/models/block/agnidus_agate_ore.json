@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "primogemcraft:block/agnidus_agate_ore",
+    "up": "primogemcraft:block/agnidus_agate_ore",
+    "north": "primogemcraft:block/agnidus_agate_ore",
+    "east": "primogemcraft:block/agnidus_agate_ore",
+    "south": "primogemcraft:block/agnidus_agate_ore",
+    "west": "primogemcraft:block/agnidus_agate_ore",
+    "particle": "primogemcraft:block/agnidus_agate_ore"
+  },
+  "render_type": "solid"
+}

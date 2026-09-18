@@ -1,0 +1,281 @@
+{
+  "wish_roll": {
+    "subtitle": "subtitles.primogemcraft.wish_roll",
+    "sounds": [
+      {
+        "name": "primogemcraft:wish_roll"
+      }
+    ]
+  },
+  "wish_ten": {
+    "subtitle": "subtitles.primogemcraft.wish_ten",
+    "sounds": [
+      {
+        "name": "primogemcraft:wish_ten"
+      }
+    ]
+  },
+  "wish_blue": {
+    "subtitle": "subtitles.primogemcraft.wish_blue",
+    "sounds": [
+      {
+        "name": "primogemcraft:wish_blue"
+      }
+    ]
+  },
+  "wish_purple": {
+    "subtitle": "subtitles.primogemcraft.wish_purple",
+    "sounds": [
+      {
+        "name": "primogemcraft:wish_purple"
+      }
+    ]
+  },
+  "wish_gold": {
+    "subtitle": "subtitles.primogemcraft.wish_gold",
+    "sounds": [
+      {
+        "name": "primogemcraft:wish_gold"
+      }
+    ]
+  },
+  "capturing_radiance": {
+    "subtitle": "subtitles.primogemcraft.capturing_radiance",
+    "sounds": [
+      {
+        "name": "primogemcraft:capturing_radiance"
+      }
+    ]
+  },
+  "wish_core_feed": {
+    "subtitle": "subtitles.primogemcraft.wish_core_feed",
+    "sounds": [
+      {
+        "name": "primogemcraft:wish_core_feed"
+      }
+    ]
+  },
+  "curio_broken": {
+    "subtitle": "subtitles.primogemcraft.curio_broken",
+    "sounds": [
+      {
+        "name": "primogemcraft:curio_broken"
+      }
+    ]
+  },
+  "choice_grant": {
+    "subtitle": "subtitles.primogemcraft.choice_grant",
+    "sounds": [
+      {
+        "name": "primogemcraft:choice_grant"
+      }
+    ]
+  },
+  "bomb_planted": {
+    "subtitle": "subtitles.primogemcraft.bomb_planted",
+    "sounds": [
+      {
+        "name": "primogemcraft:bomb_planted"
+      }
+    ]
+  },
+  "bomb_tick": {
+    "subtitle": "subtitles.primogemcraft.bomb_tick",
+    "sounds": [
+      {
+        "name": "primogemcraft:bomb_tick"
+      }
+    ]
+  },
+  "bomb_final_tick": {
+    "subtitle": "subtitles.primogemcraft.bomb_final_tick",
+    "sounds": [
+      {
+        "name": "primogemcraft:bomb_final_tick"
+      }
+    ]
+  },
+  "bomb_defusing": {
+    "subtitle": "subtitles.primogemcraft.bomb_defusing",
+    "sounds": [
+      {
+        "name": "primogemcraft:bomb_defusing"
+      }
+    ]
+  },
+  "bomb_defused": {
+    "subtitle": "subtitles.primogemcraft.bomb_defused",
+    "sounds": [
+      {
+        "name": "primogemcraft:bomb_defused"
+      }
+    ]
+  },
+  "enhancement_success": {
+    "subtitle": "subtitles.primogemcraft.enhancement_success",
+    "sounds": [
+      {
+        "name": "primogemcraft:enhancement_success"
+      }
+    ]
+  },
+  "varunada_lazurite_bubble": {
+    "subtitle": "subtitles.primogemcraft.varunada_lazurite_bubble",
+    "sounds": [
+      {
+        "name": "primogemcraft:varunada_lazurite_bubble"
+      }
+    ]
+  },
+  "varunada_lazurite_burst": {
+    "subtitle": "subtitles.primogemcraft.varunada_lazurite_burst",
+    "sounds": [
+      {
+        "name": "primogemcraft:varunada_lazurite_burst"
+      }
+    ]
+  },
+  "weapon_charge": {
+    "subtitle": "subtitles.primogemcraft.weapon_charge",
+    "sounds": [
+      {
+        "name": "primogemcraft:weapon_charge"
+      }
+    ]
+  },
+  "thrust_flourish": {
+    "subtitle": "subtitles.primogemcraft.thrust_flourish",
+    "sounds": [
+      {
+        "name": "primogemcraft:thrust_flourish"
+      }
+    ]
+  },
+  "soil_shaping": {
+    "subtitle": "subtitles.primogemcraft.soil_shaping",
+    "sounds": [
+      {
+        "name": "primogemcraft:soil_shaping"
+      }
+    ]
+  },
+  "scam": {
+    "subtitle": "subtitles.primogemcraft.scam",
+    "sounds": [
+      {
+        "name": "primogemcraft:scam"
+      }
+    ]
+  },
+  "a_day_of_hope": {
+    "sounds": [
+      {
+        "name": "primogemcraft:a_day_of_hope",
+        "stream": true
+      }
+    ]
+  },
+  "village_surrounded_by_green": {
+    "sounds": [
+      {
+        "name": "primogemcraft:village_surrounded_by_green",
+        "stream": true
+      }
+    ]
+  },
+  "the_village_no_longer_young": {
+    "sounds": [
+      {
+        "name": "primogemcraft:the_village_no_longer_young",
+        "stream": true
+      }
+    ]
+  },
+  "hakushins_lullaby": {
+    "sounds": [
+      {
+        "name": "primogemcraft:hakushins_lullaby",
+        "stream": true
+      }
+    ]
+  },
+  "ballad_of_many_waters": {
+    "sounds": [
+      {
+        "name": "primogemcraft:ballad_of_many_waters"
+      }
+    ]
+  },
+  "chasing_starlight_with_you": {
+    "sounds": [
+      {
+        "name": "primogemcraft:chasing_starlight_with_you"
+      }
+    ]
+  },
+  "space_walk": {
+    "sounds": [
+      {
+        "name": "primogemcraft:space_walk",
+        "stream": true
+      }
+    ]
+  },
+  "salty_moon": {
+    "sounds": [
+      {
+        "name": "primogemcraft:salty_moon",
+        "stream": true
+      }
+    ]
+  },
+  "take_the_journey": {
+    "sounds": [
+      {
+        "name": "primogemcraft:take_the_journey",
+        "stream": true
+      }
+    ]
+  },
+  "march_7th_giggle": {
+    "subtitle": "subtitles.primogemcraft.march_7th_giggle",
+    "sounds": [
+      {
+        "name": "primogemcraft:march_7th_giggle",
+        "stream": true
+      }
+    ]
+  },
+  "march_7th_puzzled": {
+    "subtitle": "subtitles.primogemcraft.march_7th_puzzled",
+    "sounds": [
+      {
+        "name": "primogemcraft:march_7th_puzzled",
+        "stream": true
+      }
+    ]
+  },
+  "march_7th_startled": {
+    "subtitle": "subtitles.primogemcraft.march_7th_startled",
+    "sounds": [
+      {
+        "name": "primogemcraft:march_7th_startled",
+        "stream": true
+      }
+    ]
+  },
+  "experience_book": {
+    "sounds": [
+      {
+        "name": "primogemcraft:experience_book"
+      }
+    ]
+  },
+  "lottery_draw": {
+    "sounds": [
+      {
+        "name": "primogemcraft:lottery_draw"
+      }
+    ]
+  }
+}

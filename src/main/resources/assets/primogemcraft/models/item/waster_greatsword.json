@@ -1,0 +1,6 @@
+{
+  "parent": "primogemcraft:item/weapon/large_weapon_held",
+  "textures": {
+    "layer0": "primogemcraft:item/waster_greatsword_held"
+  }
+}
