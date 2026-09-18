@@ -1241,7 +1241,7 @@
   "prescription.primogemcraft.two": "贰",
 
   "enchantment.primogemcraft.ambrosial_arbor_attachment": "建木附着",
-  "enchantment.primogemcraft.ambrosial_arbor_attachment.desc": "§6物品损坏或即将损坏时，恢复其附魔等级*20%耐久度，恢复后降级",
+  "enchantment.primogemcraft.ambrosial_arbor_attachment.desc": "§6物品因耐久耗尽而销毁或鞘翅失效前，恢复最大耐久的附魔等级*20%（最高100%，至少1点，鞘翅至少2点），随后附魔降低一级",
   "enchantment.primogemcraft.cosmic_fragment_mending": "宇宙碎片修补",
   "enchantment.primogemcraft.cosmic_fragment_mending.desc": "§8使用背包中的宇宙碎片修复主副手和身上盔甲的耐久度[消耗一个，修复附魔等级*2%]  被标记在c:curio的物品不受影响",
   "enchantment.primogemcraft.can_opener": "开罐器",

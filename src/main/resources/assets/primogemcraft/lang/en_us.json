@@ -1099,7 +1099,7 @@
   "prescription.primogemcraft.two": "Two",
 
   "enchantment.primogemcraft.ambrosial_arbor_attachment": "Ambrosial Arbor Attachment",
-  "enchantment.primogemcraft.ambrosial_arbor_attachment.desc": "§6When an item is damaged or about to break, restore 20% durability per enchantment level; it de-levels after being restored",
+  "enchantment.primogemcraft.ambrosial_arbor_attachment.desc": "§6Before durability loss destroys an item or disables elytra, restore 20% of maximum durability per enchantment level (up to 100%, at least 1 point or 2 for elytra), then reduce the enchantment by one level",
   "enchantment.primogemcraft.cosmic_fragment_mending": "Cosmic Fragment Mending",
   "enchantment.primogemcraft.cosmic_fragment_mending.desc": "§8Use Cosmic Fragments from your inventory to repair the durability of the main hand, off hand, and worn armor [Consumes one; repairs enchantment level × 2%]  Items tagged c:curio are unaffected",
   "enchantment.primogemcraft.can_opener": "Can Opener",

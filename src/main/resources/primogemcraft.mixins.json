@@ -5,6 +5,7 @@
   "plugin": "net.per.primogemcraft.mixin.MixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ItemStackMixin",
     "PowderSnowBlockMixin"
   ],
   "injectors": {
