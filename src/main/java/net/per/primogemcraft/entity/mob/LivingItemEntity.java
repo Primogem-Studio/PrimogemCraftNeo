@@ -149,6 +149,12 @@ public class LivingItemEntity extends PathfinderMob {
         syncDurationHealth(true);
     }
 
+    /** Adds {@code ticks} to a finite item's duration, preserving infinite duration and preventing overflow. */
+    public void addRemainingTicks(int ticks) {
+        if (isInfinite()) return;
+        setRemainingTicks(Math.clamp((long) remainingTicks + ticks, 1, Integer.MAX_VALUE));
+    }
+
     /** Increases an infinite item's maximum and current health by the health equivalent of {@code ticks}. */
     public void addInfiniteHealthFromDuration(int ticks) {
         if (level().isClientSide || !isInfinite() || ticks <= 0 || !isAlive() || isRemoved()) return;
@@ -559,8 +565,7 @@ public class LivingItemEntity extends PathfinderMob {
     private boolean isHoverPointFree(Vec3 point) {
         if (level().isClientSide) return true;
         var box = new AABB(point.x - 1.2, point.y - 1.2, point.z - 1.2, point.x + 1.2, point.y + 1.2, point.z + 1.2);
-        return level().getEntities(EntityTypeTest.forClass(LivingItemEntity.class), box,
-                entity -> entity != this && Objects.equals(entity.getOwnerUuid(), getOwnerUuid())).isEmpty();
+        return !hasNearbyAlly(box);
     }
 
     private void updateCombat(Player owner, LivingEntity target) {
@@ -633,9 +638,15 @@ public class LivingItemEntity extends PathfinderMob {
 
     private boolean isCrowded() {
         if (level().isClientSide) return false;
-        return !level().getEntities(EntityTypeTest.forClass(LivingItemEntity.class),
-                getBoundingBox().inflate(COMBAT_SPREAD_RADIUS),
-                entity -> entity != this && Objects.equals(entity.getOwnerUuid(), getOwnerUuid())).isEmpty();
+        return hasNearbyAlly(getBoundingBox().inflate(COMBAT_SPREAD_RADIUS));
+    }
+
+    private boolean hasNearbyAlly(AABB bounds) {
+        var ownerUuid = getOwnerUuid();
+        var matches = new ArrayList<LivingItemEntity>(1);
+        level().getEntities(EntityTypeTest.forClass(LivingItemEntity.class), bounds,
+                entity -> entity != this && Objects.equals(entity.getOwnerUuid(), ownerUuid), matches, 1);
+        return !matches.isEmpty();
     }
 
     private static DamageSource elementSource(ItemStack stack, DamageSource source) {
@@ -707,16 +718,25 @@ public class LivingItemEntity extends PathfinderMob {
             if (mob instanceof TamableAnimal tamable && owner.getUUID().equals(tamable.getOwnerUUID())) return false;
             if (mob.isAlliedTo(this)) return false;
             var blacklisted = attackBlacklist.get(mob.getUUID());
-            return blacklisted == null || now - blacklisted >= ATTACK_BLACKLIST_TIME;
+            return (blacklisted == null || now - blacklisted >= ATTACK_BLACKLIST_TIME) && isThreat(mob, owner, now);
         });
         attackBlacklist.entrySet().removeIf(entry -> now - entry.getValue() >= ATTACK_BLACKLIST_TIME);
         ownerAttackMemory.entrySet().removeIf(entry -> now - entry.getValue() >= OWNER_ATTACK_MEMORY);
+        if (mobs.isEmpty()) return null;
+        var targetLocks = new IdentityHashMap<LivingEntity, Integer>();
+        var ownerUuid = getOwnerUuid();
+        var allies = level().getEntities(EntityTypeTest.forClass(LivingItemEntity.class),
+                getBoundingBox().inflate(MAX_CHASE_DISTANCE),
+                entity -> entity != this && Objects.equals(entity.getOwnerUuid(), ownerUuid));
+        for (var ally : allies) {
+            var target = ally.getTarget();
+            if (target != null) targetLocks.merge(target, 1, Integer::sum);
+        }
         Mob best = null;
         var bestLock = Integer.MAX_VALUE;
         var bestDistance = Double.MAX_VALUE;
         for (var mob : mobs) {
-            if (!isThreat(mob, owner, now)) continue;
-            var lock = countLocksOn(mob);
+            var lock = targetLocks.getOrDefault(mob, 0);
             var distance = distanceToSqr(mob);
             if (lock < bestLock || (lock == bestLock && distance < bestDistance)) {
                 bestLock = lock;
@@ -727,16 +747,15 @@ public class LivingItemEntity extends PathfinderMob {
         return best;
     }
 
-    private int countLocksOn(LivingEntity candidate) {
-        if (level().isClientSide) return 0;
-        var count = 0;
-        var allies = level().getEntities(EntityTypeTest.forClass(LivingItemEntity.class),
+    private boolean hasAllyTargeting(LivingEntity candidate) {
+        if (level().isClientSide) return false;
+        var ownerUuid = getOwnerUuid();
+        var matches = new ArrayList<LivingItemEntity>(1);
+        level().getEntities(EntityTypeTest.forClass(LivingItemEntity.class),
                 getBoundingBox().inflate(MAX_CHASE_DISTANCE),
-                entity -> entity != this && Objects.equals(entity.getOwnerUuid(), getOwnerUuid()));
-        for (var ally : allies) {
-            if (ally.getTarget() == candidate) count++;
-        }
-        return count;
+                entity -> entity != this && Objects.equals(entity.getOwnerUuid(), ownerUuid)
+                        && entity.getTarget() == candidate, matches, 1);
+        return !matches.isEmpty();
     }
 
     private boolean isThreat(Mob mob, Player owner, long now) {
@@ -759,7 +778,7 @@ public class LivingItemEntity extends PathfinderMob {
             return;
         if (target instanceof LivingEntity living && living.isAlive() && !living.isRemoved()) {
             ownerAttackMemory.put(living.getUUID(), level().getGameTime());
-            if (getTarget() == null && countLocksOn(living) < 1) setTarget(living);
+            if (getTarget() == null && !hasAllyTargeting(living)) setTarget(living);
         }
     }
 

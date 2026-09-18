@@ -2222,10 +2222,10 @@
   "item.elixir.action.primogemcraft.recall": "Recall",
   "item.elixir.prefix.diminishing": "Diminishing",
   "item.elixir.material.desc.primogemcraft.main.primogem": "Summons wish entities above 1 pharm, otherwise drops primogems at your feet (mod-added effect)",
-  "item.elixir.material.desc.primogemcraft.main.time_lag": "Extends the duration of every living item when pharm is positive and shortens it when negative; the result stays between 3 and 8 seconds (mod-added effect)",
-  "item.elixir.material.desc.primogemcraft.main.transmutation": "Turns the offhand item into a living item when pharm is positive, lasting longer the higher the pharm; sets the duration of every living item to zero when negative (mod-added effect)",
-  "item.elixir.material.desc.primogemcraft.main.crystallization": "Positive pharm turns the 27 inventory slots outside the hotbar into living items; negative pharm turns every item into one, hotbar and armour included. The duration ignores pharm (mod-added effect)",
-  "item.elixir.material.desc.primogemcraft.main.permanence": "Turns the offhand item into a permanent living item, unaffected by pharm; recalling it by hand returns the item, and it takes another brewing to transmute it again (mod-added effect)",
-  "item.elixir.material.desc.primogemcraft.main.recall": "Recalls every dropped living item to the player's position (mod-added effect)",
+  "item.elixir.material.desc.primogemcraft.main.time_lag": "Adds 3–8 seconds and restores 6–16 health to finite living items; permanent ones gain 6–16 maximum health and recover the same amount. Affects all owned living items when taken by a player, or only the recipient when it is a living item (mod-added effect)",
+  "item.elixir.material.desc.primogemcraft.main.transmutation": "Positive pharm transmutes the player's offhand item; negative pharm expires all owned finite living items. A living item recipient only has its own finite duration set, or cleared for negative pharm; permanent status is preserved (mod-added effect)",
+  "item.elixir.material.desc.primogemcraft.main.crystallization": "Nonnegative pharm transmutes the player's 27 inventory slots outside the hotbar; negative pharm transmutes all items, including hotbar and armour. Duration is absolute pharm × 4 ticks, capped at 20 seconds. A living item recipient only has its own finite duration set; permanent status is preserved (mod-added effect)",
+  "item.elixir.material.desc.primogemcraft.main.permanence": "Transmutes the player's offhand item into a permanent living item, or makes a living item recipient permanent. Manual recall returns the item; another brewing is needed to transmute it again (mod-added effect)",
+  "item.elixir.material.desc.primogemcraft.main.recall": "Recalls all dropped living items to the player when taken by a player; a living item recipient is instead moved back to its owner (mod-added effect)",
   "item.elixir.material.desc.primogemcraft.off.fine_enhancement_ore": "Off material: diminishing calculation — the contribution is the base value minus the absolute pharm, never below 0, so the more pharm the less it adds (mod custom calculation)"
 }

@@ -164,8 +164,7 @@ public final class LivingItemAPI {
         var count = 0;
         for (var entity : items) {
             if (entity.isInfinite()) continue;
-            var ticks = Math.clamp((long) entity.getRemainingTicks() + deltaTicks, 1, Integer.MAX_VALUE);
-            entity.setRemainingTicks(ticks);
+            entity.addRemainingTicks(deltaTicks);
             count++;
         }
         return count;
@@ -176,7 +175,9 @@ public final class LivingItemAPI {
         if (owner == null || owner.level().isClientSide) return List.of();
         var serverLevel = (ServerLevel) owner.level();
         EntityTypeTest<Entity, LivingItemEntity> test = EntityTypeTest.forClass(LivingItemEntity.class);
-        return new ArrayList<>(serverLevel.getEntities(test, entity -> owner.getUUID().equals(entity.getOwnerUuid())));
+        var items = new ArrayList<LivingItemEntity>();
+        serverLevel.getEntities(test, entity -> owner.getUUID().equals(entity.getOwnerUuid()), items);
+        return items;
     }
 
     private static LivingItemEntity summon(Level level, Player player, ItemStack stack, int ticks, boolean takeOffhand) {
