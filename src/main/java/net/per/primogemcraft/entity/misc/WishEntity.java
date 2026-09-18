@@ -410,7 +410,7 @@ public class WishEntity extends Entity {
     }
 
     private ResourceLocation lootTable() {
-        return rarity().lootTable(banner(), isCapturingRadiance());
+        return rarity().lootTable();
     }
 
     public enum CaptureState {

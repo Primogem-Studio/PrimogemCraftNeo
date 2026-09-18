@@ -11,8 +11,6 @@ public enum WishRarity {
     PURPLE("purple"),
     GOLD("gold");
 
-    private static final String CAPTURING_RADIANCE_SUFFIX = "_capturing_radiance";
-
     private final String id;
 
     WishRarity(String id) {
@@ -27,12 +25,12 @@ public enum WishRarity {
         return "wish." + MOD_ID + ".rarity." + id;
     }
 
-    public String lootTablePath(WishBanner banner, boolean capturingRadiance) {
-        return "wish/" + banner.id() + "/" + id + (capturingRadiance ? CAPTURING_RADIANCE_SUFFIX : "");
+    public String lootTablePath() {
+        return "wish/" + id;
     }
 
-    public ResourceLocation lootTable(WishBanner banner, boolean capturingRadiance) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, lootTablePath(banner, capturingRadiance));
+    public ResourceLocation lootTable() {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, lootTablePath());
     }
 
     public ResourceLocation texture() {

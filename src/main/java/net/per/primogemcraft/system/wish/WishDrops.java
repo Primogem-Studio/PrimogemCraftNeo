@@ -24,8 +24,8 @@ public class WishDrops extends SimpleJsonResourceReloadListener {
         super(GSON, DIRECTORY);
     }
 
-    public static List<Item> of(WishBanner banner, WishRarity rarity) {
-        return drops.getOrDefault(rarity.lootTable(banner, false), List.of());
+    public static List<Item> of(WishRarity rarity) {
+        return drops.getOrDefault(rarity.lootTable(), List.of());
     }
 
     @Override

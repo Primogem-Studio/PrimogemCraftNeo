@@ -10,11 +10,9 @@ import net.minecraft.world.item.Item;
 import net.per.primogemcraft.recipe.StellarConverterRecipe;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.registry.PGCRecipeTypes;
-import net.per.primogemcraft.system.wish.WishBanner;
 import net.per.primogemcraft.system.wish.WishDrops;
 import net.per.primogemcraft.system.wish.WishRarity;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 
 @REIPluginClient
@@ -40,8 +38,6 @@ public class PGCREIClientPlugin implements REIClientPlugin {
     }
 
     private static List<Item> itemsOf(WishRarity rarity) {
-        var items = new LinkedHashSet<Item>();
-        for (var banner : WishBanner.values()) items.addAll(WishDrops.of(banner, rarity));
-        return List.copyOf(items);
+        return WishDrops.of(rarity);
     }
 }
