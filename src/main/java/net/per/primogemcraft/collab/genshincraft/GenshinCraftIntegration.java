@@ -31,7 +31,6 @@ public final class GenshinCraftIntegration {
     public static void register(IEventBus modBus) {
         if (!loaded) return;
         modBus.register(GenshinCraftBridge.class);
-        GenshinCraftReactionGuard.register();
     }
 
     public static DamageSource replace(DamageSource origin, Element element, ElementStyle style, ElementDamageOptions options) {

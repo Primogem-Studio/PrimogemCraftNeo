@@ -3,6 +3,8 @@ package net.per.primogemcraft.collab.genshincraft;
 import net.hackermdch.genshincraft.api.AddTrounceBlossomLootEvent;
 import net.hackermdch.genshincraft.api.RegisterEffectRenderEvent;
 import net.hackermdch.genshincraft.block.TrounceBlossom;
+import net.hackermdch.genshincraft.capability.GenshinCapabilities;
+import net.hackermdch.genshincraft.capability.LivingBossBarRender;
 import net.hackermdch.genshincraft.data.GenshinComponents;
 import net.hackermdch.genshincraft.data.PermanentInfusion;
 import net.hackermdch.genshincraft.element.Element.Type;
@@ -10,10 +12,13 @@ import net.hackermdch.genshincraft.element.ElementDamageSource;
 import net.hackermdch.genshincraft.render.EffectRender;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.per.primogemcraft.item.weapon.element.ElementTools;
 import net.per.primogemcraft.registry.PGCEffects;
+import net.per.primogemcraft.registry.PGCEntities;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamageOptions;
@@ -71,6 +76,11 @@ public final class GenshinCraftBridge {
         TrounceBlossom.addLoot(new ItemStack(PGCItems.VAJRADA_AMETHYST_FRAGMENT.get(), FRAGMENT_COUNT), FRAGMENT_CHANCE);
         TrounceBlossom.addLoot(new ItemStack(PGCItems.VAJRADA_AMETHYST_CHUNK.get()), CHUNK_CHANCE);
         TrounceBlossom.addLoot(new ItemStack(PGCItems.MISTSPLITTER_REFORGED.get()), WEAPON_CHANCE);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    private static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerEntity(GenshinCapabilities.BOSS_BAR, PGCEntities.ABUNDANCE_BLIGHT_ZOMBIE.get(), LivingBossBarRender::get);
     }
 
     static DamageSource element(DamageSource origin, Element element, ElementStyle style, ElementDamageOptions options) {
