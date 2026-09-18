@@ -20,7 +20,8 @@ public final class PGCConfig {
     public static final int DEFAULT_EVENT_ENTITY_LIFETIME = 6000;
     public static final int DEFAULT_EVENT_DROP_COOLDOWN = 20;
     public static final int DEFAULT_EVENT_CHALLENGE_TICKS = 3600;
-    public static final int DEFAULT_MARA_SPAWN_MULTIPLIER = 1;
+    public static final int DEFAULT_ABUNDANCE_CHANCE = 25;
+    public static final int DEFAULT_BLIGHT_ZOMBIE_CHANCE = 1;
     public static final int DEFAULT_MARA_HEALTH_THRESHOLD = 256;
     public static final double DEFAULT_GENSHINCRAFT_HEALTH_CONVERSION_SCALE = 0.025D;
     public static final int DEFAULT_GENSHINCRAFT_REGENERATION_SCALE = 32;
@@ -45,7 +46,8 @@ public final class PGCConfig {
     public static final ModConfigSpec.IntValue EVENT_ENTITY_LIFETIME = BUILDER.defineInRange("event_entity_lifetime", DEFAULT_EVENT_ENTITY_LIFETIME, 100, 240000);
     public static final ModConfigSpec.IntValue EVENT_DROP_COOLDOWN = BUILDER.defineInRange("event_drop_cooldown", DEFAULT_EVENT_DROP_COOLDOWN, 0, 1200);
     public static final ModConfigSpec.IntValue EVENT_CHALLENGE_TICKS = BUILDER.defineInRange("event_challenge_ticks", DEFAULT_EVENT_CHALLENGE_TICKS, 100, 240000);
-    public static final ModConfigSpec.IntValue MARA_SPAWN_MULTIPLIER = BUILDER.defineInRange("mara_spawn_multiplier", DEFAULT_MARA_SPAWN_MULTIPLIER, 0, 1000);
+    public static final ModConfigSpec.IntValue ABUNDANCE_CHANCE = BUILDER.defineInRange("abundance_chance", DEFAULT_ABUNDANCE_CHANCE, 0, 100);
+    public static final ModConfigSpec.IntValue BLIGHT_ZOMBIE_CHANCE = BUILDER.defineInRange("blight_zombie_chance", DEFAULT_BLIGHT_ZOMBIE_CHANCE, 0, 100);
     public static final ModConfigSpec.IntValue MARA_HEALTH_THRESHOLD = BUILDER.defineInRange("mara_health_threshold", DEFAULT_MARA_HEALTH_THRESHOLD, 0, 100000);
 
     public static final ModConfigSpec.ConfigValue<List<? extends Integer>> WEAPON_LEVEL_XP_REQUIREMENTS = BUILDER

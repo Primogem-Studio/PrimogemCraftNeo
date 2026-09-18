@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -39,14 +38,11 @@ public final class AbundanceEvents {
     private static final ResourceKey<LootTable> WITHER_LOOT = ResourceKey.create(Registries.LOOT_TABLE,
             ResourceLocation.fromNamespaceAndPath(MOD_ID, "entities/abundance_withering"));
 
-    private static final int SOURCE_TICKS = 2000000;
-    private static final double EASY_CHANCE = 0.05D;
-    private static final double NORMAL_CHANCE = 0.1D;
-    private static final double HARD_CHANCE = 0.18D;
-    private static final double BLIGHT_CHANCE = 0.01D;
+    private static final int SOURCE_TICKS = -1;
     private static final float DEATH_HEALTH_RATIO = 0.5F;
     private static final double DAMAGE_NEGATE_CHANCE = 0.25D;
-    private static final int GLOWING_TICKS = 1200;
+    private static final int DEATH_BOOST_TICKS = 300;
+    private static final int DEATH_BOOST_AMPLIFIER = 1;
     private static final double DEATH_PARTICLE_HEIGHT = 1.0D;
     private static final int DEATH_PARTICLE_COUNT = 100;
     private static final double DEATH_PARTICLE_SPEED = 0.7D;
@@ -63,15 +59,14 @@ public final class AbundanceEvents {
     public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (event.loadedFromDisk() || !(event.getLevel() instanceof ServerLevel level)) return;
         if (!(event.getEntity() instanceof LivingEntity living)) return;
-        if (living instanceof Zombie zombie && !(living instanceof AbundanceBlightZombieEntity)
-                && level.getRandom().nextDouble() < scaled(BLIGHT_CHANCE)) {
-            convert(level, zombie);
-            return;
-        }
+        if (!level.getServer().isSpawningMonsters()) return;
         if (!living.getType().is(EntityTypeTags.UNDEAD)) return;
         if (living.getMaxHealth() >= PGCConfig.MARA_HEALTH_THRESHOLD.get()) return;
-        if (level.getRandom().nextDouble() >= scaled(sourceChance(level))) return;
+        if (level.getRandom().nextDouble() >= chance(PGCConfig.ABUNDANCE_CHANCE.get())) return;
         living.addEffect(new MobEffectInstance(PGCEffects.ABUNDANCE, SOURCE_TICKS, 0));
+        if (living instanceof Zombie zombie && !(living instanceof AbundanceBlightZombieEntity)
+                && level.getRandom().nextDouble() < chance(PGCConfig.BLIGHT_ZOMBIE_CHANCE.get()))
+            convert(level, zombie);
     }
 
     @SubscribeEvent
@@ -91,13 +86,13 @@ public final class AbundanceEvents {
         var amplifier = instance.getAmplifier();
         var duration = instance.getDuration();
         entity.removeEffect(PGCEffects.ABUNDANCE);
+        grantDeathBoosts(entity);
         if (amplifier > 0) {
             entity.addEffect(new MobEffectInstance(PGCEffects.ABUNDANCE, duration, amplifier - 1));
             return;
         }
         if (level instanceof ServerLevel server && !(entity instanceof Player))
             dropWitherLoot(server, entity, event.getSource());
-        entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, GLOWING_TICKS, 0, false, false));
     }
 
     @SubscribeEvent
@@ -110,16 +105,16 @@ public final class AbundanceEvents {
         entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SHIELD_BLOCK, SoundSource.HOSTILE, SHIELD_VOLUME, SHIELD_PITCH);
     }
 
-    private static double scaled(double chance) {
-        return Math.min(1.0D, chance * PGCConfig.MARA_SPAWN_MULTIPLIER.get());
+    private static double chance(int percent) {
+        return percent / 100.0D;
     }
 
-    private static double sourceChance(ServerLevel level) {
-        var difficulty = level.getDifficulty();
-        if (difficulty == Difficulty.EASY) return EASY_CHANCE;
-        if (difficulty == Difficulty.NORMAL) return NORMAL_CHANCE;
-        if (difficulty == Difficulty.HARD) return HARD_CHANCE;
-        return 0.0D;
+    private static void grantDeathBoosts(LivingEntity entity) {
+        if (entity instanceof Player) return;
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, DEATH_BOOST_TICKS, DEATH_BOOST_AMPLIFIER, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, DEATH_BOOST_TICKS, DEATH_BOOST_AMPLIFIER, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, DEATH_BOOST_TICKS, DEATH_BOOST_AMPLIFIER, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, DEATH_BOOST_TICKS, 0, false, false));
     }
 
     private static void convert(ServerLevel level, Zombie zombie) {

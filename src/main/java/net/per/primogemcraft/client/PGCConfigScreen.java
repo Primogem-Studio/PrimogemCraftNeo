@@ -27,7 +27,8 @@ public final class PGCConfigScreen {
     private static final String EVENT_ENTITY_LIFETIME_KEY = "primogemcraft.configuration.event_entity_lifetime";
     private static final String EVENT_DROP_COOLDOWN_KEY = "primogemcraft.configuration.event_drop_cooldown";
     private static final String EVENT_CHALLENGE_TICKS_KEY = "primogemcraft.configuration.event_challenge_ticks";
-    private static final String MARA_SPAWN_MULTIPLIER_KEY = "primogemcraft.configuration.mara_spawn_multiplier";
+    private static final String ABUNDANCE_CHANCE_KEY = "primogemcraft.configuration.abundance_chance";
+    private static final String BLIGHT_ZOMBIE_CHANCE_KEY = "primogemcraft.configuration.blight_zombie_chance";
     private static final String MARA_HEALTH_THRESHOLD_KEY = "primogemcraft.configuration.mara_health_threshold";
     private static final String GENSHINCRAFT_HEALTH_CONVERSION_SCALE_KEY = "primogemcraft.configuration.genshincraft_health_conversion_scale";
     private static final String GENSHINCRAFT_REGENERATION_SCALE_KEY = "primogemcraft.configuration.genshincraft_regeneration_scale";
@@ -74,7 +75,8 @@ public final class PGCConfigScreen {
         event.addEntry(intEntry(builder, EVENT_DROP_COOLDOWN_KEY, PGCConfig.EVENT_DROP_COOLDOWN.get(), PGCConfig.DEFAULT_EVENT_DROP_COOLDOWN, ZERO, MAX_COOLDOWN_LIMIT, PGCConfig.EVENT_DROP_COOLDOWN::set));
         event.addEntry(intEntry(builder, EVENT_CHALLENGE_TICKS_KEY, PGCConfig.EVENT_CHALLENGE_TICKS.get(), PGCConfig.DEFAULT_EVENT_CHALLENGE_TICKS, MIN_ENTITY_LIFETIME, MAX_TICKS_LIMIT, PGCConfig.EVENT_CHALLENGE_TICKS::set));
         var other = builder.getOrCreateCategory(Component.translatable("config.primogemcraft.category.other"));
-        other.addEntry(intEntry(builder, MARA_SPAWN_MULTIPLIER_KEY, PGCConfig.MARA_SPAWN_MULTIPLIER.get(), PGCConfig.DEFAULT_MARA_SPAWN_MULTIPLIER, ZERO, MAX_MULTIPLIER_LIMIT, PGCConfig.MARA_SPAWN_MULTIPLIER::set));
+        other.addEntry(intEntry(builder, ABUNDANCE_CHANCE_KEY, PGCConfig.ABUNDANCE_CHANCE.get(), PGCConfig.DEFAULT_ABUNDANCE_CHANCE, ZERO, MAX_CHANCE_LIMIT, PGCConfig.ABUNDANCE_CHANCE::set));
+        other.addEntry(intEntry(builder, BLIGHT_ZOMBIE_CHANCE_KEY, PGCConfig.BLIGHT_ZOMBIE_CHANCE.get(), PGCConfig.DEFAULT_BLIGHT_ZOMBIE_CHANCE, ZERO, MAX_CHANCE_LIMIT, PGCConfig.BLIGHT_ZOMBIE_CHANCE::set));
         other.addEntry(intEntry(builder, MARA_HEALTH_THRESHOLD_KEY, PGCConfig.MARA_HEALTH_THRESHOLD.get(), PGCConfig.DEFAULT_MARA_HEALTH_THRESHOLD, ZERO, MAX_HEALTH_LIMIT, PGCConfig.MARA_HEALTH_THRESHOLD::set));
         if (ModList.get().isLoaded("genshincraft")) {
             var genshincraft = builder.getOrCreateCategory(Component.translatable("config.primogemcraft.category.genshincraft"));

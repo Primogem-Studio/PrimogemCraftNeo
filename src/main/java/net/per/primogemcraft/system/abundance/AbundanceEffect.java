@@ -4,16 +4,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCParticles;
 
 public class AbundanceEffect extends MobEffect {
-    private static final int RESISTANCE_TICKS = 60;
-    private static final int RESISTANCE_AMPLIFIER = 1;
     private static final double PARTICLE_CHANCE = 0.2D;
     private static final int PARTICLE_COUNT = 5;
     private static final double PARTICLE_JITTER = 0.1D;
@@ -35,12 +31,7 @@ public class AbundanceEffect extends MobEffect {
             level.sendParticles(PGCParticles.MARA.get(), entity.getX() + jitter(entity), entity.getY(), entity.getZ() + jitter(entity),
                     PARTICLE_COUNT, 0.0D, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPEED);
         if (entity instanceof Player) return true;
-        if (entity.hasEffect(PGCEffects.CUCKOO_CLOCK_TRICK)) {
-            entity.removeEffect(PGCEffects.ABUNDANCE);
-            return true;
-        }
-        if (!entity.hasEffect(MobEffects.DAMAGE_RESISTANCE))
-            entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, RESISTANCE_TICKS, RESISTANCE_AMPLIFIER, false, false));
+        if (entity.hasEffect(PGCEffects.CUCKOO_CLOCK_TRICK)) entity.removeEffect(PGCEffects.ABUNDANCE);
         return true;
     }
 
