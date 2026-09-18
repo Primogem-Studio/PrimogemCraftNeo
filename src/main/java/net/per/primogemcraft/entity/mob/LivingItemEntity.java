@@ -2,6 +2,7 @@ package net.per.primogemcraft.entity.mob;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -20,6 +21,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -71,6 +73,7 @@ public class LivingItemEntity extends PathfinderMob {
     private static final String NBT_ATTACK_CD = "LivingItemAttackCd";
     private static final String NBT_USE_CD = "LivingItemUseCd";
     private static final String NBT_RANGE = "LivingItemRange";
+    private static final String NBT_INFINITE_MAX_HEALTH = "LivingItemInfiniteMaxHealth";
 
     private static final TagKey<Item> TAG_RIGHT_CLICK = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "living_item_right_click"));
 
@@ -91,8 +94,12 @@ public class LivingItemEntity extends PathfinderMob {
     private static final int CHASE_STUCK_TICKS = 40;
     private static final float RETARGET_CHANCE = 0.35F;
     private static final int ATTACK_INVULNERABLE_TICKS = 5;
+    private static final float INFINITE_HEALTH = 500.0F;
+    private static final double TICKS_PER_HEALTH = 10.0;
 
     private int remainingTicks;
+    private float infiniteMaxHealth = INFINITE_HEALTH;
+    private boolean durationHealthInitialized;
     private int attackCooldown;
     private int attackInterval = 20;
     private int useCooldown;
@@ -118,7 +125,7 @@ public class LivingItemEntity extends PathfinderMob {
     public void startLiving(Player owner, ItemStack stack, int ticks) {
         entityData.set(DATA_OWNER, Optional.of(owner.getUUID()));
         entityData.set(DATA_ITEM, stack.copy());
-        remainingTicks = ticks < 0 ? -1 : Math.max(1, ticks);
+        setRemainingTicks(ticks);
         applyItemStats();
         attackCooldown = random.nextInt(Math.max(1, attackInterval));
         joinOwnerTeam(owner);
@@ -129,7 +136,7 @@ public class LivingItemEntity extends PathfinderMob {
     }
 
     public void setInfinite() {
-        remainingTicks = -1;
+        setRemainingTicks(-1);
     }
 
     public int getRemainingTicks() {
@@ -138,6 +145,41 @@ public class LivingItemEntity extends PathfinderMob {
 
     public void setRemainingTicks(int ticks) {
         remainingTicks = ticks < 0 ? -1 : Math.max(1, ticks);
+        durationHealthInitialized = true;
+        syncDurationHealth(true);
+    }
+
+    /** Increases an infinite item's maximum and current health by the health equivalent of {@code ticks}. */
+    public void addInfiniteHealthFromDuration(int ticks) {
+        if (level().isClientSide || !isInfinite() || ticks <= 0 || !isAlive() || isRemoved()) return;
+        var restoredHealth = (float) (ticks / TICKS_PER_HEALTH);
+        var health = getHealth();
+        infiniteMaxHealth += restoredHealth;
+        syncDurationHealth(false);
+        setHealth(health + restoredHealth);
+    }
+
+    private void syncDurationHealth(boolean replenishInfinite) {
+        var health = isInfinite() ? infiniteMaxHealth : (float) (remainingTicks / TICKS_PER_HEALTH);
+        var maximumHealth = getAttribute(Attributes.MAX_HEALTH);
+        if (maximumHealth != null) maximumHealth.setBaseValue(Math.max(0.1F, health));
+        if (!isInfinite() || replenishInfinite) super.setHealth(health);
+        else super.setHealth(Math.min(getHealth(), health));
+    }
+
+    @Override
+    public double getAttributeValue(Holder<Attribute> attribute) {
+        if (attribute.is(Attributes.MAX_HEALTH)) return getAttributeBaseValue(attribute);
+        return super.getAttributeValue(attribute);
+    }
+
+    @Override
+    public void setHealth(float health) {
+        super.setHealth(health);
+        if (durationHealthInitialized && !level().isClientSide && !isInfinite()) {
+            remainingTicks = getHealth() <= 0.0F ? 0
+                    : (int) Math.max(1L, Math.min(Integer.MAX_VALUE, Math.round(getHealth() * TICKS_PER_HEALTH)));
+        }
     }
 
     public void applyItemStats() {
@@ -269,6 +311,7 @@ public class LivingItemEntity extends PathfinderMob {
             if (ownerUuid != null && ownerUuid.equals(source.getEntity().getUUID())) return false;
         }
         if (!super.hurt(source, amount)) return false;
+        syncDurationHealth(false);
         if (source.getEntity() instanceof LivingEntity attacker && attacker.isAlive() && isAlive()) {
             setLastHurtByMob(attacker);
             ownerAttackMemory.put(attacker.getUUID(), level().getGameTime());
@@ -367,20 +410,26 @@ public class LivingItemEntity extends PathfinderMob {
         compound.putInt(NBT_ATTACK_CD, attackCooldown);
         compound.putInt(NBT_USE_CD, useCooldown);
         compound.putDouble(NBT_RANGE, attackRange);
+        compound.putFloat(NBT_INFINITE_MAX_HEALTH, infiniteMaxHealth);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
+        durationHealthInitialized = false;
         super.readAdditionalSaveData(compound);
         setNoGravity(true);
         if (compound.contains(NBT_ITEM))
             ItemStack.parse(level().registryAccess(), compound.get(NBT_ITEM)).ifPresent(this::setCarriedStackSilent);
         if (compound.hasUUID(NBT_OWNER)) entityData.set(DATA_OWNER, Optional.of(compound.getUUID(NBT_OWNER)));
         remainingTicks = compound.getInt(NBT_TICKS);
+        var savedMaxHealth = compound.getFloat(NBT_INFINITE_MAX_HEALTH);
+        infiniteMaxHealth = Float.isFinite(savedMaxHealth) ? Math.max(INFINITE_HEALTH, savedMaxHealth) : INFINITE_HEALTH;
         attackCooldown = compound.getInt(NBT_ATTACK_CD);
         useCooldown = compound.getInt(NBT_USE_CD);
         attackRange = compound.getDouble(NBT_RANGE);
         applyItemStats();
+        durationHealthInitialized = true;
+        syncDurationHealth(false);
     }
 
     private void setCarriedStackSilent(ItemStack stack) {
@@ -396,6 +445,7 @@ public class LivingItemEntity extends PathfinderMob {
         int rotate = entityData.get(DATA_ROTATE);
         if (rotate > 0) entityData.set(DATA_ROTATE, rotate - 1);
         if (level().isClientSide) return;
+        if (isRemoved() || isDeadOrDying()) return;
         var motion = getDeltaMovement();
         if (motion.y < -MAX_FALL_SPEED) setDeltaMovement(motion.multiply(1.0, 0.5, 1.0));
         var grounded = onGround() && !isInWater();
@@ -408,6 +458,7 @@ public class LivingItemEntity extends PathfinderMob {
                 if (!tryThrowSelf()) revertToItem();
                 return;
             }
+            syncDurationHealth(false);
         }
         var owner = getOwner();
         if (owner == null) return;
@@ -922,7 +973,7 @@ public class LivingItemEntity extends PathfinderMob {
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.8)
-                .add(Attributes.MAX_HEALTH, 20)
+                .add(Attributes.MAX_HEALTH, INFINITE_HEALTH)
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 2.0)
                 .add(Attributes.FOLLOW_RANGE, 32)

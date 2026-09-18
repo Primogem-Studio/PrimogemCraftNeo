@@ -158,11 +158,17 @@ public final class LivingItemAPI {
         return items.size();
     }
 
-    /** Adds {@code deltaTicks} to the remaining duration of every living item of the owner and returns how many were affected. */
+    /** Adds {@code deltaTicks} to the remaining duration of the owner's finite living items and returns how many were affected. */
     public static int addDurationForAll(Player owner, int deltaTicks) {
         var items = collectAll(owner);
-        for (var entity : items) entity.setRemainingTicks(entity.getRemainingTicks() + deltaTicks);
-        return items.size();
+        var count = 0;
+        for (var entity : items) {
+            if (entity.isInfinite()) continue;
+            var ticks = Math.clamp((long) entity.getRemainingTicks() + deltaTicks, 1, Integer.MAX_VALUE);
+            entity.setRemainingTicks(ticks);
+            count++;
+        }
+        return count;
     }
 
     /** Collects every living item of the owner that is currently alive. */

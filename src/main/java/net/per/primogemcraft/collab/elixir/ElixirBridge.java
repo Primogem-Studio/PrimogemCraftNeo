@@ -48,9 +48,10 @@ public final class ElixirBridge {
         });
         ACTIONS.register("time_lag", () -> (pharm, time, stack, level, entity) -> {
             if (level.isClientSide || !(entity instanceof Player player)) return;
+            var duration = Mth.clamp(time / DURATION_DIVISOR, LAG_MINIMUM_DURATION, LAG_MAXIMUM_DURATION);
+            LivingItemAPI.addDurationForAll(player, duration);
             for (var living : LivingItemAPI.collectAll(player)) {
-                if (living.isInfinite()) continue;
-                living.setRemainingTicks(Mth.clamp(living.getRemainingTicks() + time / DURATION_DIVISOR, LAG_MINIMUM_DURATION, LAG_MAXIMUM_DURATION));
+                if (living.isInfinite()) living.addInfiniteHealthFromDuration(duration);
             }
         });
         ACTIONS.register("transmutation", () -> (pharm, time, stack, level, entity) -> {
