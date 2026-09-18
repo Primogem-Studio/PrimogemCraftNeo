@@ -90,6 +90,7 @@ public class LivingItemEntity extends PathfinderMob {
     private static final double COMBAT_SPREAD_RADIUS = 1.8;
     private static final int CHASE_STUCK_TICKS = 40;
     private static final float RETARGET_CHANCE = 0.35F;
+    private static final int ATTACK_INVULNERABLE_TICKS = 5;
 
     private int remainingTicks;
     private int attackCooldown;
@@ -142,20 +143,7 @@ public class LivingItemEntity extends PathfinderMob {
     public void applyItemStats() {
         var stack = getCarriedStack();
         var mods = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
-        var attackSpeed = 4.0;
-        var hasAttackSpeedModifier = false;
-        if (mods != null) {
-            for (var entry : mods.modifiers()) {
-                var modifier = entry.modifier();
-                if (modifier.operation() != AttributeModifier.Operation.ADD_VALUE) continue;
-                if (entry.attribute().is(Attributes.ATTACK_SPEED)) {
-                    attackSpeed += modifier.amount();
-                    hasAttackSpeedModifier = true;
-                }
-            }
-        }
-        if (!hasAttackSpeedModifier) attackSpeed = 1.0;
-        attackInterval = Math.max(10, (int) Math.round(20.0 / Math.max(0.1, attackSpeed)) + 4);
+        attackInterval = getAttackInterval();
 
         var attack = getAttribute(Attributes.ATTACK_DAMAGE);
         if (attack != null) {
@@ -163,6 +151,25 @@ public class LivingItemEntity extends PathfinderMob {
             attack.setBaseValue(BASE_ATTACK_DAMAGE);
             addItemModifiers(attack, mods);
         }
+    }
+
+    private int getAttackInterval() {
+        var attackSpeed = new AttributeInstance(Attributes.ATTACK_SPEED, attribute -> {});
+        attackSpeed.setBaseValue(4.0);
+        var owner = getOwner();
+        if (owner != null && owner.getAttribute(Attributes.ATTACK_SPEED) != null) {
+            attackSpeed.replaceFrom(owner.getAttribute(Attributes.ATTACK_SPEED));
+            owner.getMainHandItem().forEachModifier(EquipmentSlot.MAINHAND, (attribute, modifier) -> {
+                if (attribute.is(Attributes.ATTACK_SPEED)) attackSpeed.removeModifier(modifier.id());
+            });
+        }
+        getCarriedStack().forEachModifier(EquipmentSlot.MAINHAND, (attribute, modifier) -> {
+            if (attribute.is(Attributes.ATTACK_SPEED)) {
+                attackSpeed.removeModifier(modifier.id());
+                attackSpeed.addTransientModifier(modifier);
+            }
+        });
+        return Math.max(1, (int) Math.ceil(20.0 / attackSpeed.getValue()));
     }
 
     private void clearItemModifiers(AttributeInstance instance) {
@@ -521,10 +528,7 @@ public class LivingItemEntity extends PathfinderMob {
             }
             return;
         }
-        if (attackCooldown > 0) {
-            attackCooldown--;
-            return;
-        }
+        if (attackCooldown > 0 && --attackCooldown > 0) return;
         var distanceSquared = target.getBoundingBox().distanceToSqr(position());
         if (distanceSquared > attackRange * attackRange) {
             chaseTarget(owner, target, distanceSquared);
@@ -536,10 +540,12 @@ public class LivingItemEntity extends PathfinderMob {
                 if (alternative != null && alternative != target && isValidTarget(alternative, owner))
                     setTarget(alternative);
             }
+            return;
         }
+        attackInterval = getAttackInterval();
+        attackCooldown = attackInterval;
         if (attackWithStack(owner, target)) {
             entityData.set(DATA_SWING, 5);
-            attackCooldown = attackInterval;
             if (random.nextFloat() < RETARGET_CHANCE) {
                 var alternative = findTarget(owner);
                 if (alternative != null && alternative != target && isValidTarget(alternative, owner))
@@ -563,7 +569,6 @@ public class LivingItemEntity extends PathfinderMob {
         if (isCrowded()) orbitAngle += 0.35;
         var point = combatHoverPoint(target);
         steerTo(point.x, point.y, point.z, MOVE_SPEED_ATTACK);
-        attackCooldown = 2;
     }
 
     private Vec3 combatHoverPoint(LivingEntity target) {
@@ -600,7 +605,7 @@ public class LivingItemEntity extends PathfinderMob {
             setTarget(null);
             return false;
         }
-        if (target.invulnerableTime > 0) target.invulnerableTime = Math.max(1, target.invulnerableTime / 4);
+        target.invulnerableTime = ATTACK_INVULNERABLE_TICKS;
         if (stack.canPerformAction(ItemAbilities.SWORD_SWEEP) || stack.getItem().getAttackDamageBonus(target, baseDamage, source) > 0.0F)
             sweepAttack(serverLevel, owner, target, stack, baseDamage);
         var knockback = getAttributeValue(Attributes.ATTACK_KNOCKBACK) + EnchantmentHelper.modifyKnockback(serverLevel, stack, target, source, 0.0F);
@@ -633,8 +638,9 @@ public class LivingItemEntity extends PathfinderMob {
                         && !(entity instanceof LivingItemEntity living && Objects.equals(living.getOwnerUuid(), getOwnerUuid()))
                         && distanceToSqr(entity) < 9.0);
         for (var entity : targets) {
-            if (entity.hurt(source, EnchantmentHelper.modifyDamage(serverLevel, stack, entity, source, sweepDamage)) && entity.invulnerableTime > 0)
-                entity.invulnerableTime = Math.max(1, entity.invulnerableTime / 4);
+            if (entity.invulnerableTime > 0) continue;
+            if (entity.hurt(source, EnchantmentHelper.modifyDamage(serverLevel, stack, entity, source, sweepDamage)))
+                entity.invulnerableTime = ATTACK_INVULNERABLE_TICKS;
         }
         serverLevel.playSound(null, getX(), getY(), getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0F, 1.0F);
         serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, getX(), getY() + 0.3, getZ(), 1, 0.0, 0.0, 0.0, 0.0);
