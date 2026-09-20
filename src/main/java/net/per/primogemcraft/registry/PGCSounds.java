@@ -11,6 +11,14 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 public class PGCSounds {
     public static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(Registries.SOUND_EVENT, MOD_ID);
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_PLACE = register("zipline_place");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_ATTACH = register("zipline_attach");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_DETACH = register("zipline_detach");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_SELECT = register("zipline_select");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_START = register("zipline_start");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_TRAVEL = register("zipline_travel");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_ARRIVE = register("zipline_arrive");
+
     public static final DeferredHolder<SoundEvent, SoundEvent> WISH_ROLL = register("wish_roll");
     public static final DeferredHolder<SoundEvent, SoundEvent> WISH_TEN = register("wish_ten");
     public static final DeferredHolder<SoundEvent, SoundEvent> WISH_BLUE = register("wish_blue");

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:elemental_crystal_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "primogemcraft:strange_primogem_sword"
+  },
+  "addition": {
+    "item": "minecraft:end_stone"
+  },
+  "result": {
+    "id": "primogemcraft:protocol_originium_sword"
+  }
+}

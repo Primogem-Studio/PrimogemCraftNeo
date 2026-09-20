@@ -294,6 +294,7 @@ public class PGCItems {
     public static final DeferredItem<PrimogemAxeItem> PRIMOGEM_AXE = REGISTRY.registerItem("primogem_axe", PrimogemAxeItem::new);
     public static final DeferredItem<PrimogemShovelItem> PRIMOGEM_SHOVEL = REGISTRY.registerItem("primogem_shovel", PrimogemShovelItem::new);
     public static final DeferredItem<PrimogemHoeItem> PRIMOGEM_HOE = REGISTRY.registerItem("primogem_hoe", PrimogemHoeItem::new);
+    public static final DeferredItem<ProtocolOriginiumSwordItem> PROTOCOL_ORIGINIUM_SWORD = REGISTRY.registerItem("protocol_originium_sword", ProtocolOriginiumSwordItem::new);
     public static final DeferredItem<StrangePrimogemSwordItem> STRANGE_PRIMOGEM_SWORD = REGISTRY.registerItem("strange_primogem_sword", StrangePrimogemSwordItem::new);
 
     public static final DeferredItem<VayudaTurquoisePickaxeItem> VAYUDA_TURQUOISE_PICKAXE = REGISTRY.registerItem("vayuda_turquoise_pickaxe", VayudaTurquoisePickaxeItem::new);

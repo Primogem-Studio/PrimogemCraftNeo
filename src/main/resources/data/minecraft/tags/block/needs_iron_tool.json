@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "primogemcraft:zipline_base",
     "primogemcraft:deepslate_elemental_crystal_ore",
     "primogemcraft:deepslate_prithiva_topaz_ore",
     "primogemcraft:elemental_crystal_ore",

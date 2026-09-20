@@ -93,6 +93,8 @@ public class PGCClientEvents {
 
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(PGCEntities.ZIPLINE_ANCHOR.get(), ZiplineAnchorRenderer::new);
+        event.registerEntityRenderer(PGCEntities.ZIPLINE_CARRIER.get(), ZiplineCarrierRenderer::new);
         event.registerEntityRenderer(PGCEntities.FALLING_MORA_PILE.get(), FallingBlockRenderer::new);
         event.registerEntityRenderer(PGCEntities.WISH_ENTITY.get(), WishEntityRenderer::new);
         event.registerEntityRenderer(PGCEntities.DENDRO_CORE.get(), DendroCoreRenderer::new);
@@ -136,6 +138,7 @@ public class PGCClientEvents {
 
     @SubscribeEvent
     public static void registerClientReloadListeners(RegisterClientReloadListenersEvent event) {
+        event.registerReloadListener(ZiplineModel.INSTANCE);
         event.registerReloadListener(new WishDrops());
     }
 }

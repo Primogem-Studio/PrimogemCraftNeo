@@ -277,5 +277,61 @@
         "name": "primogemcraft:lottery_draw"
       }
     ]
+  },
+  "zipline_place": {
+    "subtitle": "subtitles.primogemcraft.zipline_place",
+    "sounds": [
+      {
+        "name": "primogemcraft:zipline_place"
+      }
+    ]
+  },
+  "zipline_attach": {
+    "subtitle": "subtitles.primogemcraft.zipline_attach",
+    "sounds": [
+      {
+        "name": "primogemcraft:zipline_attach"
+      }
+    ]
+  },
+  "zipline_detach": {
+    "subtitle": "subtitles.primogemcraft.zipline_detach",
+    "sounds": [
+      {
+        "name": "primogemcraft:zipline_detach"
+      }
+    ]
+  },
+  "zipline_select": {
+    "subtitle": "subtitles.primogemcraft.zipline_select",
+    "sounds": [
+      {
+        "name": "primogemcraft:zipline_select"
+      }
+    ]
+  },
+  "zipline_start": {
+    "subtitle": "subtitles.primogemcraft.zipline_start",
+    "sounds": [
+      {
+        "name": "primogemcraft:zipline_start"
+      }
+    ]
+  },
+  "zipline_travel": {
+    "subtitle": "subtitles.primogemcraft.zipline_travel",
+    "sounds": [
+      {
+        "name": "primogemcraft:zipline_travel"
+      }
+    ]
+  },
+  "zipline_arrive": {
+    "subtitle": "subtitles.primogemcraft.zipline_arrive",
+    "sounds": [
+      {
+        "name": "primogemcraft:zipline_arrive"
+      }
+    ]
   }
 }

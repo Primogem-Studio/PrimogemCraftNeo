@@ -75,6 +75,11 @@ public final class PGCConfigScreen {
         event.addEntry(intEntry(builder, EVENT_DROP_COOLDOWN_KEY, PGCConfig.EVENT_DROP_COOLDOWN.get(), PGCConfig.DEFAULT_EVENT_DROP_COOLDOWN, ZERO, MAX_COOLDOWN_LIMIT, PGCConfig.EVENT_DROP_COOLDOWN::set));
         event.addEntry(intEntry(builder, EVENT_CHALLENGE_TICKS_KEY, PGCConfig.EVENT_CHALLENGE_TICKS.get(), PGCConfig.DEFAULT_EVENT_CHALLENGE_TICKS, MIN_ENTITY_LIFETIME, MAX_TICKS_LIMIT, PGCConfig.EVENT_CHALLENGE_TICKS::set));
         var other = builder.getOrCreateCategory(Component.translatable("config.primogemcraft.category.other"));
+        var ziplineSpeedKey = "primogemcraft.configuration.zipline_speed_blocks_per_second";
+        other.addEntry(builder.entryBuilder().startDoubleField(Component.translatable(ziplineSpeedKey), PGCConfig.ZIPLINE_SPEED.get())
+                .setDefaultValue(PGCConfig.DEFAULT_ZIPLINE_SPEED).setMin(0.1D).setMax(100.0D)
+                .setTooltip(Component.translatable(ziplineSpeedKey + ".tooltip"))
+                .setSaveConsumer(PGCConfig.ZIPLINE_SPEED::set).build());
         other.addEntry(intEntry(builder, ABUNDANCE_CHANCE_KEY, PGCConfig.ABUNDANCE_CHANCE.get(), PGCConfig.DEFAULT_ABUNDANCE_CHANCE, ZERO, MAX_CHANCE_LIMIT, PGCConfig.ABUNDANCE_CHANCE::set));
         other.addEntry(intEntry(builder, BLIGHT_ZOMBIE_CHANCE_KEY, PGCConfig.BLIGHT_ZOMBIE_CHANCE.get(), PGCConfig.DEFAULT_BLIGHT_ZOMBIE_CHANCE, ZERO, MAX_CHANCE_LIMIT, PGCConfig.BLIGHT_ZOMBIE_CHANCE::set));
         other.addEntry(intEntry(builder, MARA_HEALTH_THRESHOLD_KEY, PGCConfig.MARA_HEALTH_THRESHOLD.get(), PGCConfig.DEFAULT_MARA_HEALTH_THRESHOLD, ZERO, MAX_HEALTH_LIMIT, PGCConfig.MARA_HEALTH_THRESHOLD::set));

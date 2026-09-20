@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "primogemcraft:zipline_base",
     "primogemcraft:agnidus_agate_block",
     "primogemcraft:agnidus_agate_ore",
     "primogemcraft:burning_wish_metal_block",

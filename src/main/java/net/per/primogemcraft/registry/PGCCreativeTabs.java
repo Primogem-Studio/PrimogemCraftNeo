@@ -257,6 +257,7 @@ public class PGCCreativeTabs {
         output.accept(ANOMALY_SHIVADA_JADE_PICKAXE);
         output.accept(VARUNADA_LAZURITE_BLOSSOM_PICKAXE);
         output.accept(STRANGE_PRIMOGEM_SWORD);
+        output.accept(PROTOCOL_ORIGINIUM_SWORD);
     });
 
     @SuppressWarnings("unused")

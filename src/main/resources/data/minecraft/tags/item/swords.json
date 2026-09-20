@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "primogemcraft:protocol_originium_sword",
     {
       "id": "#primogemcraft:weapon/one_handed_sword",
       "required": false

@@ -26,7 +26,7 @@ public class StrangePrimogemSwordItem extends SwordItem {
     private static final double BREAK_CHANCE = 0.1D;
     private static final float SOUND_VOLUME = 1.0F;
     private static final float SOUND_PITCH = 1.0F;
-    private static final int TOOLTIP_LINES = 5;
+    private static final int TOOLTIP_LINES = 6;
 
     public StrangePrimogemSwordItem(Properties properties) {
         super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());

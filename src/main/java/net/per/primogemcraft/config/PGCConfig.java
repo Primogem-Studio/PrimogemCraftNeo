@@ -5,6 +5,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import java.util.List;
 
 public final class PGCConfig {
+    public static final double DEFAULT_ZIPLINE_SPEED = 16.0D;
     public static final int DEFAULT_CAPTURING_RADIANCE_CHANCE = 25;
     public static final int DEFAULT_WEAPON_MAX_LEVEL = 90;
     public static final int DEFAULT_WEAPON_MAX_LEVEL_BONUS = 10;
@@ -30,6 +31,8 @@ public final class PGCConfig {
     public static final double DEFAULT_GENSHINCRAFT_GEO_WEAKNESS_AMPLIFIER = 5.0D;
 
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+
+    public static final ModConfigSpec.DoubleValue ZIPLINE_SPEED = BUILDER.defineInRange("zipline_speed_blocks_per_second", DEFAULT_ZIPLINE_SPEED, 0.1D, 100.0D);
 
     public static final ModConfigSpec.IntValue CAPTURING_RADIANCE_CHANCE = BUILDER.defineInRange("capturing_radiance_chance", DEFAULT_CAPTURING_RADIANCE_CHANCE, 0, 100);
     public static final ModConfigSpec.IntValue WEAPON_MAX_LEVEL = BUILDER.defineInRange("weapon_max_level", DEFAULT_WEAPON_MAX_LEVEL, 1, 1000);

@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "PRIMOGEMCRAFT_ZIPLINE_HANGING",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {
+        "class": "net/per/primogemcraft/client/ZiplineClientEvents",
+        "field": "HANGING"
+      }
+    }
+  ]
+}

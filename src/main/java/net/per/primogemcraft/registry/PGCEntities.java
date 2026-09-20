@@ -13,6 +13,8 @@ import net.per.primogemcraft.entity.misc.HertaOtherworldBranchTowerEntity;
 import net.per.primogemcraft.entity.misc.RandomEventEntity;
 import net.per.primogemcraft.entity.misc.WishEntity;
 import net.per.primogemcraft.entity.misc.XiaoLanternEntity;
+import net.per.primogemcraft.entity.misc.ZiplineAnchorEntity;
+import net.per.primogemcraft.entity.misc.ZiplineCarrierEntity;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
@@ -27,6 +29,14 @@ public class PGCEntities {
     public static final String FALLING_MORA_PILE_NAME = "falling_mora_pile";
 
     public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, MOD_ID);
+
+    public static final DeferredHolder<EntityType<?>, EntityType<ZiplineAnchorEntity>> ZIPLINE_ANCHOR =
+            REGISTRY.register("zipline_anchor", () -> EntityType.Builder.of(ZiplineAnchorEntity::new, MobCategory.MISC)
+                    .sized(3.0F, 6.5F).fireImmune().clientTrackingRange(10).updateInterval(20).build("zipline_anchor"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<ZiplineCarrierEntity>> ZIPLINE_CARRIER =
+            REGISTRY.register("zipline_carrier", () -> EntityType.Builder.of(ZiplineCarrierEntity::new, MobCategory.MISC)
+                    .sized(0.1F, 0.1F).fireImmune().noSave().noSummon().clientTrackingRange(10).updateInterval(1).build("zipline_carrier"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<FallingMoraPileEntity>> FALLING_MORA_PILE =
             REGISTRY.register(FALLING_MORA_PILE_NAME, () -> EntityType.Builder.<FallingMoraPileEntity>of(FallingMoraPileEntity::new, MobCategory.MISC)

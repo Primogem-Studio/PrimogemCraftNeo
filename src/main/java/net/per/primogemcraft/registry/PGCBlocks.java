@@ -19,6 +19,10 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 public class PGCBlocks {
     public static final DeferredRegister.Blocks REGISTRY = DeferredRegister.createBlocks(MOD_ID);
 
+    public static final DeferredBlock<ZiplineBaseBlock> ZIPLINE_BASE = REGISTRY.register("zipline_base", () -> new ZiplineBaseBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).sound(SoundType.METAL).strength(5f, 30f)
+                    .requiresCorrectToolForDrops().noOcclusion().pushReaction(PushReaction.BLOCK).noLootTable()));
+
     public static final DeferredBlock<Block> PRIMOGEM_ORE = REGISTRY.registerSimpleBlock("primogem_ore",
             BlockBehaviour.Properties.of().mapColor(MapColor.DIAMOND).sound(SoundType.ANCIENT_DEBRIS).strength(3f, 5f)
                     .requiresCorrectToolForDrops().instrument(NoteBlockInstrument.BASEDRUM));
