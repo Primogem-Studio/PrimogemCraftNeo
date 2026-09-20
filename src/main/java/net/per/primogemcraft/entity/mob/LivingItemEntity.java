@@ -128,6 +128,7 @@ public class LivingItemEntity extends PathfinderMob {
         setRemainingTicks(ticks);
         applyItemStats();
         attackCooldown = random.nextInt(Math.max(1, attackInterval));
+        useCooldown = 40 + random.nextInt(40);
         joinOwnerTeam(owner);
     }
 
@@ -538,7 +539,6 @@ public class LivingItemEntity extends PathfinderMob {
         }
         if (distanceToSqr(hoverTarget.x, hoverTarget.y, hoverTarget.z) > 0.5 * 0.5) {
             steerTo(hoverTarget.x, hoverTarget.y, hoverTarget.z, MOVE_SPEED_IDLE);
-            lookAt(owner, 30.0F, 30.0F);
         } else {
             hoverTarget = null;
         }
@@ -787,7 +787,6 @@ public class LivingItemEntity extends PathfinderMob {
         if (stack.isEmpty() || owner == null) return;
         var item = stack.getItem();
         if (owner.getCooldowns().isOnCooldown(item)) return;
-        entityData.set(DATA_ROTATE, 10);
         var focus = getTarget() != null ? getTarget() : owner;
         if (isBowLike(stack)) {
             if (focus != owner) bowShot(owner, focus);
@@ -802,6 +801,7 @@ public class LivingItemEntity extends PathfinderMob {
             return;
         }
         if (!canRightClick(stack)) return;
+        entityData.set(DATA_ROTATE, 10);
         useAsPlayer(owner, stack);
     }
 

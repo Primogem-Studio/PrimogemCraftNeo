@@ -4,8 +4,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.per.primogemcraft.registry.PGCDataComponents;
-import net.per.primogemcraft.system.curio.*;
+import net.per.primogemcraft.system.curio.CurioContext;
+import net.per.primogemcraft.system.curio.CurioForm;
+import net.per.primogemcraft.system.curio.CurioImpact;
+import net.per.primogemcraft.system.curio.CurioItem;
+import net.per.primogemcraft.system.curio.CurioSignal;
+import net.per.primogemcraft.system.curio.CurioTrigger;
+import net.per.primogemcraft.system.curio.Curios;
 
 public class VoidCheeseItem extends CurioItem {
     private static final double REPAIR_CHANCE = 0.2D;
@@ -27,9 +32,7 @@ public class VoidCheeseItem extends CurioItem {
         if (impact.signal() != CurioSignal.XP_PICKED) return;
         if (!context.chance(REPAIR_CHANCE)) return;
         var player = context.player();
-        var target = Curios.randomInventoryItem(player, VoidCheeseItem::worn);
-        if (target.isEmpty()) return;
-        if (!Curios.repair(player, target, REPAIR_AMOUNT)) return;
+        if (Curios.repairRandom(player, REPAIR_AMOUNT).isEmpty()) return;
         if (!context.chance(BREAK_CHANCE)) return;
         context.destroy();
     }
@@ -43,8 +46,4 @@ public class VoidCheeseItem extends CurioItem {
         return result;
     }
 
-    private static boolean worn(ItemStack stack) {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
-        return bar != null && bar.numerator() > 0 && !Curios.repairsCurios(stack);
-    }
 }

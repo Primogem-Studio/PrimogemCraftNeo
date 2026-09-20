@@ -23,6 +23,10 @@
     "minecraft:wind_charge",
     "minecraft:powder_snow_bucket",
     "minecraft:flint_and_steel",
-    "minecraft:fishing_rod"
+    "minecraft:fishing_rod",
+    {
+      "id": "the_original_world:judgment_food",
+      "required": false
+    }
   ]
 }

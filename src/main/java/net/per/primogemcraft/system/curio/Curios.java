@@ -74,11 +74,19 @@ public final class Curios {
         return repairRandom(player, ratio, ItemStack.EMPTY);
     }
 
+    public static ItemStack repairRandom(ServerPlayer player, int amount) {
+        if (amount <= 0) return ItemStack.EMPTY;
+        var candidates = new ArrayList<ItemStack>();
+        collectCandidates(player, candidates, Curios::partiallyUsed);
+        var target = random(candidates, player.getRandom());
+        return !target.isEmpty() && repair(player, target, amount) ? target : ItemStack.EMPTY;
+    }
+
     public static ItemStack repairRandom(ServerPlayer player, float ratio, ItemStack source) {
         var candidates = new ArrayList<ItemStack>();
         collectCandidates(player, candidates, stack -> stack != source && repairable(stack, ratio));
         if (ratio >= FULL_REPAIR) {
-            for (var stack : inventory(player)) if (stack != source && intactForm(stack) != null) candidates.add(stack);
+            for (var stack : repairTargets(player)) if (stack != source && intactForm(stack) != null) candidates.add(stack);
         }
         if (candidates.isEmpty())
             collectCandidates(player, candidates, stack -> stack != source && partiallyUsed(stack));
@@ -95,7 +103,7 @@ public final class Curios {
 
     public static ItemStack repairRandomDurability(ServerPlayer player, float ratio) {
         var candidates = new ArrayList<ItemStack>();
-        for (var stack : inventory(player)) {
+        for (var stack : repairTargets(player)) {
             if (!stack.isDamageableItem() || stack.getDamageValue() <= 0) continue;
             if (stack.getDamageValue() < (int) (stack.getMaxDamage() * ratio)) continue;
             candidates.add(stack);
@@ -186,14 +194,14 @@ public final class Curios {
     public static ItemStack randomCurio(RandomSource random, TagKey<Item> tag, Item excluded) {
         var tagged = BuiltInRegistries.ITEM.getTag(tag);
         if (tagged.isEmpty()) return ItemStack.EMPTY;
-        var items = tagged.get().stream().map(Holder::value).filter(item -> item != excluded).toList();
+        var items = tagged.get().stream().map(Holder::value).filter(item -> item != excluded && item != PGCItems.INTEGRATED_CODE.get()).toList();
         if (items.isEmpty()) return ItemStack.EMPTY;
         return new ItemStack(items.get(random.nextInt(items.size())));
     }
 
     public static boolean hasCurios(TagKey<Item> tag) {
         var tagged = BuiltInRegistries.ITEM.getTag(tag);
-        return tagged.isPresent() && tagged.get().size() > 0;
+        return tagged.isPresent() && tagged.get().stream().anyMatch(holder -> holder.value() != PGCItems.INTEGRATED_CODE.get());
     }
 
     public static boolean marked(ItemStack stack, ResourceLocation mark) {
@@ -283,6 +291,12 @@ public final class Curios {
             if (stack.getItem() instanceof CurioItem curio && curio.barFillsUp()) continue;
             if (valid.test(stack)) candidates.add(stack);
         }
+    }
+
+    private static List<ItemStack> repairTargets(ServerPlayer player) {
+        var stacks = inventory(player);
+        stacks.addAll(CuriosIntegration.equipped(player));
+        return stacks;
     }
 
     private static boolean repairable(ItemStack stack, float ratio) {
