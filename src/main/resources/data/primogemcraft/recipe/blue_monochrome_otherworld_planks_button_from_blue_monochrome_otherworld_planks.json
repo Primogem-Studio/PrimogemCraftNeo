@@ -3,11 +3,11 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "primogemcraft:monochrome_otherworld_planks"
+      "item": "primogemcraft:blue_monochrome_otherworld_planks"
     }
   ],
   "result": {
-    "id": "primogemcraft:monochrome_otherworld_planks_button",
+    "id": "primogemcraft:blue_monochrome_otherworld_planks_button",
     "count": 1
   }
 }

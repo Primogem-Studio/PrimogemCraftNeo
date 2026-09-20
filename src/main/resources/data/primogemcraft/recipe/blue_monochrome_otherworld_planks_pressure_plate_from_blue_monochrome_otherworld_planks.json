@@ -6,11 +6,11 @@
   ],
   "key": {
     "a": {
-      "item": "primogemcraft:monochrome_otherworld_planks"
+      "item": "primogemcraft:blue_monochrome_otherworld_planks"
     }
   },
   "result": {
-    "id": "primogemcraft:monochrome_otherworld_planks_pressure_plate",
+    "id": "primogemcraft:blue_monochrome_otherworld_planks_pressure_plate",
     "count": 1
   }
 }

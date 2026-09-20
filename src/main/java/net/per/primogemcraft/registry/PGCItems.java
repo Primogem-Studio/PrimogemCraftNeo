@@ -619,6 +619,13 @@ public class PGCItems {
     public static final DeferredItem<BlockItem> MONOCHROME_OTHERWORLD_PLANKS_FENCE_GATE = REGISTRY.registerSimpleBlockItem("monochrome_otherworld_planks_fence_gate", PGCBlocks.MONOCHROME_OTHERWORLD_PLANKS_FENCE_GATE);
     public static final DeferredItem<BlockItem> MONOCHROME_OTHERWORLD_PLANKS_PRESSURE_PLATE = REGISTRY.registerSimpleBlockItem("monochrome_otherworld_planks_pressure_plate", PGCBlocks.MONOCHROME_OTHERWORLD_PLANKS_PRESSURE_PLATE);
     public static final DeferredItem<BlockItem> MONOCHROME_OTHERWORLD_PLANKS_BUTTON = REGISTRY.registerSimpleBlockItem("monochrome_otherworld_planks_button", PGCBlocks.MONOCHROME_OTHERWORLD_PLANKS_BUTTON);
+    public static final DeferredItem<BlockItem> BLUE_MONOCHROME_OTHERWORLD_PLANKS = REGISTRY.registerSimpleBlockItem("blue_monochrome_otherworld_planks", PGCBlocks.BLUE_MONOCHROME_OTHERWORLD_PLANKS);
+    public static final DeferredItem<BlockItem> BLUE_MONOCHROME_OTHERWORLD_PLANKS_STAIRS = REGISTRY.registerSimpleBlockItem("blue_monochrome_otherworld_planks_stairs", PGCBlocks.BLUE_MONOCHROME_OTHERWORLD_PLANKS_STAIRS);
+    public static final DeferredItem<BlockItem> BLUE_MONOCHROME_OTHERWORLD_PLANKS_SLAB = REGISTRY.registerSimpleBlockItem("blue_monochrome_otherworld_planks_slab", PGCBlocks.BLUE_MONOCHROME_OTHERWORLD_PLANKS_SLAB);
+    public static final DeferredItem<BlockItem> BLUE_MONOCHROME_OTHERWORLD_PLANKS_FENCE = REGISTRY.registerSimpleBlockItem("blue_monochrome_otherworld_planks_fence", PGCBlocks.BLUE_MONOCHROME_OTHERWORLD_PLANKS_FENCE);
+    public static final DeferredItem<BlockItem> BLUE_MONOCHROME_OTHERWORLD_PLANKS_FENCE_GATE = REGISTRY.registerSimpleBlockItem("blue_monochrome_otherworld_planks_fence_gate", PGCBlocks.BLUE_MONOCHROME_OTHERWORLD_PLANKS_FENCE_GATE);
+    public static final DeferredItem<BlockItem> BLUE_MONOCHROME_OTHERWORLD_PLANKS_PRESSURE_PLATE = REGISTRY.registerSimpleBlockItem("blue_monochrome_otherworld_planks_pressure_plate", PGCBlocks.BLUE_MONOCHROME_OTHERWORLD_PLANKS_PRESSURE_PLATE);
+    public static final DeferredItem<BlockItem> BLUE_MONOCHROME_OTHERWORLD_PLANKS_BUTTON = REGISTRY.registerSimpleBlockItem("blue_monochrome_otherworld_planks_button", PGCBlocks.BLUE_MONOCHROME_OTHERWORLD_PLANKS_BUTTON);
     public static final DeferredItem<BlockItem> GEOMARROW_CRYSTAL_BLOCK = REGISTRY.registerSimpleBlockItem("geomarrow_crystal_block", PGCBlocks.GEOMARROW_CRYSTAL_BLOCK);
     public static final DeferredItem<BlockItem> GEOMARROW_CRYSTAL_CLUSTER = REGISTRY.registerSimpleBlockItem("geomarrow_crystal_cluster", PGCBlocks.GEOMARROW_CRYSTAL_CLUSTER);
     public static final DeferredItem<BlockItem> WEATHERED_STONE_BRICKS = REGISTRY.registerSimpleBlockItem("weathered_stone_bricks", PGCBlocks.WEATHERED_STONE_BRICKS);

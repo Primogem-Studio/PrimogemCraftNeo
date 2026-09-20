@@ -272,6 +272,41 @@ public class PGCBlocks {
                     BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).sound(SoundType.WOOD).strength(2f, 3f).ignitedByLava()
                             .instrument(NoteBlockInstrument.BASS)));
 
+    public static final DeferredBlock<Block> BLUE_MONOCHROME_OTHERWORLD_PLANKS =
+            REGISTRY.registerSimpleBlock("blue_monochrome_otherworld_planks",
+                    BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).sound(SoundType.WOOD).strength(2f, 3f).ignitedByLava()
+                            .instrument(NoteBlockInstrument.BASS));
+
+    public static final DeferredBlock<StairBlock> BLUE_MONOCHROME_OTHERWORLD_PLANKS_STAIRS =
+            REGISTRY.register("blue_monochrome_otherworld_planks_stairs", () -> new StairBlock(BLUE_MONOCHROME_OTHERWORLD_PLANKS.get().defaultBlockState(),
+                    BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).sound(SoundType.WOOD).strength(3f, 2f).ignitedByLava()
+                            .instrument(NoteBlockInstrument.BASS)));
+
+    public static final DeferredBlock<SlabBlock> BLUE_MONOCHROME_OTHERWORLD_PLANKS_SLAB =
+            REGISTRY.register("blue_monochrome_otherworld_planks_slab", () -> new SlabBlock(
+                    BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).sound(SoundType.WOOD).strength(2f, 3f).ignitedByLava()
+                            .instrument(NoteBlockInstrument.BASS)));
+
+    public static final DeferredBlock<FenceBlock> BLUE_MONOCHROME_OTHERWORLD_PLANKS_FENCE =
+            REGISTRY.register("blue_monochrome_otherworld_planks_fence", () -> new FenceBlock(
+                    BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).sound(SoundType.WOOD).strength(2f, 3f).ignitedByLava()
+                            .instrument(NoteBlockInstrument.BASS).forceSolidOn()));
+
+    public static final DeferredBlock<FenceGateBlock> BLUE_MONOCHROME_OTHERWORLD_PLANKS_FENCE_GATE =
+            REGISTRY.register("blue_monochrome_otherworld_planks_fence_gate", () -> new FenceGateBlock(WoodType.OAK,
+                    BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).sound(SoundType.WOOD).strength(2f, 3f).ignitedByLava()
+                            .instrument(NoteBlockInstrument.BASS).forceSolidOn()));
+
+    public static final DeferredBlock<PressurePlateBlock> BLUE_MONOCHROME_OTHERWORLD_PLANKS_PRESSURE_PLATE =
+            REGISTRY.register("blue_monochrome_otherworld_planks_pressure_plate", () -> new PressurePlateBlock(BlockSetType.OAK,
+                    BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).sound(SoundType.WOOD).strength(2f, 3f).ignitedByLava()
+                            .instrument(NoteBlockInstrument.BASS).forceSolidOn()));
+
+    public static final DeferredBlock<ButtonBlock> BLUE_MONOCHROME_OTHERWORLD_PLANKS_BUTTON =
+            REGISTRY.register("blue_monochrome_otherworld_planks_button", () -> new ButtonBlock(BlockSetType.OAK, 30,
+                    BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).sound(SoundType.WOOD).strength(2f, 3f).ignitedByLava()
+                            .instrument(NoteBlockInstrument.BASS)));
+
     public static final DeferredBlock<Block> GEOMARROW_CRYSTAL_BLOCK = REGISTRY.registerSimpleBlock("geomarrow_crystal_block",
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).sound(SoundType.GLASS).strength(5f, 20f)
                     .lightLevel(s -> 10).requiresCorrectToolForDrops().friction(0.7f).speedFactor(0.9f).jumpFactor(0.2f)

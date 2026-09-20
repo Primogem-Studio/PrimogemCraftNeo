@@ -10,11 +10,11 @@
       "item": "minecraft:stick"
     },
     "b": {
-      "item": "primogemcraft:monochrome_otherworld_planks"
+      "item": "primogemcraft:blue_monochrome_otherworld_planks"
     }
   },
   "result": {
-    "id": "primogemcraft:monochrome_otherworld_planks_fence_gate",
+    "id": "primogemcraft:blue_monochrome_otherworld_planks_fence_gate",
     "count": 1
   }
 }

@@ -1,6 +1,13 @@
 {
   "replace": false,
   "values": [
+    "primogemcraft:blue_monochrome_otherworld_planks",
+    "primogemcraft:blue_monochrome_otherworld_planks_button",
+    "primogemcraft:blue_monochrome_otherworld_planks_fence",
+    "primogemcraft:blue_monochrome_otherworld_planks_fence_gate",
+    "primogemcraft:blue_monochrome_otherworld_planks_pressure_plate",
+    "primogemcraft:blue_monochrome_otherworld_planks_slab",
+    "primogemcraft:blue_monochrome_otherworld_planks_stairs",
     "primogemcraft:dendro_core_planks",
     "primogemcraft:dendro_core_planks_button",
     "primogemcraft:dendro_core_planks_fence",

@@ -1,0 +1,8 @@
+{
+  "parent": "block/fence_post",
+  "textures": {
+    "texture": "primogemcraft:block/otherworld_wood_end",
+    "particle": "primogemcraft:block/otherworld_wood_end"
+  },
+  "render_type": "solid"
+}

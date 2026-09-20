@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "primogemcraft:block/blue_monochrome_otherworld_planks_pressure_plate"
+    },
+    "powered=true": {
+      "model": "primogemcraft:block/blue_monochrome_otherworld_planks_pressure_plate_down"
+    }
+  }
+}

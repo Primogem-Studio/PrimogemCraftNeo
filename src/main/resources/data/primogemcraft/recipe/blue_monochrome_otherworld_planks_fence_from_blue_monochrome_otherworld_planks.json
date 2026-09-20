@@ -7,14 +7,14 @@
   ],
   "key": {
     "a": {
-      "item": "primogemcraft:monochrome_otherworld_planks"
+      "item": "primogemcraft:blue_monochrome_otherworld_planks"
     },
     "b": {
       "item": "minecraft:stick"
     }
   },
   "result": {
-    "id": "primogemcraft:monochrome_otherworld_planks_fence",
+    "id": "primogemcraft:blue_monochrome_otherworld_planks_fence",
     "count": 3
   }
 }
