@@ -34,6 +34,15 @@ public class WishValueMaterials extends SimpleJsonResourceReloadListener {
         return 1;
     }
 
+    public static Map<ResourceLocation, Integer> displayValues() {
+        var values = new LinkedHashMap<ResourceLocation, Integer>();
+        for (var item : BuiltInRegistries.ITEM) {
+            var value = value(item.getDefaultInstance());
+            if (value > 1) values.put(BuiltInRegistries.ITEM.getKey(item), value);
+        }
+        return values;
+    }
+
     @Override
     protected void apply(Map<ResourceLocation, JsonElement> resources, ResourceManager manager, ProfilerFiller profiler) {
         var items = new LinkedHashMap<Item, Integer>();

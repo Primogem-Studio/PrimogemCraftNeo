@@ -1073,6 +1073,8 @@
 
   "rei.category.primogemcraft.conversion": "Converting",
   "rei.category.primogemcraft.wish": "Wish",
+  "rei.category.primogemcraft.wish_materials": "Wish Core Feeding",
+  "rei.primogemcraft.wish_materials.tooltip.0": "Provides %s Wish Value per item",
   "rei.primogemcraft.tooltip.conversion_cost": "Cost: %s",
   "curio.primogemcraft.trigger.active": "§eActive trigger:",
   "curio.primogemcraft.trigger.right_click": "§eRight-click trigger:",

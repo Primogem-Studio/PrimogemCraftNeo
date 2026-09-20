@@ -21,12 +21,15 @@ public class PGCREIClientPlugin implements REIClientPlugin {
     public void registerCategories(CategoryRegistry registry) {
         registry.add(new WishCategory());
         registry.add(new ConversionCategory());
+        registry.add(new WishMaterialCategory());
+        registry.addWorkstations(PGCREIPlugin.WISH_MATERIALS, EntryStacks.of(PGCItems.WISH_CORE.get()));
         registry.addWorkstations(PGCREIPlugin.WISH, EntryStacks.of(PGCItems.ACQUAINT_FATE.get()), EntryStacks.of(PGCItems.INTERTWINED_FATE.get()));
         registry.addWorkstations(PGCREIPlugin.CONVERSION, EntryStacks.of(PGCItems.STELLAR_CONVERTER.get()));
     }
 
     @Override
     public void registerDisplays(DisplayRegistry registry) {
+        registry.registerDisplayGenerator(PGCREIPlugin.WISH_MATERIALS, new WishMaterialDisplayGenerator());
         registry.registerRecipeFiller(StellarConverterRecipe.class, PGCRecipeTypes.STELLAR_CONVERTER.get(), ConversionDisplay::new);
         for (var rarity : WishRarity.values()) addDisplays(registry, rarity);
     }

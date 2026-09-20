@@ -12,6 +12,7 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 public class PGCREIPlugin implements REIServerPlugin {
     public static final CategoryIdentifier<WishDisplay> WISH = CategoryIdentifier.of(MOD_ID, "wish");
     public static final CategoryIdentifier<ConversionDisplay> CONVERSION = CategoryIdentifier.of(MOD_ID, "conversion");
+    public static final CategoryIdentifier<WishMaterialDisplay> WISH_MATERIALS = CategoryIdentifier.of(MOD_ID, "wish_materials");
 
     @Override
     public void registerDisplaySerializer(DisplaySerializerRegistry registry) {

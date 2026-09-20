@@ -1215,6 +1215,8 @@
 
   "rei.category.primogemcraft.conversion": "转化",
   "rei.category.primogemcraft.wish": "祈愿",
+  "rei.category.primogemcraft.wish_materials": "祈愿核心喂养",
+  "rei.primogemcraft.wish_materials.tooltip.0": "每个提供 %s 点祈愿值",
   "rei.primogemcraft.tooltip.conversion_cost": "花费：%s",
   "curio.primogemcraft.trigger.active": "§e主动触发：",
   "curio.primogemcraft.trigger.right_click": "§e右键触发：",
