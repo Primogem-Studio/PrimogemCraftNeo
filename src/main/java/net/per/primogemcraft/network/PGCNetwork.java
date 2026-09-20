@@ -7,6 +7,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.per.primogemcraft.client.ChoiceParticles;
 import net.per.primogemcraft.client.ItemActivationFx;
 import net.per.primogemcraft.client.WishMaterialValues;
+import net.per.primogemcraft.client.WishLootItems;
 import net.per.primogemcraft.client.gui.ChoiceClientHandler;
 import net.per.primogemcraft.system.choice.ChoiceRegistry;
 import net.per.primogemcraft.system.element.AnemoEffectMode;
@@ -20,6 +21,7 @@ public final class PGCNetwork {
     @SubscribeEvent
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar(PROTOCOL_VERSION);
+        registrar.playToClient(WishDropsPayload.TYPE, WishDropsPayload.STREAM_CODEC, (payload, context) -> WishLootItems.update(payload.drops()));
         registrar.playToClient(WishMaterialsPayload.TYPE, WishMaterialsPayload.STREAM_CODEC, (payload, context) -> WishMaterialValues.update(payload.values()));
         registrar.playToClient(ChoiceOpenPayload.TYPE, ChoiceOpenPayload.STREAM_CODEC, (payload, context) -> ChoiceClientHandler.open(payload.request()));
         registrar.playToClient(ChoiceResultPayload.TYPE, ChoiceResultPayload.STREAM_CODEC, (payload, context) -> ChoiceClientHandler.result(payload));

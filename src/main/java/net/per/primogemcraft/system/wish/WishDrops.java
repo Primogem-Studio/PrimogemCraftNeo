@@ -10,7 +10,11 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class WishDrops extends SimpleJsonResourceReloadListener {
     public static final String DIRECTORY = "loot_table/wish";
@@ -26,6 +30,14 @@ public class WishDrops extends SimpleJsonResourceReloadListener {
 
     public static List<Item> of(WishRarity rarity) {
         return drops.getOrDefault(rarity.lootTable(), List.of());
+    }
+
+    public static Map<ResourceLocation, List<ResourceLocation>> displayItems() {
+        var result = new LinkedHashMap<ResourceLocation, List<ResourceLocation>>();
+        for (var rarity : WishRarity.values()) {
+            result.put(rarity.lootTable(), of(rarity).stream().map(BuiltInRegistries.ITEM::getKey).toList());
+        }
+        return Map.copyOf(result);
     }
 
     @Override

@@ -6,6 +6,7 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.per.primogemcraft.network.WishMaterialsPayload;
+import net.per.primogemcraft.network.WishDropsPayload;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
@@ -14,8 +15,9 @@ public class WishEvents {
     @SubscribeEvent
     public static void syncMaterials(OnDatapackSyncEvent event) {
         var payload = new WishMaterialsPayload(WishValueMaterials.displayValues());
-        if (event.getPlayer() != null) PacketDistributor.sendToPlayer(event.getPlayer(), payload);
-        else PacketDistributor.sendToAllPlayers(payload);
+        var drops = new WishDropsPayload(WishDrops.displayItems());
+        if (event.getPlayer() != null) PacketDistributor.sendToPlayer(event.getPlayer(), payload, drops);
+        else PacketDistributor.sendToAllPlayers(payload, drops);
     }
 
     @SubscribeEvent
