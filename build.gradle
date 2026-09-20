@@ -91,6 +91,8 @@ dependencies {
     api "me.shedaniel.cloth:cloth-config-neoforge:15.0.140"
     implementation "maven.modrinth:jade:15.10.5+neoforge"
     implementation "maven.modrinth:tacz-1.21.1:1.1.8-hotfix-r6"
+    implementation "maven.modrinth:farmers-delight:1.21.1-1.3.4"
+    implementation "maven.modrinth:teyvats-delight:0.2.31"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

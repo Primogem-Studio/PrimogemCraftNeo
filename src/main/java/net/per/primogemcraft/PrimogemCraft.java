@@ -8,6 +8,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.per.primogemcraft.collab.elixir.ElixirIntegration;
 import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
 import net.per.primogemcraft.collab.tacz.TaczIntegration;
+import net.per.primogemcraft.collab.teyvatdelight.TeyvatDelightIntegration;
 import net.per.primogemcraft.config.PGCConfig;
 import net.per.primogemcraft.registry.*;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ public class PrimogemCraft {
         GenshinCraftIntegration.register(modBus);
         ElixirIntegration.register(modBus);
         TaczIntegration.register();
+        TeyvatDelightIntegration.register(modBus);
         container.registerConfig(ModConfig.Type.COMMON, PGCConfig.SPEC);
     }
 }
