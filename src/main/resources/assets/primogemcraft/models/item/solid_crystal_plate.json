@@ -1,5 +1,6 @@
 {
   "parent": "minecraft:item/generated",
+  "loader": "neoforge:item_layers",
   "textures": {
     "layer0": "primogemcraft:block/solid_crystal_plate"
   }

@@ -2,7 +2,10 @@ package net.per.primogemcraft.registry;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -16,7 +19,7 @@ public class PGCCreativeTabs {
     public static final DeferredRegister<CreativeModeTab> REGISTRY = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
 
     @SuppressWarnings("unused")
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MATERIALS = create("materials", GENESIS_CRYSTAL, output -> {
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MATERIALS = create("materials", GENESIS_CRYSTAL, tab("main"), output -> {
         output.accept(STELLAR_JADE);
         output.accept(PRIMOGEM_DUST);
         output.accept(MASTERLESS_STARGLITTER);
@@ -101,7 +104,7 @@ public class PGCCreativeTabs {
     });
 
     @SuppressWarnings("unused")
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN = create("main", PRIMOGEM, output -> {
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN = create("main", PRIMOGEM, CreativeModeTabs.SPAWN_EGGS, output -> {
         output.accept(THE_BEGINNING_OF_EVERYTHING);
         output.accept(GENESIS_CRYSTAL);
         output.accept(PRIMOGEM);
@@ -181,7 +184,7 @@ public class PGCCreativeTabs {
     });
 
     @SuppressWarnings("unused")
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EQUIPMENT = create("equipment", PRIMOGEM_SWORD, output -> {
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EQUIPMENT = create("equipment", PRIMOGEM_SWORD, tab("curios"), output -> {
         output.accept(MORA_HELMET);
         output.accept(MORA_CHESTPLATE);
         output.accept(MORA_LEGGINGS);
@@ -256,7 +259,7 @@ public class PGCCreativeTabs {
     });
 
     @SuppressWarnings("unused")
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BLOCKS = create("blocks", PRIMOGEM_ORE, output -> {
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BLOCKS = create("blocks", PRIMOGEM_ORE, tab("equipment"), output -> {
         output.accept(PRIMOGEM_ORE);
         output.accept(OTHERWORLD_LOG_PLANKS);
         output.accept(INTERTWINED_FATE_BLOCK);
@@ -358,7 +361,7 @@ public class PGCCreativeTabs {
     });
 
     @SuppressWarnings("unused")
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CURIOS = create("curios", SHINING_TRAPEZOHEDRON_DIE, output -> {
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CURIOS = create("curios", SHINING_TRAPEZOHEDRON_DIE, tab("materials"), output -> {
         output.accept(SHINING_TRAPEZOHEDRON_DIE);
         output.accept(FICTIONAL_THREE_EIGHT_DIE);
         output.accept(CASKET_OF_INACCURACY);
@@ -470,11 +473,16 @@ public class PGCCreativeTabs {
         output.accept(DAMAGED_FORTUNE_GLUE);
     });
 
-    private static DeferredHolder<CreativeModeTab, CreativeModeTab> create(String name, DeferredItem<?> icon, Consumer<CreativeModeTab.Output> items) {
+    private static DeferredHolder<CreativeModeTab, CreativeModeTab> create(String name, DeferredItem<?> icon, ResourceKey<CreativeModeTab> previousTab, Consumer<CreativeModeTab.Output> items) {
         return REGISTRY.register(name, () -> CreativeModeTab.builder()
                 .title(Component.translatable("itemGroup.primogemcraft." + name))
                 .icon(icon::toStack)
                 .displayItems((parameters, output) -> items.accept(output))
+                .withTabsBefore(previousTab)
                 .build());
+    }
+
+    private static ResourceKey<CreativeModeTab> tab(String name) {
+        return ResourceKey.create(Registries.CREATIVE_MODE_TAB, ResourceLocation.fromNamespaceAndPath(MOD_ID, name));
     }
 }

@@ -1,3 +1,6 @@
 {
-  "parent": "primogemcraft:block/otherworld_crystal_cluster"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "primogemcraft:block/otherworld_crystal_cluster"
+  }
 }
