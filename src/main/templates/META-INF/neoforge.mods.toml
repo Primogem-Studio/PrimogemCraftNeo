@@ -30,6 +30,13 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.primogemcraft]]
+modId = "jei"
+type = "optional"
+versionRange = "[19.19.0,20)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies.primogemcraft]]
 modId = "curios"
 type = "optional"
 versionRange = "[9.0.0,)"
