@@ -554,6 +554,7 @@ public class PGCItems {
     public static final DeferredItem<WishDataExporterItem> WISH_DATA_EXPORTER = REGISTRY.registerItem("wish_data_exporter", WishDataExporterItem::new);
     public static final DeferredItem<StarRailSpecialPassItem> STAR_RAIL_SPECIAL_PASS = REGISTRY.registerItem("star_rail_special_pass", StarRailSpecialPassItem::new);
     public static final DeferredItem<ColorfulSunglassesItem> COLORFUL_SUNGLASSES = REGISTRY.registerItem("colorful_sunglasses", properties -> new ColorfulSunglassesItem(PGCArmorMaterials.COLORFUL_SUNGLASSES, properties.durability(ArmorItem.Type.HELMET.getDurability(15))));
+    public static final DeferredItem<ViolaneItem> VIOLANE = REGISTRY.registerItem("violane", properties -> new ViolaneItem(properties.stacksTo(1).rarity(Rarity.RARE)));
     public static final DeferredItem<ArmorItem> SPECIAL_01_HELMET = REGISTRY.registerItem("special_01_helmet",
             properties -> new ArmorItem(PGCArmorMaterials.SPECIAL_01, ArmorItem.Type.HELMET, properties.durability(ArmorItem.Type.HELMET.getDurability(225))));
 

@@ -542,6 +542,20 @@
         },
         {
           "type": "minecraft:item",
+          "name": "primogemcraft:violane",
+          "weight": 10,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1,
+                "max": 1
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
           "name": "primogemcraft:colorful_sunglasses",
           "weight": 10,
           "functions": [

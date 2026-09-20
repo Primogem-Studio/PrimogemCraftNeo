@@ -3,6 +3,7 @@ package net.per.primogemcraft.system.wish;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.per.primogemcraft.item.misc.ViolaneItem;
 import net.per.primogemcraft.config.PGCConfig;
 import net.per.primogemcraft.registry.PGCAttachments;
 import net.per.primogemcraft.registry.PGCItems;
@@ -19,7 +20,8 @@ public final class WishRoller {
     private static final double BASE_PURPLE_CHANCE = 0.2D;
     private static final double PURPLE_CHANCE_PER_VALUE = 0.002D;
     private static final double MAX_CHANCE = 0.9D;
-    private static final double COLORFUL_SUNGLASSES_GOLD_MULTIPLIER = 2.0D;
+    private static final double COLORFUL_SUNGLASSES_VALUE_BONUS = 0.05D;
+    private static final double VIOLANE_VALUE_BONUS = 0.01D;
     private static final double PERCENT = 100.0D;
 
     private WishRoller() {
@@ -45,19 +47,20 @@ public final class WishRoller {
         var random = player.getRandom();
         var pity = player.getData(PGCAttachments.WISH_PITY.get());
         var colorful = isWearingColorfulSunglasses(player);
-        var rarity = guaranteedGold ? WishRarity.GOLD : decide(random, pity, banner, wishValue, colorful);
+        var violane = ViolaneItem.isActive(player);
+        var valueMultiplier = 1.0D + (colorful ? COLORFUL_SUNGLASSES_VALUE_BONUS : 0.0D) + (violane ? VIOLANE_VALUE_BONUS : 0.0D);
+        var rarity = guaranteedGold ? WishRarity.GOLD : decide(random, pity, banner, wishValue * valueMultiplier);
         player.setData(PGCAttachments.WISH_PITY.get(), pity.count(rarity, banner.countsPity()));
         var capturingRadiance = banner.countsPity() && rarity == WishRarity.GOLD && random.nextDouble() < capturingRadianceChance();
-        return new WishResult(banner, rarity, capturingRadiance, colorful);
+        return new WishResult(banner, rarity, capturingRadiance, violane && rarity == WishRarity.BLUE || colorful);
     }
 
     public static double capturingRadianceChance() {
         return PGCConfig.CAPTURING_RADIANCE_CHANCE.get() / PERCENT;
     }
 
-    private static WishRarity decide(RandomSource random, WishPity pity, WishBanner banner, int wishValue, boolean colorful) {
+    private static WishRarity decide(RandomSource random, WishPity pity, WishBanner banner, double wishValue) {
         var goldChance = goldChance(banner, wishValue);
-        if (colorful) goldChance = Math.min(MAX_CHANCE, goldChance * COLORFUL_SUNGLASSES_GOLD_MULTIPLIER);
         if ((banner.countsPity() && pity.goldPity() >= GOLD_PITY_LIMIT) || random.nextDouble() < goldChance) {
             return WishRarity.GOLD;
         }
@@ -69,11 +72,11 @@ public final class WishRoller {
         return WishRarity.BLUE;
     }
 
-    public static double goldChance(WishBanner banner, int wishValue) {
+    public static double goldChance(WishBanner banner, double wishValue) {
         return Math.min(MAX_CHANCE, BASE_GOLD_CHANCE + GOLD_CHANCE_PER_VALUE * countedValue(banner, wishValue));
     }
 
-    public static double purpleChance(WishBanner banner, int wishValue) {
+    public static double purpleChance(WishBanner banner, double wishValue) {
         return Math.min(MAX_CHANCE, BASE_PURPLE_CHANCE + PURPLE_CHANCE_PER_VALUE * countedValue(banner, wishValue));
     }
 
@@ -85,7 +88,7 @@ public final class WishRoller {
         return purpleChance(banner, wishValue) - BASE_PURPLE_CHANCE;
     }
 
-    private static int countedValue(WishBanner banner, int wishValue) {
+    private static double countedValue(WishBanner banner, double wishValue) {
         return banner.countsPity() ? wishValue : 0;
     }
 

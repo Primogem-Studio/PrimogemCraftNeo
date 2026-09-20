@@ -177,6 +177,7 @@ public class PGCCreativeTabs {
         output.accept(LUCENT_AFTERGLOW);
         output.accept(CHASING_STARLIGHT_WITH_YOU);
         output.accept(COLORFUL_SUNGLASSES);
+        output.accept(VIOLANE);
         output.accept(DENDRO_CORE_SPAWN_EGG);
         output.accept(ABUNDANCE_BLIGHT_ZOMBIE_SPAWN_EGG);
         output.accept(XIAO_LANTERN_SPAWN_EGG);

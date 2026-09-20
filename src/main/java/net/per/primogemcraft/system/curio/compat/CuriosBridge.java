@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.per.primogemcraft.item.misc.OtherworldBankbook;
+import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.curio.CurioContext;
 import net.per.primogemcraft.system.curio.CurioForm;
 import net.per.primogemcraft.system.curio.CurioItem;
@@ -25,7 +26,7 @@ public final class CuriosBridge {
     }
 
     public static void register() {
-        CuriosApi.registerCurioPredicate(PREDICATE, result -> result.stack().is(CurioForm.ANY) || OtherworldBankbook.isBankbook(result.stack()));
+        CuriosApi.registerCurioPredicate(PREDICATE, result -> result.stack().is(CurioForm.ANY) || OtherworldBankbook.isBankbook(result.stack()) || result.stack().is(PGCItems.VIOLANE.get()));
     }
 
     public static List<ItemStack> equipped(Player player) {
