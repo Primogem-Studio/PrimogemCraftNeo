@@ -7,7 +7,7 @@
     "item": "primogemcraft:masterless_stardust"
   },
   "addition": {
-    "item": "primogemcraft:primogem"
+    "tag": "c:primogemcraft"
   },
   "result": {
     "id": "primogemcraft:acquaint_fate"

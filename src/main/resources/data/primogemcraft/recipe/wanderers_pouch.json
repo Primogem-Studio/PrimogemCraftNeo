@@ -10,7 +10,7 @@
       "item": "minecraft:string"
     },
     "b": {
-      "item": "primogemcraft:mora"
+      "tag": "c:mora"
     },
     "c": {
       "item": "minecraft:leather"

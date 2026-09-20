@@ -8,7 +8,7 @@
   ],
   "key": {
     "a": {
-      "item": "primogemcraft:mora"
+      "tag": "c:mora"
     },
     "b": {
       "item": "minecraft:light_weighted_pressure_plate"

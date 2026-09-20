@@ -7,7 +7,7 @@
     "item": "primogemcraft:intertwined_fate"
   },
   "addition": {
-    "item": "primogemcraft:mora"
+    "tag": "c:mora"
   },
   "result": {
     "id": "primogemcraft:the_village_no_longer_young"

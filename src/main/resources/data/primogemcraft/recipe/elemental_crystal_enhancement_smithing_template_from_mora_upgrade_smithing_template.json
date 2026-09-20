@@ -7,7 +7,7 @@
     "item": "primogemcraft:mora_upgrade_smithing_template"
   },
   "addition": {
-    "item": "primogemcraft:primogem"
+    "tag": "c:primogemcraft"
   },
   "result": {
     "id": "primogemcraft:elemental_crystal_enhancement_smithing_template"

@@ -14,7 +14,7 @@
       "item": "primogemcraft:primogem_shard"
     },
     "c": {
-      "item": "primogemcraft:primogem"
+      "tag": "c:primogemcraft"
     }
   },
   "result": {

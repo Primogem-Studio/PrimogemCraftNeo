@@ -8,7 +8,7 @@
   ],
   "key": {
     "a": {
-      "item": "primogemcraft:primogem"
+      "tag": "c:primogemcraft"
     },
     "b": {
       "item": "primogemcraft:elemental_crystal_enhancement_smithing_template"

@@ -11,7 +11,7 @@
       "item": "minecraft:lapis_lazuli"
     },
     "b": {
-      "item": "primogemcraft:primogem"
+      "tag": "c:primogemcraft"
     }
   },
   "result": {

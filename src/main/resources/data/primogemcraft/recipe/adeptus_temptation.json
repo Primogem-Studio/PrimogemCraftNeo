@@ -8,7 +8,7 @@
   ],
   "key": {
     "a": {
-      "item": "primogemcraft:primogem"
+      "tag": "c:primogemcraft"
     },
     "b": {
       "item": "primogemcraft:genesis_crystal"
