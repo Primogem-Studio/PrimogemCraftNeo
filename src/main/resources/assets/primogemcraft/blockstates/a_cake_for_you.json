@@ -1,19 +1,472 @@
 {
-  "variants": {
-    "facing=north": {
-      "model": "primogemcraft:block/a_cake_for_you"
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "bites": "0|1|2|3|4|5|6|7|8"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_plate",
+        "y": 270
+      }
     },
-    "facing=east": {
-      "model": "primogemcraft:block/a_cake_for_you",
-      "y": 90
+    {
+      "when": {
+        "facing": "east",
+        "bites": "0|1|2|3|4|5|6|7|8"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_plate"
+      }
     },
-    "facing=south": {
-      "model": "primogemcraft:block/a_cake_for_you",
-      "y": 180
+    {
+      "when": {
+        "facing": "south",
+        "bites": "0|1|2|3|4|5|6|7|8"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_plate",
+        "y": 90
+      }
     },
-    "facing=west": {
-      "model": "primogemcraft:block/a_cake_for_you",
-      "y": 270
+    {
+      "when": {
+        "facing": "west",
+        "bites": "0|1|2|3|4|5|6|7|8"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_plate",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "bites": "0|1|2|3|4|5|6|7|8"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_decorations",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "bites": "0|1|2|3|4|5|6|7|8"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_decorations"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "bites": "0|1|2|3|4|5|6|7|8"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_decorations",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "bites": "0|1|2|3|4|5|6|7|8"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_decorations",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "bites": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_lily_intact",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "bites": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_lily_intact"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "bites": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_lily_intact",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "bites": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_lily_intact",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "bites": "5|6|7|8"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_lily_eaten",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "bites": "5|6|7|8"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_lily_eaten"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "bites": "5|6|7|8"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_lily_eaten",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "bites": "5|6|7|8"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_lily_eaten",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "bites": "0"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "bites": "0"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "bites": "0"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "bites": "0"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "bites": "0|1"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "bites": "0|1"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "bites": "0|1"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "bites": "0|1"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "bites": "0|1|2"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "bites": "0|1|2"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "bites": "0|1|2"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "bites": "0|1|2"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "bites": "0|1|2|3"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "bites": "0|1|2|3"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_4"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "bites": "0|1|2|3"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "bites": "0|1|2|3"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "bites": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "bites": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_5"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "bites": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "bites": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "bites": "0|1|2|3|4|5"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "bites": "0|1|2|3|4|5"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_6"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "bites": "0|1|2|3|4|5"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "bites": "0|1|2|3|4|5"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "bites": "0|1|2|3|4|5|6"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "bites": "0|1|2|3|4|5|6"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_7"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "bites": "0|1|2|3|4|5|6"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "bites": "0|1|2|3|4|5|6"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "bites": "0|1|2|3|4|5|6|7"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "bites": "0|1|2|3|4|5|6|7"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_8"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "bites": "0|1|2|3|4|5|6|7"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "bites": "0|1|2|3|4|5|6|7"
+      },
+      "apply": {
+        "model": "primogemcraft:block/a_cake_for_you_slice_8",
+        "y": 180
+      }
     }
-  }
+  ]
 }

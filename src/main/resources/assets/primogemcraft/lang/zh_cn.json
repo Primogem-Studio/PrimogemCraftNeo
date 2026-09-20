@@ -944,7 +944,7 @@
   "entity.minecraft.villager.primogemcraft.primogem_scholar": "原石学家",
 
   "block.primogemcraft.a_cake_for_you": "§6赠糕于你",
-  "block.primogemcraft.a_cake_for_you.tooltip.0": "§7最好带一些摩拉再来！",
+  "block.primogemcraft.a_cake_for_you.tooltip.0": "§7可食用8口，手持摩拉右键消耗1个摩拉恢复一块；挖掘不掉落。",
   "block.primogemcraft.agnidus_agate_block": "§c燃愿玛瑙 块",
   "block.primogemcraft.agnidus_agate_ore": "§c燃愿玛瑙 矿石",
   "block.primogemcraft.big_jar": "大罐子",

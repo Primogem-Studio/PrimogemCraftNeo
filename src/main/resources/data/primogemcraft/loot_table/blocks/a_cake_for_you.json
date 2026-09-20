@@ -1,20 +1,4 @@
 {
   "type": "minecraft:block",
-  "random_sequence": "primogemcraft:blocks/a_cake_for_you",
-  "pools": [
-    {
-      "rolls": 1.0,
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
-      ],
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "primogemcraft:a_cake_for_you"
-        }
-      ]
-    }
-  ]
+  "pools": []
 }

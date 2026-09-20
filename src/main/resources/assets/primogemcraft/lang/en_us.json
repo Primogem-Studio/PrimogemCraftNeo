@@ -802,7 +802,7 @@
   "entity.minecraft.villager.primogemcraft.primogem_scholar": "Primogem Scholar",
 
   "block.primogemcraft.a_cake_for_you": "§6A Cake for You",
-  "block.primogemcraft.a_cake_for_you.tooltip.0": "§7Better bring some Mora before coming back!",
+  "block.primogemcraft.a_cake_for_you.tooltip.0": "§7Eat up to 8 slices. Right-click with Mora to spend 1 Mora and restore a slice. Drops nothing when broken.",
   "block.primogemcraft.agnidus_agate_block": "§cAgnidus Agate Block",
   "block.primogemcraft.agnidus_agate_ore": "§cAgnidus Agate Ore",
   "block.primogemcraft.big_jar": "Big Jar",

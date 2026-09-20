@@ -1,0 +1,75 @@
+{
+  "parent": "primogemcraft:block/a_cake_for_you_model",
+  "render_type": "solid",
+  "elements": [
+    {
+      "name": "4",
+      "from": [
+        1,
+        1,
+        11
+      ],
+      "to": [
+        5,
+        7,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            9,
+            3,
+            10,
+            4.5
+          ],
+          "texture": "#1"
+        },
+        "east": {
+          "uv": [
+            4,
+            9,
+            5,
+            10.5
+          ],
+          "texture": "#1"
+        },
+        "south": {
+          "uv": [
+            9,
+            4.5,
+            10,
+            6
+          ],
+          "texture": "#1"
+        },
+        "west": {
+          "uv": [
+            5,
+            9,
+            6,
+            10.5
+          ],
+          "texture": "#1"
+        },
+        "up": {
+          "uv": [
+            11,
+            3.5,
+            10,
+            2.5
+          ],
+          "texture": "#1"
+        },
+        "down": {
+          "uv": [
+            11,
+            3.5,
+            10,
+            4.5
+          ],
+          "texture": "#1"
+        }
+      }
+    }
+  ]
+}
