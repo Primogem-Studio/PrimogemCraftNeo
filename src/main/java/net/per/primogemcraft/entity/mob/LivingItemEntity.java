@@ -447,12 +447,18 @@ public class LivingItemEntity extends PathfinderMob {
     public void tick() {
         super.tick();
         setNoGravity(true);
-        int swing = entityData.get(DATA_SWING);
+        var swing = entityData.get(DATA_SWING);
         if (swing > 0) entityData.set(DATA_SWING, swing - 1);
-        int rotate = entityData.get(DATA_ROTATE);
+        var rotate = entityData.get(DATA_ROTATE);
         if (rotate > 0) entityData.set(DATA_ROTATE, rotate - 1);
         if (level().isClientSide) return;
         if (isRemoved() || isDeadOrDying()) return;
+        var owner = getOwner();
+        if (owner != null && owner.isAlive() && level() != owner.level()) {
+            setTarget(null);
+            followOwner(owner);
+            return;
+        }
         var motion = getDeltaMovement();
         if (motion.y < -MAX_FALL_SPEED) setDeltaMovement(motion.multiply(1.0, 0.5, 1.0));
         var grounded = onGround() && !isInWater();
@@ -467,7 +473,6 @@ public class LivingItemEntity extends PathfinderMob {
             }
             syncDurationHealth(false);
         }
-        var owner = getOwner();
         if (owner == null) return;
         if (owner.isDeadOrDying() || !owner.isAlive()) {
             if (isInfinite()) return;
