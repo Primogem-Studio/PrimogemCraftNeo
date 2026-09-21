@@ -1,4 +1,6 @@
 {
+  "command.primogemcraft.zipline.placed": "已铺设 %s 座滑索，跳过 %s 个不适合的位置（铺设数量上限：%s）。",
+  "command.primogemcraft.zipline.invalid_path": "轨迹应为包含 2～64 个 [x,z] 整数偏移的 JSON 数组，每个坐标范围为 -256～256，例如 [[0,0],[32,0],[32,32]]。高度自动适应地形。",
   "item.primogemcraft.protocol_originium_sword.tooltip.0": "§e彩蛋物品",
   "item.primogemcraft.protocol_originium_sword.tooltip.1": "§f • 潜行右键地面，部署一座固定滑索",
   "item.primogemcraft.protocol_originium_sword.tooltip.2": "§7   放置冷却10秒，创造模式不受限制",

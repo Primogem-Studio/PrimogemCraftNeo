@@ -8,6 +8,7 @@ import net.per.primogemcraft.command.debug.Enchant;
 import net.per.primogemcraft.command.debug.Event;
 import net.per.primogemcraft.command.debug.Weapon;
 import net.per.primogemcraft.command.debug.Wish;
+import net.per.primogemcraft.command.debug.Zipline;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
@@ -21,5 +22,6 @@ public class PGCCommands {
         Enchant.register(dispatcher);
         Event.register(dispatcher);
         Weapon.register(dispatcher, event.getBuildContext());
+        Zipline.register(dispatcher);
     }
 }

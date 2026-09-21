@@ -1,4 +1,6 @@
 {
+  "command.primogemcraft.zipline.placed": "Placed %s ziplines; skipped %s unsuitable locations (placement limit: %s).",
+  "command.primogemcraft.zipline.invalid_path": "Path must be a JSON array of 2-64 [x,z] integer offsets, each between -256 and 256, e.g. [[0,0],[32,0],[32,32]]. Heights follow the terrain.",
   "item.primogemcraft.protocol_originium_sword.tooltip.0": "§eEaster Egg Item",
   "item.primogemcraft.protocol_originium_sword.tooltip.1": "§f • Sneak-use on the ground to deploy a fixed zipline",
   "item.primogemcraft.protocol_originium_sword.tooltip.2": "§7   Placement cooldown: 10 seconds; no limit in Creative",
