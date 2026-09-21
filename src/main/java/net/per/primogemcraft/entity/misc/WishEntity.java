@@ -47,6 +47,7 @@ public class WishEntity extends Entity {
     private static final EntityDataAccessor<Integer> DATA_RARITY = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_CAPTURING_RADIANCE = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_COLORFUL = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_SUNGLASSES = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_CAPTURE_STATE = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_RADIANCE_VISIBLE = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.BOOLEAN);
     private static final double SINGLE_SPAWN_HEIGHT = 10.0D;
@@ -86,6 +87,7 @@ public class WishEntity extends Entity {
         wish.entityData.set(DATA_RARITY, result.rarity().ordinal());
         wish.entityData.set(DATA_CAPTURING_RADIANCE, result.capturingRadiance());
         wish.entityData.set(DATA_COLORFUL, result.colorful());
+        wish.entityData.set(DATA_SUNGLASSES, result.sunglasses());
         wish.moveTo(x, y, z, 0.0F, 0.0F);
         var dir = player.position().subtract(wish.position()).normalize();
         wish.setYRot((float) (Mth.atan2(-dir.x, dir.z) * Mth.RAD_TO_DEG));
@@ -157,6 +159,14 @@ public class WishEntity extends Entity {
 
     public boolean isColorful() {
         return entityData.get(DATA_COLORFUL);
+    }
+
+    public WishRarity displayRarity() {
+        if (!entityData.get(DATA_SUNGLASSES)) return rarity();
+        return switch (rarity()) {
+            case BLUE -> WishRarity.PURPLE;
+            case PURPLE, GOLD -> WishRarity.GOLD;
+        };
     }
 
     public CaptureState captureState() {
@@ -261,6 +271,7 @@ public class WishEntity extends Entity {
         builder.define(DATA_RARITY, WishRarity.BLUE.ordinal());
         builder.define(DATA_CAPTURING_RADIANCE, false);
         builder.define(DATA_COLORFUL, false);
+        builder.define(DATA_SUNGLASSES, false);
         builder.define(DATA_CAPTURE_STATE, CaptureState.NONE.ordinal());
         builder.define(DATA_RADIANCE_VISIBLE, false);
     }
@@ -272,6 +283,7 @@ public class WishEntity extends Entity {
         entityData.set(DATA_RARITY, compound.getInt("rarity"));
         entityData.set(DATA_CAPTURING_RADIANCE, compound.getBoolean("capturing_radiance"));
         entityData.set(DATA_COLORFUL, compound.getBoolean("colorful"));
+        entityData.set(DATA_SUNGLASSES, compound.getBoolean("sunglasses"));
         age = compound.getInt("age");
     }
 
@@ -282,6 +294,7 @@ public class WishEntity extends Entity {
         compound.putInt("rarity", entityData.get(DATA_RARITY));
         compound.putBoolean("capturing_radiance", entityData.get(DATA_CAPTURING_RADIANCE));
         compound.putBoolean("colorful", entityData.get(DATA_COLORFUL));
+        compound.putBoolean("sunglasses", entityData.get(DATA_SUNGLASSES));
         compound.putInt("age", age);
     }
 

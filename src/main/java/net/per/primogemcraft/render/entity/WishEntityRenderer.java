@@ -47,6 +47,6 @@ public class WishEntityRenderer extends EntityRenderer<WishEntity> {
     public ResourceLocation getTextureLocation(WishEntity entity) {
         if (entity.isRadianceVisible()) return CAPTURING_RADIANCE_TEXTURE;
         if (entity.isColorful()) return COLORFUL_TEXTURE;
-        return entity.rarity().texture();
+        return entity.displayRarity().texture();
     }
 }

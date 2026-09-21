@@ -20,6 +20,8 @@ public class ContainerWindowScreen extends AbstractContainerScreen<ContainerWind
 
     private final SmoothScroll scroll = new SmoothScroll();
     private boolean draggingScrollbar;
+    private boolean quickMoving;
+    private Slot lastQuickMoveSlot;
     private int hoveredCell = -1;
     private float cellHover;
 
@@ -60,8 +62,34 @@ public class ContainerWindowScreen extends AbstractContainerScreen<ContainerWind
 
     @Override
     protected void renderSlot(GuiGraphics graphics, Slot slot) {
-        if (slot.container == menu.container()) return;
+        if (slot.container != menu.container()) {
+            super.renderSlot(graphics, slot);
+            return;
+        }
+        var y = cellY(slot.index);
+        if (y + SLOT_ITEM <= ContainerWindowLayout.gridTop()
+                || y >= ContainerWindowLayout.gridTop() + ContainerWindowLayout.gridHeight(menu.visibleRows())) return;
+        clipGrid(graphics);
+        graphics.pose().pushPose();
+        graphics.pose().translate(ContainerWindowLayout.columnX(slot.index % ContainerWindowLayout.COLUMNS) - slot.x,
+                y - slot.y, 0.0F);
         super.renderSlot(graphics, slot);
+        graphics.pose().popPose();
+        graphics.disableScissor();
+    }
+
+    @Override
+    protected void renderSlotHighlight(GuiGraphics graphics, Slot slot, int mouseX, int mouseY, float partialTick) {
+        if (slot.container != menu.container()) super.renderSlotHighlight(graphics, slot, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    protected boolean isHovering(int x, int y, int width, int height, double mouseX, double mouseY) {
+        if (y == ContainerWindowLayout.HIDDEN_Y && x <= ContainerWindowLayout.HIDDEN_X) {
+            var index = ContainerWindowLayout.HIDDEN_X - x;
+            return index < menu.containerSlots() && cellAt(mouseX, mouseY) == index;
+        }
+        return super.isHovering(x, y, width, height, mouseX, mouseY);
     }
 
     @Override
@@ -73,16 +101,13 @@ public class ContainerWindowScreen extends AbstractContainerScreen<ContainerWind
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && canScroll() && scrollbarContains(mouseX, mouseY)) {
+        if (button == 0 && !isQuickCrafting && canScroll() && scrollbarContains(mouseX, mouseY)) {
             draggingScrollbar = true;
             dragScrollbar(mouseY);
             return true;
         }
-        var index = cellAt(mouseX, mouseY);
-        if (index >= 0 && (button == 0 || button == 1)) {
-            slotClicked(menu.getSlot(index), index, button, hasShiftDown() ? ClickType.QUICK_MOVE : ClickType.PICKUP);
-            return true;
-        }
+        quickMoving = (button == 0 || button == 1) && hasShiftDown() && menu.getCarried().isEmpty();
+        lastQuickMoveSlot = quickMoving ? slotAt(mouseX, mouseY) : null;
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -92,22 +117,33 @@ public class ContainerWindowScreen extends AbstractContainerScreen<ContainerWind
             dragScrollbar(mouseY);
             return true;
         }
+        if (quickMoving && hasShiftDown() && menu.getCarried().isEmpty()) {
+            var slot = slotAt(mouseX, mouseY);
+            if (slot != null && slot != lastQuickMoveSlot && slot.hasItem() && slot.mayPickup(minecraft.player)) {
+                slotClicked(slot, slot.index, button, ClickType.QUICK_MOVE);
+            }
+            lastQuickMoveSlot = slot;
+            return true;
+        }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        draggingScrollbar = false;
+        quickMoving = false;
+        lastQuickMoveSlot = null;
+        if (draggingScrollbar) {
+            draggingScrollbar = false;
+            return true;
+        }
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
     private void renderGrid(GuiGraphics graphics) {
         var rows = menu.visibleRows();
         var firstRow = Mth.floor(scroll.shown());
-        var top = Math.round(ContainerWindowLayout.GRID_Y - (scroll.shown() - firstRow) * ContainerWindowLayout.SLOT);
-        graphics.enableScissor(leftPos + ContainerWindowLayout.GRID_X - 1, topPos + ContainerWindowLayout.gridTop(),
-                leftPos + ContainerWindowLayout.GRID_X - 1 + ContainerWindowLayout.gridWidth(),
-                topPos + ContainerWindowLayout.gridTop() + ContainerWindowLayout.gridHeight(rows));
+        var top = cellY(firstRow * ContainerWindowLayout.COLUMNS);
+        clipGrid(graphics);
         for (var row = 0; row <= rows; row++) {
             var y = top + row * ContainerWindowLayout.SLOT;
             for (var column = 0; column < ContainerWindowLayout.COLUMNS; column++) {
@@ -115,10 +151,6 @@ public class ContainerWindowScreen extends AbstractContainerScreen<ContainerWind
                 if (index >= menu.containerSlots()) break;
                 var x = ContainerWindowLayout.columnX(column);
                 slotCell(graphics, x, y, index == hoveredCell ? cellHover : 0.0F);
-                var stack = menu.getSlot(index).getItem();
-                if (stack.isEmpty()) continue;
-                graphics.renderItem(stack, x, y);
-                graphics.renderItemDecorations(font, stack, x, y);
             }
         }
         graphics.disableScissor();
@@ -164,16 +196,30 @@ public class ContainerWindowScreen extends AbstractContainerScreen<ContainerWind
     }
 
     private int cellAt(double mouseX, double mouseY) {
+        if (!gridContains(mouseX, mouseY)) return -1;
         var localX = mouseX - leftPos - ContainerWindowLayout.GRID_X + 1.0D;
-        var localY = mouseY - topPos - ContainerWindowLayout.GRID_Y + 1.0D;
-        if (localX < 0.0D || localY < 0.0D) return -1;
         var column = (int) Math.floor(localX / ContainerWindowLayout.SLOT);
-        if (column >= ContainerWindowLayout.COLUMNS) return -1;
-        var scrolled = (scroll.shown() - Mth.floor(scroll.shown())) * ContainerWindowLayout.SLOT;
-        var row = (int) Math.floor((localY + scrolled) / ContainerWindowLayout.SLOT);
-        if (row >= menu.visibleRows()) return -1;
-        var index = (Mth.floor(scroll.shown()) + row) * ContainerWindowLayout.COLUMNS + column;
+        var row = (int) Math.floor((mouseY - topPos - cellY(0) + 1.0D) / ContainerWindowLayout.SLOT);
+        var index = row * ContainerWindowLayout.COLUMNS + column;
         return index < menu.containerSlots() ? index : -1;
+    }
+
+    private int cellY(int index) {
+        return ContainerWindowLayout.GRID_Y + index / ContainerWindowLayout.COLUMNS * ContainerWindowLayout.SLOT
+                - Math.round(scroll.shown() * ContainerWindowLayout.SLOT);
+    }
+
+    private void clipGrid(GuiGraphics graphics) {
+        graphics.enableScissor(leftPos + ContainerWindowLayout.GRID_X - 1, topPos + ContainerWindowLayout.gridTop(),
+                leftPos + ContainerWindowLayout.GRID_X - 1 + ContainerWindowLayout.gridWidth(),
+                topPos + ContainerWindowLayout.gridTop() + ContainerWindowLayout.gridHeight(menu.visibleRows()));
+    }
+
+    private Slot slotAt(double mouseX, double mouseY) {
+        for (var slot : menu.slots) {
+            if (slot.isActive() && isHovering(slot.x, slot.y, SLOT_ITEM, SLOT_ITEM, mouseX, mouseY)) return slot;
+        }
+        return null;
     }
 
     private boolean gridContains(double mouseX, double mouseY) {

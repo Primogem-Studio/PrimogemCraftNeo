@@ -52,7 +52,7 @@ public final class WishRoller {
         var rarity = guaranteedGold ? WishRarity.GOLD : decide(random, pity, banner, wishValue * valueMultiplier);
         player.setData(PGCAttachments.WISH_PITY.get(), pity.count(rarity, banner.countsPity()));
         var capturingRadiance = banner.countsPity() && rarity == WishRarity.GOLD && random.nextDouble() < capturingRadianceChance();
-        return new WishResult(banner, rarity, capturingRadiance, violane && rarity == WishRarity.BLUE || colorful);
+        return new WishResult(banner, rarity, capturingRadiance, violane && rarity == WishRarity.BLUE || colorful && rarity == WishRarity.GOLD, colorful);
     }
 
     public static double capturingRadianceChance() {
