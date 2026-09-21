@@ -1,17 +1,21 @@
 package net.per.primogemcraft.render.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import net.per.primogemcraft.entity.misc.ZiplineCarrierEntity;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public class ZiplineCarrierRenderer extends EntityRenderer<ZiplineCarrierEntity> {
+    private static final double CABLE_RADIUS = 0.025;
+
     public ZiplineCarrierRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
@@ -24,15 +28,31 @@ public class ZiplineCarrierRenderer extends EntityRenderer<ZiplineCarrierEntity>
     @Override
     public void render(ZiplineCarrierEntity entity, float yaw, float partialTick, PoseStack poses, MultiBufferSource buffers, int light) {
         if (!entity.moving()) return;
+        var source = entity.source();
+        var target = entity.target();
+        var direction = target.subtract(source);
+        if (direction.lengthSqr() < 1.0E-8) return;
+        direction = direction.normalize();
+        var side = (Math.abs(direction.y) < 0.9
+                ? new Vec3(-direction.z, 0, direction.x)
+                : new Vec3(0, direction.z, -direction.y)).normalize().scale(CABLE_RADIUS);
+        var perpendicular = direction.cross(side);
         var origin = entity.getPosition(partialTick);
-        var source = entity.source().subtract(origin);
-        var target = entity.target().subtract(origin);
-        var normal = target.subtract(source).normalize();
-        var buffer = buffers.getBuffer(RenderType.lines());
-        buffer.addVertex(poses.last(), (float) source.x, (float) source.y, (float) source.z).setColor(235, 210, 100, 255)
-                .setNormal(poses.last(), (float) normal.x, (float) normal.y, (float) normal.z);
-        buffer.addVertex(poses.last(), (float) target.x, (float) target.y, (float) target.z).setColor(235, 210, 100, 255)
-                .setNormal(poses.last(), (float) normal.x, (float) normal.y, (float) normal.z);
+        source = source.subtract(origin);
+        target = target.subtract(origin);
+        var buffer = buffers.getBuffer(RenderType.leash());
+        var pose = poses.last();
+        for (var corner = 0; corner <= 4; corner++) {
+            var offset = (corner & 1) == 0 ? side : perpendicular;
+            var sign = corner == 2 || corner == 3 ? -1 : 1;
+            var x = offset.x * sign;
+            var y = offset.y * sign;
+            var z = offset.z * sign;
+            buffer.addVertex(pose, (float) (source.x + x), (float) (source.y + y), (float) (source.z + z))
+                    .setColor(235, 210, 100, 255).setLight(LightTexture.FULL_BRIGHT);
+            buffer.addVertex(pose, (float) (target.x + x), (float) (target.y + y), (float) (target.z + z))
+                    .setColor(235, 210, 100, 255).setLight(LightTexture.FULL_BRIGHT);
+        }
     }
 
     @Override
