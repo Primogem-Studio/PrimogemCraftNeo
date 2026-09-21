@@ -21,6 +21,7 @@ public class PrimogemCraft {
     public PrimogemCraft(IEventBus modBus, ModContainer container) {
         PGCBlocks.REGISTRY.register(modBus);
         PGCBlockEntities.REGISTRY.register(modBus);
+        modBus.addListener(PGCBlockEntities::registerCapabilities);
         PGCItems.REGISTRY.register(modBus);
         PGCSounds.REGISTRY.register(modBus);
         PGCDataComponents.REGISTRY.register(modBus);

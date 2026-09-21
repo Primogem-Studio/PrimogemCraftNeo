@@ -47,7 +47,8 @@ public class StellarConverterMenu extends AbstractContainerMenu {
             addSlot(new Slot(container, slotIndex, SLOT_X[slotIndex], SLOT_Y[slotIndex]) {
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return StellarConverterBlockEntity.accepts(slotIndex, stack);
+                    return StellarConverterBlockEntity.accepts(slotIndex, stack)
+                            && !isSlotDisabled(slotIndex) && container.canPlaceItem(slotIndex, stack);
                 }
             });
         }
@@ -61,6 +62,29 @@ public class StellarConverterMenu extends AbstractContainerMenu {
 
     public int charge() {
         return data.get(StellarConverterBlockEntity.DATA_CHARGE);
+    }
+
+    public boolean isChannelDisabled(int channel) {
+        return data.get(channel == 0 ? StellarConverterBlockEntity.DATA_FIRST_DISABLED
+                : StellarConverterBlockEntity.DATA_SECOND_DISABLED) != 0;
+    }
+
+    public boolean isSlotDisabled(int slot) {
+        return switch (slot) {
+            case FIRST_INPUT_SLOT, StellarConverterBlockEntity.FIRST_OUTPUT_SLOT -> isChannelDisabled(0);
+            case SECOND_INPUT_SLOT, StellarConverterBlockEntity.SECOND_OUTPUT_SLOT -> isChannelDisabled(1);
+            default -> false;
+        };
+    }
+
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (id < 0 || id > 1 || !stillValid(player)) return false;
+        var index = id == 0 ? StellarConverterBlockEntity.DATA_FIRST_DISABLED
+                : StellarConverterBlockEntity.DATA_SECOND_DISABLED;
+        data.set(index, isChannelDisabled(id) ? 0 : 1);
+        broadcastChanges();
+        return true;
     }
 
     public int firstCost() {
@@ -81,8 +105,10 @@ public class StellarConverterMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(stack, SLOT_COUNT, slots.size(), true)) return ItemStack.EMPTY;
         } else if (StellarConverterBlockEntity.isFuel(stack)) {
             if (!moveItemStackTo(stack, FUEL_SLOT, FUEL_SLOT + 1, false)) return ItemStack.EMPTY;
-        } else if (!moveItemStackTo(stack, FIRST_INPUT_SLOT, SLOT_COUNT, false)) {
-            return ItemStack.EMPTY;
+        } else {
+            var moved = !isChannelDisabled(0) && moveItemStackTo(stack, FIRST_INPUT_SLOT, FIRST_INPUT_SLOT + 1, false);
+            moved |= !isChannelDisabled(1) && moveItemStackTo(stack, SECOND_INPUT_SLOT, SECOND_INPUT_SLOT + 1, false);
+            if (!moved) return ItemStack.EMPTY;
         }
         if (stack.isEmpty()) slot.setByPlayer(ItemStack.EMPTY);
         else slot.setChanged();

@@ -2,6 +2,8 @@ package net.per.primogemcraft.registry;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.per.primogemcraft.block.entity.ContainerWindowBlockEntity;
@@ -14,6 +16,11 @@ import net.per.primogemcraft.block.entity.XiaoLanternLauncherBlockEntity;
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public class PGCBlockEntities {
+    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, STELLAR_CONVERTER.get(),
+                (converter, side) -> converter.itemHandler());
+    }
+
     public static final String UNIDENTIFIED_DOLL_NAME = "unidentified_doll";
     public static final String GORGEOUS_SMITHING_TABLE_NAME = "gorgeous_smithing_table";
     public static final String STELLAR_CONVERTER_NAME = "stellar_converter";

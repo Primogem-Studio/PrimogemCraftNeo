@@ -27,7 +27,13 @@ public final class NineSliceButton {
 
     public static void draw(GuiGraphics graphics, Font font, int x, int y, int width, int height, Component text,
                             boolean enabled, boolean hover) {
-        var skin = enabled ? hover ? HIGHLIGHT : NORMAL : DISABLED;
+        draw(graphics, font, x, y, width, height, text, enabled, hover, false);
+    }
+
+    public static void draw(GuiGraphics graphics, Font font, int x, int y, int width, int height, Component text,
+                            boolean enabled, boolean hover, boolean selected) {
+        var highlighted = enabled && (hover || selected);
+        var skin = enabled ? highlighted ? HIGHLIGHT : NORMAL : DISABLED;
         var bottom = fit(skin, height, font.lineHeight);
         skin(graphics, skin, x, y, width, height, bottom);
         var faceWidth = Math.max(1, width - skin.left() - skin.right());
@@ -35,7 +41,7 @@ public final class NineSliceButton {
         var sink = enabled && hover && leftPressed() ? PRESS_SINK : 0;
         var textX = x + skin.left() + (faceWidth - font.width(text)) / 2;
         var textY = y + skin.top() + (faceHeight - font.lineHeight) / 2 + TEXT_DROP + sink;
-        graphics.drawString(font, text, textX, textY, enabled && hover ? TEXT_HOVER_COLOR : TEXT_COLOR, false);
+        graphics.drawString(font, text, textX, textY, highlighted ? TEXT_HOVER_COLOR : TEXT_COLOR, false);
     }
 
     public static void draw(GuiGraphics graphics, Font font, int x, int y, int width, int height, Component text, boolean enabled) {

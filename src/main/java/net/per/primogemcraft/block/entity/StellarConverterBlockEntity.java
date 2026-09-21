@@ -17,6 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import net.per.primogemcraft.registry.PGCBlockEntities;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.registry.PGCRecipeTypes;
@@ -38,15 +40,26 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
     public static final int DATA_CHARGE = 0;
     public static final int DATA_FIRST_COST = 1;
     public static final int DATA_SECOND_COST = 2;
-    public static final int DATA_COUNT = 3;
+    public static final int DATA_FIRST_DISABLED = 3;
+    public static final int DATA_SECOND_DISABLED = 4;
+    public static final int DATA_COUNT = 5;
 
     private static final String CHARGE_TAG = "charge";
+    private static final String FIRST_DISABLED_TAG = "first_disabled";
+    private static final String SECOND_DISABLED_TAG = "second_disabled";
     private static final int[] SLOTS = IntStream.range(0, SLOT_COUNT).toArray();
 
     private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
     private int charge;
     private int firstCost;
     private int secondCost;
+    private boolean firstDisabled;
+    private boolean secondDisabled;
+    private final IItemHandler itemHandler = new SidedInvWrapper(this, Direction.DOWN);
+
+    public IItemHandler itemHandler() {
+        return itemHandler;
+    }
 
     public StellarConverterBlockEntity(BlockPos pos, BlockState state) {
         super(PGCBlockEntities.STELLAR_CONVERTER.get(), pos, state);
@@ -72,12 +85,16 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         charge = tag.getInt(CHARGE_TAG);
+        firstDisabled = tag.getBoolean(FIRST_DISABLED_TAG);
+        secondDisabled = tag.getBoolean(SECOND_DISABLED_TAG);
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.putInt(CHARGE_TAG, charge);
+        tag.putBoolean(FIRST_DISABLED_TAG, firstDisabled);
+        tag.putBoolean(SECOND_DISABLED_TAG, secondDisabled);
     }
 
     @Override
@@ -107,7 +124,8 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
 
     @Override
     public boolean canPlaceItem(int index, ItemStack stack) {
-        return accepts(index, stack);
+        return accepts(index, stack) && (index != FIRST_INPUT_SLOT || !firstDisabled)
+                && (index != SECOND_INPUT_SLOT || !secondDisabled);
     }
 
     @Override
@@ -125,7 +143,10 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
         return switch (index) {
             case DATA_CHARGE -> charge;
             case DATA_FIRST_COST -> firstCost;
-            default -> secondCost;
+            case DATA_SECOND_COST -> secondCost;
+            case DATA_FIRST_DISABLED -> firstDisabled ? 1 : 0;
+            case DATA_SECOND_DISABLED -> secondDisabled ? 1 : 0;
+            default -> 0;
         };
     }
 
@@ -134,8 +155,11 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
         switch (index) {
             case DATA_CHARGE -> charge = value;
             case DATA_FIRST_COST -> firstCost = value;
-            default -> secondCost = value;
+            case DATA_SECOND_COST -> secondCost = value;
+            case DATA_FIRST_DISABLED -> firstDisabled = value != 0;
+            case DATA_SECOND_DISABLED -> secondDisabled = value != 0;
         }
+        setChanged();
     }
 
     @Override
@@ -145,7 +169,7 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
 
     @Override
     public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction direction) {
-        return accepts(index, stack);
+        return canPlaceItem(index, stack) && (index == FUEL_SLOT || !isFuel(stack));
     }
 
     @Override
@@ -170,6 +194,11 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
     }
 
     private boolean convert(int inputSlot, int outputSlot) {
+        if (inputSlot == FIRST_INPUT_SLOT ? firstDisabled : secondDisabled) {
+            if (inputSlot == FIRST_INPUT_SLOT) firstCost = 0;
+            else secondCost = 0;
+            return false;
+        }
         var input = items.get(inputSlot);
         var conversion = findConversion(input);
         var cost = conversion == null ? 0 : conversion.cost();

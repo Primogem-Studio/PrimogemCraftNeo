@@ -53,6 +53,8 @@ This is the part that was wrong before, so it is written out in full.
 
 ## Drawing
 
+For buttons, read `../primogemcraft-nine-slice-button/SKILL.md` and use the shared `NineSliceButton` renderer and its widget textures. Buttons are an exception to the atlas-only rule; panel, slot, and scrollbar drawing still follows this skill.
+
 ```java
 GuiAtlas.panel(graphics, 0, 0, imageWidth, imageHeight);              // nine-slice background
 GuiAtlas.sprite(graphics, GuiAtlas.SLOT, slot.x - 1, slot.y - 1);     // one slot

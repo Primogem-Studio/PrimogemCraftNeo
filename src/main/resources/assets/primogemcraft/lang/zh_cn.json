@@ -1703,6 +1703,8 @@
   "gui.primogemcraft.gorgeous_smithing_table.weapons": "祈愿武器",
   "gui.primogemcraft.stellar_converter.charge": "能量：%1$s/%2$s",
   "gui.primogemcraft.stellar_converter.cost": "耗能 %s",
+  "gui.primogemcraft.stellar_converter.channel_0": "A",
+  "gui.primogemcraft.stellar_converter.channel_1": "B",
   "message.primogemcraft.equilibrium.already": "§c§l当前石板效果已获得",
   "message.primogemcraft.equilibrium.reset": "§a§l你是创造模式，已潜行右键将均衡等级设置为 0",
   "message.primogemcraft.compass.restricted": "§c只能探测特定方块！",

@@ -1561,6 +1561,8 @@
   "gui.primogemcraft.gorgeous_smithing_table.weapons": "Wish Weapons",
   "gui.primogemcraft.stellar_converter.charge": "Charge: %1$s/%2$s",
   "gui.primogemcraft.stellar_converter.cost": "Cost %s",
+  "gui.primogemcraft.stellar_converter.channel_0": "A",
+  "gui.primogemcraft.stellar_converter.channel_1": "B",
   "message.primogemcraft.equilibrium.already": "§c§lThe current tablet effect has already been obtained",
   "message.primogemcraft.equilibrium.reset": "§a§lYou are in creative mode; sneak-right-click set the equilibrium level to 0",
   "message.primogemcraft.compass.restricted": "§cThis compass only detects specific blocks!",
