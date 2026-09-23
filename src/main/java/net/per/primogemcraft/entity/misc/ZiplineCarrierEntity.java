@@ -220,7 +220,12 @@ public class ZiplineCarrierEntity extends Entity {
     }
 
     @Override
+    public void kill() {
+    }
+
+    @Override
     public void remove(RemovalReason reason) {
+        if (reason == RemovalReason.KILLED) return;
         super.remove(reason);
         if (!level().isClientSide() && combat()) {
             if (lowerAnchor != null) lowerAnchor.discard();

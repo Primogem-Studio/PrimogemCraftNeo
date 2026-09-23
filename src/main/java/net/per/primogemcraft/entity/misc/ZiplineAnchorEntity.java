@@ -113,6 +113,16 @@ public class ZiplineAnchorEntity extends Entity {
     }
 
     @Override
+    public void kill() {
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        if (reason == RemovalReason.KILLED) return;
+        super.remove(reason);
+    }
+
+    @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(TEMPORARY, false);
     }
