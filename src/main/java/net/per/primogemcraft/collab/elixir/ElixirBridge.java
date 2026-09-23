@@ -13,11 +13,16 @@ import net.per.elixir.util.IElixirAction;
 import net.per.elixir.util.IElixirCalc;
 import net.per.primogemcraft.entity.misc.WishEntity;
 import net.per.primogemcraft.entity.mob.LivingItemEntity;
+import net.per.primogemcraft.item.misc.ViolaneItem;
+import net.per.primogemcraft.registry.PGCAttachments;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.living.LivingItemAPI;
 import net.per.primogemcraft.system.wish.WishBanner;
+import net.per.primogemcraft.system.wish.WishRarity;
+import net.per.primogemcraft.system.wish.WishResult;
 import net.per.primogemcraft.system.wish.WishRoller;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
@@ -28,7 +33,6 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
  */
 public final class ElixirBridge {
     private static final int PRIMOGEM_WISH_THRESHOLD = 1;
-    private static final int COMMON_WISH_VALUE = 0;
     private static final int DURATION_DIVISOR = 8;
     private static final int LAG_MINIMUM_DURATION = 60;
     private static final int LAG_MAXIMUM_DURATION = 160;
@@ -42,7 +46,21 @@ public final class ElixirBridge {
         ACTIONS.register("primogem", () -> (pharm, time, stack, level, entity) -> {
             if (pharm <= PRIMOGEM_WISH_THRESHOLD) return;
             if (entity instanceof ServerPlayer player && level instanceof ServerLevel serverLevel) {
-                WishEntity.spawnRing(serverLevel, player, WishRoller.roll(player, WishBanner.ACQUAINT, COMMON_WISH_VALUE, pharm));
+                var results = new ArrayList<WishResult>();
+                var random = player.getRandom();
+                var sunglasses = WishRoller.isWearingColorfulSunglasses(player);
+                var violane = ViolaneItem.isActive(player);
+                var pity = player.getData(PGCAttachments.WISH_PITY.get());
+                for (var remaining = Math.min(pharm, 100); remaining > 0; remaining -= 25) {
+                    var goldChance = Math.min(1.0D, remaining / 25.0D);
+                    var rarity = random.nextDouble() < goldChance ? WishRarity.GOLD
+                            : random.nextDouble() < WishRoller.purpleChance(WishBanner.ACQUAINT, 0) ? WishRarity.PURPLE : WishRarity.BLUE;
+                    pity = pity.count(rarity, false);
+                    results.add(new WishResult(WishBanner.ACQUAINT, rarity, false,
+                            violane && rarity == WishRarity.BLUE || sunglasses && rarity == WishRarity.GOLD, sunglasses));
+                }
+                player.setData(PGCAttachments.WISH_PITY.get(), pity);
+                WishEntity.spawnRing(serverLevel, player, results);
                 return;
             }
             if (level.isClientSide) return;
