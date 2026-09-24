@@ -10,6 +10,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.per.primogemcraft.entity.misc.ZiplineCarrierEntity;
+import net.per.primogemcraft.entity.misc.ZiplineAnchorEntity;
+import net.per.primogemcraft.client.ZiplineRenderSpace;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
@@ -28,8 +30,10 @@ public class ZiplineCarrierRenderer extends EntityRenderer<ZiplineCarrierEntity>
     @Override
     public void render(ZiplineCarrierEntity entity, float yaw, float partialTick, PoseStack poses, MultiBufferSource buffers, int light) {
         if (!entity.moving()) return;
-        var source = entity.source();
-        var target = entity.target();
+        var source = entity.combat() ? entity.source() : ZiplineRenderSpace.position(entity.level(),
+                Vec3.atBottomCenterOf(entity.sourceBase()).add(0, ZiplineAnchorEntity.ANCHOR_HEIGHT, 0), partialTick);
+        var target = entity.combat() ? entity.target() : ZiplineRenderSpace.position(entity.level(),
+                Vec3.atBottomCenterOf(entity.targetBase()).add(0, ZiplineAnchorEntity.ANCHOR_HEIGHT, 0), partialTick);
         var direction = target.subtract(source);
         if (direction.lengthSqr() < 1.0E-8) return;
         direction = direction.normalize();
@@ -37,7 +41,7 @@ public class ZiplineCarrierRenderer extends EntityRenderer<ZiplineCarrierEntity>
                 ? new Vec3(-direction.z, 0, direction.x)
                 : new Vec3(0, direction.z, -direction.y)).normalize().scale(CABLE_RADIUS);
         var perpendicular = direction.cross(side);
-        var origin = entity.getPosition(partialTick);
+        var origin = ZiplineRenderSpace.entityOrigin(entity, partialTick);
         source = source.subtract(origin);
         target = target.subtract(origin);
         var buffer = buffers.getBuffer(RenderType.leash());

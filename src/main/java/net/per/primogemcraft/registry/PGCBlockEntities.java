@@ -7,6 +7,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.per.primogemcraft.block.entity.ContainerWindowBlockEntity;
+import net.per.primogemcraft.block.entity.ZiplineBaseBlockEntity;
 import net.per.primogemcraft.block.entity.GorgeousSmithingTableBlockEntity;
 import net.per.primogemcraft.block.entity.MoraPileBlockEntity;
 import net.per.primogemcraft.block.entity.StellarConverterBlockEntity;
@@ -29,6 +30,10 @@ public class PGCBlockEntities {
     public static final String CONTAINER_WINDOW_NAME = "container_window";
 
     public static final DeferredRegister<BlockEntityType<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
+
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ZiplineBaseBlockEntity>> ZIPLINE_BASE =
+            REGISTRY.register("zipline_base", () -> BlockEntityType.Builder.of(ZiplineBaseBlockEntity::new, PGCBlocks.ZIPLINE_BASE.get()).build(null));
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<UnidentifiedDollBlockEntity>> UNIDENTIFIED_DOLL =

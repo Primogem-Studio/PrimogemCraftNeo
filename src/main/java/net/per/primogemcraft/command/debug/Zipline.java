@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.per.primogemcraft.block.ZiplineBaseBlock;
+import net.per.primogemcraft.block.entity.ZiplineBaseBlockEntity;
 import net.per.primogemcraft.entity.misc.ZiplineAnchorEntity;
 import net.per.primogemcraft.registry.PGCBlocks;
 import net.per.primogemcraft.registry.PGCEntities;
@@ -172,13 +173,14 @@ public final class Zipline {
         for (var position : original.keySet()) {
             var part = (position.getZ() - center.getZ() + 1) * 3 + position.getX() - center.getX() + 1;
             var state = position.getY() == center.getY()
-                    ? PGCBlocks.ZIPLINE_BASE.get().defaultBlockState().setValue(ZiplineBaseBlock.PART, part)
+                    ? PGCBlocks.ZIPLINE_BASE.get().defaultBlockState().setValue(ZiplineBaseBlock.PART, part).setValue(ZiplineBaseBlock.FACING, Direction.fromYRot(-yaw))
                     : Blocks.STONE.defaultBlockState();
             if (!level.setBlock(position, state, 3)) {
                 restore(level, original);
                 return false;
             }
         }
+        if (level.getBlockEntity(center) instanceof ZiplineBaseBlockEntity base) base.bind(anchor);
         if (!level.addFreshEntity(anchor)) {
             restore(level, original);
             return false;

@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "primogemcraft:mora_helmet"
+    "primogemcraft:mora_helmet",
+    "primogemcraft:colorful_sunglasses",
+    "primogemcraft:special_01_helmet"
   ]
 }

@@ -20,6 +20,7 @@ import net.per.primogemcraft.config.PGCConfig;
 import net.per.primogemcraft.registry.PGCEntities;
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.system.zipline.ZiplineGrip;
+import net.per.primogemcraft.system.zipline.ZiplineSpace;
 import org.joml.Vector3f;
 
 import java.util.List;
@@ -31,6 +32,9 @@ public class ZiplineCarrierEntity extends Entity {
     private static final EntityDataAccessor<Boolean> COMBAT = SynchedEntityData.defineId(ZiplineCarrierEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Vector3f> SOURCE_OFFSET = SynchedEntityData.defineId(ZiplineCarrierEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Float> HEADING = SynchedEntityData.defineId(ZiplineCarrierEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> SOURCE_ANCHOR = SynchedEntityData.defineId(ZiplineCarrierEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> TARGET_ANCHOR = SynchedEntityData.defineId(ZiplineCarrierEntity.class, EntityDataSerializers.INT);
+    private double travelProgress;
     public static final double RANGE = 128;
     private static final int MIN_LIFT_HEIGHT = 16;
     private static final int MAX_LIFT_HEIGHT = 24;
@@ -54,9 +58,10 @@ public class ZiplineCarrierEntity extends Entity {
 
     public void initialize(ZiplineAnchorEntity anchor) {
         lowerAnchor = upperAnchor = anchor;
-        entityData.set(SOURCE, anchor.blockPosition());
-        entityData.set(TARGET, anchor.blockPosition());
-        upperAnchor = anchor;
+        entityData.set(SOURCE, anchor.basePosition());
+        entityData.set(TARGET, anchor.basePosition());
+        entityData.set(SOURCE_ANCHOR, anchor.getId());
+        entityData.set(TARGET_ANCHOR, anchor.getId());
         setPos(anchor.attachment());
         setHeading(-anchor.getYRot() - 90.0F);
     }
@@ -78,11 +83,28 @@ public class ZiplineCarrierEntity extends Entity {
     }
 
     public Vec3 source() {
-        return endpoint(entityData.get(SOURCE)).add(new Vec3(entityData.get(SOURCE_OFFSET)));
+        return endpointPosition(SOURCE, SOURCE_ANCHOR);
     }
 
     public Vec3 target() {
-        return endpoint(entityData.get(TARGET)).add(new Vec3(entityData.get(SOURCE_OFFSET)));
+        return endpointPosition(TARGET, TARGET_ANCHOR);
+    }
+
+    private Vec3 endpointPosition(EntityDataAccessor<BlockPos> position, EntityDataAccessor<Integer> anchorId) {
+        if (!combat() && level().getEntity(entityData.get(anchorId)) instanceof ZiplineAnchorEntity anchor)
+            return anchor.attachment();
+        var point = endpoint(entityData.get(position)).add(new Vec3(entityData.get(SOURCE_OFFSET)));
+        return combat() ? point : ZiplineSpace.worldPosition(level(), point);
+    }
+
+    public BlockPos sourceBase() {
+        return level().getEntity(entityData.get(SOURCE_ANCHOR)) instanceof ZiplineAnchorEntity anchor
+                ? anchor.basePosition() : entityData.get(SOURCE);
+    }
+
+    public BlockPos targetBase() {
+        return level().getEntity(entityData.get(TARGET_ANCHOR)) instanceof ZiplineAnchorEntity anchor
+                ? anchor.basePosition() : entityData.get(TARGET);
     }
 
     public boolean combat() {
@@ -181,7 +203,7 @@ public class ZiplineCarrierEntity extends Entity {
         var eye = player.getEyePosition();
         var look = player.getLookAngle();
         for (var anchor : candidates) {
-            if (anchor.isRemoved() || anchor.temporary() || anchor.blockPosition().equals(entityData.get(SOURCE))) continue;
+            if (anchor.isRemoved() || anchor.temporary() || anchor.getId() == entityData.get(SOURCE_ANCHOR)) continue;
             var attachment = anchor.attachment();
             if (attachment.distanceToSqr(position()) > RANGE * RANGE) continue;
             var direction = attachment.subtract(eye).normalize();
@@ -196,10 +218,13 @@ public class ZiplineCarrierEntity extends Entity {
 
     public void depart(Player player, int targetId) {
         if (moving() || combat() || !hasPassenger(player) || !(level().getEntity(targetId) instanceof ZiplineAnchorEntity anchor)) return;
-        if (anchor.temporary() || anchor.blockPosition().equals(entityData.get(SOURCE)) || !anchor.intact()
+        if (anchor.temporary() || anchor.getId() == entityData.get(SOURCE_ANCHOR) || !anchor.intact()
                 || anchor.attachment().distanceToSqr(position()) > RANGE * RANGE
                 || anchor.attachment().subtract(player.getEyePosition()).normalize().dot(player.getLookAngle()) < Math.cos(Math.toRadians(25))) return;
-        entityData.set(TARGET, anchor.blockPosition());
+        upperAnchor = anchor;
+        entityData.set(TARGET, anchor.basePosition());
+        entityData.set(TARGET_ANCHOR, anchor.getId());
+        travelProgress = 0;
         var direction = target().subtract(source());
         if (direction.horizontalDistanceSqr() > 0.0001) setHeading(ZiplineGrip.facingYaw(direction));
         entityData.set(MOVING, true);
@@ -260,11 +285,16 @@ public class ZiplineCarrierEntity extends Entity {
         }
         if (!combat()) {
             lowerAnchor = validateAnchor(entityData.get(SOURCE), lowerAnchor);
-            upperAnchor = entityData.get(SOURCE).equals(entityData.get(TARGET)) ? lowerAnchor : validateAnchor(entityData.get(TARGET), upperAnchor);
+            upperAnchor = entityData.get(SOURCE_ANCHOR).equals(entityData.get(TARGET_ANCHOR)) ? lowerAnchor : validateAnchor(entityData.get(TARGET), upperAnchor);
             if (lowerAnchor == null || upperAnchor == null) {
                 release();
                 return;
             }
+            entityData.set(SOURCE, lowerAnchor.basePosition());
+            entityData.set(TARGET, upperAnchor.basePosition());
+            entityData.set(SOURCE_ANCHOR, lowerAnchor.getId());
+            entityData.set(TARGET_ANCHOR, upperAnchor.getId());
+            if (!moving()) setPos(source());
         }
         if (combat() && departureDelay > 0) {
             if (--departureDelay == 0) {
@@ -279,14 +309,18 @@ public class ZiplineCarrierEntity extends Entity {
         }
         if (moving()) {
             var speed = PGCConfig.ZIPLINE_SPEED.get() / (combat() ? 40.0 : 20.0);
-            var remaining = target().subtract(position());
-            var next = remaining.length() <= speed ? target() : position().add(remaining.normalize().scale(speed));
+            var start = source();
+            var end = target();
+            var direction = end.subtract(start);
+            travelProgress = Math.min(1, travelProgress + speed / Math.max(direction.length(), 1.0E-8));
+            var next = start.lerp(end, travelProgress);
+            if (direction.horizontalDistanceSqr() > 0.0001) setHeading(ZiplineGrip.facingYaw(direction));
             if (!level().hasChunkAt(BlockPos.containing(next))) {
                 release();
                 return;
             }
             setPos(next);
-            if (remaining.length() <= speed) {
+            if (travelProgress >= 1) {
                 positionRider(rider);
                 playStage(PGCSounds.ZIPLINE_ARRIVE.get());
                 if (combat()) {
@@ -295,6 +329,7 @@ public class ZiplineCarrierEntity extends Entity {
                     return;
                 }
                 entityData.set(SOURCE, entityData.get(TARGET));
+                entityData.set(SOURCE_ANCHOR, entityData.get(TARGET_ANCHOR));
                 lowerAnchor = upperAnchor;
                 entityData.set(MOVING, false);
             }
@@ -303,10 +338,8 @@ public class ZiplineCarrierEntity extends Entity {
     }
 
     private ZiplineAnchorEntity validateAnchor(BlockPos position, ZiplineAnchorEntity cached) {
-        if (!level().hasChunkAt(position)) return null;
-        var anchor = cached != null && !cached.isRemoved() && cached.blockPosition().equals(position)
-                ? cached : ZiplineAnchorEntity.find(level(), position);
-        return anchor != null && anchor.intact() ? anchor : null;
+        var anchor = cached != null && !cached.isRemoved() ? cached : ZiplineAnchorEntity.find(level(), position);
+        return anchor != null && level().hasChunkAt(anchor.basePosition()) && anchor.intact() ? anchor : null;
     }
 
     @Override
@@ -357,6 +390,8 @@ public class ZiplineCarrierEntity extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(SOURCE_ANCHOR, -1);
+        builder.define(TARGET_ANCHOR, -1);
         builder.define(SOURCE, BlockPos.ZERO);
         builder.define(TARGET, BlockPos.ZERO);
         builder.define(MOVING, false);

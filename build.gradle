@@ -88,8 +88,18 @@ neoForge {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+configurations {
+    localRuntime {
+        canBeConsumed = false
+        canBeResolved = false
+    }
+    runtimeClasspath.extendsFrom(localRuntime)
+}
 
 dependencies {
+    localRuntime "maven.modrinth:create:6.0.10+mc1.21.1"
+    localRuntime "maven.modrinth:create-aeronautics:1.3.2+mc1.21.1"
+    localRuntime "maven.modrinth:sable:2.0.5+mc1.21.1"
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
     compileOnly "maven.modrinth:genshincraft:3.1.3"

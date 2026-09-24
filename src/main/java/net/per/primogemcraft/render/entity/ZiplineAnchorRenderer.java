@@ -9,7 +9,9 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.per.primogemcraft.client.ZiplineModel;
+import net.per.primogemcraft.client.ZiplineRenderSpace;
 import net.per.primogemcraft.entity.misc.ZiplineAnchorEntity;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
@@ -23,14 +25,23 @@ public class ZiplineAnchorRenderer extends EntityRenderer<ZiplineAnchorEntity> {
 
     @Override
     public boolean shouldRender(ZiplineAnchorEntity entity, Frustum frustum, double x, double y, double z) {
-        return entity.shouldRender(x, y, z) && frustum.isVisible(new AABB(
-                entity.getX() - 2.2, entity.getY(), entity.getZ() - 2.2,
-                entity.getX() + 2.2, entity.getY() + 6.5, entity.getZ() + 2.2));
+        var local = Vec3.atBottomCenterOf(entity.basePosition());
+        var previous = entity.temporary() ? entity.position() : ZiplineRenderSpace.position(entity.level(), local, 0);
+        var current = entity.temporary() ? entity.position() : ZiplineRenderSpace.position(entity.level(), local, 1);
+        return entity.shouldRenderAtSqrDistance(Math.min(previous.distanceToSqr(x, y, z), current.distanceToSqr(x, y, z)))
+                && frustum.isVisible(new AABB(previous, current).inflate(8));
     }
 
     @Override
     public void render(ZiplineAnchorEntity entity, float yaw, float partialTick, PoseStack poses, MultiBufferSource buffers, int light) {
         poses.pushPose();
+        if (!entity.temporary()) {
+            var local = Vec3.atBottomCenterOf(entity.basePosition());
+            var position = ZiplineRenderSpace.position(entity.level(), local, partialTick);
+            var offset = position.subtract(ZiplineRenderSpace.entityOrigin(entity, partialTick));
+            poses.translate(offset.x, offset.y, offset.z);
+            poses.mulPose(ZiplineRenderSpace.rotation(entity.level(), local, partialTick));
+        }
         poses.mulPose(Axis.YP.rotationDegrees(yaw));
         var scale = (float) ZiplineAnchorEntity.MODEL_SCALE / 16;
         poses.scale(scale, scale, scale);
