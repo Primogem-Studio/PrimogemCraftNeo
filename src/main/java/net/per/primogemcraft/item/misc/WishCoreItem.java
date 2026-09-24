@@ -6,7 +6,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +14,11 @@ import net.minecraft.world.level.Level;
 import net.per.primogemcraft.component.CustomBar;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.registry.PGCSounds;
-import net.per.primogemcraft.system.wish.*;
+import net.per.primogemcraft.system.wish.WishBanner;
+import net.per.primogemcraft.system.wish.WishReports;
+import net.per.primogemcraft.system.wish.WishRoller;
+import net.per.primogemcraft.system.wish.WishTooltips;
+import net.per.primogemcraft.system.wish.WishValue;
 
 import java.util.List;
 
@@ -34,15 +37,6 @@ public class WishCoreItem extends Item {
             feed(serverPlayer, stack);
         }
         return InteractionResultHolder.consume(stack);
-    }
-
-    @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
-        if (entity instanceof ServerPlayer player) {
-            var source = player.getOffhandItem();
-            player.displayClientMessage(WishReports.offhandValue(WishValueMaterials.value(source) * source.getCount()), false);
-        }
-        return super.onEntitySwing(stack, entity, hand);
     }
 
     @Override

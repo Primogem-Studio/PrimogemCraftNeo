@@ -1108,7 +1108,7 @@
 
   "message.primogemcraft.wish.core_no_material": "§c副手没有可以喂食的物品",
   "message.primogemcraft.wish.core_full": "§c祈愿核心已经喂满%s个材料",
-  "message.primogemcraft.wish.core_offhand_value": "§5当前副手物品总共可提供%s§5点祈愿值",
+  "message.primogemcraft.wish.core_offhand_value": "§5当前副手物品每个可提供%s§5点祈愿值",
   "message.primogemcraft.wish.record_header": "玩家<%s>的抽卡记录：",
   "message.primogemcraft.wish.record_time": "截至系统时:%s记录",
   "message.primogemcraft.wish.record_blue": "§7当前出蓝%s§7总共",

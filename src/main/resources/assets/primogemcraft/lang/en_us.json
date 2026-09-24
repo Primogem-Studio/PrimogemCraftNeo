@@ -966,7 +966,7 @@
 
   "message.primogemcraft.wish.core_no_material": "§cThere is nothing in the off hand to feed",
   "message.primogemcraft.wish.core_full": "§cThe wish core already holds %s materials",
-  "message.primogemcraft.wish.core_offhand_value": "§5The off-hand items can provide %s§5 wish value in total",
+  "message.primogemcraft.wish.core_offhand_value": "§5Each off-hand item can provide %s§5 wish value",
   "message.primogemcraft.wish.record_header": "Wish record of <%s>:",
   "message.primogemcraft.wish.record_time": "Recorded at system time %s",
   "message.primogemcraft.wish.record_blue": "§7Blue so far:%s",
