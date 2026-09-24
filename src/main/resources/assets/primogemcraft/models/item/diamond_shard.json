@@ -2,5 +2,79 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "primogemcraft:item/diamond_shard"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "primogemcraft:count": 2
+      },
+      "model": "primogemcraft:item/diamond_shard_2"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 3
+      },
+      "model": "primogemcraft:item/diamond_shard_3"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 4
+      },
+      "model": "primogemcraft:item/diamond_shard_4"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 5
+      },
+      "model": "primogemcraft:item/diamond_shard_5"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 6
+      },
+      "model": "primogemcraft:item/diamond_shard_6"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 7
+      },
+      "model": "primogemcraft:item/diamond_shard_7"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 8
+      },
+      "model": "primogemcraft:item/diamond_shard_8"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 9
+      },
+      "model": "primogemcraft:item/diamond_shard_9"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 10
+      },
+      "model": "primogemcraft:item/diamond_shard_10"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 16
+      },
+      "model": "primogemcraft:item/diamond_shard_16"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 32
+      },
+      "model": "primogemcraft:item/diamond_shard_32"
+    },
+    {
+      "predicate": {
+        "primogemcraft:count": 64
+      },
+      "model": "primogemcraft:item/diamond_shard_64"
+    }
+  ]
 }

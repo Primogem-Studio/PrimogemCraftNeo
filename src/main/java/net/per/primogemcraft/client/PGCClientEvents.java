@@ -73,7 +73,7 @@ public class PGCClientEvents {
                 (stack, level, entity, seed) -> StackOfCosmicBigLottoItem.lottos(stack)));
         event.enqueueWork(() -> {
             ItemPropertyFunction count = (stack, level, entity, seed) -> stack.getCount();
-            for (var item : List.of(PGCItems.MORA.get(), PGCItems.PRIMOGEM_SHARD.get(), PGCItems.ELEMENTAL_MOLTEN_BEAD_FRAGMENT.get()))
+            for (var item : List.of(PGCItems.MORA.get(), PGCItems.PRIMOGEM_SHARD.get(), PGCItems.DIAMOND_SHARD.get(), PGCItems.ELEMENTAL_MOLTEN_BEAD_FRAGMENT.get()))
                 ItemProperties.register(item, COUNT_PROPERTY, count);
         });
         event.enqueueWork(() -> {
