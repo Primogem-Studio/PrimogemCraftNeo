@@ -10,6 +10,7 @@ import net.per.primogemcraft.client.WishMaterialValues;
 import net.per.primogemcraft.client.WishLootItems;
 import net.per.primogemcraft.client.gui.ChoiceClientHandler;
 import net.per.primogemcraft.entity.misc.ZiplineCarrierEntity;
+import net.per.primogemcraft.item.misc.LuckySpecialTicketItem;
 import net.per.primogemcraft.system.choice.ChoiceRegistry;
 import net.per.primogemcraft.system.element.AnemoEffectMode;
 
@@ -40,6 +41,9 @@ public final class PGCNetwork {
         });
         registrar.playToServer(AnemoEffectPayload.TYPE, AnemoEffectPayload.STREAM_CODEC, (payload, context) -> {
             if (context.player() instanceof ServerPlayer player) AnemoEffectMode.cycle(player);
+        });
+        registrar.playToServer(LuckySpecialTicketCashOutPayload.TYPE, LuckySpecialTicketCashOutPayload.STREAM_CODEC, (payload, context) -> {
+            if (context.player() instanceof ServerPlayer player) LuckySpecialTicketItem.cashOut(player);
         });
     }
 }

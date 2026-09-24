@@ -7,7 +7,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -51,26 +50,25 @@ public class LuckySpecialTicketItem extends DescribedItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         var stack = player.getItemInHand(hand);
-        if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+        if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResultHolder.consume(stack);
         var waited = waitedTicks(stack);
         if (waited >= WAIT_TICKS) reveal(serverPlayer, stack);
         else if (waited == NOT_JOINED) join(serverPlayer, stack);
         else serverPlayer.displayClientMessage(Component.translatable(MESSAGE_PREFIX + "waiting"), true);
-        return InteractionResultHolder.sidedSuccess(stack, false);
+        return InteractionResultHolder.consume(stack);
     }
 
-    @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
-        if (!(entity instanceof ServerPlayer player)) return super.onEntitySwing(stack, entity, hand);
+    public static void cashOut(ServerPlayer player) {
+        var stack = player.getMainHandItem();
+        if (!player.isAlive() || player.isSpectator() || !stack.is(PGCItems.LUCKY_SPECIAL_TICKET.get())) return;
         if (waitedTicks(stack) != NOT_JOINED) {
             player.sendSystemMessage(Component.translatable(MESSAGE_PREFIX + "regret"));
-            return false;
+            return;
         }
         PlayerItems.give(player, jade(CASH_OUT_JADE));
         stack.shrink(1);
         draw(player);
         player.displayClientMessage(Component.translatable(MESSAGE_PREFIX + "cashout"), true);
-        return false;
     }
 
     @Override

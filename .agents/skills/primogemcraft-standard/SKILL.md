@@ -55,6 +55,14 @@ Current layout: `PrimogemCraft.java` (the `@Mod` entry point), `registry/PGCItem
 13. Unless necessary, do not explicitly use the `this` keyword to call methods or access fields.
 14. **Mixin is a last resort, and it needs consent.** Reach for a NeoForge event, an existing extension point, a registry hook, a data file, or a delegating class first. Touch `mixin/` only when nothing in the public API can express the change, and only after the user has approved that specific mixin: state why a mixin is unavoidable in the reply and wait, never add one on your own initiative.
 
+## Separate left-click and right-click actions
+
+- All future left-click and right-click features must have separate input paths. Never infer a left click from `onEntitySwing`: right-click success and other animations can also swing the hand and accidentally spend items or grant rewards.
+- Follow `client/WishMaterialValues.java`: handle left clicks in a `Dist.CLIENT` subscriber for `InputEvent.InteractionKeyMappingTriggered`, gated by `event.isAttack()`, no open screen, a present player, and the expected main-hand item. Keep right-click behavior in `Item.use` or the appropriate use/interact hook. Respect canceled input events and decide explicitly whether the custom action should also allow the vanilla attack.
+- Client-only display actions may stay on the client. Inventory, rewards, and persistent state changes must use a dedicated serverbound payload registered in `network/PGCNetwork.java`. Recheck the current held item, player eligibility, and item state on the server; never trust client-supplied reward amounts or item state. See `client/LuckySpecialTicketInput.java`, `network/LuckySpecialTicketCashOutPayload.java`, and `item/misc/LuckySpecialTicketItem.java` for a complete example.
+- When a right-click action needs no swing, use `InteractionResultHolder.consume(stack)` as `WishCoreItem.use` does. Suppressing the swing alone is not a replacement for separate input paths. Do not use timing flags or cooldowns to guess which button caused a swing.
+- Review air, block, and entity targets; main hand versus offhand; a single item versus a stack; and repeated clicks. Verify that right-click never executes left-click behavior, left-click never executes right-click behavior, and each accepted action mutates state only once. Distinguish source/build checks from in-game checks that were actually run.
+
 ## Naming standard
 
 Names are the part of this project most likely to be wrong, so they get their own rule.
