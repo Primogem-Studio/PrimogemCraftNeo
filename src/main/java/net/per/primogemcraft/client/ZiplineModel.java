@@ -23,7 +23,7 @@ public final class ZiplineModel extends SimplePreparableReloadListener<float[]> 
 
     @Override
     protected float[] prepare(ResourceManager manager, ProfilerFiller profiler) {
-        try (var reader = manager.openAsReader(ResourceLocation.fromNamespaceAndPath(MOD_ID, "models/entity/zipline.json"))) {
+        try (var reader = manager.openAsReader(ResourceLocation.fromNamespaceAndPath(MOD_ID, "entity_models/zipline.json"))) {
             return bake(JsonParser.parseReader(reader).getAsJsonObject().getAsJsonArray("elements"));
         } catch (IOException exception) {
             throw new IllegalStateException("Unable to load zipline model", exception);
