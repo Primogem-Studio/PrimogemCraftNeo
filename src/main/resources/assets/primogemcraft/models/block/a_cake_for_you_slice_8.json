@@ -3,7 +3,7 @@
   "render_type": "solid",
   "elements": [
     {
-      "name": "8",
+      "name": "cake_slice_8",
       "from": [
         1,
         1,
@@ -70,6 +70,42 @@
           "texture": "#1"
         }
       }
+    }
+  ],
+  "groups": [
+    {
+      "name": "a_cake_for_you",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "children": [
+        {
+          "name": "cake_slices",
+          "origin": [
+            0,
+            0,
+            0
+          ],
+          "color": 0,
+          "children": [
+            {
+              "name": "cake_slice_8",
+              "origin": [
+                0,
+                0,
+                0
+              ],
+              "color": 0,
+              "children": [
+                0
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

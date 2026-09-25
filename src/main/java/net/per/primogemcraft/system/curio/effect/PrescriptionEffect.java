@@ -1,7 +1,6 @@
 package net.per.primogemcraft.system.curio.effect;
 
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -68,6 +67,6 @@ public class PrescriptionEffect extends CurioEffect {
     }
 
     private static ResourceLocation modifierId(Holder<Attribute> attribute) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, "prescription/" + BuiltInRegistries.ATTRIBUTE.getResourceKey(attribute.value()).orElseThrow().location().getPath());
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, "prescription/" + attribute.unwrapKey().orElseThrow().location().getPath());
     }
 }
