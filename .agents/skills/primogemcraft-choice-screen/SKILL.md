@@ -5,6 +5,8 @@ description: Use whenever the generic card-choice interface is opened, changed, 
 
 # Generic choice screen
 
+Apply [the project standard](../primogemcraft-standard/SKILL.md) for Ponytail compatibility, verification, and concise replies. Preserve the resolution and client/server contracts even when a shortcut would be shorter. If any option grants or charges fragments, also apply [fragment payment](../primogemcraft-fragment-payment/SKILL.md); automatic inventory grants are not a substitute for that contract.
+
 One server-side call shows a player a row of cards and the server learns how it ended. The card count is whatever the caller passes; "three" survives only in the class name `ChoiceScreen` and the lang keys `gui.primogemcraft.choice.*`. The callers are `WishEntity` (three loot previews), `CurioChoice` (three curios), `EnchantChoice` (enchantment options), `HertaShopOptions` (the shop menu) and `CurioReward` (a non-selective reveal).
 
 Three modes exist, and they differ only in what the screen does with the player's input:
@@ -354,11 +356,6 @@ These already exist in both lang files. A new caller supplies `title` and `subti
 
 ## Verification
 
-Compile after any change to this area:
-
-```powershell
-$gradle = Get-ChildItem "$env:USERPROFILE\.gradle\wrapper\dists\gradle-9.7.1-bin" -Recurse -Filter gradle.bat | Select-Object -First 1 -ExpandProperty FullName
-& $gradle compileJava --console=plain
-```
+For implementation changes, run `compileJava` and the required completion checks using the current environment's launcher resolved by [the project verification rules](../primogemcraft-standard/SKILL.md#verification).
 
 Compilation proves nothing about the animation, the texture atlas, or the timer. Say plainly that the screen itself was not run unless the caller was launched with `runClient`.

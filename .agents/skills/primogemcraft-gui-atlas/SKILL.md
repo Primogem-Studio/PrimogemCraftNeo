@@ -5,6 +5,8 @@ description: Use when building, changing, reviewing or debugging a container-sty
 
 # The shared container GUI sprite sheet
 
+Apply [the project standard](../primogemcraft-standard/SKILL.md) for Ponytail compatibility, verification, and concise replies. Keep the geometry and visual checks below; report their result briefly. In-game checks follow the standard's launch authorization rule; use the offline mock where applicable and disclose any unrun in-game checks.
+
 One sheet, one look, one place to fix. Every container-style screen in this mod draws from a single sprite sheet; no screen draws its own skin, and no two screens invent their own slot or scrollbar art.
 
 | Fact | Value |
@@ -80,21 +82,25 @@ graphics.fillGradient(x, y, x + SLOT_ITEM, y + SLOT_ITEM, alpha << 24 | HIGHLIGH
 
 ## Regenerating the placeholder sheet
 
-```powershell
-java .agents/skills/primogemcraft-gui-atlas/scripts/GenerateGuiAtlas.java src/main/resources/assets/primogemcraft/textures/gui/container_window.png
+Use the project's JDK from the current environment; these single-file programs need the JDK's `java.desktop` module but no Minecraft runtime, Python, or external library. Run from the repository root. The commands work in PowerShell, cmd, and POSIX shells when `java` resolves to that JDK; otherwise invoke its executable with the current shell's quoting. Headless mode allows PNG generation on a server without a display. Create any chosen output directory first.
+
+```text
+java "-Djava.awt.headless=true" .agents/skills/primogemcraft-gui-atlas/scripts/GenerateGuiAtlas.java src/main/resources/assets/primogemcraft/textures/gui/container_window.png
 ```
 
 The script is a single-file Java program (JDK 21, no build, no dependencies) that writes a 64 × 64 ARGB PNG from the same palette table. It overwrites the file, so keep the generator and the sheet in sync; never hand-edit the PNG without editing the generator.
 
 ## Checking alignment without launching the game
 
-```powershell
-java .agents/skills/primogemcraft-gui-atlas/scripts/MockContainerWindow.java src/main/resources/assets/primogemcraft/textures/gui/container_window.png mock.png
+```text
+java "-Djava.awt.headless=true" .agents/skills/primogemcraft-gui-atlas/scripts/MockContainerWindow.java src/main/resources/assets/primogemcraft/textures/gui/container_window.png mock.png
 ```
 
 This draws a full container window offline from the real PNG: panel, a 6 × 9 grid, the scrollbar, the inventory block and the label strips. Look at the result before comparing anything in code — a slot that is one pixel off, a scrollbar that is taller than the grid, or a label that touches the grid is obvious in the image and invisible in a diff. It prints the panel size, the grid frame range, the scrollbar column, the inventory row and the hotbar row, which must match `ContainerWindowLayout`.
 
 The mock mirrors the layout constants and the sprite table on purpose, so it runs without Minecraft. When `ContainerWindowLayout` or `GuiAtlas` changes, update the mock in the same edit; a mock with stale constants verifies the wrong geometry.
+
+The output path is caller-selected: use a task output or temporary directory for checks, and do not commit `mock.png`. Inspect the result with any available image viewer. If no viewer is available, check the printed geometry and image dimensions and report visual inspection as unperformed. Resolve Gradle through [the project verification rules](../primogemcraft-standard/SKILL.md#verification), not through a fixed shell or user cache path.
 
 ## Checklist before calling GUI work done
 
@@ -107,7 +113,7 @@ The mock mirrors the layout constants and the sprite table on purpose, so it run
 - The scrollbar height, the scissor rectangle and the grid hit test all use the same frame rectangle.
 - `MockContainerWindow` renders a window whose printed frame range and row positions match `ContainerWindowLayout`.
 - `compileJava` passes.
-- Legacy screens with their own background textures (`gorgeous_smithing_table.png`, `stellar_converter.png`, `choice_card*.png`) are out of scope until they are touched; when they are, move their reusable parts into this sheet rather than adding another background.
+- Reuse this atlas for new container panels, slots, and scrollbars. A text, button, or behavior fix in a legacy screen does not require a background migration. Migrate reusable container art when the requested change actually redesigns that art; card faces and backs retain the separate texture contract in [choice screen](../primogemcraft-choice-screen/SKILL.md).
 
 ## Mistakes this sheet exists to prevent
 

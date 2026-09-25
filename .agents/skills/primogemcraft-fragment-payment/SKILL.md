@@ -5,6 +5,8 @@ description: Use whenever PrimogemCraftNeo code consumes, grants, counts, prices
 
 # Cosmic Fragment payment
 
+Apply [the project standard](../primogemcraft-standard/SKILL.md) for Ponytail compatibility, verification, and concise replies. The bankbook contract is part of the minimum working solution; reuse its entry points rather than adding a shorter inventory-only path.
+
 **The rule, binding, in both directions:**
 
 1. Every custom method in this mod that **consumes** Cosmic Fragments for a player counts and pays through `OtherworldBankbook`, never through `PlayerItems` alone. A path that calls `PlayerItems.count`/`PlayerItems.take` on `PGCItems.COSMIC_FRAGMENT` is incomplete — it ignores the fragments the player has stored in the Otherworld Bankbook, which the item's own tooltip promises to spend "only when paying at events or shops". In the words it was asked for: 所有的本mod的自定义方法实现消耗宇宙碎片都应当兼容异世界存折。
@@ -75,7 +77,7 @@ public boolean fragments(int amount) {
 Ordering rules that follow:
 
 - Pay **after** the step that can still fail. `EventContext.enchant(grade, fragments)` opens the enchant screen first and only then pays, so a screen that does not open costs nothing.
-- A payment that is one step of an `&&` chain has no refund; keep paid steps last, and make the paid step the one whose failure ends the event.
+- An `&&` chain has no rollback. Check affordability and other prerequisites before mutation, and coordinate fallible effects and payment through the existing helper on the server thread. Keep payment after the fallible screen-opening step as `enchant` does; do not generalize this into granting rewards before an unchecked payment. If either half can still fail after the other commits, handle that failure explicitly rather than rearranging the chain.
 - Never combine a bankbook payment with a separate `PlayerItems.take` of the same fragments. One cost is paid once, in one call.
 
 ## The grant contract
@@ -148,12 +150,7 @@ These read or destroy fragments without the bankbook. They are the open follow-u
 
 ## Verification
 
-Compile after any change here:
-
-```powershell
-$gradle = Get-ChildItem "$env:USERPROFILE\.gradle\wrapper\dists\gradle-9.7.1-bin" -Recurse -Filter gradle.bat | Select-Object -First 1 -ExpandProperty FullName
-& $gradle compileJava --console=plain
-```
+For implementation changes, run `compileJava` and the required completion checks using the current environment's launcher resolved by [the project verification rules](../primogemcraft-standard/SKILL.md#verification).
 
 Compilation proves nothing about payment or grant behaviour. The manual checks need a running game:
 

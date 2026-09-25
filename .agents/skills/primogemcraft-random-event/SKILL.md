@@ -5,6 +5,8 @@ description: Use when working on the random-event system in the PrimogemCraftNeo
 
 # Random events
 
+Apply [the project standard](../primogemcraft-standard/SKILL.md) for Ponytail compatibility, verification, and concise replies. The contracts below are implementation requirements, not a checklist to repeat to the user.
+
 A random event is a piece of gameplay that is offered to one player as a card and only then happens. The world offers it as an entity the player right-clicks; the player picks a card out of a group; the picked card runs an action. Everything an event may do to the world goes through one `EventContext`.
 
 An **event** is a card: a number, a title, a description, an action and an optional condition. A **group** is a hand of cards: a number, a title, a weight and a lazy list of event numbers. Nothing else exists — there is no category, no rarity, no per-event weight, and the condition is the only thing that can make a card un-clickable before it is picked.
@@ -124,7 +126,7 @@ public interface EventCondition {
 | `hasHealth(double ratio)` | Whether current health is at least `maxHealth * ratio`. |
 | `health(double ratio)` | Same check, then hurts with generic damage for `maxHealth * ratio`. Can kill. |
 | `enchant(EnchantGrade)` | Opens `EnchantChoice.open(player, grade)`. |
-| `enchant(EnchantGrade, int fragments)` | Charges the fragments first, then opens. |
+| `enchant(EnchantGrade, int fragments)` | Checks enchantable targets and affordability, opens the screen, then pays only if opening succeeded. |
 | `curios(TagKey<Item> tag, int count)` | Rolls up to `count` distinct curios from a `c` item tag (20 attempts) and opens `CurioChoice` titled with the event's own title, hinting with `gui.primogemcraft.event.hint`, granting through `Curios.give`. `deny()` when the tag yields nothing. |
 | `lootTable(ResourceLocation table, int count)` | Rolls a loot table through `EventLoot.roll`, dedups with `ChoiceSupport.distinct`, and offers the results under `gui.primogemcraft.event.loot`. |
 | `choose(List<ItemStack> options, Component title)` | A plain `ChoiceRegistry` pick over up to N stacks: `ITEM_MODEL`, `ChoiceSupport.DEFAULT_CARDS`, `FASTEST` spin, one turn. |
@@ -136,7 +138,7 @@ public interface EventCondition {
 
 Two composition rules follow from the `boolean` return:
 
-- **Chain with `&&`.** `context.health(0.2D) && context.enchant(EnchantGrade.LOW)` means "pay, then act, and stop if the payment failed". Every shipped multi-step action is written this way.
+- **Use `&&` only when partial completion is acceptable.** It short-circuits but does not roll back earlier effects. Check prerequisites before mutation; for paid operations use the existing helper that coordinates eligibility, the fallible step, and payment. Do not move a reward before an unchecked payment or a payment before an operation that can still fail merely to shorten the action.
 - **`false` means "nothing happened", and the screen is the only thing that reads it.** `EventChoice` turns it into a refusal that keeps the card screen open; `EventChain` and every other caller ignore it. Do not write an action whose `false` is ambiguous between "acted but quietly" and "did nothing at all".
 
 `EventContext.choose` and `EventContext.curios` grant the result themselves in the `ChoiceRegistry` callback; `lootTable` and `choose` are thin wrappers over it. A caller that wants different art or a different grant writes its own `ChoiceRegistry.open` call — see the `primogemcraft-choice-screen` skill for that contract.
@@ -314,7 +316,7 @@ All of `/primogemcraft event …` requires permission level 2.
 
 1. Add a `private static final String PATH = "…"` constant next to the others in `RandomEvents`, using the same slash-grouped shape as its neighbours.
 2. Add the matching `private static RandomEvent` field, or register it without keeping a field if no group needs to name it.
-3. Register it inside `registerAll()` with a lambda over `EventContext`. Write the whole action as one `&&` chain: costs first, effects last.
+3. Register it inside `registerAll()` with a lambda over `EventContext`. Reuse a helper that coordinates the cost and effect; use an `&&` chain only when its partial-failure behavior is correct. Check eligibility first and avoid irreversible payment before a later step that can fail. Follow the fragment-payment contract for fragment costs.
 4. If the action can return `false` — a price it cannot pay, a gate, a tag with nothing in it, nothing enchantable in the inventory — pass an `EventCondition` built from its factories (`EventCondition.all(EventCondition.fragments(20), EventCondition.enchantTargets())`), each part a pure copy of one check the action makes. Leave it out only when the action has no way to fail, and add a factory beside `EventContext` when the check you need has none.
 5. Add both lang keys, `event.primogemcraft.<path>.title` and `.description`, to `zh_cn.json` and `en_us.json`.
 6. Put it in at least one group in `registerGroups()` — an event that belongs to no group can only be reached by `run <number>`.
@@ -337,7 +339,7 @@ All of `/primogemcraft event …` requires permission level 2.
 - **Registration runs on the client too.** `RandomEventRenderer.getTextureLocation` calls `entity.group()`, which calls `EventRegistry.group`, which calls `load()`. The first frame with an event entity in view therefore executes `RandomEvents.registerAll()` on the client. Keep the registration body free of server-only state — no level, no player, no world data.
 - **A weight of 0 still fires.** `EventGroup`'s compact constructor clamps to `Math.max(1, weight)`. To keep a group out of the natural drop pool, do not register it as a weighted group at all, or accept that every registered group is reachable.
 - **`deny()` is rate-limited, and it is the only "no".** It shares one 100-tick gate per player, so a player who fails two different events in five seconds sees only the first message. Returning `false` silently instead of calling `deny()` gives the player no feedback; calling `deny()` outside a payment check gives misleading ones.
-- **A `&&` chain does not refund.** A paid step that runs before the step which can fail still costs the player when that step fails. `context.enchant(grade, fragments)` is written the safe way — it checks `hasEnchantTargets` and the fragments, opens the screen, and only then takes the payment — but an event that pays with its own `context.fragments(...)` in front of another step, the way `enchant/health_special` does, has no such protection. Order the chain so paid steps are last, or make the paid step the one whose failure ends the event.
+- **A `&&` chain does not refund.** A paid step before a fallible effect can charge for a failed event. `context.enchant(grade, fragments)` checks targets and affordability, opens the screen, then pays only after successful opening. Reuse that coordinated helper; follow the [fragment-payment ordering contract](../primogemcraft-fragment-payment/SKILL.md#the-contract) for new paid paths rather than applying a blanket costs-first or costs-last rule.
 - **The enchant screen only opens when something in the inventory can really be enchanted.** `EnchantChoice.hasTargets` and its pool are one filter, and it is `stack.isEnchantable() && stack.getEnchantmentValue() > 0`: a damageable item whose enchantment value is 0 — a shield, an elytra, shears, flint and steel — is `isEnchantable()` yet can never receive an enchantment, so counting it would make an enchant card look clickable and then open nothing at all. `hasEnchantTargets` is exactly the check that keeps `enchant/fragments_*` from charging fragments for a screen that never appears.
 - **`health(ratio)` can kill.** It is unresisted generic damage for a fraction of max health, so `0.95` is lethal to a player already hurt. The `hasHealth` pre-check is what makes the shipped `enchant/health_special` survivable.
 - **A forced pick on the event screen only takes cards that are clickable, and `leave` is the way out.** ESC and the 30-second timer skip every card whose condition is unmet or that the server has refused, and fall back to the group's `leave` card when none is left. Adding a conditional event to a group that has no unconditional member therefore also adds a `leave` card the player did not ask for — that is the design, not a stray entry, unless that event is registered with `registerForced`. `gui.primogemcraft.event.hint` is the in-game warning for this.
@@ -353,11 +355,6 @@ All of `/primogemcraft event …` requires permission level 2.
 
 ## Verification
 
-Compile after any change here:
-
-```powershell
-$gradle = Get-ChildItem "$env:USERPROFILE\.gradle\wrapper\dists\gradle-9.7.1-bin" -Recurse -Filter gradle.bat | Select-Object -First 1 -ExpandProperty FullName
-& $gradle compileJava --console=plain
-```
+For implementation changes, run `compileJava` and the required completion checks using the current environment's launcher resolved by [the project verification rules](../primogemcraft-standard/SKILL.md#verification).
 
 Compilation proves nothing about the drop rate, the card screen, the challenge timing or the renderer. `/primogemcraft event list`, `info`, `run` and `summon all` are the manual checks and need a running game (`runClient` or `runServer`); say plainly that they were not run unless they were.

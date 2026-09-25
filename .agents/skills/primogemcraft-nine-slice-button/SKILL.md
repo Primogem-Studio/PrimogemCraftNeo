@@ -5,6 +5,8 @@ description: Draw or restyle PrimogemCraftNeo GUI buttons using the shared nine-
 
 # Nine-Slice GUI Button
 
+Apply [the project standard](../primogemcraft-standard/SKILL.md) for Ponytail compatibility, verification, and concise replies. Reusing this renderer is the minimal implementation; preserve the state, input, focus, and narration contracts when changing its appearance.
+
 Follow the Elixir nine-slice geometry and state contract, using the textures and label colors already used by GorgeousSmithingTableScreen in this project.
 
 ## Spec
