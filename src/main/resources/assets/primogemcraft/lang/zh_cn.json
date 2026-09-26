@@ -1108,8 +1108,8 @@
   "wish.primogemcraft.rarity_label.gold": "金",
   "wish.primogemcraft.rarity_label.colorful": "彩",
 
-  "message.primogemcraft.wish.core_no_material": "§c副手没有可以喂食的物品",
-  "message.primogemcraft.wish.core_full": "§c祈愿核心已经喂满%s个材料",
+  "message.primogemcraft.wish.core_no_material": "§c副手没有可用于祈愿填充的物品",
+  "message.primogemcraft.wish.core_full": "§c祈愿填充已达上限：%s个材料",
   "message.primogemcraft.wish.core_offhand_value": "§5当前副手物品每个可提供%s§5点祈愿值",
   "message.primogemcraft.wish.record_header": "玩家<%s>的抽卡记录：",
   "message.primogemcraft.wish.record_time": "截至系统时:%s记录",
@@ -1189,7 +1189,7 @@
   "subtitles.primogemcraft.wish_purple": "祈愿出紫",
   "subtitles.primogemcraft.wish_gold": "祈愿出金",
   "subtitles.primogemcraft.capturing_radiance": "触发捕获明光",
-  "subtitles.primogemcraft.wish_core_feed": "喂食祈愿核心",
+  "subtitles.primogemcraft.wish_core_feed": "祈愿填充",
   "subtitles.primogemcraft.curio_broken": "奇物损坏",
   "subtitles.primogemcraft.choice_grant": "获得全部奖励",
   "subtitles.primogemcraft.bomb_planted": "炸弹已经安放",
@@ -1253,7 +1253,7 @@
 
   "rei.category.primogemcraft.conversion": "转化",
   "rei.category.primogemcraft.wish": "祈愿",
-  "rei.category.primogemcraft.wish_materials": "祈愿核心喂养",
+  "rei.category.primogemcraft.wish_materials": "祈愿填充",
   "rei.primogemcraft.wish_materials.tooltip.0": "每个提供 %s 点祈愿值",
   "rei.primogemcraft.tooltip.conversion_cost": "花费：%s",
   "curio.primogemcraft.trigger.active": "§e主动触发：",

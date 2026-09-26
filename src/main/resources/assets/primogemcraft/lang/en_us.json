@@ -966,7 +966,7 @@
   "wish.primogemcraft.rarity_label.gold": "Gold",
   "wish.primogemcraft.rarity_label.colorful": "Colorful",
 
-  "message.primogemcraft.wish.core_no_material": "§cThere is nothing in the off hand to feed",
+  "message.primogemcraft.wish.core_no_material": "§cThere is no off-hand item available for Wish Filling",
   "message.primogemcraft.wish.core_full": "§cThe wish core already holds %s materials",
   "message.primogemcraft.wish.core_offhand_value": "§5Each off-hand item can provide %s§5 wish value",
   "message.primogemcraft.wish.record_header": "Wish record of <%s>:",
@@ -1047,7 +1047,7 @@
   "subtitles.primogemcraft.wish_purple": "Purple wish",
   "subtitles.primogemcraft.wish_gold": "Golden wish",
   "subtitles.primogemcraft.capturing_radiance": "Capturing Radiance triggers",
-  "subtitles.primogemcraft.wish_core_feed": "Wish core fed",
+  "subtitles.primogemcraft.wish_core_feed": "Wish Filling",
   "subtitles.primogemcraft.curio_broken": "Curio breaks",
   "subtitles.primogemcraft.choice_grant": "Every reward granted",
   "subtitles.primogemcraft.bomb_planted": "Bomb placed",
@@ -1111,7 +1111,7 @@
 
   "rei.category.primogemcraft.conversion": "Converting",
   "rei.category.primogemcraft.wish": "Wish",
-  "rei.category.primogemcraft.wish_materials": "Wish Core Feeding",
+  "rei.category.primogemcraft.wish_materials": "Wish Filling",
   "rei.primogemcraft.wish_materials.tooltip.0": "Provides %s Wish Value per item",
   "rei.primogemcraft.tooltip.conversion_cost": "Cost: %s",
   "curio.primogemcraft.trigger.active": "§eActive trigger:",
