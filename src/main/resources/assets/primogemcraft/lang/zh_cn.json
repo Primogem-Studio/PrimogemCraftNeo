@@ -55,6 +55,8 @@
   "item.primogemcraft.intertwined_fate.tooltip.4": "§8出金概率:%s",
 
   "item.primogemcraft.wish_core": "祈愿核心",
+  "item.primogemcraft.ten_pull_wish_core": "祈愿核心§c（十连）",
+  "message.primogemcraft.wish.transfer_unavailable": "需要10枚未强化纠缠之缘、有祈愿值的十连核心及足够背包空间，请先清空鼠标持有物",
   "item.primogemcraft.wish_core.tooltip.0": "§7当前祈愿值:%s",
   "item.primogemcraft.wish_core.tooltip.1": "§8出紫概率增加:%s",
   "item.primogemcraft.wish_core.tooltip.2": "§8出金概率增加:%s",

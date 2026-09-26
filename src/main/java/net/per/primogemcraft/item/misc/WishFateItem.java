@@ -53,7 +53,7 @@ public class WishFateItem extends Item {
         }
 
         var pulls = serverPlayer.isShiftKeyDown() ? stack.getCount() : 1;
-        var wishValue = WishValue.get(stack);
+        var wishValue = WishValue.perPull(stack);
         stack.shrink(pulls);
 
         level.playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), pulls > 1 ? PGCSounds.WISH_TEN.get() : PGCSounds.WISH_ROLL.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -71,7 +71,7 @@ public class WishFateItem extends Item {
             return;
         }
 
-        var wishValue = WishValue.get(stack);
+        var wishValue = WishValue.perPull(stack);
         if (WishTooltips.showsDetails()) {
             tooltip.add(Component.translatable(tooltipKey(3), WishReports.percent(WishRoller.purpleChance(banner, wishValue), ChatFormatting.LIGHT_PURPLE)));
             tooltip.add(Component.translatable(tooltipKey(4), WishReports.percent(WishRoller.goldChance(banner, wishValue), ChatFormatting.GOLD)));

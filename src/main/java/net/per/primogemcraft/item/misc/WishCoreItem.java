@@ -23,17 +23,24 @@ import net.per.primogemcraft.system.wish.WishValue;
 import java.util.List;
 
 public class WishCoreItem extends Item {
+    public static final int TEN_PULL_CAPACITY = 300;
     private static final float FEED_VOLUME = 0.5F;
     private static final float FEED_PITCH_STEP = 0.05F;
+    private final int capacity;
 
     public WishCoreItem(Properties properties) {
+        this(properties, WishValue.CAPACITY);
+    }
+
+    public WishCoreItem(Properties properties, int capacity) {
         super(properties);
+        this.capacity = capacity;
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         var stack = player.getItemInHand(hand);
-        if (player instanceof ServerPlayer serverPlayer) {
+        if (hand == InteractionHand.MAIN_HAND && player instanceof ServerPlayer serverPlayer) {
             feed(serverPlayer, stack);
         }
         return InteractionResultHolder.consume(stack);
@@ -43,10 +50,11 @@ public class WishCoreItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         if (WishTooltips.showsDetails()) {
             var wishValue = WishValue.get(stack);
+            var perPull = capacity == TEN_PULL_CAPACITY ? wishValue / 10.0D : wishValue;
             tooltip.add(Component.translatable(tooltipKey(0), WishReports.number(wishValue, ChatFormatting.AQUA)));
             if (wishValue > 0) {
-                tooltip.add(Component.translatable(tooltipKey(1), WishReports.percent(WishRoller.purpleChanceBonus(WishBanner.INTERTWINED, wishValue), ChatFormatting.LIGHT_PURPLE)));
-                tooltip.add(Component.translatable(tooltipKey(2), WishReports.percent(WishRoller.goldChanceBonus(WishBanner.INTERTWINED, wishValue), ChatFormatting.GOLD)));
+                tooltip.add(Component.translatable(tooltipKey(1), WishReports.percent(WishRoller.purpleChanceBonus(WishBanner.INTERTWINED, perPull), ChatFormatting.LIGHT_PURPLE)));
+                tooltip.add(Component.translatable(tooltipKey(2), WishReports.percent(WishRoller.goldChanceBonus(WishBanner.INTERTWINED, perPull), ChatFormatting.GOLD)));
             }
         } else tooltip.add(Component.translatable(tooltipKey(3)));
 
@@ -60,7 +68,7 @@ public class WishCoreItem extends Item {
     }
 
     private void feed(ServerPlayer player, ItemStack stack) {
-        var bar = stack.getOrDefault(PGCDataComponents.CUSTOM_BAR.get(), new CustomBar(0, WishValue.CAPACITY, true));
+        var bar = stack.getOrDefault(PGCDataComponents.CUSTOM_BAR.get(), new CustomBar(0, capacity, true));
         if (bar.remaining() <= 0) {
             player.displayClientMessage(Component.translatable("message.primogemcraft.wish.core_full", WishReports.number(bar.denominator(), ChatFormatting.RED)), true);
             return;

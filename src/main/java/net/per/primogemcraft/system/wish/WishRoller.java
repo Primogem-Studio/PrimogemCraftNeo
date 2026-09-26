@@ -28,13 +28,13 @@ public final class WishRoller {
     private WishRoller() {
     }
 
-    public static List<WishResult> roll(ServerPlayer player, WishBanner banner, int wishValue, int count) {
+    public static List<WishResult> roll(ServerPlayer player, WishBanner banner, double wishValue, int count) {
         var results = new ArrayList<WishResult>(count);
         for (var index = 0; index < count; index++) results.add(roll(player, banner, wishValue));
         return results;
     }
 
-    public static WishResult roll(ServerPlayer player, WishBanner banner, int wishValue) {
+    public static WishResult roll(ServerPlayer player, WishBanner banner, double wishValue) {
         return roll(player, banner, wishValue, false);
     }
 
@@ -44,7 +44,7 @@ public final class WishRoller {
         return results;
     }
 
-    private static WishResult roll(ServerPlayer player, WishBanner banner, int wishValue, boolean guaranteedGold) {
+    private static WishResult roll(ServerPlayer player, WishBanner banner, double wishValue, boolean guaranteedGold) {
         var random = player.getRandom();
         var pity = player.getData(PGCAttachments.WISH_PITY.get());
         var colorful = isWearingColorfulSunglasses(player);
@@ -81,11 +81,11 @@ public final class WishRoller {
         return Math.min(MAX_CHANCE, BASE_PURPLE_CHANCE + PURPLE_CHANCE_PER_VALUE * countedValue(banner, wishValue));
     }
 
-    public static double goldChanceBonus(WishBanner banner, int wishValue) {
+    public static double goldChanceBonus(WishBanner banner, double wishValue) {
         return goldChance(banner, wishValue) - BASE_GOLD_CHANCE;
     }
 
-    public static double purpleChanceBonus(WishBanner banner, int wishValue) {
+    public static double purpleChanceBonus(WishBanner banner, double wishValue) {
         return purpleChance(banner, wishValue) - BASE_PURPLE_CHANCE;
     }
 

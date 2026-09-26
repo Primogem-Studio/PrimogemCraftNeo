@@ -550,6 +550,7 @@ public class PGCItems {
     public static final DeferredItem<WishFateItem> ACQUAINT_FATE = REGISTRY.registerItem("acquaint_fate", properties -> new WishFateItem(properties.rarity(Rarity.UNCOMMON), WishBanner.ACQUAINT));
     public static final DeferredItem<WishFateItem> INTERTWINED_FATE = REGISTRY.registerItem("intertwined_fate", properties -> new WishFateItem(properties.rarity(Rarity.UNCOMMON), WishBanner.INTERTWINED));
     public static final DeferredItem<WishCoreItem> WISH_CORE = REGISTRY.registerItem("wish_core", properties -> new WishCoreItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<WishCoreItem> TEN_PULL_WISH_CORE = REGISTRY.registerItem("ten_pull_wish_core", properties -> new WishCoreItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON), WishCoreItem.TEN_PULL_CAPACITY));
     public static final DeferredItem<DescribedItem> UNBUFFED_WISH_CORE = described("unbuffed_wish_core");
     public static final DeferredItem<WishingStaffItem> WISHING_STAFF = REGISTRY.registerItem("wishing_staff", WishingStaffItem::new);
     public static final DeferredItem<WishDataExporterItem> WISH_DATA_EXPORTER = REGISTRY.registerItem("wish_data_exporter", WishDataExporterItem::new);

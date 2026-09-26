@@ -113,6 +113,7 @@ public class PGCCreativeTabs {
         output.accept(ACQUAINT_FATE);
         output.accept(INTERTWINED_FATE);
         output.accept(WISH_CORE);
+        output.accept(TEN_PULL_WISH_CORE);
         output.accept(UNBUFFED_WISH_CORE);
         output.accept(MORA);
         output.accept(REFINED_MORA);

@@ -26,6 +26,7 @@ public class PGCDataComponents {
     public static final DeferredRegister.DataComponents REGISTRY = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MOD_ID);
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WISH_VALUE = REGISTRY.registerComponentType("wish_value", builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WISH_VALUE_DIVISOR = REGISTRY.registerComponentType("wish_value_divisor", builder -> builder.persistent(Codec.intRange(1, 10)).networkSynchronized(ByteBufCodecs.VAR_INT));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ELEMENT_TYPE = REGISTRY.registerComponentType("element_type", builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<CustomBar>> CUSTOM_BAR = REGISTRY.registerComponentType("custom_bar", builder -> builder.persistent(CustomBar.CODEC).networkSynchronized(CustomBar.STREAM_CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<ResourceLocation>>> CURIO_MARKS = REGISTRY.registerComponentType("curio_marks", builder -> builder.persistent(ResourceLocation.CODEC.listOf()).networkSynchronized(ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list())));

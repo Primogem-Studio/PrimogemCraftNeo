@@ -11,6 +11,10 @@ public final class WishValue {
         return stack.getOrDefault(PGCDataComponents.WISH_VALUE, 0);
     }
 
+    public static double perPull(ItemStack stack) {
+        return get(stack) / (double) Math.max(1, stack.getOrDefault(PGCDataComponents.WISH_VALUE_DIVISOR, 1));
+    }
+
     public static int absorb(ItemStack core, Player player, int limit, boolean whole) {
         var source = player.getOffhandItem();
         if (source.isEmpty() || limit <= 0) return 0;

@@ -13,6 +13,7 @@ import net.per.primogemcraft.entity.misc.ZiplineCarrierEntity;
 import net.per.primogemcraft.item.misc.LuckySpecialTicketItem;
 import net.per.primogemcraft.system.choice.ChoiceRegistry;
 import net.per.primogemcraft.system.element.AnemoEffectMode;
+import net.per.primogemcraft.system.wish.WishCoreTransfer;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
@@ -23,6 +24,9 @@ public final class PGCNetwork {
     @SubscribeEvent
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar(PROTOCOL_VERSION);
+        registrar.playToServer(WishCoreTransferPayload.TYPE, WishCoreTransferPayload.STREAM_CODEC, (payload, context) -> {
+            if (context.player() instanceof ServerPlayer player) WishCoreTransfer.transfer(player, payload.containerId());
+        });
         registrar.playToServer(ZiplineControlPayload.TYPE, ZiplineControlPayload.STREAM_CODEC, (payload, context) -> {
             if (context.player().getVehicle() instanceof ZiplineCarrierEntity carrier) {
                 if (payload.targetId() == -1) carrier.release();

@@ -7,6 +7,7 @@ import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.per.primogemcraft.component.CustomBar;
 import net.per.primogemcraft.item.misc.BlessingOfTheWelkinMoonItem;
 import net.per.primogemcraft.item.misc.ExperienceBookItem;
+import net.per.primogemcraft.item.misc.WishCoreItem;
 import net.per.primogemcraft.system.curio.Curios;
 import net.per.primogemcraft.system.wish.WishValue;
 
@@ -38,6 +39,7 @@ public final class PGCItemBars {
     private static List<Entry> build() {
         var built = new ArrayList<Entry>();
         built.add(new Entry(PGCItems.WISH_CORE.get(), new CustomBar(0, WishValue.CAPACITY, true), 0xFECCFF, false));
+        built.add(new Entry(PGCItems.TEN_PULL_WISH_CORE.get(), new CustomBar(0, WishCoreItem.TEN_PULL_CAPACITY, true), 0xFECCFF, false));
         built.add(new Entry(PGCItems.BLESSING_OF_THE_WELKIN_MOON.get(),
                 new CustomBar(0, BlessingOfTheWelkinMoonItem.CAPACITY, true), 0x55FFFF, true));
         for (var holder : PGCItems.REGISTRY.getEntries())

@@ -55,6 +55,8 @@
   "item.primogemcraft.intertwined_fate.tooltip.4": "§8Gold chance:%s",
 
   "item.primogemcraft.wish_core": "Wish Core",
+  "item.primogemcraft.ten_pull_wish_core": "Wish Core§c (Ten-Pull)",
+  "message.primogemcraft.wish.transfer_unavailable": "Requires 10 unboosted Intertwined Fates, a charged Ten-Pull Wish Core, inventory space, and an empty cursor",
   "item.primogemcraft.wish_core.tooltip.0": "§7Current wish value:%s",
   "item.primogemcraft.wish_core.tooltip.1": "§8Purple chance bonus:%s",
   "item.primogemcraft.wish_core.tooltip.2": "§8Gold chance bonus:%s",
