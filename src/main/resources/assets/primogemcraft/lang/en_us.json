@@ -80,8 +80,8 @@
   "item.primogemcraft.violane.tooltip.0": "§bEaster egg item",
   "item.primogemcraft.violane.tooltip.1": "§7Greatly increases the chance of getting rare wish rewards.",
   "item.primogemcraft.colorful_sunglasses.tooltip.0": "§bEaster egg item",
-  "item.primogemcraft.colorful_sunglasses.tooltip.1": "§7Used for defense or decoration, and will",
-  "item.primogemcraft.colorful_sunglasses.tooltip.2": "§7The \"gold\" rate of wishes§e greatly increased",
+  "item.primogemcraft.colorful_sunglasses.tooltip.1": "§7Wear on your head or in an accessory slot",
+  "item.primogemcraft.colorful_sunglasses.tooltip.2": "§eGreatly increases §7the \"gold\" rate of wishes",
   "item.primogemcraft.special_01_helmet": "Special 01",
 
   "item.primogemcraft.prithiva_topaz_gemstone": "§6Prithiva Topaz",
@@ -1105,6 +1105,7 @@
   "message.primogemcraft.curio.casket_of_inaccuracy.interference": "§5System: 'Curio'§eCasket of Inaccuracy§c cannot interfere",
   "message.primogemcraft.curio.casket_of_inaccuracy.unavailable": "§5System: 'Curio'§eCasket of Inaccuracy§c can offer no help",
   "curios.identifier.primogemcraft_curio": "Curio",
+  "curios.modifiers.primogemcraft_curio": "When worn as a Curio:",
 
   "rei.category.primogemcraft.conversion": "Converting",
   "rei.category.primogemcraft.wish": "Wish",

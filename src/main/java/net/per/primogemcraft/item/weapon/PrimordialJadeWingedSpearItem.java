@@ -29,10 +29,10 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.per.primogemcraft.component.WeaponCharge;
-import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.system.weapon.*;
 import net.per.primogemcraft.system.wish.WishReports;
+import net.per.primogemcraft.system.wish.WishRoller;
 import net.per.primogemcraft.util.PGCTimer;
 import net.per.primogemcraft.util.TemporaryAttributes;
 
@@ -205,7 +205,7 @@ public class PrimordialJadeWingedSpearItem extends WishWeaponItem {
                 AttributeModifier.Operation.ADD_VALUE, lightStepTicks(grounded));
         TemporaryAttributes.apply(player, LIGHT_STEP_GRAVITY_ID, Attributes.GRAVITY, LIGHT_STEP_GRAVITY,
                 AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, lightStepTicks(grounded));
-        var flourish = player.getItemBySlot(EquipmentSlot.HEAD).is(PGCItems.COLORFUL_SUNGLASSES.get());
+        var flourish = WishRoller.isWearingColorfulSunglasses(player);
         level.playSound(null, BlockPos.containing(player.position()),
                 flourish ? PGCSounds.THRUST_FLOURISH.get() : SoundEvents.TRIDENT_THROW.value(), SoundSource.PLAYERS, flourish ? 5.0F : 1.0F, 1.0F);
     }

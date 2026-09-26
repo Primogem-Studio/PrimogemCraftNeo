@@ -32,6 +32,7 @@ import net.per.primogemcraft.render.entity.model.HertaOtherworldBranchTowerModel
 import net.per.primogemcraft.render.entity.model.WishEntityModel;
 import net.per.primogemcraft.render.entity.model.XiaoLanternModel;
 import net.per.primogemcraft.system.weapon.WishWeapon;
+import net.per.primogemcraft.system.curio.compat.CuriosIntegration;
 import net.per.primogemcraft.system.wish.WishDrops;
 
 import java.util.List;
@@ -49,6 +50,11 @@ public class PGCClientEvents {
     private static final ResourceLocation SPEAR_CHARGE_LAYER = ResourceLocation.fromNamespaceAndPath(MOD_ID, "jade_winged_spear_charge");
     private static final float ELEMENT_TYPE_STEP = 0.125F;
     private static final IItemDecorator STACKS_DECORATOR = new WeaponStacksDecorator();
+
+    @SubscribeEvent
+    public static void registerCurioRenderers(FMLClientSetupEvent event) {
+        if (CuriosIntegration.loaded()) ColorfulSunglassesCurioRenderer.register();
+    }
 
     @SubscribeEvent
     public static void registerConfigScreen(FMLClientSetupEvent event) {

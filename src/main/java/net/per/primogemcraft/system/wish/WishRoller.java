@@ -7,6 +7,7 @@ import net.per.primogemcraft.item.misc.ViolaneItem;
 import net.per.primogemcraft.config.PGCConfig;
 import net.per.primogemcraft.registry.PGCAttachments;
 import net.per.primogemcraft.registry.PGCItems;
+import net.per.primogemcraft.system.curio.compat.CuriosIntegration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +94,9 @@ public final class WishRoller {
     }
 
     public static boolean isWearingColorfulSunglasses(ServerPlayer player) {
-        return player.getItemBySlot(EquipmentSlot.HEAD).is(PGCItems.COLORFUL_SUNGLASSES.get());
+        if (player.getItemBySlot(EquipmentSlot.HEAD).is(PGCItems.COLORFUL_SUNGLASSES.get())) return true;
+        for (var stack : CuriosIntegration.equipped(player))
+            if (stack.is(PGCItems.COLORFUL_SUNGLASSES.get())) return true;
+        return false;
     }
 }
