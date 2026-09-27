@@ -12,6 +12,7 @@ import net.per.primogemcraft.entity.misc.FallingMoraPileEntity;
 import net.per.primogemcraft.entity.misc.HertaOtherworldBranchTowerEntity;
 import net.per.primogemcraft.entity.misc.RandomEventEntity;
 import net.per.primogemcraft.entity.misc.WishEntity;
+import net.per.primogemcraft.entity.misc.WishArrowEntity;
 import net.per.primogemcraft.entity.misc.XiaoLanternEntity;
 import net.per.primogemcraft.entity.misc.ZiplineAnchorEntity;
 import net.per.primogemcraft.entity.misc.ZiplineCarrierEntity;
@@ -29,6 +30,10 @@ public class PGCEntities {
     public static final String FALLING_MORA_PILE_NAME = "falling_mora_pile";
 
     public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, MOD_ID);
+
+    public static final DeferredHolder<EntityType<?>, EntityType<WishArrowEntity>> WISH_ARROW =
+            REGISTRY.register("wish_arrow", () -> EntityType.Builder.<WishArrowEntity>of(WishArrowEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F).noSave().noSummon().clientTrackingRange(8).updateInterval(1).build("wish_arrow"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<ZiplineAnchorEntity>> ZIPLINE_ANCHOR =
             REGISTRY.register("zipline_anchor", () -> EntityType.Builder.of(ZiplineAnchorEntity::new, MobCategory.MISC)

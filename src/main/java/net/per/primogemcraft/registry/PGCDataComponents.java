@@ -25,6 +25,8 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 public class PGCDataComponents {
     public static final DeferredRegister.DataComponents REGISTRY = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MOD_ID);
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> BOW_SHOT_TIME = REGISTRY.registerComponentType("bow_shot_time", builder -> builder.networkSynchronized(ByteBufCodecs.VAR_LONG));
+
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WISH_VALUE = REGISTRY.registerComponentType("wish_value", builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WISH_VALUE_DIVISOR = REGISTRY.registerComponentType("wish_value_divisor", builder -> builder.persistent(Codec.intRange(1, 10)).networkSynchronized(ByteBufCodecs.VAR_INT));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ELEMENT_TYPE = REGISTRY.registerComponentType("element_type", builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));

@@ -18,6 +18,7 @@ public enum WeaponType {
     ONE_HANDED_SWORD("weapon/one_handed_sword", 1.0D, Attributes.ATTACK_DAMAGE),
     POLEARM("weapon/polearm", 1.3D, Attributes.ATTACK_DAMAGE),
     CLAYMORE("weapon/claymore", 1.6D, Attributes.ATTACK_DAMAGE),
+    BOW("weapon/bow", 1.0D / 3.0D, Attributes.ATTACK_DAMAGE),
     SHIELD("weapon/shield", 1.0D, Attributes.ARMOR),
     TOOL("weapon/tool", 0.7D, Attributes.MINING_EFFICIENCY),
     OTHER("weapon", 1.0D, Attributes.ATTACK_DAMAGE);
@@ -48,6 +49,7 @@ public enum WeaponType {
     }
 
     public static WeaponType of(ItemStack stack) {
+        if (stack.getItem() instanceof WishWeaponBowItem) return BOW;
         for (var type : TYPES) if (stack.is(type.tag)) return type;
         return OTHER;
     }

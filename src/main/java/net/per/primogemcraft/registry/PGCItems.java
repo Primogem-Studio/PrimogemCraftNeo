@@ -37,6 +37,9 @@ import net.per.primogemcraft.system.curio.effect.LottoPunishmentEffect;
 import net.per.primogemcraft.system.curio.effect.PrescriptionEffect;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.wish.WishBanner;
+import net.per.primogemcraft.system.weapon.BowAttackCycle;
+import net.per.primogemcraft.system.weapon.WishWeaponBowItem;
+import net.minecraft.sounds.SoundEvents;
 import net.per.primogemcraft.util.EffectSpecs;
 import net.per.primogemcraft.util.PlayerItems;
 
@@ -50,6 +53,12 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public class PGCItems {
     public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(MOD_ID);
+
+    public static final DeferredItem<WishWeaponBowItem> EXAMPLE_WISH_BOW = REGISTRY.registerItem("example_wish_bow", properties ->
+            new WishWeaponBowItem(properties,
+                    new BowAttackCycle(8, 16, 5, 2), 3.0F,
+                    ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/item/example_wish_bow.png"),
+                    ResourceLocation.withDefaultNamespace("textures/entity/projectiles/arrow.png"), SoundEvents.ARROW_SHOOT));
 
     private static final int FROSTED_SLIME_JUMP_TICKS = 100;
     private static final int PRAISE_OF_HIGH_MORALS_TICKS = 1200;

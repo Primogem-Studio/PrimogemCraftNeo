@@ -22,9 +22,9 @@ public final class PGCTimer {
     }
 
     public static boolean isDone(Entity entity, String name) {
-        Map<String, Integer> timers = TIMERS.get(entity);
+        var timers = TIMERS.get(entity);
         if (timers == null) return true;
-        Integer remaining = timers.get(name);
+        var remaining = timers.get(name);
         return remaining == null || remaining <= 0;
     }
 

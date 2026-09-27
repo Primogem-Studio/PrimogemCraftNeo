@@ -1,4 +1,11 @@
 {
+  "weapon.primogemcraft.bow.tooltip.0": "左键发射追踪箭矢；默认箭矢无限。",
+  "entity.primogemcraft.wish_arrow": "祈愿箭矢",
+  "item.primogemcraft.example_wish_bow": "示例祈愿弓",
+  "weapon.primogemcraft.type.bow": "§e弓",
+  "weapon.primogemcraft.bow.description.shoot": "§e长按左键连续发射追踪箭矢，追踪半径为§b8§e格，造成等同于玩家攻击力的伤害；每次发射间隔随机为§b%1$s§e～§b%2$s§e秒",
+  "weapon.primogemcraft.bow.description.ammunition": "§e默认箭矢无限；优先消耗副手箭矢或烟花。箭矢命中后立即消失",
+  "weapon.primogemcraft.bow.tooltip.1": "优先消耗副手箭矢或烟花，命中后箭矢立即消失。",
   "command.primogemcraft.zipline.placed": "已铺设 %s 座滑索，跳过 %s 个不适合的位置（铺设数量上限：%s）。",
   "command.primogemcraft.zipline.invalid_path": "轨迹应为包含 2～64 个 [x,z] 整数偏移的 JSON 数组，每个坐标范围为 -256～256，例如 [[0,0],[32,0],[32,32]]。高度自动适应地形。",
   "item.primogemcraft.protocol_originium_sword.tooltip.0": "§e彩蛋物品",
