@@ -200,7 +200,6 @@ public class PGCCreativeTabs {
         output.accept(HEWN_EDGE_BLADE);
         output.accept(PRIMORDIAL_JADE_CUTTER);
         output.accept(DULL_BLADE);
-        output.accept(EXAMPLE_WISH_BOW);
         output.accept(THE_FLUTE);
         output.accept(LIONS_ROAR);
         output.accept(HARBINGER_OF_DAWN);
@@ -215,6 +214,10 @@ public class PGCCreativeTabs {
         output.accept(DEATHMATCH);
         output.accept(PRIMORDIAL_JADE_WINGED_SPEAR);
         output.accept(WASTER_GREATSWORD);
+        output.accept(EXAMPLE_WISH_BOW);
+        output.accept(SLINGSHOT);
+        output.accept(SKYWARD_HARP);
+        output.accept(THUNDERING_PULSE);
         output.accept(MORA_HOE);
         output.accept(MORA_PICKAXE);
         output.accept(MORA_AXE);

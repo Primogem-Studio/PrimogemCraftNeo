@@ -1,0 +1,34 @@
+{
+  "loader": "neoforge:separate_transforms",
+  "gui_light": "front",
+  "textures": {
+    "particle": "primogemcraft:item/skyward_harp_icon"
+  },
+  "base": {
+    "parent": "primogemcraft:item/example_wish_bow",
+    "textures": {
+      "particle": "primogemcraft:item/skyward_harp_icon"
+    }
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "primogemcraft:item/skyward_harp_icon"
+      }
+    },
+    "fixed": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "primogemcraft:item/skyward_harp_icon"
+      }
+    },
+    "ground": {
+      "parent": "minecraft:item/generated",
+      "textures": {
+        "layer0": "primogemcraft:item/skyward_harp_icon"
+      }
+    }
+  }
+}
+

@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "primogemcraft:example_wish_bow"
+    "primogemcraft:example_wish_bow",
+    "primogemcraft:thundering_pulse",
+    "primogemcraft:skyward_harp",
+    "primogemcraft:slingshot"
   ]
 }

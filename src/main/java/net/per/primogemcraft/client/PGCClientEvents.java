@@ -99,6 +99,7 @@ public class PGCClientEvents {
 
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(PGCEntities.SKYWARD_HARP_VORTEX.get(), SkywardHarpVortexRenderer::new);
         event.registerEntityRenderer(PGCEntities.ZIPLINE_ANCHOR.get(), ZiplineAnchorRenderer::new);
         event.registerEntityRenderer(PGCEntities.ZIPLINE_CARRIER.get(), ZiplineCarrierRenderer::new);
         event.registerEntityRenderer(PGCEntities.FALLING_MORA_PILE.get(), FallingBlockRenderer::new);

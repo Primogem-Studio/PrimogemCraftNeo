@@ -11,6 +11,7 @@ import net.per.primogemcraft.entity.misc.DendroCoreEntity;
 import net.per.primogemcraft.entity.misc.FallingMoraPileEntity;
 import net.per.primogemcraft.entity.misc.HertaOtherworldBranchTowerEntity;
 import net.per.primogemcraft.entity.misc.RandomEventEntity;
+import net.per.primogemcraft.entity.misc.SkywardHarpVortexEntity;
 import net.per.primogemcraft.entity.misc.WishEntity;
 import net.per.primogemcraft.entity.misc.WishArrowEntity;
 import net.per.primogemcraft.entity.misc.XiaoLanternEntity;
@@ -30,6 +31,10 @@ public class PGCEntities {
     public static final String FALLING_MORA_PILE_NAME = "falling_mora_pile";
 
     public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, MOD_ID);
+
+    public static final DeferredHolder<EntityType<?>, EntityType<SkywardHarpVortexEntity>> SKYWARD_HARP_VORTEX =
+            REGISTRY.register("skyward_harp_vortex", () -> EntityType.Builder.<SkywardHarpVortexEntity>of(SkywardHarpVortexEntity::new, MobCategory.MISC)
+                    .sized(5.0F, 5.0F).fireImmune().noSave().noSummon().clientTrackingRange(10).updateInterval(20).build("skyward_harp_vortex"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<WishArrowEntity>> WISH_ARROW =
             REGISTRY.register("wish_arrow", () -> EntityType.Builder.<WishArrowEntity>of(WishArrowEntity::new, MobCategory.MISC)

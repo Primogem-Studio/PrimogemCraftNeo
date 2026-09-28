@@ -39,7 +39,11 @@ public final class BowSpriteMesh {
                     quads.add(side(0, -1, u, v, left, low, BACK, right, low, BACK, right, low, FRONT, left, low, FRONT));
             }
         }
-        return List.copyOf(quads);
+        var scale = size / 16.0F;
+        return quads.stream().map(quad -> new Quad(quad.vertices().stream()
+                .map(vertex -> new Vertex(0.5F + (vertex.x() - 0.5F) * scale,
+                        0.5F + (vertex.y() - 0.5F) * scale, 0.5F + (vertex.z() - 0.5F) * scale,
+                        vertex.u(), vertex.v())).toList(), quad.normalX(), quad.normalY(), quad.normalZ())).toList();
     }
 
     private static Quad side(int normalX, int normalY, float u, float v, float... coordinates) {

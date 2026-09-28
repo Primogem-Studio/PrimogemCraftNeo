@@ -1,0 +1,22 @@
+{
+  "width": 64,
+  "height": 64,
+  "asset_class": "ui",
+  "canonical_archetype": "pixel inset tutorial panel",
+  "primary_subject": "warm gray panel with fine brown frame",
+  "recognition_anchors": [
+    "stepped corners",
+    "thin warm border",
+    "quiet pale interior"
+  ],
+  "visual_sentence": "a restrained parchment gray frame supports item diagrams",
+  "template_mode": "none",
+  "background": "opaque warm gray",
+  "alpha_policy": "binary",
+  "detail_families": [
+    "contour_nuance",
+    "material_planes",
+    "small_highlights"
+  ],
+  "new_concepts": []
+}

@@ -141,7 +141,7 @@ public final class LivingItemAPI {
     public static int recallDrops(Player player) {
         if (player == null || player.level().isClientSide) return 0;
         var serverLevel = (ServerLevel) player.level();
-        EntityTypeTest<Entity, LivingItemDrop> test = EntityTypeTest.forClass(LivingItemDrop.class);
+        var test = EntityTypeTest.<Entity, LivingItemDrop>forClass(LivingItemDrop.class);
         var count = 0;
         for (var drop : serverLevel.getEntities(test, entity -> player.getUUID().equals(entity.getOwnerUuid()))) {
             if (drop.isRemoved() || !drop.isAlive()) continue;
@@ -174,7 +174,7 @@ public final class LivingItemAPI {
     public static List<LivingItemEntity> collectAll(Player owner) {
         if (owner == null || owner.level().isClientSide) return List.of();
         var serverLevel = (ServerLevel) owner.level();
-        EntityTypeTest<Entity, LivingItemEntity> test = EntityTypeTest.forClass(LivingItemEntity.class);
+        var test = EntityTypeTest.<Entity, LivingItemEntity>forClass(LivingItemEntity.class);
         var items = new ArrayList<LivingItemEntity>();
         serverLevel.getEntities(test, entity -> owner.getUUID().equals(entity.getOwnerUuid()), items);
         return items;

@@ -7,7 +7,12 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
-import net.per.primogemcraft.system.weapon.*;
+import net.per.primogemcraft.system.weapon.WeaponEnhancement;
+import net.per.primogemcraft.system.weapon.WeaponStacks;
+import net.per.primogemcraft.system.weapon.WeaponState;
+import net.per.primogemcraft.system.weapon.WeaponTooltip;
+import net.per.primogemcraft.system.weapon.WishWeapon;
+import net.per.primogemcraft.system.wish.WishTooltips;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
@@ -21,6 +26,7 @@ public final class WeaponTooltips {
     @SubscribeEvent
     public static void registerFactories(RegisterClientTooltipComponentFactoriesEvent event) {
         event.register(WeaponTooltip.class, WeaponTooltipRenderer::new);
+        event.register(WeaponTutorialRenderer.Content.class, WeaponTutorialRenderer::new);
     }
 
     @SubscribeEvent
@@ -33,5 +39,7 @@ public final class WeaponTooltips {
         var permanent = stacks.permanent() && stacks.visible() ? stacks : WeaponStacks.NONE;
         event.getTooltipElements().add(NAME_INDEX, Either.right(
                 new WeaponTooltip(state.level(), state.refinements(), extra, permanent.value(), permanent.capacity())));
+        if (WishTooltips.showsTutorial()) event.getTooltipElements().add(Either.right(
+                new WeaponTutorialRenderer.Content(stack.getItem().getDefaultInstance())));
     }
 }

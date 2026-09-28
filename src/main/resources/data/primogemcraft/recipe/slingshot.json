@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:bow"
+    },
+    {
+      "item": "primogemcraft:fine_enhancement_ore"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:slingshot",
+    "count": 1
+  }
+}

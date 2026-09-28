@@ -85,15 +85,15 @@ public record ChoiceOpenPayload(ChoiceRequest request) implements CustomPacketPa
         var textures = new ChoiceCardTextures(ResourceLocation.STREAM_CODEC.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ResourceLocation.STREAM_CODEC.decode(buffer));
         var spin = ChoiceSpin.of(ByteBufCodecs.VAR_INT.decode(buffer), ChoiceSpinSpeed.values()[ByteBufCodecs.VAR_INT.decode(buffer)], buffer.readFloat());
         var settleTicks = ByteBufCodecs.VAR_INT.decode(buffer);
-        int size = ByteBufCodecs.VAR_INT.decode(buffer);
+        var size = ByteBufCodecs.VAR_INT.decode(buffer);
         var options = new ArrayList<ChoiceCard>(size);
         for (var index = 0; index < size; index++) {
             var cardTitle = ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer);
             var cardItem = ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
             var cardDescription = ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer);
             var cardFootnote = ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer);
-            int cardTurns = ByteBufCodecs.VAR_INT.decode(buffer);
-            int cardSpeed = ByteBufCodecs.VAR_INT.decode(buffer);
+            var cardTurns = ByteBufCodecs.VAR_INT.decode(buffer);
+            var cardSpeed = ByteBufCodecs.VAR_INT.decode(buffer);
             var cardSpin = cardTurns <= NO_CARD_SPIN ? null : ChoiceCardSpin.of(cardTurns, ChoiceSpinSpeed.values()[cardSpeed]);
             var icons = buffer.readBoolean() ? ChoiceCardIcons.of(ResourceLocation.STREAM_CODEC.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer)) : null;
             var overlay = buffer.readBoolean() ? ChoiceCardOverlay.of(ResourceLocation.STREAM_CODEC.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer)) : null;
@@ -102,7 +102,7 @@ public record ChoiceOpenPayload(ChoiceRequest request) implements CustomPacketPa
             var enabled = buffer.readBoolean();
             var quality = ByteBufCodecs.VAR_INT.decode(buffer);
             var badge = ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer);
-            int unmetSize = ByteBufCodecs.VAR_INT.decode(buffer);
+            var unmetSize = ByteBufCodecs.VAR_INT.decode(buffer);
             var unmet = new ArrayList<Component>(unmetSize);
             for (var line = 0; line < unmetSize; line++) unmet.add(ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer));
             options.add(new ChoiceCard(cardTitle, cardItem, cardDescription, cardFootnote, cardSpin, icons, overlay, textTooltip, itemTooltip, enabled, quality, badge, List.copyOf(unmet)));

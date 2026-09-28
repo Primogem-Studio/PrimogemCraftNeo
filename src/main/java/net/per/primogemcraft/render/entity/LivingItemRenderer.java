@@ -17,8 +17,11 @@ import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.model.SeparateTransformsModel;
+import net.per.primogemcraft.client.LivingItemBowPose;
 import net.per.primogemcraft.entity.mob.LivingItemEntity;
+import net.per.primogemcraft.system.weapon.WishWeaponBowItem;
 
 public class LivingItemRenderer extends EntityRenderer<LivingItemEntity> {
     private static final ResourceLocation TEXTURE = ResourceLocation.withDefaultNamespace("textures/block/stone.png");
@@ -42,6 +45,17 @@ public class LivingItemRenderer extends EntityRenderer<LivingItemEntity> {
         if (entity.isInvisible()) return;
         var stack = entity.getCarriedStack();
         if (stack.isEmpty()) return;
+        if (stack.getItem() instanceof WishWeaponBowItem) {
+            poseStack.pushPose();
+            poseStack.translate(0.0, entity.getBbHeight() * 0.8 - 0.1, 0.0);
+            poseStack.mulPose(LivingItemBowPose.rotation(entityYaw, Mth.lerp(partialTick, entity.xRotO, entity.getXRot())));
+            poseStack.translate(-0.5, -0.5, -0.5);
+            IClientItemExtensions.of(stack).getCustomRenderer().renderByItem(stack, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND,
+                    poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY);
+            poseStack.popPose();
+            super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+            return;
+        }
         poseStack.pushPose();
         var model = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(stack);
         var swing = entity.getSwingTicks();
@@ -55,7 +69,8 @@ public class LivingItemRenderer extends EntityRenderer<LivingItemEntity> {
         } else {
             applySwingPose(entity, stack, poseStack);
         }
-        if (stack.getItem() instanceof BlockItem || model.getTransforms() == ItemTransforms.NO_TRANSFORMS) {
+        if (stack.getItem() instanceof BlockItem || model.getTransforms() == ItemTransforms.NO_TRANSFORMS
+                && !(model instanceof SeparateTransformsModel.Baked)) {
             displayContext = ItemDisplayContext.NONE;
             poseStack.translate(0.0, 0.15, 0.0);
         }

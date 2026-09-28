@@ -60,6 +60,10 @@ public class PGCItems {
                     ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/item/example_wish_bow.png"),
                     ResourceLocation.withDefaultNamespace("textures/entity/projectiles/arrow.png"), SoundEvents.ARROW_SHOOT));
 
+    public static final DeferredItem<ThunderingPulseItem> THUNDERING_PULSE = fiveStarWeapon("thundering_pulse", ThunderingPulseItem::new);
+    public static final DeferredItem<SkywardHarpItem> SKYWARD_HARP = fiveStarWeapon("skyward_harp", SkywardHarpItem::new);
+    public static final DeferredItem<SlingshotItem> SLINGSHOT = REGISTRY.registerItem("slingshot", SlingshotItem::new);
+
     private static final int FROSTED_SLIME_JUMP_TICKS = 100;
     private static final int PRAISE_OF_HIGH_MORALS_TICKS = 1200;
 

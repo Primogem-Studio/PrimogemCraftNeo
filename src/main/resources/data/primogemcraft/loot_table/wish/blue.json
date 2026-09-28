@@ -105,6 +105,8 @@
         {"type":"minecraft:item","name":"primogemcraft:dull_blade","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
         {"type":"minecraft:item","name":"primogemcraft:beginners_protector","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
         {"type":"minecraft:item","name":"primogemcraft:waster_greatsword","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:example_wish_bow","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:slingshot","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
         {"type":"minecraft:item","name":"minecraft:candle","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":8}}]},
         {"type":"minecraft:item","name":"minecraft:orange_candle","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":8}}]},
         {"type":"minecraft:item","name":"minecraft:copper_grate","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":8}}]},

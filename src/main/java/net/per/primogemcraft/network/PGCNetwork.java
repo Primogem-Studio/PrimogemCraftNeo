@@ -11,6 +11,7 @@ import net.per.primogemcraft.client.WishLootItems;
 import net.per.primogemcraft.client.gui.ChoiceClientHandler;
 import net.per.primogemcraft.entity.misc.ZiplineCarrierEntity;
 import net.per.primogemcraft.item.misc.LuckySpecialTicketItem;
+import net.per.primogemcraft.item.weapon.ThunderingPulseItem;
 import net.per.primogemcraft.system.choice.ChoiceRegistry;
 import net.per.primogemcraft.system.element.AnemoEffectMode;
 import net.per.primogemcraft.system.wish.WishCoreTransfer;
@@ -24,6 +25,9 @@ public final class PGCNetwork {
     @SubscribeEvent
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar(PROTOCOL_VERSION);
+        registrar.playToServer(ThunderingPulsePayload.TYPE, ThunderingPulsePayload.STREAM_CODEC, (payload, context) -> {
+            if (context.player() instanceof ServerPlayer player) ThunderingPulseItem.dash(player);
+        });
         registrar.playToServer(WishCoreTransferPayload.TYPE, WishCoreTransferPayload.STREAM_CODEC, (payload, context) -> {
             if (context.player() instanceof ServerPlayer player) WishCoreTransfer.transfer(player, payload.containerId());
         });
