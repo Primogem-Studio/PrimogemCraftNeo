@@ -56,7 +56,7 @@ public class PGCItems {
 
     public static final DeferredItem<WishWeaponBowItem> EXAMPLE_WISH_BOW = REGISTRY.registerItem("example_wish_bow", properties ->
             new WishWeaponBowItem(properties,
-                    new BowAttackCycle(8, 16, 5, 2), 3.0F,
+                    new BowAttackCycle(8, 16, 5), 3.0F,
                     ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/item/example_wish_bow.png"),
                     ResourceLocation.withDefaultNamespace("textures/entity/projectiles/arrow.png"), SoundEvents.ARROW_SHOOT));
 

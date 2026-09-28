@@ -19,9 +19,14 @@ public final class WishWeaponTooltips {
     }
 
     public static List<Component> lines(String descriptionPrefix, List<WeaponDescription> descriptions) {
+        return lines(descriptionPrefix, descriptions, List.of());
+    }
+
+    public static List<Component> lines(String descriptionPrefix, List<WeaponDescription> descriptions, List<Component> passiveLines) {
         var tooltip = new ArrayList<Component>();
         if (WishTooltips.showsDetails()) {
             for (var effect : descriptions) tooltip.addAll(effect.lines(descriptionPrefix));
+            tooltip.addAll(passiveLines);
         } else {
             tooltip.add(Component.translatable(DETAILS_KEY));
         }

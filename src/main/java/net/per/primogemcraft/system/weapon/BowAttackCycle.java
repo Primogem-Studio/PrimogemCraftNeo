@@ -1,10 +1,10 @@
 package net.per.primogemcraft.system.weapon;
 
-public record BowAttackCycle(int minimumCooldown, int maximumCooldown, int frameCount, int frameTicks) {
+public record BowAttackCycle(int minimumCooldown, int maximumCooldown, int frameCount) {
     public BowAttackCycle {
         if (minimumCooldown < 1 || maximumCooldown < minimumCooldown || maximumCooldown > 1200)
             throw new IllegalArgumentException("Invalid bow cooldown range");
-        if (frameCount < 2 || frameCount > 256 || frameTicks < 1 || frameTicks > 1200)
+        if (frameCount < 2 || frameCount > 256)
             throw new IllegalArgumentException("Invalid bow animation timing");
     }
 
@@ -14,8 +14,9 @@ public record BowAttackCycle(int minimumCooldown, int maximumCooldown, int frame
         return minimumCooldown + (int) (roll * (maximumCooldown - minimumCooldown + 1));
     }
 
-    public int frame(long elapsedTicks) {
-        if (elapsedTicks < 0 || elapsedTicks >= (long) (frameCount - 1) * frameTicks) return 0;
-        return 1 + (int) (elapsedTicks / frameTicks);
+    public int frame(long elapsedTicks, int duration) {
+        if (elapsedTicks < 0 || duration <= 0) return 0;
+        if (elapsedTicks >= duration) return frameCount - 1;
+        return (int) (elapsedTicks * frameCount / duration);
     }
 }

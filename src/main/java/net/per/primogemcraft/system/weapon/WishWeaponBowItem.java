@@ -1,7 +1,6 @@
 package net.per.primogemcraft.system.weapon;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -12,6 +11,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
@@ -22,29 +22,21 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.per.primogemcraft.entity.misc.WishArrowEntity;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.registry.PGCItems;
-import net.per.primogemcraft.util.PGCTimer;
 import net.per.primogemcraft.system.wish.WishReports;
 import net.per.primogemcraft.system.wish.WishTooltips;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
-
-@EventBusSubscriber(modid = MOD_ID)
 public class WishWeaponBowItem extends Item implements WishWeapon {
-    public static final boolean SHOW_IN_CREATIVE_TAB = false;
-    private static final String SHOT_TIMER = "weapon/bow_shot";
     private final BowAttackCycle cycle;
     private final float projectileSpeed;
     private final ResourceLocation texture;
@@ -87,6 +79,14 @@ public class WishWeaponBowItem extends Item implements WishWeapon {
     }
 
     @Override
+    public List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
+        if (!player.isUsingItem() || player.getUseItem() != stack || player.isPassenger()
+                || !stack.has(PGCDataComponents.BOW_DRAW_DURATION.get())) return List.of();
+        return List.of(WeaponModifier.conditional(Attributes.MOVEMENT_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL,
+                (owner, weapon, rank) -> BowRefinement.drawMovementBonus(rank)));
+    }
+
+    @Override
     public List<WeaponDescription> descriptions(ItemStack stack) {
         return List.of();
     }
@@ -94,13 +94,22 @@ public class WishWeaponBowItem extends Item implements WishWeapon {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable(WeaponType.BOW.labelKey()));
+        var passiveLines = new ArrayList<Component>();
         if (WishTooltips.showsDetails()) {
-            tooltip.addAll(WeaponDescription.of("normal_attack", "shoot",
-                    WishReports.number(cycle.minimumCooldown() / 20.0D, ChatFormatting.AQUA),
-                    WishReports.number(cycle.maximumCooldown() / 20.0D, ChatFormatting.AQUA)).lines("weapon.primogemcraft.bow"));
-            tooltip.addAll(WeaponDescription.note("ammunition").lines("weapon.primogemcraft.bow"));
+            var refinement = WeaponEnhancement.refinementOf(WishTooltips.viewer(), stack);
+            var movement = 0.2D * (1.0D + BowRefinement.drawMovementBonus(refinement)) - 1.0D;
+            var movementValue = WishReports.percent(movement, movement < 0.0D ? ChatFormatting.RED : ChatFormatting.YELLOW);
+            passiveLines.add(Component.translatable("weapon.primogemcraft.bow.passive"));
+            passiveLines.add(Component.translatable("weapon.primogemcraft.bow.tooltip.0",
+                    WishReports.percent(20.0D / cycle.maximumCooldown(), ChatFormatting.AQUA),
+                    WishReports.percent(20.0D / cycle.minimumCooldown(), ChatFormatting.AQUA)));
+            passiveLines.add(Component.translatable("weapon.primogemcraft.bow.tooltip.1",
+                    movement > 0.0D ? Component.translatable("weapon.primogemcraft.bow.positive", movementValue)
+                            .withStyle(ChatFormatting.YELLOW) : movementValue));
+            passiveLines.add(Component.translatable("weapon.primogemcraft.bow.tooltip.2",
+                    WishReports.number(BowRefinement.targetRange(refinement), ChatFormatting.AQUA)));
         }
-        tooltip.addAll(WishWeaponTooltips.lines(stack.getDescriptionId(), descriptions(stack)));
+        tooltip.addAll(WishWeaponTooltips.lines(stack.getDescriptionId(), descriptions(stack), passiveLines));
     }
 
     @Override
@@ -121,17 +130,64 @@ public class WishWeaponBowItem extends Item implements WishWeapon {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        return InteractionResultHolder.fail(player.getItemInHand(hand));
+        var stack = player.getItemInHand(hand);
+        if (hand != InteractionHand.MAIN_HAND || !player.isAlive() || player.isSpectator())
+            return InteractionResultHolder.fail(stack);
+        player.startUsingItem(hand);
+        if (!level.isClientSide() && player.isUsingItem()) startDraw(stack, player);
+        return InteractionResultHolder.consume(stack);
     }
 
     @Override
-    public boolean canAttackBlock(BlockState state, Level level, BlockPos pos, Player player) {
-        return false;
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.BOW;
     }
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+    public boolean isEnchantable(ItemStack stack) {
         return true;
+    }
+
+    @Override
+    public int getEnchantmentValue() {
+        return 1;
+    }
+
+    @Override
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+        return 72000;
+    }
+
+    private void startDraw(ItemStack stack, Player player) {
+        var duration = cycle.cooldown(player.getRandom().nextDouble());
+        stack.set(PGCDataComponents.BOW_DRAW_DURATION.get(), duration);
+        stack.set(PGCDataComponents.BOW_SHOT_TIME.get(), player.level().getGameTime() + duration);
+        WeaponAttributes.refreshPassive(stack, player, player.getInventory().selected);
+    }
+
+    @Override
+    public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int remainingTicks) {
+        if (!(entity instanceof ServerPlayer player)) return;
+        if (!player.isAlive() || player.isSpectator() || player.containerMenu != player.inventoryMenu
+                || player.getUsedItemHand() != InteractionHand.MAIN_HAND || player.getMainHandItem() != stack
+                || player.getCooldowns().isOnCooldown(this)) {
+            player.stopUsingItem();
+            return;
+        }
+        var shotTime = stack.get(PGCDataComponents.BOW_SHOT_TIME.get());
+        if (shotTime == null) startDraw(stack, player);
+        else if (level.getGameTime() >= shotTime) {
+            shoot(player, stack);
+            startDraw(stack, player);
+        }
+    }
+
+    @Override
+    public void onStopUsing(ItemStack stack, LivingEntity entity, int remainingTicks) {
+        stack.remove(PGCDataComponents.BOW_SHOT_TIME.get());
+        stack.remove(PGCDataComponents.BOW_DRAW_DURATION.get());
+        if (!entity.level().isClientSide() && entity instanceof Player player)
+            WeaponAttributes.refreshPassive(stack, player, player.getInventory().selected);
     }
 
     @Override
@@ -139,16 +195,7 @@ public class WishWeaponBowItem extends Item implements WishWeapon {
         return slotChanged || oldStack.getItem() != newStack.getItem();
     }
 
-    @SubscribeEvent
-    public static void blockAttack(PlayerInteractEvent.LeftClickBlock event) {
-        if (event.getEntity().getMainHandItem().getItem() instanceof WishWeaponBowItem) event.setCanceled(true);
-    }
-
-    public static void shoot(ServerPlayer player) {
-        var stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof WishWeaponBowItem bow) || !player.isAlive() || player.isSpectator()
-                || player.isUsingItem() || player.containerMenu != player.inventoryMenu
-                || !PGCTimer.isDone(player, SHOT_TIMER) || player.getCooldowns().isOnCooldown(bow)) return;
+    private void shoot(ServerPlayer player, ItemStack stack) {
         var level = player.serverLevel();
         var offhand = player.getOffhandItem();
         var consumeAmmo = offhand.getItem() instanceof ArrowItem || offhand.is(Items.FIREWORK_ROCKET);
@@ -160,14 +207,12 @@ public class WishWeaponBowItem extends Item implements WishWeapon {
         } else {
             projectile = new WishArrowEntity(level, player, ammunition, stack,
                     (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE),
-                    bow.projectileSpeed, bow.arrowTexture);
+                    projectileSpeed, arrowTexture);
         }
-        projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, bow.projectileSpeed, 0.0F);
+        projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, projectileSpeed, 0.0F);
         if (!level.addFreshEntity(projectile)) return;
         if (consumeAmmo) offhand.shrink(1);
-        PGCTimer.set(player, SHOT_TIMER, bow.cycle.cooldown(player.getRandom().nextDouble()));
-        stack.set(PGCDataComponents.BOW_SHOT_TIME.get(), level.getGameTime());
-        if (bow.attackSound != null)
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), bow.attackSound, SoundSource.PLAYERS, 1.0F, 1.0F);
+        if (attackSound != null)
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), attackSound, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 }

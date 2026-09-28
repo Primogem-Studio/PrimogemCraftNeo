@@ -21,11 +21,13 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.per.primogemcraft.registry.PGCEntities;
+import net.per.primogemcraft.system.weapon.BowRefinement;
+import net.per.primogemcraft.system.weapon.WeaponEnhancement;
 
 public final class WishArrowEntity extends Arrow {
     private static final EntityDataAccessor<String> TEXTURE = SynchedEntityData.defineId(WishArrowEntity.class, EntityDataSerializers.STRING);
     private static final ResourceLocation DEFAULT_TEXTURE = ResourceLocation.withDefaultNamespace("textures/entity/projectiles/arrow.png");
-    private static final double TARGET_RANGE = 8.0D;
+    private double targetRange = BowRefinement.targetRange(1);
     private LivingEntity target;
     private ItemStack weapon = ItemStack.EMPTY;
     private float damage;
@@ -47,6 +49,7 @@ public final class WishArrowEntity extends Arrow {
         this.weapon = weapon.copy();
         this.damage = damage;
         this.speed = speed;
+        targetRange = BowRefinement.targetRange(WeaponEnhancement.refinementOf(owner, weapon));
         spectral = ammunition.is(Items.SPECTRAL_ARROW);
         entityData.set(TEXTURE, texture.toString());
         target = findTarget(owner);
@@ -76,7 +79,7 @@ public final class WishArrowEntity extends Arrow {
                 return;
             }
             if (target != null && (!canTarget(owner, target)
-                    || target.getBoundingBox().getCenter().distanceToSqr(position()) > TARGET_RANGE * TARGET_RANGE)) target = null;
+                    || target.getBoundingBox().getCenter().distanceToSqr(position()) > targetRange * targetRange)) target = null;
             if (target == null && tickCount % 5 == 0) target = findTarget(owner);
             var direction = getDeltaMovement().normalize();
             if (target != null && hasLineOfSight(target)) {
@@ -98,12 +101,12 @@ public final class WishArrowEntity extends Arrow {
     private LivingEntity findTarget(Player owner) {
         LivingEntity chosen = null;
         var bestScore = Double.NEGATIVE_INFINITY;
-        for (var candidate : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(TARGET_RANGE))) {
+        for (var candidate : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(targetRange))) {
             if (!canTarget(owner, candidate) || !hasLineOfSight(candidate)) continue;
             var offset = candidate.getBoundingBox().getCenter().subtract(position());
             var alignment = owner.getLookAngle().dot(offset.normalize());
-            if (alignment < 0.8D || offset.lengthSqr() > TARGET_RANGE * TARGET_RANGE) continue;
-            var score = alignment - offset.length() / (TARGET_RANGE * 10.0D);
+            if (alignment < 0.8D || offset.lengthSqr() > targetRange * targetRange) continue;
+            var score = alignment - offset.length() / (targetRange * 10.0D);
             if (score > bestScore) {
                 bestScore = score;
                 chosen = candidate;

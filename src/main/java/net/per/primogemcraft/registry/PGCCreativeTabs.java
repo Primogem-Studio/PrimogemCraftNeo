@@ -9,7 +9,6 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.per.primogemcraft.system.weapon.WishWeaponBowItem;
 
 import java.util.function.Consumer;
 
@@ -201,7 +200,7 @@ public class PGCCreativeTabs {
         output.accept(HEWN_EDGE_BLADE);
         output.accept(PRIMORDIAL_JADE_CUTTER);
         output.accept(DULL_BLADE);
-        if (WishWeaponBowItem.SHOW_IN_CREATIVE_TAB) output.accept(EXAMPLE_WISH_BOW);
+        output.accept(EXAMPLE_WISH_BOW);
         output.accept(THE_FLUTE);
         output.accept(LIONS_ROAR);
         output.accept(HARBINGER_OF_DAWN);

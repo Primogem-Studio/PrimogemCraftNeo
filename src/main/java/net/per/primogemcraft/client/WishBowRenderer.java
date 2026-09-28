@@ -32,7 +32,10 @@ public final class WishBowRenderer extends BlockEntityWithoutLevelRenderer {
         if (!(stack.getItem() instanceof WishWeaponBowItem bow)) return;
         var level = Minecraft.getInstance().level;
         var shot = stack.get(PGCDataComponents.BOW_SHOT_TIME.get());
-        var frame = level == null || shot == null ? 0 : bow.cycle().frame(level.getGameTime() - shot);
+        var duration = stack.getOrDefault(PGCDataComponents.BOW_DRAW_DURATION.get(), 0);
+        var frame = level == null || shot == null || !context.firstPerson() && context != ItemDisplayContext.THIRD_PERSON_LEFT_HAND
+                && context != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 0
+                : bow.cycle().frame(duration - (shot - level.getGameTime()), duration);
         var frames = meshes.computeIfAbsent(bow, this::load);
         if (frames.isEmpty()) return;
         var vertices = ItemRenderer.getFoilBufferDirect(buffers, RenderType.entityCutout(bow.texture()), true, stack.hasFoil());

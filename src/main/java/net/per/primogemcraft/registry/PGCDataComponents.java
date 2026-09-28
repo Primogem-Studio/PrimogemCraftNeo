@@ -26,6 +26,7 @@ public class PGCDataComponents {
     public static final DeferredRegister.DataComponents REGISTRY = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MOD_ID);
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> BOW_SHOT_TIME = REGISTRY.registerComponentType("bow_shot_time", builder -> builder.networkSynchronized(ByteBufCodecs.VAR_LONG));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BOW_DRAW_DURATION = REGISTRY.registerComponentType("bow_draw_duration", builder -> builder.networkSynchronized(ByteBufCodecs.VAR_INT));
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WISH_VALUE = REGISTRY.registerComponentType("wish_value", builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WISH_VALUE_DIVISOR = REGISTRY.registerComponentType("wish_value_divisor", builder -> builder.persistent(Codec.intRange(1, 10)).networkSynchronized(ByteBufCodecs.VAR_INT));

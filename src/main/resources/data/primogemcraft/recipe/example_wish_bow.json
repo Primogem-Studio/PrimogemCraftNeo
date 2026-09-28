@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "primogemcraft:enhancement_ore"
+    },
+    {
+      "item": "minecraft:bow"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:example_wish_bow",
+    "count": 1
+  }
+}
