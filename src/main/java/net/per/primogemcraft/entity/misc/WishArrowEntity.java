@@ -30,6 +30,7 @@ import net.per.primogemcraft.system.weapon.BowRefinement;
 import net.per.primogemcraft.system.weapon.WeaponEnhancement;
 import net.per.primogemcraft.system.weapon.WeaponDamage;
 import net.per.primogemcraft.item.weapon.SkywardHarpItem;
+import net.per.primogemcraft.item.weapon.TheViridescentHuntItem;
 import net.per.primogemcraft.util.PGCTimer;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamage;
@@ -211,6 +212,8 @@ public final class WishArrowEntity extends Arrow {
                     ? WeaponDamage.extraHit(living, source, finalDamage) : victim.hurt(source, finalDamage);
             if (hurt) {
                 if (victim instanceof LivingEntity living) {
+                    if (weapon.getItem() instanceof TheViridescentHuntItem && owner instanceof Player player)
+                        TheViridescentHuntItem.trySpawnCyclone(player, weapon, living.getBoundingBox().getCenter());
                     var knockback = EnchantmentHelper.modifyKnockback((ServerLevel) level(), weapon, living, source, 0.0F);
                     var resistance = Math.max(0.0D, 1.0D - living.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                     var push = getDeltaMovement().multiply(1.0D, 0.0D, 1.0D).normalize().scale(knockback * 0.6D * resistance);

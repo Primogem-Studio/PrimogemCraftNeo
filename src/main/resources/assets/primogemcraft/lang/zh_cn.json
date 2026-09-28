@@ -1,4 +1,6 @@
 {
+  "item.primogemcraft.the_viridescent_hunt": "§a苍翠猎弓",
+  "item.primogemcraft.the_viridescent_hunt.description.cyclone": "§e攻击命中有50%%概率生成风之眼，持续牵引3格内敌人，每0.5秒造成§b%1$s§e攻击力的伤害，持续4秒，冷却§b%2$s§e秒",
   "item.primogemcraft.skyward_harp": "§b天空之翼",
   "item.primogemcraft.skyward_harp.description.echo": "§e攻击力+§b%1$s§e；命中有§b%2$s§e概率触发125%%攻击力范围伤害，冷却§b%3$s§e秒",
   "item.primogemcraft.skyward_harp.description.split": "§e射击有§b%1$s§e概率分裂§b%2$s§e支箭，伤害50%%",

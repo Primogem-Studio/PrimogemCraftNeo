@@ -1,4 +1,6 @@
 {
+  "item.primogemcraft.the_viridescent_hunt": "§aThe Viridescent Hunt",
+  "item.primogemcraft.the_viridescent_hunt.description.cyclone": "§eHits have a 50%% chance to create a Cyclone, pulling enemies within 3 blocks and dealing §b%1$s§e ATK as DMG every 0.5s for 4s. Cooldown: §b%2$s§es",
   "item.primogemcraft.skyward_harp": "§bSkyward Harp",
   "item.primogemcraft.skyward_harp.description.echo": "§eATK +§b%1$s§e; hits have a §b%2$s§e chance to deal 125%% ATK AoE DMG. Cooldown: §b%3$s§es",
   "item.primogemcraft.skyward_harp.description.split": "§eShots have a §b%1$s§e chance to split into §b%2$s§e extra arrows at 50%% DMG",

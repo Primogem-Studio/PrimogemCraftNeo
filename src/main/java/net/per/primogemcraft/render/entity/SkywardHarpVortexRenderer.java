@@ -26,15 +26,17 @@ public final class SkywardHarpVortexRenderer extends EntityRenderer<SkywardHarpV
     public void render(SkywardHarpVortexEntity entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
         poseStack.mulPose(entityRenderDispatcher.cameraOrientation());
+        if (entity.isWindEye()) poseStack.scale(0.4F, 0.4F, 0.4F);
+        var alpha = entity.isWindEye() ? 191 : 170;
         var frame = (int) (entity.level().getGameTime() / 2L % 5L);
         var v0 = frame / 5.0F;
         var v1 = (frame + 1) / 5.0F;
         var pose = poseStack.last();
         var consumer = buffer.getBuffer(RENDER_TYPE);
-        vertex(consumer, pose, -2.5F, -2.5F, 0.0F, v1);
-        vertex(consumer, pose, 2.5F, -2.5F, 1.0F, v1);
-        vertex(consumer, pose, 2.5F, 2.5F, 1.0F, v0);
-        vertex(consumer, pose, -2.5F, 2.5F, 0.0F, v0);
+        vertex(consumer, pose, -2.5F, -2.5F, 0.0F, v1, alpha);
+        vertex(consumer, pose, 2.5F, -2.5F, 1.0F, v1, alpha);
+        vertex(consumer, pose, 2.5F, 2.5F, 1.0F, v0, alpha);
+        vertex(consumer, pose, -2.5F, 2.5F, 0.0F, v0, alpha);
         poseStack.popPose();
         super.render(entity, entityYaw, partialTick, poseStack, buffer, packedLight);
     }
@@ -44,8 +46,8 @@ public final class SkywardHarpVortexRenderer extends EntityRenderer<SkywardHarpV
         return TEXTURE;
     }
 
-    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float u, float v) {
-        consumer.addVertex(pose, x, y, 0.0F).setColor(255, 255, 255, 170).setUv(u, v)
+    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float u, float v, int alpha) {
+        consumer.addVertex(pose, x, y, 0.0F).setColor(255, 255, 255, alpha).setUv(u, v)
                 .setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT).setNormal(pose, 0.0F, 0.0F, 1.0F);
     }
 }

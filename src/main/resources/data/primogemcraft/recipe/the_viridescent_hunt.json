@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:bow"
+    },
+    {
+      "item": "minecraft:emerald"
+    },
+    {
+      "item": "minecraft:emerald"
+    },
+    {
+      "item": "primogemcraft:otherworld_wind_catcher"
+    }
+  ],
+  "result": {
+    "id": "primogemcraft:the_viridescent_hunt",
+    "count": 1
+  }
+}

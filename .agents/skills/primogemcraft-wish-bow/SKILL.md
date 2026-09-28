@@ -47,7 +47,21 @@ Java paths above are under `src/main/java/net/per/primogemcraft/`; resource path
 
 Name formatting such as `§d`, Minecraft rarity, star tags and loot membership are separate concerns. Setting one does not register the others. New subclasses already receive the renderer through `WishBowClient`'s registry scan; do not duplicate a renderer registration for each item. Reuse the registered `WISH_ARROW` entity for compatible arrows.
 
+Match the name's color code in both lang files to the item's base vanilla `Rarity` (`DataComponents.RARITY`). Vanilla mappings are `§f` / `#FFFFFF` → `COMMON`, `§e` / `#FFFF55` → `UNCOMMON`, `§b` / `#55FFFF` → `RARE`, and `§d` / `#FF55FF` → `EPIC`. Do not use a lang color alone to imitate a quality that rarity-aware UI cannot see. Check the actual default components as well as the displayed name; enchantments can promote the effective rarity of a stack. For The Viridescent Hunt, the purple name `§d` requires base `Rarity.EPIC`, while its four-star classification and purple wish membership remain independent. Do not add a four-star bow to the five-star tag merely to obtain purple text.
+
 Use `WeaponDescription.of(action, text, values...)` for skill descriptions, following existing `item.primogemcraft.<id>.description.<text>` keys. Action labels use `weapon.primogemcraft.action.<action>`. A literal percent in a translated template must be `%%`. Keep these established weapon descriptions instead of creating a parallel tooltip renderer.
+
+Player-facing bow descriptions use generic damage wording: Chinese `造成伤害` (with the requested amount or ATK ratio), English `deal DMG`. Do not write `风元素伤害`, `雷元素伤害`, other `X元素伤害`, or their English equivalents in these descriptions. This is a localization rule; it does not change the damage source, elemental reactions, or gameplay implementation.
+
+## Vanilla quality and dismantling compatibility
+
+Preserve `WishWeaponBowItem` / `WishWeapon` integration and the existing recovery path when registering a bow. Verify these independently of name color and wish loot rarity:
+
+- `weapon/bow.json` includes the item, and the root `weapon.json` includes that bow tag. The shared [weapon recovery recipe](../../../src/main/resources/data/primogemcraft/recipe/weapon_recovery.json) accepts `#primogemcraft:weapon` plus `specially_treated_fine_ore`; a bow omitted from the tag cannot use that recipe.
+- [WishWeapon.isFiveStar](../../../src/main/java/net/per/primogemcraft/system/weapon/WishWeapon.java) reads only `weapon/five_star`. [WeaponRecoveryRecipe](../../../src/main/java/net/per/primogemcraft/recipe/WeaponRecoveryRecipe.java) stores `WeaponState` and that classification in `WEAPON_RECOVERY`. Neither name color nor vanilla `Rarity.EPIC` makes a weapon five-star. Keep applicable non-five-star entries in `weapon/low`; that tag is not the recovery recipe's input tag.
+- [TreatedFineOreItem](../../../src/main/java/net/per/primogemcraft/item/misc/TreatedFineOreItem.java) redeems the stored recovery through [WeaponEnhancement.refund](../../../src/main/java/net/per/primogemcraft/system/weapon/WeaponEnhancement.java). Reuse its XP/ore refunds and refinement provenance: non-five-star duplicate layers return two Masterless Starglitter each, superimposer layers return Custom Superimposers; five-star refinement layers return Custom Superimposers and the weapon also returns one Lucent Afterglow. Temporary refinements do not become refundable permanent layers. Do not create a bow-specific dismantling formula.
+
+When changing quality or star classification, check an ordinary stack and an enhanced/refined stack through the recovery recipe and redemption. Source/tag inspection confirms routing only; report runtime recovery as untested unless exercised in game.
 
 ## Skill inputs, refinement and arrows
 
@@ -69,6 +83,8 @@ Preserve already-hit exclusion in collision and homing so arrows cannot repeated
 ## Textures and model perspectives
 
 The held texture is a vertical strip of N square frames: width S, height S*N, with N equal to `cycle().frameCount()`. A sheet's total height does not change its native per-frame resolution. Keep the static inventory icon independent of the held animation and preserve the requested dimensions.
+
+The default inventory item icon is **16×16**, showing a recognizable part of the bow body. For a larger held frame, take an exact native-pixel crop around the grip and characteristic body detail; do not shrink the whole bow into the icon or use the entire 32×32 frame as its inventory texture. Choose the crop for that artwork, without resampling. A 16×16 icon does not change a 32×32 held animation or its model scale. If the user already cropped or edited the icon, preserve that file and do not recrop or regenerate it. An explicit request for another icon size takes precedence.
 
 The default model size corresponds to a 16×16 texture. `BowSpriteMesh.build` scales geometry uniformly by `S / 16` around `(0.5, 0.5, 0.5)`, including thickness: 32×32 is twice the baseline size, 64×64 is four times. UVs still span one frame. Do not normalize larger textures back to the same physical size or multiply the same resolution scale again in JSON or the renderer. Keep the grip near the frame center and stationary across frames so scaling preserves the hand anchor.
 
@@ -92,10 +108,12 @@ Do not register a new bow with only `parent: builtin/entity` and a particle text
 
 Debug appearance in order: selected perspective and parent chain, light mode, texture/frame dimensions, mesh UVs/normals, then artwork. Hand transforms and the active draw pose compose; do not duplicate both in Java and JSON. Check left and right hands independently. Preserve mesh cache clearing on resource reload. Pure asset changes can be inspected with F3+T; Java changes need the updated mod and a restart.
 
+The Viridescent Hunt wind-eye visual target is the shared Skyward Harp vortex at the smaller render scale, fixed **3-block** attraction radius and **75% opacity** (visible alpha, approximately `191/255`). Keep this setting specific to the wind eye; do not change Skyward Harp's own vortex. A skill-only request records this target without authorizing an implementation or texture edit.
+
 ## Verification
 
 - For skill-only edits, validate Markdown/frontmatter, source links and `git diff --check`; no game build is necessary.
-- For implementation/resource changes, follow the standard's build checks with the launcher resolved from the current environment. Parse changed JSON, resolve model/texture references, check frame count and PNG dimensions, and compare the static icon's intended colors with the resting frame.
+- For implementation/resource changes, follow the standard's build checks with the launcher resolved from the current environment. Parse changed JSON, resolve model/texture references, check frame count and PNG dimensions, and compare the static icon's intended colors with the resting frame. Confirm the default icon is a 16×16 native crop, name color matches base vanilla rarity, bow descriptions use generic damage wording in both languages, and recovery tags/classification follow the shared dismantling rules.
 - Reuse the runnable Java checks in `tests/BowAttackCycleTest.java`, `BowRefinementTest.java`, `BowSpriteMeshTest.java` and, when relevant, `ThunderingPulseStatsTest.java`. Root `tests/` is not the Gradle test source set: `build` may report `test NO-SOURCE`. Compile these checks with their referenced pure Java sources into a temporary directory and run them explicitly; do not leave `.class` files in `tests/`.
 - For gameplay changes, record a reproduction with lined-up targets, exact expected hit count, normal versus empowered arrows, repeated inputs, and a block stopping the arrow. Include ordinary arrows and any other ammunition affected by the change.
 - For visuals, check hotbar and inventory colors, dropped item and item frame, both hand preferences in first/third person, idle versus drawing, animation reset after switching items, and resource reload. Follow the standard's conditions for launching the game. Report which checks actually ran; a successful build or static model check is not an in-game rendering test.

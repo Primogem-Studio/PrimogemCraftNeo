@@ -217,6 +217,7 @@ public class PGCCreativeTabs {
         output.accept(EXAMPLE_WISH_BOW);
         output.accept(SLINGSHOT);
         output.accept(SKYWARD_HARP);
+        output.accept(THE_VIRIDESCENT_HUNT);
         output.accept(THUNDERING_PULSE);
         output.accept(MORA_HOE);
         output.accept(MORA_PICKAXE);

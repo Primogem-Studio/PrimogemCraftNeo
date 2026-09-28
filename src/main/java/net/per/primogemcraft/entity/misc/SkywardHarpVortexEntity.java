@@ -1,6 +1,8 @@
 package net.per.primogemcraft.entity.misc;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -17,13 +19,16 @@ import net.per.primogemcraft.registry.PGCEntities;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamageOptions;
 import net.per.primogemcraft.system.weapon.WeaponDamage;
+import net.per.primogemcraft.system.weapon.ViridescentHuntStats;
 
 import java.util.UUID;
 
 public final class SkywardHarpVortexEntity extends Entity {
+    private static final EntityDataAccessor<Boolean> WIND_EYE = SynchedEntityData.defineId(SkywardHarpVortexEntity.class, EntityDataSerializers.BOOLEAN);
     private UUID ownerId;
     private double radius;
     private long expires;
+    private double damageRatio = 0.1D;
 
     public SkywardHarpVortexEntity(EntityType<? extends SkywardHarpVortexEntity> type, Level level) {
         super(type, level);
@@ -32,12 +37,27 @@ public final class SkywardHarpVortexEntity extends Entity {
     }
 
     public static void spawn(ServerLevel level, Player owner, Vec3 impact, double radius, int duration) {
+        spawn(level, owner, impact.add(0.0D, 3.0D, 0.0D), radius, duration, 0.1D, false);
+    }
+
+    public static void spawnWindEye(ServerLevel level, Player owner, Vec3 center, double damageRatio) {
+        spawn(level, owner, center, ViridescentHuntStats.RADIUS, ViridescentHuntStats.DURATION, damageRatio, true);
+    }
+
+    private static void spawn(ServerLevel level, Player owner, Vec3 center, double radius, int duration,
+                              double damageRatio, boolean windEye) {
         var vortex = new SkywardHarpVortexEntity(PGCEntities.SKYWARD_HARP_VORTEX.get(), level);
-        vortex.setPos(impact.add(0.0D, 3.0D, 0.0D));
+        vortex.setPos(center);
         vortex.ownerId = owner.getUUID();
         vortex.radius = radius;
         vortex.expires = level.getGameTime() + duration;
+        vortex.damageRatio = damageRatio;
+        vortex.entityData.set(WIND_EYE, windEye);
         level.addFreshEntity(vortex);
+    }
+
+    public boolean isWindEye() {
+        return entityData.get(WIND_EYE);
     }
 
     @Override
@@ -49,17 +69,19 @@ public final class SkywardHarpVortexEntity extends Entity {
             discard();
             return;
         }
-        if (tickCount % 4 != 0) return;
+        var windEye = isWindEye();
+        if (!windEye && tickCount % 4 != 0) return;
+        var damageTick = tickCount % (windEye ? ViridescentHuntStats.DAMAGE_INTERVAL : 40) == 0;
         var center = position();
         for (var target : level().getEntities(this, new AABB(center, center).inflate(radius),
-                candidate -> (candidate instanceof ItemEntity || candidate instanceof ExperienceOrb) && candidate.isAlive()
+                candidate -> !windEye && (candidate instanceof ItemEntity || candidate instanceof ExperienceOrb) && candidate.isAlive()
                         || candidate instanceof LivingEntity living && WishArrowEntity.canTarget(owner, living))) {
             var offset = center.subtract(target.getBoundingBox().getCenter());
             var distance = offset.length();
             if (distance > radius) continue;
-            if (tickCount % 40 == 0 && target instanceof LivingEntity living)
+            if (damageTick && target instanceof LivingEntity living)
                 WeaponDamage.extraHit(living, WeaponDamage.continuous(level(), Element.ANEMO, this, owner,
-                        ElementDamageOptions.REACTING), (float) (owner.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.1D));
+                        ElementDamageOptions.REACTING), (float) (owner.getAttributeValue(Attributes.ATTACK_DAMAGE) * damageRatio));
             if (distance < 0.25D) continue;
             target.setDeltaMovement(target.getDeltaMovement().scale(0.5D).add(offset.scale(Math.min(0.35D, distance * 0.15D) / distance)));
             target.hurtMarked = true;
@@ -74,6 +96,7 @@ public final class SkywardHarpVortexEntity extends Entity {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(WIND_EYE, false);
     }
 
     @Override

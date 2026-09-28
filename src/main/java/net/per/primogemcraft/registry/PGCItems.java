@@ -62,6 +62,7 @@ public class PGCItems {
 
     public static final DeferredItem<ThunderingPulseItem> THUNDERING_PULSE = fiveStarWeapon("thundering_pulse", ThunderingPulseItem::new);
     public static final DeferredItem<SkywardHarpItem> SKYWARD_HARP = fiveStarWeapon("skyward_harp", SkywardHarpItem::new);
+    public static final DeferredItem<TheViridescentHuntItem> THE_VIRIDESCENT_HUNT = REGISTRY.registerItem("the_viridescent_hunt", TheViridescentHuntItem::new);
     public static final DeferredItem<SlingshotItem> SLINGSHOT = REGISTRY.registerItem("slingshot", SlingshotItem::new);
 
     private static final int FROSTED_SLIME_JUMP_TICKS = 100;
