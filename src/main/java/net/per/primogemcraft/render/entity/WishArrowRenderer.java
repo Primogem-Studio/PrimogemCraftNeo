@@ -29,7 +29,7 @@ public final class WishArrowRenderer extends ArrowRenderer<WishArrowEntity> {
         poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, arrow.xRotO, arrow.getXRot())));
         var pose = poseStack.last();
         var consumer = bufferSource.getBuffer(RenderType.entityTranslucentEmissive(BEAM_TEXTURE, false));
-        var row = arrow.isAnemo() ? 1 : arrow.isEmpowered() ? 6 : 0;
+        var row = arrow.isAnemo() ? 1 : arrow.isEmpowered() || arrow.isFireArrow() || arrow.isOnFire() ? 6 : 0;
         var v0 = row / 8.0F;
         var v1 = (row + 1) / 8.0F;
         beam(consumer, pose, v0, v1);

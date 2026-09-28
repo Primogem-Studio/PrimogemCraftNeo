@@ -37,6 +37,7 @@ public class PGCSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> VARUNADA_LAZURITE_BUBBLE = register("varunada_lazurite_bubble");
     public static final DeferredHolder<SoundEvent, SoundEvent> VARUNADA_LAZURITE_BURST = register("varunada_lazurite_burst");
     public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_CHARGE = register("weapon_charge");
+    public static final DeferredHolder<SoundEvent, SoundEvent> THUNDERING_PULSE_FIRE_ARROW = register("thundering_pulse_fire_arrow");
     public static final DeferredHolder<SoundEvent, SoundEvent> THRUST_FLOURISH = register("thrust_flourish");
     public static final DeferredHolder<SoundEvent, SoundEvent> SOIL_SHAPING = register("soil_shaping");
     public static final DeferredHolder<SoundEvent, SoundEvent> SCAM = register("scam");

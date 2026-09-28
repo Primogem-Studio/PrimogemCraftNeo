@@ -23,4 +23,12 @@ public final class ThunderingPulseStats {
     public static double dashSpeed(int refinement) {
         return 1.5D + 0.25D * (Math.max(1, refinement) - 1);
     }
+
+    public static int fireArrowChance(int refinement) {
+        return refinement < 5 ? 0 : 50 + 5 * (Math.min(8, refinement) - 5);
+    }
+
+    public static double fireArrowDamageMultiplier(int refinement) {
+        return refinement < 5 ? 0.0D : (60 + 10 * (Math.min(8, refinement) - 5)) / 100.0D;
+    }
 }

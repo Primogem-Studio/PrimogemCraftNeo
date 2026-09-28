@@ -1,4 +1,12 @@
 {
+  "thundering_pulse_fire_arrow": {
+    "subtitle": "subtitles.primogemcraft.thundering_pulse_fire_arrow",
+    "sounds": [
+      {
+        "name": "primogemcraft:thundering_pulse_fire_arrow"
+      }
+    ]
+  },
   "wish_roll": {
     "subtitle": "subtitles.primogemcraft.wish_roll",
     "sounds": [

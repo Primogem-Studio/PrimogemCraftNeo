@@ -44,6 +44,7 @@ public final class WishArrowEntity extends Arrow {
     private static final EntityDataAccessor<String> TEXTURE = SynchedEntityData.defineId(WishArrowEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Boolean> EMPOWERED = SynchedEntityData.defineId(WishArrowEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> ANEMO = SynchedEntityData.defineId(WishArrowEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> FIRE_ARROW = SynchedEntityData.defineId(WishArrowEntity.class, EntityDataSerializers.BOOLEAN);
     private static final ResourceLocation DEFAULT_TEXTURE = ResourceLocation.withDefaultNamespace("textures/entity/projectiles/arrow.png");
     private double targetRange = BowRefinement.targetRange(1);
     private LivingEntity target;
@@ -84,6 +85,7 @@ public final class WishArrowEntity extends Arrow {
         builder.define(TEXTURE, DEFAULT_TEXTURE.toString());
         builder.define(EMPOWERED, false);
         builder.define(ANEMO, false);
+        builder.define(FIRE_ARROW, false);
     }
 
     public ResourceLocation texture() {
@@ -96,6 +98,15 @@ public final class WishArrowEntity extends Arrow {
 
     public boolean isAnemo() {
         return entityData.get(ANEMO);
+    }
+
+    public boolean isFireArrow() {
+        return entityData.get(FIRE_ARROW);
+    }
+
+    public void makeFireArrow() {
+        entityData.set(FIRE_ARROW, true);
+        igniteForSeconds(5.0F);
     }
 
     public void configureSkywardHarp(int splits, int duration) {
