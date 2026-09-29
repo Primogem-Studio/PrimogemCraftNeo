@@ -16,9 +16,9 @@ function wings.update(this, context)
     local recent = now - context:getLastShootTimestamp()
     local firing = recent >= 0 and recent <= context:getShootInterval() + 100
     local aiming = context:getAimingProgress()
-    local target = aiming * (2 / 3) + (1 - aiming) * (firing and 0.5 or 0)
+    local target = aiming + (1 - aiming) * (firing and 0.5 or 0)
     local duration = target > this.wing_progress and 160 or 350
-    local step = elapsed / duration * 0.5
+    local step = elapsed / duration
     this.wing_progress = math.max(this.wing_progress - step, math.min(target, this.wing_progress + step))
     context:setAnimationProgress(context:getTrack(default.STATIC_TRACK_LINE, default.PARALLEL_TRACK_1), this.wing_progress, true)
 end

@@ -14,11 +14,7 @@
 	"use_default_animation": "rifle",
 	"sounds": {
 		"shoot": "pgfs:tiankong/tiankong_shoot",
-		"dry_fire": "pgfs:tiankong/tiankong_dry_fire",
-		"reload_empty": "pgfs:tiankong/tiankong_reload_empty",
-		"put_away": "pgfs:tiankong/m95_reload_empty_drop",
-		"draw": "pgfs:tiankong/m95_put_away",
-		"reload_tactical": "pgfs:tiankong/tiankong_reload_tactical"
+		"dry_fire": "pgfs:tiankong/tiankong_dry_fire"
 	},
 	"model": "pgfs:gun/tiankong_geo",
 	"texture": "pgfs:gun/uv/tiankong",
