@@ -227,6 +227,7 @@ public final class WishArrowEntity extends Arrow {
             var hurt = victim instanceof LivingEntity living
                     ? WeaponDamage.extraHit(living, source, finalDamage) : victim.hurt(source, finalDamage);
             if (hurt) {
+                if (isEmpowered()) victim.igniteForSeconds(5.0F);
                 if (victim instanceof LivingEntity living) {
                     if (weapon.getItem() instanceof TheViridescentHuntItem && owner instanceof Player player)
                         TheViridescentHuntItem.trySpawnCyclone(player, weapon, living.getBoundingBox().getCenter());
