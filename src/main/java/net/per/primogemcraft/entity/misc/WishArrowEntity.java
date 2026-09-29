@@ -6,7 +6,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -52,6 +51,7 @@ public final class WishArrowEntity extends Arrow {
     private float speed;
     private boolean spectral;
     private byte empowermentPiercing;
+    private float empowermentDamageBonus;
     private int splitArrows;
     private int vortexDuration;
     private boolean splitArrow;
@@ -114,9 +114,10 @@ public final class WishArrowEntity extends Arrow {
         vortexDuration = duration;
     }
 
-    public void empower(int piercing) {
+    public void empower(int piercing, float damageBonus) {
         entityData.set(EMPOWERED, true);
         empowermentPiercing = (byte) Math.clamp(piercing, 1, 127);
+        empowermentDamageBonus = damageBonus;
         igniteForSeconds(5.0F);
     }
 
@@ -214,11 +215,15 @@ public final class WishArrowEntity extends Arrow {
             var source = damageSources().arrow(this, owner == null ? this : owner);
             if (owner instanceof LivingEntity living) living.setLastHurtMob(victim);
             var fireTicks = victim.getRemainingFireTicks();
-            if (isOnFire() && victim.getType() != EntityType.ENDERMAN) victim.igniteForSeconds(5.0F);
-            if (isAnemo())
+            if (isEmpowered() || isFireArrow())
+                source = ElementDamage.of(Element.PYRO, source, ElementStyle.NORMAL, ElementDamageOptions.REACTING);
+            else if (isAnemo())
                 source = ElementDamage.of(Element.ANEMO, source, ElementStyle.NORMAL, ElementDamageOptions.REACTING);
+            if (isOnFire() && !isEmpowered() && !isFireArrow() && victim.getType() != EntityType.ENDERMAN)
+                victim.igniteForSeconds(5.0F);
             var finalDamage = EnchantmentHelper.modifyDamage((ServerLevel) level(), weapon, victim, source, (float) getBaseDamage());
             if (splitArrow) finalDamage *= 0.5F;
+            if (isEmpowered()) finalDamage *= 1.0F + empowermentDamageBonus;
             var hurt = victim instanceof LivingEntity living
                     ? WeaponDamage.extraHit(living, source, finalDamage) : victim.hurt(source, finalDamage);
             if (hurt) {
@@ -232,12 +237,6 @@ public final class WishArrowEntity extends Arrow {
                     EnchantmentHelper.doPostAttackEffectsWithItemSource((ServerLevel) level(), living, source, weapon);
                     doPostHurtEffects(living);
                     if (spectral) living.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200), owner);
-                    if (isEmpowered()) {
-                        WeaponDamage.extraHit(living, ElementDamage.of(Element.PYRO, source, ElementStyle.NORMAL,
-                                ElementDamageOptions.REACTING), finalDamage * 0.5F);
-                        WeaponDamage.extraHit(living, new DamageSource(
-                                damageSources().onFire().typeHolder(), this, owner), finalDamage * 0.5F);
-                    }
                     if (!splitArrow && weapon.getItem() instanceof SkywardHarpItem && owner instanceof Player player) {
                         var refinement = WeaponEnhancement.refinementOf(player, weapon);
                         if (SkywardHarpItem.triggers(refinement, player)) {

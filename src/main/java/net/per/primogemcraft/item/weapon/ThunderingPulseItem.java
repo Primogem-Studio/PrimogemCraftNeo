@@ -62,7 +62,8 @@ public final class ThunderingPulseItem extends WishWeaponBowItem {
                 WeaponDescription.of("sneak_use", "empowerment",
                         WishReports.number(ThunderingPulseStats.duration(refinement) / 20.0D, ChatFormatting.AQUA),
                         WishReports.number(ThunderingPulseStats.maximumPiercing(refinement), ChatFormatting.AQUA),
-                        WishReports.number(ThunderingPulseStats.empowermentCooldown(refinement) / 20.0D, ChatFormatting.AQUA)),
+                        WishReports.number(ThunderingPulseStats.empowermentCooldown(refinement) / 20.0D, ChatFormatting.AQUA),
+                        WishReports.percent(ThunderingPulseStats.empowermentDamageBonus(refinement), ChatFormatting.AQUA)),
                 refinement < 5 ? WeaponDescription.of("special_effect", "fire_arrow_locked")
                         : WeaponDescription.of("special_effect", "fire_arrow",
                                 WishReports.number(ThunderingPulseStats.fireArrowChance(refinement), ChatFormatting.AQUA),
@@ -106,7 +107,8 @@ public final class ThunderingPulseItem extends WishWeaponBowItem {
         if (projectile instanceof WishArrowEntity arrow && arrow.getOwner() instanceof Player player
                 && !PGCTimer.isDone(player, EMPOWERMENT)) {
             var refinement = WeaponEnhancement.refinementOf(player, weapon);
-            arrow.empower(1 + player.getRandom().nextInt(ThunderingPulseStats.maximumPiercing(refinement)));
+            arrow.empower(1 + player.getRandom().nextInt(ThunderingPulseStats.maximumPiercing(refinement)),
+                    ThunderingPulseStats.empowermentDamageBonus(refinement));
         }
         return projectile;
     }

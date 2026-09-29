@@ -16,6 +16,10 @@ public final class ThunderingPulseStats {
         return Math.max(1, refinement) + 1;
     }
 
+    public static float empowermentDamageBonus(int refinement) {
+        return 0.5F + 0.125F * (Math.max(1, refinement) - 1);
+    }
+
     public static int dashCooldown(int refinement) {
         return Math.max(10, 200 - 40 * (Math.max(1, refinement) - 1));
     }

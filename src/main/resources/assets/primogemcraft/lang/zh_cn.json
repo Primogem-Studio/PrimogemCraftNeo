@@ -8,7 +8,7 @@
   "item.primogemcraft.slingshot": "§b弹弓",
   "item.primogemcraft.slingshot.description.damage": "当前精炼使伤害提高 §b%1$s",
   "item.primogemcraft.thundering_pulse": "§d飞雷之弦振",
-  "item.primogemcraft.thundering_pulse.description.empowerment": "§e强化持续§b%1$s§e秒；每支箭随机穿透§b1～%2$s§e个目标，并额外造成两次各为攻击力50%%的伤害，点燃目标5秒；冷却§b%3$s§e秒",
+  "item.primogemcraft.thundering_pulse.description.empowerment": "§e强化持续§b%1$s§e秒；每支箭随机穿透§b1～%2$s§e个目标，造成的伤害增加§b%4$s§e；冷却§b%3$s§e秒",
   "item.primogemcraft.thundering_pulse.description.dash": "§e沿视线方向以§b%1$s§e格/刻的初速度突进，冷却§b%2$s§e秒",
   "item.primogemcraft.thundering_pulse.description.fire_arrow_locked": "§7精炼等级达到§b5§7时解锁……",
   "item.primogemcraft.thundering_pulse.description.fire_arrow": "§e增益生效时，发射箭矢时有§b%1$s%%§e概率额外发射一支箭，造成攻击力§b%2$s%%§e的伤害",

@@ -8,7 +8,7 @@
   "item.primogemcraft.slingshot": "§bSlingshot",
   "item.primogemcraft.slingshot.description.damage": "Current refinement increases damage by §b%1$s",
   "item.primogemcraft.thundering_pulse": "§dThundering Pulse",
-  "item.primogemcraft.thundering_pulse.description.empowerment": "§eEmpowers arrows for §b%1$s§es: each pierces §b1–%2$s§e targets and deals two extra hits of DMG, each equal to 50%% ATK, igniting targets for 5s; §b%3$s§es cooldown",
+  "item.primogemcraft.thundering_pulse.description.empowerment": "§eEmpowers arrows for §b%1$s§es: each pierces §b1–%2$s§e targets and deals §b%4$s§e increased DMG; §b%3$s§es cooldown",
   "item.primogemcraft.thundering_pulse.description.dash": "§eDash along your view at an initial speed of §b%1$s§e blocks/tick; §b%2$s§es cooldown",
   "item.primogemcraft.thundering_pulse.description.fire_arrow_locked": "§7Unlocks at Refinement Rank §b5§7...",
   "item.primogemcraft.thundering_pulse.description.fire_arrow": "§eWhile empowered, firing an arrow has a §b%1$s%%§e chance to fire an additional arrow, dealing DMG equal to §b%2$s%%§e ATK",
