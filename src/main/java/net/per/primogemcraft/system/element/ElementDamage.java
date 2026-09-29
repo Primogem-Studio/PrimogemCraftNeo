@@ -4,7 +4,18 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
+import net.per.primogemcraft.config.PGCConfig;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 /**
  * The single entry point for every elemental hit this mod deals. A source built here always carries its
@@ -12,7 +23,10 @@ import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
  * with it the hit becomes GenshinCraft's own elemental damage source, and either way
  * {@link #elementOf(DamageSource)} reads the element back.
  */
+@EventBusSubscriber(modid = MOD_ID)
 public final class ElementDamage {
+    private static final Map<DamageSource, Element> SOURCES = Collections.synchronizedMap(new WeakHashMap<>());
+
     private ElementDamage() {
     }
 
@@ -21,7 +35,23 @@ public final class ElementDamage {
     }
 
     public static DamageSource of(Element element, Holder<DamageType> type, Entity direct, Entity causing, ElementStyle style, ElementDamageOptions options) {
-        return GenshinCraftIntegration.replace(new ElementDamageSource(type, element, options, direct, causing), element, style, options);
+        var original = new ElementDamageSource(type, element, options, direct, causing);
+        var source = GenshinCraftIntegration.replace(original, element, style, options);
+        if (source != original) SOURCES.put(source, element);
+        return source;
+    }
+
+    public static boolean isExternallyManaged() {
+        return GenshinCraftIntegration.managesElementDamage();
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        if (event.getEntity().level().isClientSide() || !isExternallyManaged()) return;
+        var element = SOURCES.get(event.getSource());
+        if (element == null) return;
+        var multiplier = PGCConfig.elementDamageMultiplier(element).get();
+        if (multiplier != 1.0D) event.setAmount((float) Math.min(Float.MAX_VALUE, event.getAmount() * multiplier));
     }
 
     public static DamageSource of(Element element, DamageSource origin) {

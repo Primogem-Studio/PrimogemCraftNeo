@@ -37,6 +37,10 @@ public final class GenshinCraftIntegration {
         return loaded ? GenshinCraftBridge.element(origin, element, style, options) : origin;
     }
 
+    public static boolean managesElementDamage() {
+        return loaded;
+    }
+
     public static DamageSource damageOf(ItemStack stack, DamageSource origin) {
         return loaded ? Helper.getSpecialDamage(stack, origin) : origin;
     }

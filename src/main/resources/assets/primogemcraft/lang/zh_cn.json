@@ -1,4 +1,12 @@
 {
+  "config.primogemcraft.category.element_damage": "元素伤害倍率",
+  "primogemcraft.configuration.anemo_damage_multiplier": "风元素伤害倍率",
+  "primogemcraft.configuration.geo_damage_multiplier": "岩元素伤害倍率",
+  "primogemcraft.configuration.electro_damage_multiplier": "雷元素伤害倍率",
+  "primogemcraft.configuration.dendro_damage_multiplier": "草元素伤害倍率",
+  "primogemcraft.configuration.hydro_damage_multiplier": "水元素伤害倍率",
+  "primogemcraft.configuration.pyro_damage_multiplier": "火元素伤害倍率",
+  "primogemcraft.configuration.cryo_damage_multiplier": "冰元素伤害倍率",
   "item.primogemcraft.the_viridescent_hunt": "§a苍翠猎弓",
   "item.primogemcraft.the_viridescent_hunt.description.cyclone": "§e攻击命中有50%%概率生成风之眼，持续牵引3格内敌人，每0.5秒造成§b%1$s§e攻击力的伤害，持续4秒，冷却§b%2$s§e秒",
   "item.primogemcraft.skyward_harp": "§b天空之翼",

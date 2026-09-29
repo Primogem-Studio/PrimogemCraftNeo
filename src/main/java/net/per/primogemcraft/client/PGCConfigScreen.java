@@ -8,6 +8,8 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.per.primogemcraft.config.PGCConfig;
+import net.per.primogemcraft.system.element.Element;
+import net.per.primogemcraft.system.element.ElementDamage;
 
 import java.util.function.Consumer;
 
@@ -90,6 +92,17 @@ public final class PGCConfigScreen {
             genshincraft.addEntry(intEntry(builder, GENSHINCRAFT_BUBBLE_HEAL_KEY, PGCConfig.GENSHINCRAFT_BUBBLE_HEAL.get(), PGCConfig.DEFAULT_GENSHINCRAFT_BUBBLE_HEAL, ZERO, MAX_HEALTH_LIMIT, PGCConfig.GENSHINCRAFT_BUBBLE_HEAL::set));
             genshincraft.addEntry(intEntry(builder, GENSHINCRAFT_FREEZE_DAMAGE_SCALE_KEY, PGCConfig.GENSHINCRAFT_FREEZE_DAMAGE_SCALE.get(), PGCConfig.DEFAULT_GENSHINCRAFT_FREEZE_DAMAGE_SCALE, ZERO, MAX_MULTIPLIER_LIMIT, PGCConfig.GENSHINCRAFT_FREEZE_DAMAGE_SCALE::set));
             genshincraft.addEntry(doubleEntry(builder, GENSHINCRAFT_GEO_WEAKNESS_AMPLIFIER_KEY, PGCConfig.GENSHINCRAFT_GEO_WEAKNESS_AMPLIFIER.get(), PGCConfig.DEFAULT_GENSHINCRAFT_GEO_WEAKNESS_AMPLIFIER, PGCConfig.GENSHINCRAFT_GEO_WEAKNESS_AMPLIFIER::set));
+        }
+        if (ElementDamage.isExternallyManaged()) {
+            var elementalDamage = builder.getOrCreateCategory(Component.translatable("config.primogemcraft.category.element_damage"));
+            for (var element : Element.values()) {
+                var value = PGCConfig.elementDamageMultiplier(element);
+                elementalDamage.addEntry(builder.entryBuilder()
+                        .startDoubleField(Component.translatable("primogemcraft.configuration." + element.id() + "_damage_multiplier"), value.get())
+                        .setDefaultValue(PGCConfig.DEFAULT_ELEMENT_DAMAGE_MULTIPLIER)
+                        .setMin(MIN_MULTIPLIER).setMax(MAX_MULTIPLIER)
+                        .setSaveConsumer(value::set).build());
+            }
         }
         builder.setSavingRunnable(PGCConfig.SPEC::save);
         return builder.build();

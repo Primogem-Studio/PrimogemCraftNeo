@@ -1,10 +1,12 @@
 package net.per.primogemcraft.config;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
+import net.per.primogemcraft.system.element.Element;
 
 import java.util.List;
 
 public final class PGCConfig {
+    public static final double DEFAULT_ELEMENT_DAMAGE_MULTIPLIER = 1.0D;
     public static final double DEFAULT_ZIPLINE_SPEED = 16.0D;
     public static final int DEFAULT_CAPTURING_RADIANCE_CHANCE = 25;
     public static final int DEFAULT_WEAPON_MAX_LEVEL = 90;
@@ -76,7 +78,27 @@ public final class PGCConfig {
                     "without GenshinCraft the weapon applies the level its description shows.")
             .defineInRange("genshincraft_geo_weakness_amplifier", DEFAULT_GENSHINCRAFT_GEO_WEAKNESS_AMPLIFIER, 0.0D, 1000.0D);
 
+    public static final ModConfigSpec.DoubleValue ANEMO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("anemo_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+    public static final ModConfigSpec.DoubleValue GEO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("geo_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+    public static final ModConfigSpec.DoubleValue ELECTRO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("electro_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+    public static final ModConfigSpec.DoubleValue DENDRO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("dendro_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+    public static final ModConfigSpec.DoubleValue HYDRO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("hydro_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+    public static final ModConfigSpec.DoubleValue PYRO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("pyro_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+    public static final ModConfigSpec.DoubleValue CRYO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("cryo_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
+
+    public static ModConfigSpec.DoubleValue elementDamageMultiplier(Element element) {
+        return switch (element) {
+            case ANEMO -> ANEMO_DAMAGE_MULTIPLIER;
+            case GEO -> GEO_DAMAGE_MULTIPLIER;
+            case ELECTRO -> ELECTRO_DAMAGE_MULTIPLIER;
+            case DENDRO -> DENDRO_DAMAGE_MULTIPLIER;
+            case HYDRO -> HYDRO_DAMAGE_MULTIPLIER;
+            case PYRO -> PYRO_DAMAGE_MULTIPLIER;
+            case CRYO -> CRYO_DAMAGE_MULTIPLIER;
+        };
+    }
 
     private PGCConfig() {
     }

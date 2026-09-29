@@ -1,4 +1,12 @@
 {
+  "config.primogemcraft.category.element_damage": "Elemental damage multipliers",
+  "primogemcraft.configuration.anemo_damage_multiplier": "Anemo damage multiplier",
+  "primogemcraft.configuration.geo_damage_multiplier": "Geo damage multiplier",
+  "primogemcraft.configuration.electro_damage_multiplier": "Electro damage multiplier",
+  "primogemcraft.configuration.dendro_damage_multiplier": "Dendro damage multiplier",
+  "primogemcraft.configuration.hydro_damage_multiplier": "Hydro damage multiplier",
+  "primogemcraft.configuration.pyro_damage_multiplier": "Pyro damage multiplier",
+  "primogemcraft.configuration.cryo_damage_multiplier": "Cryo damage multiplier",
   "item.primogemcraft.the_viridescent_hunt": "§aThe Viridescent Hunt",
   "item.primogemcraft.the_viridescent_hunt.description.cyclone": "§eHits have a 50%% chance to create a Cyclone, pulling enemies within 3 blocks and dealing §b%1$s§e ATK as DMG every 0.5s for 4s. Cooldown: §b%2$s§es",
   "item.primogemcraft.skyward_harp": "§bSkyward Harp",
