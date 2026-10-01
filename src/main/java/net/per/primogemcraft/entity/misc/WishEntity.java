@@ -164,7 +164,7 @@ public class WishEntity extends Entity {
     public WishRarity displayRarity() {
         if (!entityData.get(DATA_SUNGLASSES)) return rarity();
         return switch (rarity()) {
-            case BLUE -> WishRarity.PURPLE;
+            case BLUE -> WishRarity.BLUE;
             case PURPLE, GOLD -> WishRarity.GOLD;
         };
     }
