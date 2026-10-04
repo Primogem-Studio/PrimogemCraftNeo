@@ -8,6 +8,9 @@
     "ItemStackMixin",
     "PowderSnowBlockMixin"
   ],
+  "client": [
+    "KatheryneScreenMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },

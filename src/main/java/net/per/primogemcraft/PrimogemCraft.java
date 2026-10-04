@@ -10,6 +10,7 @@ import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
 import net.per.primogemcraft.collab.tacz.TaczIntegration;
 import net.per.primogemcraft.collab.teyvatdelight.TeyvatDelightIntegration;
 import net.per.primogemcraft.config.PGCConfig;
+import net.per.primogemcraft.config.TeyvatExchangeConfig;
 import net.per.primogemcraft.system.zipline.ZiplineAssembly;
 import net.per.primogemcraft.registry.*;
 import org.slf4j.Logger;
@@ -46,5 +47,6 @@ public class PrimogemCraft {
         TaczIntegration.register();
         TeyvatDelightIntegration.register(modBus);
         container.registerConfig(ModConfig.Type.COMMON, PGCConfig.SPEC);
+        container.registerConfig(ModConfig.Type.SERVER, TeyvatExchangeConfig.SPEC, "primogemcraft-teyvat-exchange.toml");
     }
 }

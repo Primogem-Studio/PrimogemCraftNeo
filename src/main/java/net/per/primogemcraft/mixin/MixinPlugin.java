@@ -1,5 +1,7 @@
 package net.per.primogemcraft.mixin;
 
+import net.neoforged.fml.loading.LoadingModList;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -19,6 +21,11 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (mixinClassName.endsWith(".KatheryneScreenMixin")) {
+            var mods = LoadingModList.get();
+            return mods != null && mods.getMods().stream().anyMatch(mod -> mod.getModId().equals("teyvatdelight")
+                    && mod.getVersion().compareTo(new DefaultArtifactVersion("1.0.3")) >= 0);
+        }
         return true;
     }
 

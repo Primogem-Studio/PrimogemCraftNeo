@@ -35,10 +35,17 @@ public final class CurioChoice {
     }
 
     public static void open(ServerPlayer player, Component title, Component hint, List<ItemStack> options, Consumer<ItemStack> callback) {
+        open(player, title, hint, options, callback, () -> {});
+    }
+
+    /** Uses onCancel when a pending choice is abandoned, including logout and replacement. */
+    public static void open(ServerPlayer player, Component title, Component hint, List<ItemStack> options,
+                            Consumer<ItemStack> callback, Runnable onCancel) {
         var cards = new ArrayList<ChoiceCard>();
         for (var option : options) cards.add(card(option));
         ChoiceRegistry.open(player, title, hint, ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, ChoiceSupport.CURIO_CARDS, ChoiceSupport.spin(LADDER.get(BASE_TIER)), cards, callback == null ? null : index -> {
             if (index >= 0 && index < options.size()) callback.accept(options.get(index));
+            else onCancel.run();
             return true;
         });
     }

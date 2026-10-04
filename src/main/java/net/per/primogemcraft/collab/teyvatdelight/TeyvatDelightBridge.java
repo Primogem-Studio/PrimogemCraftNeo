@@ -19,6 +19,7 @@ final class TeyvatDelightBridge {
 
     static void register(IEventBus modBus) {
         modBus.addListener(TeyvatDelightBridge::modifyDefaultComponents);
+        if (TeyvatDelightIntegration.supportsShop()) modBus.addListener(StellarShopNetwork::register);
         NeoForge.EVENT_BUS.addListener(TeyvatDelightBridge::addFoodTooltip);
     }
 
