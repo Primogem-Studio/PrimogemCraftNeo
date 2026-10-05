@@ -26,6 +26,7 @@ Load only the domain skills involved in the task, including a linked skill when 
 | Container panels, slots, scrolling, or their textures | [primogemcraft-gui-atlas](../primogemcraft-gui-atlas/SKILL.md) |
 | Button appearance, states, or hit testing | [primogemcraft-nine-slice-button](../primogemcraft-nine-slice-button/SKILL.md) |
 | Wish bows, bow skills/projectiles, held animation, hand transforms, or bow inventory icons | [primogemcraft-wish-bow](../primogemcraft-wish-bow/SKILL.md) |
+| Genshin Craft spell primitives (基元), forged-component registration, or related decorators and triggers | [primogemcraft-spell-primitive](../primogemcraft-spell-primitive/SKILL.md) |
 
 ## Environment portability
 
