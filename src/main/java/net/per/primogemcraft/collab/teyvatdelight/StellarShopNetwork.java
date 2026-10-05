@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public final class StellarShopNetwork {
-    public static final int TASK_FIRST_SLOT = 11;
+    public static final int TASK_FIRST_SLOT = 32;
     public static final int ENCHANT_FIRST_SLOT = 16;
     private static Consumer<Snapshot> receiver = snapshot -> {};
 
@@ -25,7 +25,7 @@ public final class StellarShopNetwork {
     }
 
     static void register(RegisterPayloadHandlersEvent event) {
-        var registrar = event.registrar("5");
+        var registrar = event.registrar("7");
         registrar.playToServer(Action.TYPE, Action.CODEC, (payload, context) -> {
             if (context.player() instanceof ServerPlayer player) StellarShop.handle(player, payload);
         });
@@ -72,7 +72,7 @@ public final class StellarShopNetwork {
         public static final StreamCodec<RegistryFriendlyByteBuf, Details> CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, Details::curioSeconds, ByteBufCodecs.VAR_INT, Details::eventSeconds,
                 Exchange.CODEC.apply(ByteBufCodecs.list(4)), Details::exchanges,
-                Task.CODEC.apply(ByteBufCodecs.list(5)), Details::tasks, Details::new);
+                Task.CODEC.apply(ByteBufCodecs.list(StellarTaskPlan.MAX_COUNT)), Details::tasks, Details::new);
     }
 
     public record Snapshot(int containerId, long shopCycle, long day, int balance, List<Offer> offers, Details details) implements CustomPacketPayload {

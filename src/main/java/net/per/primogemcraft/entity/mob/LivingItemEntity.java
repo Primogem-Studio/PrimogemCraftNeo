@@ -67,6 +67,7 @@ import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
 import net.per.primogemcraft.entity.misc.LivingItemDrop;
+import net.per.primogemcraft.system.living.LivingItemFormation;
 import net.per.primogemcraft.system.living.LivingItemUsePlayer;
 import net.per.primogemcraft.system.weapon.WishWeaponBowItem;
 
@@ -133,6 +134,12 @@ public class LivingItemEntity extends PathfinderMob {
     private double lastChaseDist = Double.MAX_VALUE;
     private int chaseStuckTicks;
     private LivingItemUsePlayer usePlayer;
+    private LivingItemFormation formation = LivingItemFormation.NONE;
+    private int formationIndex;
+    private int formationCount = 1;
+    private double formationSpacing = 1.5;
+    private Vec3 commandPosition;
+    private UUID commandTarget;
     private final Map<UUID, Long> ownerAttackMemory = new HashMap<>();
     private final Map<UUID, Long> attackBlacklist = new HashMap<>();
 
@@ -297,6 +304,85 @@ public class LivingItemEntity extends PathfinderMob {
         if (team != null) level().getScoreboard().addPlayerToTeam(getStringUUID(), team);
     }
 
+    /** Clears spell orders and resumes the normal follow and defense behavior. */
+    public void clearCommand() {
+        stopCarriedItemUse();
+        formation = LivingItemFormation.NONE;
+        commandPosition = null;
+        commandTarget = null;
+        hoverTarget = null;
+        ownerAttackMemory.clear();
+        setTarget(null);
+        setDeltaMovement(Vec3.ZERO);
+    }
+
+    /** Assigns an idle formation slot while preserving an explicit focus target. */
+    public void commandFormation(LivingItemFormation shape, int index, int count, double spacing) {
+        stopCarriedItemUse();
+        commandPosition = null;
+        hoverTarget = null;
+        ownerAttackMemory.clear();
+        if (commandTarget == null) setTarget(null);
+        formation = shape;
+        formationIndex = Math.max(0, index);
+        formationCount = Math.max(1, count);
+        formationSpacing = Double.isFinite(spacing) ? Math.clamp(spacing, 0.5, 3) : 1.5;
+    }
+
+    /** Moves to and holds a position without attacking or automatically using the carried item. */
+    public void commandMove(Vec3 position) {
+        clearCommand();
+        commandPosition = position;
+    }
+
+    /** Focuses an eligible target until it dies, leaves range, or another order replaces it. */
+    public void commandAttack(LivingEntity target) {
+        var owner = getOwner();
+        if (owner == null || !canCommandAttack(owner, target)) return;
+        stopCarriedItemUse();
+        commandPosition = null;
+        hoverTarget = null;
+        ownerAttackMemory.clear();
+        commandTarget = target.getUUID();
+        setTarget(target);
+    }
+
+    /** Checks ownership, allies and server PvP restrictions for a spell-directed attack. */
+    public static boolean canCommandAttack(Player owner, LivingEntity target) {
+        if (target == owner || !target.isAlive() || target.isRemoved() || target.isSpectator()
+                || target.isInvulnerable() || target.level() != owner.level()
+                || target.isAlliedTo(owner) || owner.isAlliedTo(target)
+                || target instanceof LivingItemEntity item && owner.getUUID().equals(item.getOwnerUuid())
+                || target instanceof TamableAnimal pet && owner.getUUID().equals(pet.getOwnerUUID())) return false;
+        return !(target instanceof Player player) || !player.getAbilities().invulnerable
+                && owner.level() instanceof ServerLevel level && level.getServer().isPvpAllowed() && owner.canHarmPlayer(player);
+    }
+
+    private boolean tickCommand(Player owner) {
+        if (commandTarget != null && level() instanceof ServerLevel level) {
+            if (level.getEntity(commandTarget) instanceof LivingEntity target && canCommandAttack(owner, target)
+                    && owner.distanceToSqr(target) <= 64 * 64) {
+                setTarget(target);
+                return false;
+            }
+            stopCarriedItemUse();
+            commandTarget = null;
+            setTarget(null);
+        }
+        if (formation == LivingItemFormation.NONE && commandPosition == null) return false;
+        stopCarriedItemUse();
+        setTarget(null);
+        var destination = commandPosition != null ? commandPosition : owner.position().add(0, 2, 0)
+                .add(formation.offset(formationIndex, formationCount, formationSpacing, owner.getLookAngle()));
+        if (commandPosition != null && owner.distanceToSqr(commandPosition) > 64 * 64) {
+            clearCommand();
+            return false;
+        }
+        if (distanceToSqr(owner) > 64 * 64) teleportTo(owner.getX(), owner.getY() + 2, owner.getZ());
+        steerTo(destination.x, destination.y, destination.z, MOVE_SPEED_ATTACK);
+        return true;
+    }
+
     @Override
     protected PathNavigation createNavigation(Level level) {
         return new FlyingPathNavigation(this, level);
@@ -440,6 +526,18 @@ public class LivingItemEntity extends PathfinderMob {
         compound.putInt(NBT_USE_CD, useCooldown);
         compound.putDouble(NBT_RANGE, attackRange);
         compound.putFloat(NBT_INFINITE_MAX_HEALTH, infiniteMaxHealth);
+        compound.putString("LivingItemFormation", formation.name());
+        compound.putInt("LivingItemFormationIndex", formationIndex);
+        compound.putInt("LivingItemFormationCount", formationCount);
+        compound.putDouble("LivingItemFormationSpacing", formationSpacing);
+        if (commandPosition != null) {
+            var position = new CompoundTag();
+            position.putDouble("X", commandPosition.x);
+            position.putDouble("Y", commandPosition.y);
+            position.putDouble("Z", commandPosition.z);
+            compound.put("LivingItemCommandPosition", position);
+        }
+        if (commandTarget != null) compound.putUUID("LivingItemCommandTarget", commandTarget);
     }
 
     @Override
@@ -460,6 +558,22 @@ public class LivingItemEntity extends PathfinderMob {
         applyItemStats();
         durationHealthInitialized = true;
         syncDurationHealth(false);
+        clearCommand();
+        try {
+            formation = LivingItemFormation.valueOf(compound.getString("LivingItemFormation"));
+        } catch (IllegalArgumentException ignored) {
+            formation = LivingItemFormation.NONE;
+        }
+        formationIndex = Math.max(0, compound.getInt("LivingItemFormationIndex"));
+        formationCount = Math.max(1, compound.getInt("LivingItemFormationCount"));
+        var spacing = compound.getDouble("LivingItemFormationSpacing");
+        formationSpacing = Double.isFinite(spacing) ? Math.clamp(spacing, 0.5, 3) : 1.5;
+        if (compound.contains("LivingItemCommandPosition")) {
+            var position = compound.getCompound("LivingItemCommandPosition");
+            var point = new Vec3(position.getDouble("X"), position.getDouble("Y"), position.getDouble("Z"));
+            if (Double.isFinite(point.x) && Double.isFinite(point.y) && Double.isFinite(point.z)) commandPosition = point;
+        }
+        if (compound.hasUUID("LivingItemCommandTarget")) commandTarget = compound.getUUID("LivingItemCommandTarget");
     }
 
     private void setCarriedStackSilent(ItemStack stack) {
@@ -478,8 +592,7 @@ public class LivingItemEntity extends PathfinderMob {
         if (isRemoved() || isDeadOrDying()) return;
         var owner = getOwner();
         if (owner != null && owner.isAlive() && level() != owner.level()) {
-            stopCarriedItemUse();
-            setTarget(null);
+            clearCommand();
             followOwner(owner);
             return;
         }
@@ -508,6 +621,7 @@ public class LivingItemEntity extends PathfinderMob {
             return;
         }
         syncInvisibility(owner);
+        if (tickCommand(owner)) return;
         if (usePlayer != null) tickCarriedItemUse(owner);
         if (isRemoved()) return;
         if (useCooldown > 0) {
@@ -622,7 +736,7 @@ public class LivingItemEntity extends PathfinderMob {
             return;
         }
         if (target.invulnerableTime > 0) {
-            if (random.nextFloat() < 0.25F) {
+            if (commandTarget == null && random.nextFloat() < 0.25F) {
                 var alternative = findTarget(owner);
                 if (alternative != null && alternative != target && isValidTarget(alternative, owner))
                     setTarget(alternative);
@@ -633,7 +747,7 @@ public class LivingItemEntity extends PathfinderMob {
         attackCooldown = attackInterval;
         if (attackWithStack(owner, target)) {
             entityData.set(DATA_SWING, 5);
-            if (random.nextFloat() < RETARGET_CHANCE) {
+            if (commandTarget == null && random.nextFloat() < RETARGET_CHANCE) {
                 var alternative = findTarget(owner);
                 if (alternative != null && alternative != target && isValidTarget(alternative, owner))
                     setTarget(alternative);
@@ -731,6 +845,7 @@ public class LivingItemEntity extends PathfinderMob {
                         && !(entity instanceof LivingItemEntity living && Objects.equals(living.getOwnerUuid(), getOwnerUuid()))
                         && distanceToSqr(entity) < 9.0);
         for (var entity : targets) {
+            if (commandTarget != null && !canCommandAttack(owner, entity)) continue;
             if (entity.invulnerableTime > 0) continue;
             if (entity.hurt(source, EnchantmentHelper.modifyDamage(serverLevel, stack, entity, source, sweepDamage)))
                 entity.invulnerableTime = ATTACK_INVULNERABLE_TICKS;
@@ -796,6 +911,8 @@ public class LivingItemEntity extends PathfinderMob {
     }
 
     private boolean isValidTarget(LivingEntity target, Player owner) {
+        if (commandTarget != null && commandTarget.equals(target.getUUID()))
+            return canCommandAttack(owner, target) && owner.distanceToSqr(target) <= 64 * 64;
         var now = level().getGameTime();
         if (distanceToSqr(target) > MAX_CHASE_DISTANCE * MAX_CHASE_DISTANCE) return false;
         if (target instanceof Mob mob && (mob.getTarget() == owner || mob.getTarget() == this)) return true;
@@ -805,6 +922,7 @@ public class LivingItemEntity extends PathfinderMob {
 
     public void onOwnerAttack(Entity target) {
         if (level().isClientSide || isRemoved()) return;
+        if (formation != LivingItemFormation.NONE || commandPosition != null || commandTarget != null) return;
         if (target == this || target instanceof LivingItemEntity other && Objects.equals(other.getOwnerUuid(), getOwnerUuid()))
             return;
         if (target instanceof LivingEntity living && living.isAlive() && !living.isRemoved()) {

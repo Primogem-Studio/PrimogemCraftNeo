@@ -1,0 +1,17 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "genshincraft"
+    }
+  ],
+  "type": "decorator",
+  "reference": "primogemcraft:living_item",
+  "action": "wedge",
+  "texture": "minecraft:item/arrow",
+  "name_color": "8CDEA4",
+  "cost": 4,
+  "require_aspects": [
+    "primogemcraft:living_item"
+  ]
+}

@@ -30,6 +30,7 @@ public final class GenshinCraftIntegration {
 
     public static void register(IEventBus modBus) {
         if (!loaded) return;
+        GenshinCraftBridge.registerSpellComponents(modBus);
         modBus.register(GenshinCraftBridge.class);
     }
 

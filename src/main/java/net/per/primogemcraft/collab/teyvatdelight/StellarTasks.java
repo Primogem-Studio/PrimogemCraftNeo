@@ -109,24 +109,10 @@ final class StellarTasks {
         var persisted = data.getCompound(Player.PERSISTED_NBT_TAG);
         var day = StellarShop.day(player);
         var state = persisted.getCompound(STATE_KEY);
-        if (state.contains("tasks", Tag.TAG_LIST) && day <= state.getLong("day")) {
-            var tasks = state.getList("tasks", Tag.TAG_COMPOUND);
-            for (var index = 0; index < tasks.size(); index++) {
-                var task = tasks.getCompound(index);
-                var ingredients = task.getList("ingredients", Tag.TAG_COMPOUND);
-                if (task.getInt("kind") != StellarTaskPlan.MATERIAL || ingredients.size() != 1) continue;
-                var ingredient = ingredients.getCompound(0);
-                var item = item(ingredient.getString("item"));
-                if ((item == PGCItems.TRASH.get() || item == PGCItems.PLEASANT_LOOKING_TRASH.get())
-                        && ingredient.getInt("count") > 1) {
-                    ingredient.putInt("count", 1);
-                    task.putInt("amount", task.getInt("amount") * 2);
-                    task.putLong("token", task.getLong("token") + 1);
-                }
-            }
-            return tasks;
-        }
-        var previous = persisted.contains(STATE_KEY) ? new ListTag()
+        if (state.getInt("version") == 2 && state.contains("tasks", Tag.TAG_LIST) && day <= state.getLong("day"))
+            return state.getList("tasks", Tag.TAG_COMPOUND);
+        var previous = state.contains("tasks", Tag.TAG_LIST) && day <= state.getLong("day")
+                ? state.getList("tasks", Tag.TAG_COMPOUND) : persisted.contains(STATE_KEY) ? new ListTag()
                 : StellarShop.state(player).getList("tasks", Tag.TAG_COMPOUND);
         var random = new Random(player.server.overworld().getSeed() ^ player.getUUID().getMostSignificantBits()
                 ^ Long.rotateLeft(player.getUUID().getLeastSignificantBits(), 23) ^ day);
@@ -155,6 +141,7 @@ final class StellarTasks {
             tasks.add(task);
         }
         state = new CompoundTag();
+        state.putInt("version", 2);
         state.putLong("day", day);
         state.put("tasks", tasks);
         persisted.put(STATE_KEY, state);
@@ -186,15 +173,17 @@ final class StellarTasks {
     private static boolean rewardAvailable(ServerPlayer player, CompoundTag task) {
         return switch (task.getInt("kind")) {
             case StellarTaskPlan.EVENT -> !EventRegistry.groups().isEmpty();
-            case StellarTaskPlan.ENCHANT -> task.getInt("grade") >= 0 && task.getInt("grade") <= 1 && EnchantChoice.hasTargets(player);
+            case StellarTaskPlan.ENCHANT -> task.getInt("grade") >= 0 && task.getInt("grade") < EnchantGrade.values().length
+                    && EnchantChoice.hasTargets(player);
             case StellarTaskPlan.MATERIAL -> item(task.getString("reward")) != Items.AIR
-                    && task.getInt("amount") > 0 && task.getInt("amount") <= 16;
+                    && task.getInt("amount") > 0 && task.getInt("amount") <= 32;
             default -> false;
         };
     }
 
     private static EnchantGrade grade(CompoundTag task) {
-        return task.getInt("grade") == 1 ? EnchantGrade.MEDIUM : EnchantGrade.LOW;
+        var grade = task.getInt("grade");
+        return EnchantGrade.values()[Math.clamp(grade, 0, EnchantGrade.values().length - 1)];
     }
 
     private static EventGroup randomGroup(ServerPlayer player) {

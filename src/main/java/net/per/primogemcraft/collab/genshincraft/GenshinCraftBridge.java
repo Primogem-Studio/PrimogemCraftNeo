@@ -10,21 +10,32 @@ import net.hackermdch.genshincraft.data.PermanentInfusion;
 import net.hackermdch.genshincraft.element.Element.Type;
 import net.hackermdch.genshincraft.element.ElementDamageSource;
 import net.hackermdch.genshincraft.render.EffectRender;
+import net.hackermdch.genshincraft.spell.PrimitiveDefinition;
+import net.hackermdch.genshincraft.spell.DecoratorDefinition;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.per.primogemcraft.item.weapon.element.ElementTools;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCEntities;
 import net.per.primogemcraft.registry.PGCItems;
+import net.per.primogemcraft.registry.PGCSpellPrimitiveTypes;
+import net.per.primogemcraft.registry.PGCSpellAspects;
+import net.per.primogemcraft.registry.PGCSpellDecoratorTypes;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamageOptions;
 import net.per.primogemcraft.system.element.ElementStyle;
 
 import static net.hackermdch.genshincraft.element.Element.fromType;
+import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 /**
  * The GenshinCraft linkage. Registered on the mod event bus only while GenshinCraft is installed, so nothing
@@ -42,6 +53,30 @@ public final class GenshinCraftBridge {
     private static final int FRAGMENT_COUNT = 2;
 
     private GenshinCraftBridge() {
+    }
+
+    static void registerSpellComponents(IEventBus modBus) {
+        PGCSpellPrimitiveTypes.REGISTRY.register(modBus);
+        PGCSpellDecoratorTypes.REGISTRY.register(modBus);
+        PGCSpellAspects.REGISTRY.register(modBus);
+        NeoForge.EVENT_BUS.addListener(GenshinCraftBridge::onSpellComponentTooltip);
+    }
+
+    private static void onSpellComponentTooltip(ItemTooltipEvent event) {
+        var holder = event.getItemStack().get(GenshinComponents.FORGED_COMPONENT);
+        if (holder == null) return;
+        var definition = holder.value().definition();
+        var livingItem = definition instanceof PrimitiveDefinition primitive && primitive.instance instanceof LivingItemPrimitive
+                || definition instanceof DecoratorDefinition decorator && decorator.instance instanceof LivingItemDecorator;
+        if (!livingItem && !(definition instanceof PrimitiveDefinition primitive && primitive.instance instanceof UtilityPulsePrimitive)) return;
+        holder.unwrapKey().ifPresent(key -> {
+            if (!key.location().getNamespace().equals(MOD_ID)) return;
+            event.getToolTip().add(Component.translatable(key.location().toLanguageKey("forged_component") + ".tooltip.0")
+                    .withStyle(ChatFormatting.GRAY));
+            var family = livingItem ? "living_item" : "utility_pulse";
+            event.getToolTip().add(Component.translatable("forged_component.primogemcraft." + family + ".tooltip.0")
+                    .withStyle(ChatFormatting.DARK_GRAY));
+        });
     }
 
     @SubscribeEvent

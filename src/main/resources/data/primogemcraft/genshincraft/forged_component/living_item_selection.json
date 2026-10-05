@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "genshincraft"
+    }
+  ],
+  "type": "primitive",
+  "reference": "primogemcraft:living_item",
+  "action": "select",
+  "texture": "minecraft:item/spyglass",
+  "name_color": "8CDEA4",
+  "aspects": [
+    "primogemcraft:living_item",
+    "common:countable",
+    "common:sizeable"
+  ],
+  "stats": {
+    "common:size": 1,
+    "common:count": 1,
+    "common:lifetime": 1,
+    "common:speed": 0
+  },
+  "cost": 3
+}

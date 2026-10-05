@@ -1,0 +1,17 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "genshincraft"
+    }
+  ],
+  "type": "decorator",
+  "reference": "primogemcraft:living_item",
+  "action": "attack",
+  "texture": "minecraft:item/iron_sword",
+  "name_color": "8CDEA4",
+  "cost": 6,
+  "require_aspects": [
+    "primogemcraft:living_item"
+  ]
+}

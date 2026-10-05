@@ -36,6 +36,7 @@ public final class LivingItemEvents {
         var test = EntityTypeTest.<Entity, LivingItemEntity>forClass(LivingItemEntity.class);
         var items = previousLevel.getEntities(test, entity -> owner.getUUID().equals(entity.getOwnerUuid()) && entity.isAlive());
         for (var entity : items) {
+            entity.clearCommand();
             entity.teleportTo(owner.serverLevel(), owner.getX(), owner.getY() + 2.5, owner.getZ(), Set.of(), owner.getYRot(), 0);
         }
     }

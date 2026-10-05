@@ -1,0 +1,24 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "genshincraft"
+    }
+  ],
+  "type": "primitive",
+  "reference": "primogemcraft:utility_pulse",
+  "action": "heal",
+  "texture": "minecraft:item/glistering_melon_slice",
+  "name_color": "78D98B",
+  "aspects": [
+    "common:sizeable",
+    "common:countable"
+  ],
+  "stats": {
+    "common:size": 1,
+    "common:count": 1,
+    "common:lifetime": 1,
+    "common:speed": 0
+  },
+  "cost": 12
+}

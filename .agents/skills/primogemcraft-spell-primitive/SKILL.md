@@ -1,6 +1,6 @@
 ---
 name: primogemcraft-spell-primitive
-description: Register or extend Genshin Craft (原的世界) spell primitives (基元) in PrimogemCraftNeo, including PrimitiveType, forged-component JSON, aspects, stats, localization, acquisition, and blueprint integration. Also use for closely related spell decorators and triggers; ordinary elemental weapon damage does not require this skill.
+description: Design and extend Genshin Craft (原的世界) spell components in PrimogemCraftNeo, choosing between primitives (基元), decorators (修饰器), and triggers. Covers behavior registration, forged-component JSON, aspects, lifecycle, localization, acquisition, and blueprint integration; ordinary elemental weapon damage does not require this skill.
 ---
 
 # Genshin Craft spell primitives
@@ -27,16 +27,37 @@ Useful upstream evidence, all under `net.hackermdch.genshincraft`:
 
 ## Choose the smallest registration path
 
-There are two distinct registries:
+Separate behavior registries from the playable component registry:
 
-- **Behavior types:** static registry `PrimitiveType.REGISTRY`, id `genshincraft:spell_primitive_type`. Java registers codecs and implementations here.
+- **Behavior types:** static registries `PrimitiveType.REGISTRY`, `DecoratorType.REGISTRY`, and `TriggerType.REGISTRY`. Java registers the matching implementation and codec in its category; a decorator is not a primitive with a different label.
 - **Playable components:** synchronized data-pack registry `ForgedComponentDefinition.REGISTRY_KEY`, id `genshincraft:forged_component`. JSON registers selectable, named components here.
 
-Genshin Craft owns both registries. Add entries; do not recreate either registry or call `NewRegistryEvent`/`DataPackRegistryEvent.NewRegistry` to register them again.
+Genshin Craft owns these registries, along with `AspectDefinition.REGISTRY`. Add entries; do not recreate their registries or register them again through `NewRegistryEvent`/`DataPackRegistryEvent.NewRegistry`.
 
 Reuse a behavior for parameter-only variants. Built-in references are `genshincraft:bullet`, `genshincraft:explosion`, and `genshincraft:pull`. In 3.2.1, `bullet` already accepts `physical`, `quantum`, `imaginary`, `pyro`, `hydro`, `electro`, `cryo`, `dendro`, `anemo`, and `geo` damage values. A new damage/color/stat variant does not need a new Java type. Inspect each type's codec: the bullet's `damage` option is not automatically available on explosion or pull.
 
 Use a decorator for a reusable change to existing effects, such as projectile steering; use a primitive for a new base effect. Inspect `DecoratorType`, `DecoratorInstance`, and the nearest built-in when that is the requested feature. Triggers have their own `TriggerType.REGISTRY`; registering a trigger entry alone does not make the runtime emit its event.
+
+### Classify a feature family before implementing it
+
+Do not turn every requested action into a separate primitive. First identify the base effect or target source, its reusable modifications, and the events that start follow-up operations. An `action` enum can share a codec within a category; it does not replace the category decision.
+
+| Responsibility | Category | Living-item example |
+|---|---|---|
+| Creates an effect or supplies a target set | Primitive | Animate one real offhand item; select existing owned living items |
+| Changes the supplied effect's position, formation or behavior | Decorator | Ring, line, wedge, rally, focus, follow, recall, return |
+| Determines when another sequence runs | Trigger | Existing hit-entity, hit-block or lifecycle-end trigger |
+
+Keep an existing-target primitive when modifiers must also work on already-created entities. Creation modifiers must receive only this execution's created entities, not silently rescan and command all nearby entities. Selection modifiers must use the selected owner-checked set. Define how multiple modifiers compose: independent settings should coexist, conflicting orders need a documented order, and return must not let later modifiers resurrect or duplicate returned items. For living items, formation and focus coexist; follow/recall clear orders, rally replaces them, and return uses `revertByOwner()` for finite and permanent items.
+
+## Register and execute decorators
+
+- Extend `DecoratorInstance<T>` and register its stable `DecoratorType<T>` through a project `DeferredRegister` against `DecoratorType.REGISTRY`. Register capability markers against `AspectDefinition.REGISTRY` only when existing aspects do not describe the required target contract. Keep both behind the existing optional-mod guard.
+- Playable JSON uses `"type": "decorator"`, its decorator `reference`, flattened codec fields, and `require_aspects`; it does not inherit a primitive's `aspects` or `stats`. For example, `living_item_ring` references the decorator type `primogemcraft:living_item`, sets `action: "ring"`, and requires `["primogemcraft:living_item"]`. Animate and Select declare that marker in their primitive `aspects`; ordinary bullets and pulses do not. A marker aspect can have no stats.
+- In 3.2.1 the execution order is: filter decorators by required aspects → all `beforeInit` calls → count/repeat calculation → copy `EffectSpec` per fork → `distribute(context, stub, spec, index, count)` → initialize stub → primitive `init` → all decorator `afterInit` calls → `attachBehaviors`. Check this against the resolved upstream version when changing lifecycle behavior.
+- `beforeInit` modifies attributes before forking; `distribute` has the fork index/count for placement; `afterInit` operates on the created effect. **If primitive `init` discards the stub, the runtime skips `afterInit` and behavior attachment.** A target-providing instant primitive must remain alive through its decorators; finish afterward, such as from an execution-local `SpellBehavior.onAttach`. Lifecycle-end follow-ups must observe the completed modifications.
+- `EffectSpec` copies the behavior list shallowly. Do not put mutable target lists or fork state on a decoded primitive/decorator or into a shared pre-fork behavior. Allocate execution state in per-fork `distribute` or primitive `init`; immutable fork metadata may be shared safely. Keep selections on that spec/stub rather than a global map.
+- Trace actual callers when migrating a family: update JSON category and fields, registry wiring, aspect gating, acquisition, and tooltip dispatch for `DecoratorDefinition` as well as `PrimitiveDefinition`. Preserve component ids unless the task authorizes changing them. Migrate saved design-table projects before loading when a component changes category, preserving existing modifiers and an original backup. In 3.2.1, a wrong-category component also crashes the upstream validation error formatter; keeping the id alone is insufficient. Check already-written blueprints and runes separately; a project migration does not rewrite inventory items.
 
 ## Register the playable JSON entry
 
@@ -102,7 +123,7 @@ Treat decoded primitive instances as shared definitions. Keep per-cast mutable s
 | `common:movable` | `common:speed` |
 | `common:destroyable` | `common:lifetime`, `common:destroy_on_hit` |
 
-`EffectSpec` initializes `common:repeat`, then the selected aspects' stats, then applies explicit JSON `stats`. A stat having an upstream default does **not** mean it exists on every effect. In particular, a non-countable instant effect still needs a valid `common:count` (normally 1); explosion and pull explicitly supply it. Inspect the built-in's lifetime and disposal behavior too. `SpellRuntimeIR` rejects non-integer counts and counts outside 1–1024.
+`EffectSpec` initializes `common:repeat`, then the selected aspects' stats, then applies explicit JSON `stats`. A stat having an upstream default does **not** mean it exists on every effect. Even instant effects need valid `common:count`, `common:size`, `common:lifetime`, and `common:speed`: `SpellRuntimeIR` rejects non-integer counts outside 1–1024, and `SpellStub.initialize` requires finite size in (0, 64], lifetime >= 1, and speed in [0, 64]. Explicit defaults of count 1, size 1, lifetime 1 and speed 0 suit a stationary instant effect without advertising unsupported aspects.
 
 Declare only capabilities that the effect actually implements. Decorators' `require_aspects` must be satisfied; consume modified values through `EffectSpec.getStat(...)` rather than hardcoding them. New attributes can use the mod-bus `Stats.RegisterEvent` for defaults and, when needed, a registered `AspectDefinition`; first check whether existing stats suffice.
 
@@ -123,6 +144,7 @@ Component cost affects both forging fluid and the resulting rune's cooldown; it 
 ## Verify the requested change
 
 - Check resource path, codec field names, behavior id, aspect ids, translations, texture resolution, and acquisition stack identity against the current dependency. Parse JSON, but do not treat JSON syntax alone as codec validation.
+- For a mixed family, verify the actual primitive and decorator codecs, category placement, required-aspect matching, and rejection of misplaced actions. Check creation + count + formation, selection + formation + focus, selection + return, empty/failed creation, conflicting modifier order, and simultaneous casts. Verify end triggers run after modifiers and unrelated primitives cannot accept specialized commands. Respect an explicit request to remove test files after running checks; do not keep redundant test documentation or temporary artifacts solely for this skill.
 - For implementation changes, compile/build using the project standard. Review both loaded and absent upstream-mod paths. Do not claim runtime compatibility from compilation.
 - When a game run is requested, check selection in the design table, blueprint write, forge requirements and output, rune casting, modifier behavior, trigger positioning, repeated casts, and survival acquisition. For custom behavior include the relevant target/owner and lifecycle cases. An optional-mod feature also needs an absent-mod launch check before claiming that compatibility was tested.
 - For edits to this skill only, validate frontmatter and links and run `git diff --check`; no game build is required. State which implementation or gameplay checks remain unrun.

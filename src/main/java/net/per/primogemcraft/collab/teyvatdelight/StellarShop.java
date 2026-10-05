@@ -52,7 +52,7 @@ final class StellarShop {
             exchange(player, menu, slot - 7, action);
             return;
         }
-        if (slot >= StellarShopNetwork.TASK_FIRST_SLOT && slot < StellarShopNetwork.TASK_FIRST_SLOT + 5) {
+        if (slot >= StellarShopNetwork.TASK_FIRST_SLOT && slot < StellarShopNetwork.TASK_FIRST_SLOT + StellarTaskPlan.MAX_COUNT) {
             StellarTasks.submit(player, action);
             if (player.containerMenu == menu) sync(player, menu);
             return;
@@ -133,12 +133,13 @@ final class StellarShop {
         for (var index = 0; index < 4; index++) {
             var cost = exchangeAmount(index, false);
             result.add(new StellarShopNetwork.Exchange(cost, exchangeAmount(index, true), exchangeRemaining(player, index),
-                    TeyvatExchangeConfig.ENABLED.get() && exchangeRemaining(player, index) > 0 && PlayerItems.count(player, exchangeItem(index, false)) >= cost));
+                    TeyvatExchangeConfig.ENABLED.get() && exchangeRemaining(player, index) != 0 && PlayerItems.count(player, exchangeItem(index, false)) >= cost));
         }
         return result;
     }
 
     private static int exchangeRemaining(ServerPlayer player, int index) {
+        if (index % 2 != 0) return -1;
         var limit = (index < 2 ? TeyvatExchangeConfig.PRIMOGEM_DAILY_LIMIT : TeyvatExchangeConfig.MORA_DAILY_LIMIT).get();
         return Math.max(0, limit - state(player).getInt(index < 2 ? "exchange_primogem" : "exchange_mora"));
     }
@@ -162,7 +163,7 @@ final class StellarShop {
             fail(player, menu, "refreshed");
             return;
         }
-        if (exchangeRemaining(player, index) <= 0) {
+        if (exchangeRemaining(player, index) == 0) {
             fail(player, menu, "sold_out");
             return;
         }
@@ -172,9 +173,11 @@ final class StellarShop {
             return;
         }
         PlayerItems.take(player, input, cost);
-        var state = state(player);
-        var key = index < 2 ? "exchange_primogem" : "exchange_mora";
-        state.putInt(key, state.getInt(key) + 1);
+        if (index % 2 == 0) {
+            var state = state(player);
+            var key = index < 2 ? "exchange_primogem" : "exchange_mora";
+            state.putInt(key, state.getInt(key) + 1);
+        }
         PlayerItems.give(player, new ItemStack(exchangeItem(index, true), reward));
         player.getInventory().setChanged();
         menu.broadcastChanges();
