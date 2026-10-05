@@ -101,7 +101,7 @@ dependencies {
     localRuntime "maven.modrinth:create-aeronautics:1.3.2+mc1.21.1"
     localRuntime "maven.modrinth:sable:2.0.5+mc1.21.1"
     implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
-    implementation "maven.modrinth:genshincraft:3.2.1"
+    compileOnly "maven.modrinth:genshincraft:3.2.1"
     implementation "maven.modrinth:elixir_dan:1.3.4"
     api "me.shedaniel:RoughlyEnoughItems-neoforge:16.0.799"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
