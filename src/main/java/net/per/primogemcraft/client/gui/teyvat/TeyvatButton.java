@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.per.primogemcraft.client.gui.NineSliceButton;
 
 import java.time.Duration;
@@ -23,6 +24,11 @@ public final class TeyvatButton extends Button {
 
     @Override
     public void setMessage(Component message) {
+        if (message.getContents() instanceof TranslatableContents contents
+                && contents.getKey().equals("gui.teyvatdelight.katheryne.buy")
+                && Minecraft.getInstance().screen instanceof KatheryneCollaboration.Host host
+                && host.primogemcraft$collaboration() != null && host.primogemcraft$collaboration().taskPage())
+            message = Component.translatable("gui.primogemcraft.stellar_tasks.submit");
         if (message.equals(getMessage())) return;
         super.setMessage(message);
         setTooltip(Tooltip.create(message));

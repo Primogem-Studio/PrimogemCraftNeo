@@ -13,6 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
+import net.per.primogemcraft.enchantment.EnchantChoice;
+import net.per.primogemcraft.enchantment.EnchantGrade;
 import net.per.primogemcraft.system.choice.ChoiceRegistry;
 import net.per.primogemcraft.system.curio.CurioChoice;
 import net.per.primogemcraft.system.curio.CurioForm;
@@ -31,7 +33,7 @@ import java.util.List;
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 final class StellarShop {
-    private static final int[] PRICES = {2, 6, 9, 4, 8, 8, 8};
+    private static final int[] PRICES = {2, 6, 9, 2, 4, 4, 4, 2, 4};
     private static final String STATE_KEY = MOD_ID + ":stellar_shop";
     private static final String TEXT = "gui.primogemcraft.stellar_shop.";
 
@@ -50,6 +52,13 @@ final class StellarShop {
             exchange(player, menu, slot - 7, action);
             return;
         }
+        if (slot >= StellarShopNetwork.TASK_FIRST_SLOT && slot < StellarShopNetwork.TASK_FIRST_SLOT + 5) {
+            StellarTasks.submit(player, action);
+            if (player.containerMenu == menu) sync(player, menu);
+            return;
+        }
+        if (slot >= StellarShopNetwork.ENCHANT_FIRST_SLOT && slot < StellarShopNetwork.ENCHANT_FIRST_SLOT + 2)
+            slot = 7 + slot - StellarShopNetwork.ENCHANT_FIRST_SLOT;
         if (slot < 0 || slot >= PRICES.length) return;
         if (action.shopCycle() != KatheryneData.shopCycle(player.server) || action.day() != day(player)) {
             fail(player, menu, "refreshed");
@@ -62,6 +71,20 @@ final class StellarShop {
         var currency = currency();
         if (PlayerItems.count(player, currency) < PRICES[slot]) {
             fail(player, menu, "not_enough");
+            return;
+        }
+        if (slot >= 7) {
+            if (!EnchantChoice.hasTargets(player)) {
+                fail(player, menu, "unavailable");
+                return;
+            }
+            player.closeContainer();
+            if (!EnchantChoice.open(player, slot == 7 ? EnchantGrade.LOW : EnchantGrade.MEDIUM, 1, 3, 1)) return;
+            PlayerItems.take(player, currency, PRICES[slot]);
+            var state = state(player);
+            state.putInt("bought_" + slot, state.getInt("bought_" + slot) + 1);
+            player.getInventory().setChanged();
+            player.containerMenu.broadcastChanges();
             return;
         }
         var options = slot < 3 ? rollCurios(player, slot) : List.<ItemStack>of();
@@ -91,16 +114,18 @@ final class StellarShop {
         var offers = new ArrayList<StellarShopNetwork.Offer>();
         for (var slot = 0; slot < PRICES.length; slot++) {
             var title = slot < 3 ? Component.translatable(TEXT + "curio", CurioGrade.values()[slot].name())
+                    : slot >= 7 ? Component.translatable((slot == 7 ? EnchantGrade.LOW : EnchantGrade.MEDIUM).translationKey())
                     : slot == 3 ? Component.translatable(TEXT + "random_event")
                     : slot - 4 < groups.size() ? groups.get(slot - 4).title() : Component.translatable(TEXT + "unavailable");
             var available = slot < 3 ? curioPool(slot).size() >= 3
+                    : slot >= 7 ? EnchantChoice.hasTargets(player)
                     : slot == 3 ? !EventRegistry.events().isEmpty() : slot - 4 < groups.size();
             offers.add(new StellarShopNetwork.Offer(title, PRICES[slot], remaining(player, slot), available));
         }
         PacketDistributor.sendToPlayer(player, new StellarShopNetwork.Snapshot(menu.containerId,
                 KatheryneData.shopCycle(player.server), day(player), PlayerItems.count(player, currency()), offers,
                 new StellarShopNetwork.Details(KatheryneRules.secondsUntil(player.server, KatheryneRules.shopRefreshTime()),
-                        KatheryneRules.secondsUntil(player.server, 0), exchanges(player))));
+                        KatheryneRules.secondsUntil(player.server, 0), exchanges(player), StellarTasks.snapshot(player))));
     }
 
     private static List<StellarShopNetwork.Exchange> exchanges(ServerPlayer player) {
@@ -153,8 +178,6 @@ final class StellarShop {
         PlayerItems.give(player, new ItemStack(exchangeItem(index, true), reward));
         player.getInventory().setChanged();
         menu.broadcastChanges();
-        player.displayClientMessage(Component.translatable(TEXT + "exchange_done", cost, input.getDescription(),
-                reward, exchangeItem(index, true).getDescription()), true);
         sync(player, menu);
     }
 
@@ -176,11 +199,11 @@ final class StellarShop {
         return Math.max(0, (slot == 3 ? 2 : 1) - state(player).getInt("bought_" + slot));
     }
 
-    private static long day(ServerPlayer player) {
+    static long day(ServerPlayer player) {
         return Math.floorDiv(player.server.overworld().getDayTime(), 24000L);
     }
 
-    private static CompoundTag state(ServerPlayer player) {
+    static CompoundTag state(ServerPlayer player) {
         var data = player.getPersistentData();
         if (!data.contains(Player.PERSISTED_NBT_TAG)) data.put(Player.PERSISTED_NBT_TAG, new CompoundTag());
         var persisted = data.getCompound(Player.PERSISTED_NBT_TAG);

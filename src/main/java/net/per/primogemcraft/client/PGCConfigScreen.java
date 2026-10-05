@@ -110,8 +110,6 @@ public final class PGCConfigScreen {
         var server = Minecraft.getInstance().getSingleplayerServer();
         var editableExchange = server != null && TeyvatExchangeConfig.SPEC.isLoaded();
         var exchange = builder.getOrCreateCategory(Component.translatable("config.primogemcraft.category.teyvat_exchange"));
-        exchange.addEntry(builder.entryBuilder().startTextDescription(Component.translatable(
-                editableExchange ? "config.primogemcraft.teyvat_exchange.local" : "config.primogemcraft.teyvat_exchange.server")).build());
         var enabled = builder.entryBuilder().startBooleanToggle(Component.translatable("config.primogemcraft.teyvat_exchange.enabled"),
                         TeyvatExchangeConfig.SPEC.isLoaded() ? TeyvatExchangeConfig.ENABLED.get() : TeyvatExchangeConfig.ENABLED.getDefault())
                 .setDefaultValue(TeyvatExchangeConfig.ENABLED.getDefault())

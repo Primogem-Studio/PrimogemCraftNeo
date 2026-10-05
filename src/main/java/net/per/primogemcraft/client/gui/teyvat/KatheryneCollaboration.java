@@ -10,12 +10,14 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.ItemLore;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.per.primogemcraft.collab.teyvatdelight.StellarShopNetwork;
 import net.per.primogemcraft.registry.PGCItems;
+import net.per.primogemcraft.registry.PGCDataComponents;
+import net.per.primogemcraft.system.curio.CurioGrade;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -29,12 +31,15 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public final class KatheryneCollaboration {
     private static final String TEXT = "gui.primogemcraft.stellar_shop.";
+    private static final String TASK_TEXT = "gui.primogemcraft.stellar_tasks.";
+    private static final ResourceLocation TASK_PAGE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "stellar_tasks");
     private static final ResourceLocation QUESTION = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/event_question.png");
     private static final Map<ResourceLocation, Page> PAGES = new LinkedHashMap<>();
     private final KatheryneMenu menu;
     private StellarShopNetwork.Snapshot snapshot;
     private List<KatheryneSnapshot.Sale> shopRows = List.of();
     private List<KatheryneSnapshot.Sale> exchangeRows = List.of();
+    private List<KatheryneSnapshot.Sale> taskRows = List.of();
     private Page page;
     private boolean buying;
     private long nextRefresh;
@@ -42,6 +47,8 @@ public final class KatheryneCollaboration {
     static {
         registerPage(ResourceLocation.fromNamespaceAndPath(MOD_ID, "stellar_shop"), Component.translatable(TEXT + "title"),
                 KatheryneCollaboration::shopRows, KatheryneCollaboration::canBuy, KatheryneCollaboration::buy);
+        registerPage(TASK_PAGE, Component.translatable(TASK_TEXT + "title"),
+                collaboration -> collaboration.taskRows, KatheryneCollaboration::canSubmit, KatheryneCollaboration::submit);
     }
 
     public KatheryneCollaboration(KatheryneMenu menu) {
@@ -64,6 +71,7 @@ public final class KatheryneCollaboration {
         collaboration.snapshot = snapshot;
         collaboration.shopRows = collaboration.createShopRows();
         collaboration.exchangeRows = collaboration.createExchangeRows();
+        collaboration.taskRows = collaboration.createTaskRows();
         collaboration.buying = false;
     }
 
@@ -94,19 +102,38 @@ public final class KatheryneCollaboration {
 
     /** Draws shop offer icons while leaving native Katheryne items to its renderer. */
     public boolean renderIcon(GuiGraphics graphics, ItemStack stack, int x, int y) {
+        if (taskPage()) {
+            for (var index = 0; index < taskRows.size(); index++) {
+                if (taskRows.get(index).outputs().getFirst().icon() == stack
+                        && CurioGrade.of(snapshot.details().tasks().get(index).reward()) != null) {
+                    renderCurioIcon(graphics, x, y);
+                    return true;
+                }
+            }
+        }
+        if (taskPage() && stack.is(Items.BOOK)) {
+            graphics.blit(QUESTION, x, y, 0, 0, 16, 16, 16, 16);
+            return true;
+        }
         if (page == null || page.rows().apply(this) != shopRows) return false;
         for (var index = 0; index < shopRows.size(); index++) {
             if (shopRows.get(index).outputs().getFirst().icon() != stack) continue;
             if (index < 3) {
-                graphics.renderItem(new ItemStack(PGCItems.FRUIT_OF_THE_ALIEN_TREE.get()), x, y);
-                graphics.pose().pushPose();
-                graphics.pose().translate(0, 0, 200);
-                graphics.blit(QUESTION, x + 8, y, 8, 8, 0, 0, 16, 16, 16, 16);
-                graphics.pose().popPose();
+                renderCurioIcon(graphics, x, y);
+            } else if (index >= 7) {
+                graphics.renderItem(new ItemStack(Items.ENCHANTED_BOOK), x, y);
             } else graphics.blit(QUESTION, x, y, 0, 0, 16, 16, 16, 16);
             return true;
         }
         return false;
+    }
+
+    private static void renderCurioIcon(GuiGraphics graphics, int x, int y) {
+        graphics.renderItem(new ItemStack(PGCItems.FRUIT_OF_THE_ALIEN_TREE.get()), x, y);
+        graphics.pose().pushPose();
+        graphics.pose().translate(0, 0, 200);
+        graphics.blit(QUESTION, x + 8, y, 8, 8, 0, 0, 16, 16, 16, 16);
+        graphics.pose().popPose();
     }
 
     public boolean available(int index) {
@@ -126,20 +153,19 @@ public final class KatheryneCollaboration {
         return page == null;
     }
 
+    public boolean taskPage() {
+        return page == PAGES.get(TASK_PAGE);
+    }
+
     public Component footer() {
         if (snapshot == null) return Component.translatable(TEXT + "loading");
+        if (taskPage()) return Component.translatable(TASK_TEXT + "refresh", time(snapshot.details().eventSeconds()));
         if (homePage()) return Component.translatable(TEXT + "exchange_refresh", time(snapshot.details().eventSeconds()));
         return Component.translatable(TEXT + "refresh_in", time(snapshot.details().curioSeconds()), time(snapshot.details().eventSeconds()));
     }
 
     private static String time(int seconds) {
         return String.format(java.util.Locale.ROOT, "%02d:%02d", seconds / 60, seconds % 60);
-    }
-
-    public Component exchangeLabel(int index) {
-        if (snapshot == null) return Component.translatable(TEXT + "loading");
-        var exchange = snapshot.details().exchanges().get(index);
-        return Component.translatable(TEXT + "exchange_" + index, exchange.cost(), exchange.reward());
     }
 
     public boolean canExchange(int index) {
@@ -171,7 +197,6 @@ public final class KatheryneCollaboration {
             var teyvat = index < 2 ? TeyvatDelight.PRIMOGEM.get() : TeyvatDelight.MORA.get();
             var output = new ItemStack(index % 2 == 0 ? teyvat : craft);
             output.set(DataComponents.CUSTOM_NAME, Component.translatable(TEXT + "exchange_item_" + index));
-            output.set(DataComponents.LORE, new ItemLore(List.of(exchangeLabel(index))));
             result.add(new KatheryneSnapshot.Sale(
                     List.of(new KatheryneSnapshot.StackAmount(output, exchange.reward())),
                     List.of(new KatheryneSnapshot.StackAmount(new ItemStack(index % 2 == 0 ? craft : teyvat), exchange.cost())),
@@ -183,23 +208,54 @@ public final class KatheryneCollaboration {
     private List<KatheryneSnapshot.Sale> createShopRows() {
         if (snapshot == null) return List.of();
         return snapshot.offers().stream().map(offer -> new KatheryneSnapshot.Sale(
-                List.of(icon(offer.title(), Component.translatable(TEXT + "offer", offer.title(), offer.price(), offer.remaining()))),
+                List.of(icon(offer.title())),
                 List.of(new KatheryneSnapshot.StackAmount(new ItemStack(TeyvatDelight.PRIMOGEM.get()), offer.price())),
                 offer.remaining())).toList();
     }
 
-    private static KatheryneSnapshot.StackAmount icon(Component name, Component description) {
+    private List<KatheryneSnapshot.Sale> createTaskRows() {
+        return snapshot.details().tasks().stream().map(task -> {
+            var reward = CurioGrade.of(task.reward()) != null ? new ItemStack(Items.BOOK) : task.reward().copyWithCount(1);
+            reward.set(DataComponents.CUSTOM_NAME, task.completed()
+                    ? Component.translatable(TASK_TEXT + "done", task.title()) : task.title());
+            reward.set(DataComponents.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
+            reward.remove(PGCDataComponents.CUSTOM_BAR.get());
+            var ingredients = task.ingredients().stream().map(ingredient -> {
+                var food = ingredient.copyWithCount(1);
+                food.set(DataComponents.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
+                food.remove(PGCDataComponents.CUSTOM_BAR.get());
+                return new KatheryneSnapshot.StackAmount(food, ingredient.getCount());
+            }).toList();
+            return new KatheryneSnapshot.Sale(
+                    List.of(new KatheryneSnapshot.StackAmount(reward, task.reward().getCount())),
+                    ingredients,
+                    task.completed() ? 0 : 1);
+        }).toList();
+    }
+
+    private boolean canSubmit(int index) {
+        return snapshot != null && index >= 0 && index < snapshot.details().tasks().size()
+                && snapshot.details().tasks().get(index).available();
+    }
+
+    private void submit(int index) {
+        if (buying || !canSubmit(index)) return;
+        buying = true;
+        PacketDistributor.sendToServer(new StellarShopNetwork.Action(menu.containerId,
+                StellarShopNetwork.TASK_FIRST_SLOT + index, snapshot.details().tasks().get(index).token(), snapshot.day()));
+    }
+
+    private static KatheryneSnapshot.StackAmount icon(Component name) {
         var stack = new ItemStack(Items.BOOK);
         stack.set(DataComponents.CUSTOM_NAME, name.copy().withStyle(ChatFormatting.WHITE));
-        stack.set(DataComponents.LORE, new ItemLore(List.of(description.copy().withStyle(ChatFormatting.WHITE),
-                Component.translatable(TEXT + "rules").withStyle(ChatFormatting.WHITE))));
         return new KatheryneSnapshot.StackAmount(stack, 1);
     }
 
     private void buy(int index) {
         if (snapshot == null || buying) return;
         buying = true;
-        PacketDistributor.sendToServer(new StellarShopNetwork.Action(menu.containerId, index, snapshot.shopCycle(), snapshot.day()));
+        var slot = index >= 7 ? StellarShopNetwork.ENCHANT_FIRST_SLOT + index - 7 : index;
+        PacketDistributor.sendToServer(new StellarShopNetwork.Action(menu.containerId, slot, snapshot.shopCycle(), snapshot.day()));
     }
 
     private boolean canBuy(int index) {
