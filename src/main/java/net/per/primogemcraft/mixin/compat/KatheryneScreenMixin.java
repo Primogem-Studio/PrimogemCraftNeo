@@ -1,4 +1,4 @@
-package net.per.primogemcraft.mixin;
+package net.per.primogemcraft.mixin.compat;
 
 import com.guoche.teyvatdelight.KatheryneMenu;
 import com.guoche.teyvatdelight.KatheryneSnapshot;
@@ -15,17 +15,8 @@ import net.minecraft.world.item.ItemStack;
 import net.per.primogemcraft.client.gui.teyvat.KatheryneCollaboration;
 import net.per.primogemcraft.client.gui.teyvat.KatheryneListLayout;
 import net.per.primogemcraft.client.gui.teyvat.TeyvatButton;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Pseudo;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
-import org.spongepowered.asm.mixin.injection.Slice;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
