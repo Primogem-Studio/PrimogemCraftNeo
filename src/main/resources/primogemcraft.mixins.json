@@ -9,7 +9,7 @@
     "PowderSnowBlockMixin"
   ],
   "client": [
-    "KatheryneScreenMixin"
+    "compat.KatheryneScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
