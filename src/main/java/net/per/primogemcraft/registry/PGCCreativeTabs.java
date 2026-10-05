@@ -34,7 +34,7 @@ public class PGCCreativeTabs {
         output.accept(CUCKOO_CLOCK_PART);
         output.accept(ARCHAIC_STONE);
         output.accept(DIAMOND_SHARD);
-        output.accept(ELEMENTAL_DISSOLVING_BEAD_DUST);
+        output.accept(ELEMENTAL_MOLTEN_BEAD_DUST);
         output.accept(ELEMENTAL_MOLTEN_BEAD_FRAGMENT);
         output.accept(ELEMENTAL_MOLTEN_BEAD);
         output.accept(DREAM_SAKURA);

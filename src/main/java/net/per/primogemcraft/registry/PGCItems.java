@@ -139,7 +139,7 @@ public class PGCItems {
     public static final DeferredItem<ElementalMoltenBeadItem> ELEMENTAL_MOLTEN_BEAD = REGISTRY.registerItem("elemental_molten_bead",
             properties -> new ElementalMoltenBeadItem(properties.stacksTo(1).fireResistant()));
     public static final DeferredItem<DescribedItem> ELEMENTAL_MOLTEN_BEAD_FRAGMENT = described("elemental_molten_bead_fragment", Rarity.EPIC);
-    public static final DeferredItem<DescribedItem> ELEMENTAL_DISSOLVING_BEAD_DUST = described("elemental_dissolving_bead_dust", Rarity.RARE);
+    public static final DeferredItem<DescribedItem> ELEMENTAL_MOLTEN_BEAD_DUST = described("elemental_molten_bead_dust", Rarity.RARE);
     public static final DeferredItem<DescribedItem> ELEMENTAL_CRYSTAL_DUST = described("elemental_crystal_dust");
     public static final DeferredItem<DescribedItem> PRIMOGEM_DUST = described("primogem_dust");
     public static final DeferredItem<DescribedItem> DIAMOND_SHARD = described("diamond_shard");

@@ -15,7 +15,7 @@ record StellarTaskPlan(int kind, List<Ingredient> ingredients, String reward, in
             new Reward("fine_enhancement_ore", 100, 6, 16, 1, 3),
             new Reward("dust_of_azoth", 90, 4, 12, 1, 3),
             new Reward("cosmic_fragment", 150, 32, 64, 1, 3),
-            new Reward("elemental_dissolving_bead_dust", 70, 3, 8, 1, 3),
+            new Reward("elemental_molten_bead_dust", 70, 3, 8, 1, 3),
             new Reward("unidentified_doll", 60, 2, 4, 2, 4),
             new Reward("acquaint_fate", 80, 2, 5, 2, 4),
             new Reward("intertwined_fate", 60, 2, 4, 2, 4),
