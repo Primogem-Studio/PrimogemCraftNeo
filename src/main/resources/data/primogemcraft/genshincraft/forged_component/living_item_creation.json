@@ -2,7 +2,7 @@
   "type": "primitive",
   "reference": "primogemcraft:living_item",
   "action": "create",
-  "texture": "minecraft:item/totem_of_undying",
+  "texture": "primogemcraft:item/spell/living_item_creation",
   "name_color": "8CDEA4",
   "aspects": [
     "primogemcraft:living_item",

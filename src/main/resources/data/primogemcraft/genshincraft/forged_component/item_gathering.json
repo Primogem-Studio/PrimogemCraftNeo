@@ -2,7 +2,7 @@
   "type": "primitive",
   "reference": "primogemcraft:utility_pulse",
   "action": "gather",
-  "texture": "minecraft:item/ender_pearl",
+  "texture": "primogemcraft:item/spell/item_gathering",
   "name_color": "60DACA",
   "aspects": [
     "common:sizeable",

@@ -2,7 +2,7 @@
   "type": "decorator",
   "reference": "primogemcraft:living_item",
   "action": "recall",
-  "texture": "minecraft:item/ender_pearl",
+  "texture": "primogemcraft:item/spell/living_item_recall",
   "name_color": "8CDEA4",
   "cost": 5,
   "require_aspects": [

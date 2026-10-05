@@ -2,7 +2,7 @@
   "type": "primitive",
   "reference": "primogemcraft:utility_pulse",
   "action": "slow",
-  "texture": "minecraft:item/slime_ball",
+  "texture": "primogemcraft:item/spell/slowing_pulse",
   "name_color": "91C6ED",
   "aspects": [
     "common:sizeable",

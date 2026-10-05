@@ -2,7 +2,7 @@
   "type": "primitive",
   "reference": "primogemcraft:utility_pulse",
   "action": "heal",
-  "texture": "minecraft:item/glistering_melon_slice",
+  "texture": "primogemcraft:item/spell/mending_pulse",
   "name_color": "78D98B",
   "aspects": [
     "common:sizeable",

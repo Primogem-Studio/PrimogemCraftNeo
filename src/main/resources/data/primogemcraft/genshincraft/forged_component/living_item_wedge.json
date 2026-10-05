@@ -2,7 +2,7 @@
   "type": "decorator",
   "reference": "primogemcraft:living_item",
   "action": "wedge",
-  "texture": "minecraft:item/arrow",
+  "texture": "primogemcraft:item/spell/living_item_wedge",
   "name_color": "8CDEA4",
   "cost": 4,
   "require_aspects": [

@@ -2,7 +2,7 @@
   "type": "primitive",
   "reference": "primogemcraft:living_item",
   "action": "select",
-  "texture": "minecraft:item/spyglass",
+  "texture": "primogemcraft:item/spell/living_item_selection",
   "name_color": "8CDEA4",
   "aspects": [
     "primogemcraft:living_item",

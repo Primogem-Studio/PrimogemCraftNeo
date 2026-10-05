@@ -2,7 +2,7 @@
   "type": "decorator",
   "reference": "primogemcraft:living_item",
   "action": "follow",
-  "texture": "minecraft:item/lead",
+  "texture": "primogemcraft:item/spell/living_item_follow",
   "name_color": "8CDEA4",
   "cost": 3,
   "require_aspects": [

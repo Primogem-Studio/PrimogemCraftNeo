@@ -2,7 +2,7 @@
   "type": "decorator",
   "reference": "primogemcraft:living_item",
   "action": "line",
-  "texture": "minecraft:item/iron_ingot",
+  "texture": "primogemcraft:item/spell/living_item_line",
   "name_color": "8CDEA4",
   "cost": 4,
   "require_aspects": [
