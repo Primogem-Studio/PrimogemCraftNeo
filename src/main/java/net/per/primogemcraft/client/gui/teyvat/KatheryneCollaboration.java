@@ -33,18 +33,21 @@ public final class KatheryneCollaboration {
     private static final String TEXT = "gui.primogemcraft.stellar_shop.";
     private static final String TASK_TEXT = "gui.primogemcraft.stellar_tasks.";
     private static final ResourceLocation TASK_PAGE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "stellar_tasks");
+    private static final ResourceLocation EXCHANGE_PAGE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "currency_exchange");
     private static final ResourceLocation QUESTION = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/event_question.png");
     private static final Map<ResourceLocation, Page> PAGES = new LinkedHashMap<>();
     private final KatheryneMenu menu;
     private StellarShopNetwork.Snapshot snapshot;
     private List<KatheryneSnapshot.Sale> shopRows = List.of();
-    private List<KatheryneSnapshot.Sale> exchangeRows = List.of();
     private List<KatheryneSnapshot.Sale> taskRows = List.of();
+    private List<KatheryneSnapshot.Sale> exchangeRows = List.of();
     private Page page;
     private boolean buying;
     private long nextRefresh;
 
     static {
+        registerPage(EXCHANGE_PAGE, Component.translatable(TEXT + "exchange_title"),
+                collaboration -> collaboration.exchangeRows, KatheryneCollaboration::canExchange, KatheryneCollaboration::exchange);
         registerPage(ResourceLocation.fromNamespaceAndPath(MOD_ID, "stellar_shop"), Component.translatable(TEXT + "title"),
                 KatheryneCollaboration::shopRows, KatheryneCollaboration::canBuy, KatheryneCollaboration::buy);
         registerPage(TASK_PAGE, Component.translatable(TASK_TEXT + "title"),
@@ -53,9 +56,10 @@ public final class KatheryneCollaboration {
 
     public KatheryneCollaboration(KatheryneMenu menu) {
         this.menu = menu;
+        page = PAGES.values().iterator().next();
     }
 
-    /** Registers a child page rendered by Katheryne's existing shop list and scrollbar. */
+    /** Registers a child page in the collaboration window. */
     public static void registerPage(ResourceLocation id, Component title,
                                     Function<KatheryneCollaboration, List<KatheryneSnapshot.Sale>> rows,
                                     BiPredicate<KatheryneCollaboration, Integer> available,
@@ -65,19 +69,14 @@ public final class KatheryneCollaboration {
 
     /** Receives a snapshot for the current Katheryne window only. */
     public static void receive(StellarShopNetwork.Snapshot snapshot) {
-        if (!(Minecraft.getInstance().screen instanceof Host host)) return;
-        var collaboration = host.primogemcraft$collaboration();
-        if (collaboration == null || collaboration.menu.containerId != snapshot.containerId()) return;
+        if (!(Minecraft.getInstance().screen instanceof KatheryneCollaborationScreen screen)) return;
+        var collaboration = screen.collaboration();
+        if (collaboration.menu.containerId != snapshot.containerId()) return;
         collaboration.snapshot = snapshot;
         collaboration.shopRows = collaboration.createShopRows();
-        collaboration.exchangeRows = collaboration.createExchangeRows();
         collaboration.taskRows = collaboration.createTaskRows();
+        collaboration.exchangeRows = collaboration.createExchangeRows();
         collaboration.buying = false;
-    }
-
-    public void home() {
-        page = null;
-        refresh();
     }
 
     public void refresh() {
@@ -88,8 +87,7 @@ public final class KatheryneCollaboration {
     }
 
     public List<KatheryneSnapshot.Sale> rows() {
-        if (page != null) return page.rows().apply(this);
-        return exchangeRows;
+        return page.rows().apply(this);
     }
 
     public List<Component> pageTitles() {
@@ -98,6 +96,10 @@ public final class KatheryneCollaboration {
 
     public void openPage(int index) {
         if (index >= 0 && index < PAGES.size()) page = new ArrayList<>(PAGES.values()).get(index);
+    }
+
+    public boolean selectedPage(int index) {
+        return index >= 0 && index < PAGES.size() && page == new ArrayList<>(PAGES.values()).get(index);
     }
 
     /** Draws shop offer icons while leaving native Katheryne items to its renderer. */
@@ -115,7 +117,7 @@ public final class KatheryneCollaboration {
             graphics.blit(QUESTION, x, y, 0, 0, 16, 16, 16, 16);
             return true;
         }
-        if (page == null || page.rows().apply(this) != shopRows) return false;
+        if (page.rows().apply(this) != shopRows) return false;
         for (var index = 0; index < shopRows.size(); index++) {
             if (shopRows.get(index).outputs().getFirst().icon() != stack) continue;
             if (index < 3) {
@@ -140,27 +142,26 @@ public final class KatheryneCollaboration {
         var rows = rows();
         if (buying || index < 0 || index >= rows.size()) return false;
         var row = rows.get(index);
-        return row.remaining() != 0 && (page == null ? canExchange(index) : page.available().test(this, index));
+        return row.remaining() != 0 && page.available().test(this, index);
     }
 
     public void activate(int index) {
         if (!available(index)) return;
-        if (page != null) page.purchase().accept(this, index);
-        else exchange(index);
-    }
-
-    public boolean homePage() {
-        return page == null;
+        page.purchase().accept(this, index);
     }
 
     public boolean taskPage() {
         return page == PAGES.get(TASK_PAGE);
     }
 
+    public boolean exchangePage() {
+        return page == PAGES.get(EXCHANGE_PAGE);
+    }
+
     public Component footer() {
         if (snapshot == null) return Component.translatable(TEXT + "loading");
         if (taskPage()) return Component.translatable(TASK_TEXT + "refresh", time(snapshot.details().eventSeconds()));
-        if (homePage()) return Component.translatable(TEXT + "exchange_refresh", time(snapshot.details().eventSeconds()));
+        if (exchangePage()) return Component.translatable(TEXT + "exchange_refresh", time(snapshot.details().eventSeconds()));
         return Component.translatable(TEXT + "refresh_in", time(snapshot.details().curioSeconds()), time(snapshot.details().eventSeconds()));
     }
 
@@ -168,25 +169,19 @@ public final class KatheryneCollaboration {
         return String.format(java.util.Locale.ROOT, "%02d:%02d", seconds / 60, seconds % 60);
     }
 
-    public boolean canExchange(int index) {
-        return !buying && snapshot != null && index >= 0 && index < snapshot.details().exchanges().size()
+    private List<KatheryneSnapshot.Sale> shopRows() {
+        return shopRows;
+    }
+
+    private boolean canExchange(int index) {
+        return snapshot != null && index >= 0 && index < snapshot.details().exchanges().size()
                 && snapshot.details().exchanges().get(index).available();
     }
 
-    public void exchange(int index) {
-        if (!canExchange(index)) return;
-        var exchange = snapshot.details().exchanges().get(index);
+    private void exchange(int index) {
+        if (buying || !canExchange(index)) return;
         buying = true;
-        PacketDistributor.sendToServer(new StellarShopNetwork.Action(menu.containerId, 7 + index, exchange.cost() * 65L + exchange.reward(), snapshot.day()));
-    }
-
-    public KatheryneSnapshot presentation(KatheryneSnapshot original) {
-        return new KatheryneSnapshot(original.menuId(), original.target(), original.completed(), original.secondsUntilRefresh(),
-                original.immediateRefresh(), original.rewards(), rows(), original.daily());
-    }
-
-    private List<KatheryneSnapshot.Sale> shopRows() {
-        return shopRows;
+        PacketDistributor.sendToServer(new StellarShopNetwork.Action(menu.containerId, 7 + index, snapshot.details().exchangeRevision(), snapshot.day()));
     }
 
     private List<KatheryneSnapshot.Sale> createExchangeRows() {
@@ -261,11 +256,6 @@ public final class KatheryneCollaboration {
     private boolean canBuy(int index) {
         return snapshot != null && index < snapshot.offers().size() && snapshot.offers().get(index).available()
                 && snapshot.balance() >= snapshot.offers().get(index).price();
-    }
-
-    /** Implemented by the optional client mixin; retains state on the original screen. */
-    public interface Host {
-        KatheryneCollaboration primogemcraft$collaboration();
     }
 
     private record Page(Component title, Function<KatheryneCollaboration, List<KatheryneSnapshot.Sale>> rows,

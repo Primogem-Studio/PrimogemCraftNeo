@@ -1,8 +1,8 @@
 package net.per.primogemcraft.collab.teyvatdelight;
 
-import com.guoche.teyvatdelight.KatheryneData;
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneData;
 import com.guoche.teyvatdelight.KatheryneMenu;
-import com.guoche.teyvatdelight.KatheryneRules;
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneRules;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -24,7 +24,6 @@ import net.per.primogemcraft.system.event.EventChoice;
 import net.per.primogemcraft.system.event.EventGroup;
 import net.per.primogemcraft.system.event.EventRegistry;
 import net.per.primogemcraft.util.PlayerItems;
-import net.per.primogemcraft.config.TeyvatExchangeConfig;
 import net.per.primogemcraft.registry.PGCItems;
 
 import java.util.ArrayList;
@@ -59,6 +58,7 @@ final class StellarShop {
         }
         if (slot >= StellarShopNetwork.ENCHANT_FIRST_SLOT && slot < StellarShopNetwork.ENCHANT_FIRST_SLOT + 2)
             slot = 7 + slot - StellarShopNetwork.ENCHANT_FIRST_SLOT;
+        else if (slot >= 7) return;
         if (slot < 0 || slot >= PRICES.length) return;
         if (action.shopCycle() != KatheryneData.shopCycle(player.server) || action.day() != day(player)) {
             fail(player, menu, "refreshed");
@@ -94,11 +94,8 @@ final class StellarShop {
             return;
         }
         PlayerItems.take(player, currency, PRICES[slot]);
-        if (slot < 3) KatheryneData.get(player.server).recordPurchase(player, curioOffer(slot));
-        else {
-            var state = state(player);
-            state.putInt("bought_" + slot, state.getInt("bought_" + slot) + 1);
-        }
+        var state = purchaseState(player, slot);
+        state.putInt("bought_" + slot, state.getInt("bought_" + slot) + 1);
         player.getInventory().setChanged();
         player.closeContainer();
         if (slot < 3) {
@@ -125,29 +122,28 @@ final class StellarShop {
         PacketDistributor.sendToPlayer(player, new StellarShopNetwork.Snapshot(menu.containerId,
                 KatheryneData.shopCycle(player.server), day(player), PlayerItems.count(player, currency()), offers,
                 new StellarShopNetwork.Details(KatheryneRules.secondsUntil(player.server, KatheryneRules.shopRefreshTime()),
-                        KatheryneRules.secondsUntil(player.server, 0), exchanges(player), StellarTasks.snapshot(player))));
+                        KatheryneRules.secondsUntil(player.server, 0), CurrencyExchange.revision(), exchanges(player), StellarTasks.snapshot(player))));
     }
 
     private static List<StellarShopNetwork.Exchange> exchanges(ServerPlayer player) {
         var result = new ArrayList<StellarShopNetwork.Exchange>();
-        for (var index = 0; index < 4; index++) {
-            var cost = exchangeAmount(index, false);
-            result.add(new StellarShopNetwork.Exchange(cost, exchangeAmount(index, true), exchangeRemaining(player, index),
-                    TeyvatExchangeConfig.ENABLED.get() && exchangeRemaining(player, index) != 0 && PlayerItems.count(player, exchangeItem(index, false)) >= cost));
+        for (var index = 0; index < CurrencyExchange.trades().size(); index++) {
+            var trade = CurrencyExchange.trades().get(index);
+            var remaining = exchangeRemaining(player, index);
+            result.add(new StellarShopNetwork.Exchange(trade.cost(), trade.reward(), remaining,
+                    trade.enabled() && remaining != 0 && PlayerItems.count(player, exchangeItem(index, false)) >= trade.cost()));
         }
         return result;
     }
 
-    private static int exchangeRemaining(ServerPlayer player, int index) {
-        if (index % 2 != 0) return -1;
-        var limit = (index < 2 ? TeyvatExchangeConfig.PRIMOGEM_DAILY_LIMIT : TeyvatExchangeConfig.MORA_DAILY_LIMIT).get();
-        return Math.max(0, limit - state(player).getInt(index < 2 ? "exchange_primogem" : "exchange_mora"));
+    private static String exchangeKey(int index) {
+        return index == 0 ? "exchange_primogem" : index == 2 ? "exchange_mora" : "exchange_" + index;
     }
 
-    private static int exchangeAmount(int index, boolean output) {
-        var craft = (index % 2 == 0) != output;
-        return index < 2 ? (craft ? TeyvatExchangeConfig.PRIMOGEM_CRAFT_AMOUNT : TeyvatExchangeConfig.PRIMOGEM_TEYVAT_AMOUNT).get()
-                : (craft ? TeyvatExchangeConfig.MORA_CRAFT_AMOUNT : TeyvatExchangeConfig.MORA_TEYVAT_AMOUNT).get();
+    private static int exchangeRemaining(ServerPlayer player, int index) {
+        var trade = CurrencyExchange.trades().get(index);
+        if (!trade.enabled()) return 0;
+        return trade.limit() < 0 ? -1 : Math.max(0, trade.limit() - state(player).getInt(exchangeKey(index)));
     }
 
     private static Item exchangeItem(int index, boolean output) {
@@ -157,28 +153,27 @@ final class StellarShop {
     }
 
     private static void exchange(ServerPlayer player, KatheryneMenu menu, int index, StellarShopNetwork.Action action) {
-        var cost = exchangeAmount(index, false);
-        var reward = exchangeAmount(index, true);
-        if (!TeyvatExchangeConfig.ENABLED.get() || action.shopCycle() != cost * 65L + reward || action.day() != day(player)) {
+        if (index >= CurrencyExchange.trades().size() || action.shopCycle() != CurrencyExchange.revision() || action.day() != day(player)) {
             fail(player, menu, "refreshed");
             return;
         }
+        var trade = CurrencyExchange.trades().get(index);
         if (exchangeRemaining(player, index) == 0) {
             fail(player, menu, "sold_out");
             return;
         }
         var input = exchangeItem(index, false);
-        if (PlayerItems.count(player, input) < cost) {
+        if (PlayerItems.count(player, input) < trade.cost()) {
             fail(player, menu, "exchange_short");
             return;
         }
-        PlayerItems.take(player, input, cost);
-        if (index % 2 == 0) {
+        PlayerItems.take(player, input, trade.cost());
+        if (trade.limit() >= 0) {
             var state = state(player);
-            var key = index < 2 ? "exchange_primogem" : "exchange_mora";
+            var key = exchangeKey(index);
             state.putInt(key, state.getInt(key) + 1);
         }
-        PlayerItems.give(player, new ItemStack(exchangeItem(index, true), reward));
+        PlayerItems.give(player, new ItemStack(exchangeItem(index, true), trade.reward()));
         player.getInventory().setChanged();
         menu.broadcastChanges();
         sync(player, menu);
@@ -193,13 +188,12 @@ final class StellarShop {
         return BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("teyvatdelight", "primogem"));
     }
 
-    private static KatheryneRules.ShopOffer curioOffer(int slot) {
-        return new KatheryneRules.ShopOffer(STATE_KEY + "/curio_" + slot, List.of(), List.of(), 1);
+    private static int remaining(ServerPlayer player, int slot) {
+        return Math.max(0, (slot == 3 ? 2 : 1) - purchaseState(player, slot).getInt("bought_" + slot));
     }
 
-    private static int remaining(ServerPlayer player, int slot) {
-        if (slot < 3) return KatheryneData.get(player.server).remainingFor(player, curioOffer(slot));
-        return Math.max(0, (slot == 3 ? 2 : 1) - state(player).getInt("bought_" + slot));
+    private static CompoundTag purchaseState(ServerPlayer player, int slot) {
+        return slot < 3 ? state(player, STATE_KEY + "/curios", "cycle", KatheryneData.shopCycle(player.server)) : state(player);
     }
 
     static long day(ServerPlayer player) {
@@ -207,15 +201,18 @@ final class StellarShop {
     }
 
     static CompoundTag state(ServerPlayer player) {
+        return state(player, STATE_KEY, "day", day(player));
+    }
+
+    private static CompoundTag state(ServerPlayer player, String key, String period, long cycle) {
         var data = player.getPersistentData();
         if (!data.contains(Player.PERSISTED_NBT_TAG)) data.put(Player.PERSISTED_NBT_TAG, new CompoundTag());
         var persisted = data.getCompound(Player.PERSISTED_NBT_TAG);
-        var state = persisted.getCompound(STATE_KEY);
-        var day = day(player);
-        if (!state.contains("day") || state.getLong("day") != day) {
+        var state = persisted.getCompound(key);
+        if (!state.contains(period) || state.getLong(period) != cycle) {
             state = new CompoundTag();
-            state.putLong("day", day);
-            persisted.put(STATE_KEY, state);
+            state.putLong(period, cycle);
+            persisted.put(key, state);
         }
         return state;
     }

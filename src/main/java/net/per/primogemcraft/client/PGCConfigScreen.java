@@ -4,9 +4,6 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.gui.entries.DoubleListEntry;
 import me.shedaniel.clothconfig2.gui.entries.IntegerListEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.Minecraft;
-import net.per.primogemcraft.config.TeyvatExchangeConfig;
-import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
@@ -107,38 +104,7 @@ public final class PGCConfigScreen {
                         .setSaveConsumer(value::set).build());
             }
         }
-        var server = Minecraft.getInstance().getSingleplayerServer();
-        var editableExchange = server != null && TeyvatExchangeConfig.SPEC.isLoaded();
-        var exchange = builder.getOrCreateCategory(Component.translatable("config.primogemcraft.category.teyvat_exchange"));
-        var enabled = builder.entryBuilder().startBooleanToggle(Component.translatable("config.primogemcraft.teyvat_exchange.enabled"),
-                        TeyvatExchangeConfig.SPEC.isLoaded() ? TeyvatExchangeConfig.ENABLED.get() : TeyvatExchangeConfig.ENABLED.getDefault())
-                .setDefaultValue(TeyvatExchangeConfig.ENABLED.getDefault())
-                .setSaveConsumer(value -> {
-                    if (editableExchange && Minecraft.getInstance().getSingleplayerServer() == server)
-                        server.execute(() -> TeyvatExchangeConfig.ENABLED.set(value));
-                }).build();
-        enabled.setEditable(editableExchange);
-        exchange.addEntry(enabled);
-        for (var value : List.of(TeyvatExchangeConfig.PRIMOGEM_CRAFT_AMOUNT, TeyvatExchangeConfig.PRIMOGEM_TEYVAT_AMOUNT,
-                TeyvatExchangeConfig.PRIMOGEM_DAILY_LIMIT, TeyvatExchangeConfig.MORA_CRAFT_AMOUNT,
-                TeyvatExchangeConfig.MORA_TEYVAT_AMOUNT, TeyvatExchangeConfig.MORA_DAILY_LIMIT)) {
-            var path = String.join(".", value.getPath());
-            var entry = builder.entryBuilder().startIntField(Component.translatable("config.primogemcraft.teyvat_exchange." + path),
-                            TeyvatExchangeConfig.SPEC.isLoaded() ? value.get() : value.getDefault())
-                    .setDefaultValue(value.getDefault()).setMin(path.endsWith("daily_limit") ? 0 : 1)
-                    .setMax(path.endsWith("daily_limit") ? 1000000 : 64)
-                    .setSaveConsumer(amount -> {
-                        if (editableExchange && Minecraft.getInstance().getSingleplayerServer() == server)
-                            server.execute(() -> value.set(amount));
-                    }).build();
-            entry.setEditable(editableExchange);
-            exchange.addEntry(entry);
-        }
-        builder.setSavingRunnable(() -> {
-            PGCConfig.SPEC.save();
-            if (editableExchange && Minecraft.getInstance().getSingleplayerServer() == server)
-                server.execute(TeyvatExchangeConfig.SPEC::save);
-        });
+        builder.setSavingRunnable(PGCConfig.SPEC::save);
         return builder.build();
     }
 

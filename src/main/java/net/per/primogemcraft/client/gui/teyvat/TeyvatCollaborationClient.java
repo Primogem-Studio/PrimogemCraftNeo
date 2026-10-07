@@ -4,6 +4,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.per.primogemcraft.collab.teyvatdelight.StellarShopNetwork;
 import net.per.primogemcraft.collab.teyvatdelight.TeyvatDelightIntegration;
 
@@ -17,6 +18,9 @@ public final class TeyvatCollaborationClient {
     @SubscribeEvent
     public static void setup(FMLClientSetupEvent event) {
         if (TeyvatDelightIntegration.supportsShop())
-            event.enqueueWork(() -> StellarShopNetwork.setReceiver(KatheryneCollaboration::receive));
+            event.enqueueWork(() -> {
+                StellarShopNetwork.setReceiver(KatheryneCollaboration::receive);
+                NeoForge.EVENT_BUS.addListener(KatheryneCollaborationScreen::addEntry);
+            });
     }
 }

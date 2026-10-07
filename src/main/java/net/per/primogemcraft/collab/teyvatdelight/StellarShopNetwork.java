@@ -25,7 +25,7 @@ public final class StellarShopNetwork {
     }
 
     static void register(RegisterPayloadHandlersEvent event) {
-        var registrar = event.registrar("7");
+        var registrar = event.registrar("9");
         registrar.playToServer(Action.TYPE, Action.CODEC, (payload, context) -> {
             if (context.player() instanceof ServerPlayer player) StellarShop.handle(player, payload);
         });
@@ -55,12 +55,6 @@ public final class StellarShopNetwork {
                 ByteBufCodecs.VAR_INT, Offer::remaining, ByteBufCodecs.BOOL, Offer::available, Offer::new);
     }
 
-    public record Exchange(int cost, int reward, int remaining, boolean available) {
-        public static final StreamCodec<RegistryFriendlyByteBuf, Exchange> CODEC = StreamCodec.composite(
-                ByteBufCodecs.VAR_INT, Exchange::cost, ByteBufCodecs.VAR_INT, Exchange::reward,
-                ByteBufCodecs.VAR_INT, Exchange::remaining, ByteBufCodecs.BOOL, Exchange::available, Exchange::new);
-    }
-
     public record Task(List<ItemStack> ingredients, ItemStack reward, Component title, boolean completed, boolean available, long token) {
         public static final StreamCodec<RegistryFriendlyByteBuf, Task> CODEC = StreamCodec.composite(
                 ItemStack.OPTIONAL_STREAM_CODEC.apply(ByteBufCodecs.list(3)), Task::ingredients, ItemStack.OPTIONAL_STREAM_CODEC, Task::reward,
@@ -68,10 +62,16 @@ public final class StellarShopNetwork {
                 ByteBufCodecs.BOOL, Task::available, ByteBufCodecs.VAR_LONG, Task::token, Task::new);
     }
 
-    public record Details(int curioSeconds, int eventSeconds, List<Exchange> exchanges, List<Task> tasks) {
+    public record Exchange(int cost, int reward, int remaining, boolean available) {
+        public static final StreamCodec<RegistryFriendlyByteBuf, Exchange> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, Exchange::cost, ByteBufCodecs.VAR_INT, Exchange::reward,
+                ByteBufCodecs.VAR_INT, Exchange::remaining, ByteBufCodecs.BOOL, Exchange::available, Exchange::new);
+    }
+
+    public record Details(int curioSeconds, int eventSeconds, long exchangeRevision, List<Exchange> exchanges, List<Task> tasks) {
         public static final StreamCodec<RegistryFriendlyByteBuf, Details> CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, Details::curioSeconds, ByteBufCodecs.VAR_INT, Details::eventSeconds,
-                Exchange.CODEC.apply(ByteBufCodecs.list(4)), Details::exchanges,
+                ByteBufCodecs.VAR_LONG, Details::exchangeRevision, Exchange.CODEC.apply(ByteBufCodecs.list(4)), Details::exchanges,
                 Task.CODEC.apply(ByteBufCodecs.list(StellarTaskPlan.MAX_COUNT)), Details::tasks, Details::new);
     }
 

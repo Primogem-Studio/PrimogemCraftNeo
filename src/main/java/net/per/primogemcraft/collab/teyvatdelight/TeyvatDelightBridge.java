@@ -1,7 +1,7 @@
 package net.per.primogemcraft.collab.teyvatdelight;
 
 import com.guoche.teyvatdelight.TeyvatDelight;
-import com.guoche.teyvatdelight.TeyvatItemData;
+import com.guoche.teyvatdelight.api.TeyvatItemData;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
@@ -9,6 +9,7 @@ import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.per.primogemcraft.PrimogemCraft;
 import net.per.primogemcraft.registry.PGCItems;
@@ -21,6 +22,11 @@ final class TeyvatDelightBridge {
         modBus.addListener(TeyvatDelightBridge::modifyDefaultComponents);
         if (TeyvatDelightIntegration.supportsShop()) modBus.addListener(StellarShopNetwork::register);
         NeoForge.EVENT_BUS.addListener(TeyvatDelightBridge::addFoodTooltip);
+        NeoForge.EVENT_BUS.addListener(TeyvatDelightBridge::addReloadListeners);
+    }
+
+    private static void addReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(new CurrencyExchange());
     }
 
     private static void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {

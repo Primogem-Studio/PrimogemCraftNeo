@@ -2,14 +2,10 @@
   "required": true,
   "minVersion": "0.8",
   "package": "net.per.primogemcraft.mixin",
-  "plugin": "net.per.primogemcraft.mixin.MixinPlugin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ItemStackMixin",
     "PowderSnowBlockMixin"
-  ],
-  "client": [
-    "compat.KatheryneScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
