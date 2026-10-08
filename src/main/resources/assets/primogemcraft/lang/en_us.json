@@ -1543,7 +1543,7 @@
   "item.primogemcraft.primordial_jade_winged_spear.description.moveset": "§eHas the same attack moveset as the Mace",
   "item.primogemcraft.primordial_jade_winged_spear.description.thrust": "§eMoves forward, scaled by refinement, dealing Special damage equal to §b%1$s§e of current ATK to any creature touched; this effect recovers every §b%2$s§e s, up to §b%3$s§e charges",
   "item.primogemcraft.primordial_jade_winged_spear.description.storage": "§eHolding §b W §e while moving with right click lets you step over obstacles up to 3 blocks tall",
-  "item.primogemcraft.primordial_jade_winged_spear.description.charge": "§7Currently stored: §b%1$s",
+  "item.primogemcraft.primordial_jade_winged_spear.description.charge": "§7Stored charges: §b%1$s§7 / §b%2$s",
   "item.primogemcraft.primordial_jade_winged_spear.description.flight": "§eGains Jump Boost §b%1$s§e for §b%2$s§e s; 30 s cooldown",
   "item.primogemcraft.primordial_jade_winged_spear.description.power": "§eFinal ATK increased by §b%1$s",
   "item.primogemcraft.primordial_jade_winged_spear.description.reach": "§eAttack range increased by §b%1$s",

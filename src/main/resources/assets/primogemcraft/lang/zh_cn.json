@@ -1685,7 +1685,7 @@
   "item.primogemcraft.primordial_jade_winged_spear.description.moveset": "§e具有与重锤一致的攻击模组",
   "item.primogemcraft.primordial_jade_winged_spear.description.thrust": "§e向前方移动一段距离，受精炼等级影响，同时对接触到的任何生物造成一次等同于当前攻击力§b%1$s§e的特殊伤害，该效果§b%2$s§e秒恢复一次，至多存储§b%3$s§e次",
   "item.primogemcraft.primordial_jade_winged_spear.description.storage": "§e右键移动时按住§b W §e可以越过至多3格方块的障碍",
-  "item.primogemcraft.primordial_jade_winged_spear.description.charge": "§7当前存储：§b%1$s",
+  "item.primogemcraft.primordial_jade_winged_spear.description.charge": "§7当前存储层数：§b%1$s§7 / §b%2$s",
   "item.primogemcraft.primordial_jade_winged_spear.description.flight": "§e获得跳跃提升效果，冷却30秒，赋予§b%1$s§e级，持续§b%2$s§e秒",
   "item.primogemcraft.primordial_jade_winged_spear.description.power": "§e最终攻击力提升§b%1$s",
   "item.primogemcraft.primordial_jade_winged_spear.description.reach": "§e攻击距离提升§b%1$s",

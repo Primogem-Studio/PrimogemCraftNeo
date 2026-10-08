@@ -50,8 +50,7 @@ public class PrimordialJadeWingedSpearItem extends WishWeaponItem {
 
     private static final String CHARGE_TIMER = "jade_winged_spear_charge";
     private static final String FLIGHT_TIMER = "jade_winged_spear_flight";
-    private static final int BASE_CHARGES = 2;
-    private static final int MAX_CHARGES = 3;
+    private static final int MAX_CHARGES = 5;
     private static final int CHARGE_TICKS_BASE = 160;
     private static final int CHARGE_TICKS_STEP = 20;
     private static final int CHARGE_RESTORE_THRESHOLD = 1;
@@ -129,7 +128,9 @@ public class PrimordialJadeWingedSpearItem extends WishWeaponItem {
                         WishReports.number(chargeSeconds(refinement), ChatFormatting.AQUA),
                         WishReports.number(maxCharges(refinement), ChatFormatting.AQUA)),
                 WeaponDescription.note(STORAGE_TEXT),
-                WeaponDescription.note(CHARGE_TEXT, WishReports.number(WeaponCharge.of(stack), ChatFormatting.AQUA)),
+                WeaponDescription.note(CHARGE_TEXT,
+                        WishReports.number(Math.min(WeaponCharge.of(stack), maxCharges(refinement)), ChatFormatting.AQUA),
+                        WishReports.number(maxCharges(refinement), ChatFormatting.AQUA)),
                 WeaponDescription.of(SNEAK_USE, FLIGHT_TEXT,
                         WishReports.number(flightLevel(refinement), ChatFormatting.AQUA),
                         WishReports.number(flightTicks(refinement) / 20, ChatFormatting.AQUA)),
@@ -168,6 +169,7 @@ public class PrimordialJadeWingedSpearItem extends WishWeaponItem {
         if (!selected) return;
         var refinement = WeaponState.of(stack).refinements();
         var charges = WeaponCharge.of(stack);
+        if (charges > maxCharges(refinement)) WeaponCharge.set(stack, maxCharges(refinement));
         if (charges >= maxCharges(refinement)) return;
         if (!PGCTimer.isDone(player, CHARGE_TIMER)) return;
         WeaponCharge.set(stack, charges + 1);
@@ -186,7 +188,7 @@ public class PrimordialJadeWingedSpearItem extends WishWeaponItem {
             level.playSound(null, player.blockPosition(), SoundEvents.WARDEN_EMERGE, SoundSource.PLAYERS, 1.0F, 3.0F);
             return super.use(level, player, hand);
         }
-        var charges = WeaponCharge.of(stack);
+        var charges = Math.min(WeaponCharge.of(stack), maxCharges(refinement));
         if (charges <= 0) return super.use(level, player, hand);
         if (level instanceof ServerLevel server && player instanceof ServerPlayer serverPlayer) thrust(server, serverPlayer, refinement);
         WeaponCharge.set(stack, charges - 1);
@@ -276,7 +278,7 @@ public class PrimordialJadeWingedSpearItem extends WishWeaponItem {
     }
 
     private static int maxCharges(int refinement) {
-        return Math.min(MAX_CHARGES, BASE_CHARGES + (refinement > 4 ? refinement - 4 : 0));
+        return refinement >= 5 ? MAX_CHARGES : 3;
     }
 
     private static int chargeTicks(int refinement) {
