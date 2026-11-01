@@ -1,7 +1,7 @@
 package net.per.primogemcraft.client.gui.teyvat;
 
-import com.guoche.teyvatdelight.KatheryneMenu;
-import com.guoche.teyvatdelight.KatheryneSnapshot;
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneMenu;
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneSnapshot;
 import com.guoche.teyvatdelight.client.katheryne.KatheryneScreen;
 import com.guoche.teyvatdelight.entity.katheryne.KatheryneNetwork;
 import net.minecraft.client.Minecraft;

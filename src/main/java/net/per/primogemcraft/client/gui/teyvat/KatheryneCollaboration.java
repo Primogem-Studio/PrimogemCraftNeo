@@ -1,8 +1,8 @@
 package net.per.primogemcraft.client.gui.teyvat;
 
-import com.guoche.teyvatdelight.KatheryneMenu;
-import com.guoche.teyvatdelight.KatheryneSnapshot;
-import com.guoche.teyvatdelight.TeyvatDelight;
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneMenu;
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneSnapshot;
+import com.guoche.teyvatdelight.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -189,7 +189,7 @@ public final class KatheryneCollaboration {
         for (var index = 0; index < snapshot.details().exchanges().size(); index++) {
             var exchange = snapshot.details().exchanges().get(index);
             var craft = index < 2 ? PGCItems.PRIMOGEM.get() : PGCItems.MORA.get();
-            var teyvat = index < 2 ? TeyvatDelight.PRIMOGEM.get() : TeyvatDelight.MORA.get();
+            var teyvat = index < 2 ? ModItems.PRIMOGEM.get() : ModItems.MORA.get();
             var output = new ItemStack(index % 2 == 0 ? teyvat : craft);
             output.set(DataComponents.CUSTOM_NAME, Component.translatable(TEXT + "exchange_item_" + index));
             result.add(new KatheryneSnapshot.Sale(
@@ -204,7 +204,7 @@ public final class KatheryneCollaboration {
         if (snapshot == null) return List.of();
         return snapshot.offers().stream().map(offer -> new KatheryneSnapshot.Sale(
                 List.of(icon(offer.title())),
-                List.of(new KatheryneSnapshot.StackAmount(new ItemStack(TeyvatDelight.PRIMOGEM.get()), offer.price())),
+                List.of(new KatheryneSnapshot.StackAmount(new ItemStack(ModItems.PRIMOGEM.get()), offer.price())),
                 offer.remaining())).toList();
     }
 

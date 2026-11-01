@@ -1,7 +1,7 @@
 package net.per.primogemcraft.collab.teyvatdelight;
 
 import com.guoche.teyvatdelight.entity.katheryne.KatheryneData;
-import com.guoche.teyvatdelight.KatheryneMenu;
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneMenu;
 import com.guoche.teyvatdelight.entity.katheryne.KatheryneRules;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;

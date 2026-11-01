@@ -1,7 +1,7 @@
 package net.per.primogemcraft.collab.teyvatdelight;
 
-import com.guoche.teyvatdelight.TeyvatDelight;
 import com.guoche.teyvatdelight.api.TeyvatItemData;
+import com.guoche.teyvatdelight.registry.ModDataComponents;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
@@ -41,8 +41,8 @@ final class TeyvatDelightBridge {
                         case EPIC -> 4;
                     };
             event.modify(item, builder -> builder
-                    .set(TeyvatDelight.STARS.get(), stars)
-                    .set(TeyvatDelight.FOOD_QUALITY.get(), TeyvatItemData.QUALITY_NORMAL));
+                    .set(ModDataComponents.STARS.get(), stars)
+                    .set(ModDataComponents.FOOD_QUALITY.get(), TeyvatItemData.QUALITY_NORMAL));
         }
     }
 
