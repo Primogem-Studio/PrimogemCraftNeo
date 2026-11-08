@@ -54,7 +54,7 @@ side = "BOTH"
 [[dependencies.primogemcraft]]
 modId = "genshincraft"
 type = "optional"
-versionRange = "[3.2.1,)"
+versionRange = "[3.3.0,)"
 ordering = "AFTER"
 side = "BOTH"
 
@@ -69,5 +69,12 @@ side = "BOTH"
 modId = "teyvatdelight"
 type = "optional"
 versionRange = "[1.1.12,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.primogemcraft]]
+modId = "tacz"
+type = "optional"
+versionRange = "[1.2.0,)"
 ordering = "AFTER"
 side = "BOTH"
