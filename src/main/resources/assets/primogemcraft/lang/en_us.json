@@ -1,4 +1,10 @@
 {
+  "primogemcraft.configuration.sky_target_overlay": "Sky targeting overlay",
+  "primogemcraft.configuration.sky_target_overlay.tooltip": "Show Sky's aiming decorations, target marker and lock chime. Disabling this keeps target locking and homing enabled.",
+  "gui.primogemcraft.sky.searching": "SKY · SEARCHING",
+  "gui.primogemcraft.sky.locking": "SKY · ATTUNING",
+  "gui.primogemcraft.sky.locked": "SKY · GUIDANCE READY",
+  "gui.primogemcraft.sky.distance": "%s m",
   "message.primogemcraft.living_item_project_migration_failed": "Could not migrate the old living-item design. Opening was canceled to prevent a crash; the original project file is preserved. Check the log for details.",
   "forged_component.name.primogemcraft.living_item_selection": "Living Item: Select",
   "forged_component.primogemcraft.living_item_selection.tooltip.0": "Primitive: selects your living items near the spell for attached formation, command or return decorators. Alone it changes no behavior. Radius: 16 blocks, scaled by size up to 64.",

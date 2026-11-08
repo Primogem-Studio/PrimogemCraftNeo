@@ -35,6 +35,7 @@ public final class TaczBridge {
 
     static void register() {
         NeoForge.EVENT_BUS.register(TaczBridge.class);
+        NeoForge.EVENT_BUS.register(SkyTargeting.class);
     }
 
     @SubscribeEvent

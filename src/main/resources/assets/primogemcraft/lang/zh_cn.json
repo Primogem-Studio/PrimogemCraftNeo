@@ -1,4 +1,10 @@
 {
+  "primogemcraft.configuration.sky_target_overlay": "天空瞄准界面",
+  "primogemcraft.configuration.sky_target_overlay.tooltip": "显示天空的瞄准装饰、锁定标记与锁定提示音。关闭后仍可锁定和追踪目标。",
+  "gui.primogemcraft.sky.searching": "天空 · 寻迹",
+  "gui.primogemcraft.sky.locking": "天空 · 共鸣中",
+  "gui.primogemcraft.sky.locked": "天空 · 引导就绪",
+  "gui.primogemcraft.sky.distance": "%s 米",
   "message.primogemcraft.living_item_project_migration_failed": "旧版生命物品方案迁移失败，已取消打开以避免崩溃，原方案文件已保留。详情请查看日志。",
   "forged_component.name.primogemcraft.living_item_selection": "生命物品·选取",
   "forged_component.primogemcraft.living_item_selection.tooltip.0": "基元：选取施法位置附近自己的生命物品，交给本节点的阵型、指挥或返还修饰器；单独使用不改变行为。基础半径16格，受大小修饰影响，最多64格。",

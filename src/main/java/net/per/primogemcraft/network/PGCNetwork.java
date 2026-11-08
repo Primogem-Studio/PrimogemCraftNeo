@@ -8,6 +8,7 @@ import net.per.primogemcraft.client.ChoiceParticles;
 import net.per.primogemcraft.client.ItemActivationFx;
 import net.per.primogemcraft.client.WishMaterialValues;
 import net.per.primogemcraft.client.WishLootItems;
+import net.per.primogemcraft.client.SkyTargetOverlay;
 import net.per.primogemcraft.client.gui.ChoiceClientHandler;
 import net.per.primogemcraft.entity.misc.ZiplineCarrierEntity;
 import net.per.primogemcraft.item.misc.LuckySpecialTicketItem;
@@ -25,6 +26,8 @@ public final class PGCNetwork {
     @SubscribeEvent
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar(PROTOCOL_VERSION);
+        registrar.playToClient(SkyTargetPayload.TYPE, SkyTargetPayload.STREAM_CODEC, (payload, context) -> SkyTargetOverlay.update(payload));
+        registrar.playToClient(SkyBulletPayload.TYPE, SkyBulletPayload.STREAM_CODEC, (payload, context) -> SkyTargetOverlay.updateBullet(payload));
         registrar.playToServer(ThunderingPulsePayload.TYPE, ThunderingPulsePayload.STREAM_CODEC, (payload, context) -> {
             if (context.player() instanceof ServerPlayer player) ThunderingPulseItem.dash(player);
         });
