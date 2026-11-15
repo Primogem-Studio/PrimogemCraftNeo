@@ -1,16 +1,16 @@
 package net.per.primogemcraft.client;
 
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.minecraftforge.client.extensions.common.IClientMobEffectExtensions;
 import net.per.primogemcraft.registry.PGCEffects;
 
-import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
+import java.util.function.Consumer;
 
-@EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+/**
+ * 闅愯棌閮ㄥ垎鏁堟灉鐨?HUD/鐗╁搧鏍忓浘鏍囥€? *
+ * <p>1.21 鐢?{@code RegisterClientExtensionsEvent.registerMobEffect}锛?.20.1 娌℃湁璇ヤ簨浠讹紝
+ * 鏀逛负瑕嗗啓 {@link MobEffect#initializeClient(Consumer)}鈥斺€旇繖鏄?Forge 1.20.1 鎻愪緵鐨? * 瀹樻柟鎵╁睍鍏ュ彛锛屾晥鏋滅瓑浠枫€傜敱 {@code PGCEffects} 鍦ㄦ敞鍐屽悇鏁堟灉鏃惰皟鐢?{@link #hide}銆? */
 public final class ElementEffectExtensions {
     private static final IClientMobEffectExtensions HIDDEN = new IClientMobEffectExtensions() {
         @Override
@@ -27,14 +27,21 @@ public final class ElementEffectExtensions {
     private ElementEffectExtensions() {
     }
 
-    @SubscribeEvent
-    public static void registerClientExtensions(RegisterClientExtensionsEvent event) {
-        event.registerMobEffect(HIDDEN, PGCEffects.FLIGHT.get());
-        event.registerMobEffect(HIDDEN, PGCEffects.DAMAGE_ABSORPTION_COOLDOWN.get());
-        event.registerMobEffect(HIDDEN, PGCEffects.RETALIATION_COOLDOWN.get());
-        event.registerMobEffect(HIDDEN, PGCEffects.PURIFIED_ARMOR_EFFECT_LIMIT.get());
-        event.registerMobEffect(HIDDEN, PGCEffects.BURNING_RETALIATION.get());
-        event.registerMobEffect(HIDDEN, PGCEffects.BURNING_RECOVERY.get());
-        event.registerMobEffect(HIDDEN, PGCEffects.BUBBLE_LIMIT.get());
+    /** 渚涙晥鏋滅被鍦?initializeClient 涓皟鐢紝闅愯棌鍏跺浘鏍囥€?*/
+    public static void hide(Consumer<IClientMobEffectExtensions> consumer) {
+        consumer.accept(HIDDEN);
+    }
+
+    /** 闇€瑕侀殣钘忓浘鏍囩殑鍏ㄩ儴鏁堟灉锛屼緵娉ㄥ唽渚х粺涓€搴旂敤銆?*/
+    public static MobEffect[] hiddenEffects() {
+        return new MobEffect[]{
+                PGCEffects.FLIGHT.get(),
+                PGCEffects.DAMAGE_ABSORPTION_COOLDOWN.get(),
+                PGCEffects.RETALIATION_COOLDOWN.get(),
+                PGCEffects.PURIFIED_ARMOR_EFFECT_LIMIT.get(),
+                PGCEffects.BURNING_RETALIATION.get(),
+                PGCEffects.BURNING_RECOVERY.get(),
+                PGCEffects.BUBBLE_LIMIT.get()
+        };
     }
 }

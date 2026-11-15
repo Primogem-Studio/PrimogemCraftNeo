@@ -3,10 +3,10 @@ package net.per.primogemcraft.system.choice;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.per.primogemcraft.compat.network.PayloadRegistrar;
 import net.per.primogemcraft.PrimogemCraft;
 import net.per.primogemcraft.network.ChoiceOpenPayload;
 import net.per.primogemcraft.network.ChoiceResultPayload;
@@ -18,7 +18,7 @@ import java.util.UUID;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
+@Mod.EventBusSubscriber(modid = MOD_ID)
 public final class ChoiceRegistry {
     public static final int DEFAULT_DURATION = 600;
     public static final int DEFAULT_SETTLE_TICKS = 12;
@@ -50,7 +50,7 @@ public final class ChoiceRegistry {
         var expireTime = player.level().getGameTime() + DEFAULT_DURATION;
         var cards = List.copyOf(options);
         PENDING.put(player.getUUID(), new Pending(id, mode, cards, callback));
-        PacketDistributor.sendToPlayer(player, new ChoiceOpenPayload(new ChoiceRequest(id, title, subtitle, visual, texture, textures, spin, Math.max(settleTicks, NO_SETTLE_TICKS), cards, expireTime, mode, leaveIndex)));
+        PayloadRegistrar.sendToPlayer(player, new ChoiceOpenPayload(new ChoiceRequest(id, title, subtitle, visual, texture, textures, spin, Math.max(settleTicks, NO_SETTLE_TICKS), cards, expireTime, mode, leaveIndex)));
     }
 
     public static boolean isPending(ServerPlayer player) {
@@ -71,14 +71,14 @@ public final class ChoiceRegistry {
             return;
         }
         if (accepted) PENDING.remove(player.getUUID(), pending);
-        PacketDistributor.sendToPlayer(player, new ChoiceResultPayload(id, selected, accepted));
+        PayloadRegistrar.sendToPlayer(player, new ChoiceResultPayload(id, selected, accepted));
     }
 
     private static void giveUp(ServerPlayer player, Pending pending, int id) {
         PENDING.remove(player.getUUID(), pending);
         if (pending.callback() != null) accept(pending.callback(), NO_ANSWER);
         if (pending.mode() == ChoiceMode.CONFIRM)
-            PacketDistributor.sendToPlayer(player, new ChoiceResultPayload(id, NO_ANSWER, true));
+            PayloadRegistrar.sendToPlayer(player, new ChoiceResultPayload(id, NO_ANSWER, true));
     }
 
     public static void cancel(UUID uuid, int index) {

@@ -55,12 +55,12 @@ public class ZiplineAnchorEntity extends Entity {
             for (var index = 0; index < 9; index++) {
                 var part = base.offset(index % 3 - 1, 0, index / 3 - 1);
                 var oldState = level().getBlockState(part);
-                if (oldState.is(PGCBlocks.ZIPLINE_BASE)) level().setBlock(part, oldState.setValue(ZiplineBaseBlock.FACING, facing), 2);
+                if (oldState.is(PGCBlocks.ZIPLINE_BASE.get())) level().setBlock(part, oldState.setValue(ZiplineBaseBlock.FACING, facing), 2);
             }
         }
         entityData.set(BASE, Optional.of(base.immutable()));
         var state = level().getBlockState(base);
-        if (state.is(PGCBlocks.ZIPLINE_BASE)) setYRot(-state.getValue(ZiplineBaseBlock.FACING).toYRot());
+        if (state.is(PGCBlocks.ZIPLINE_BASE.get())) setYRot(-state.getValue(ZiplineBaseBlock.FACING).toYRot());
         setPos(ZiplineSpace.worldPosition(level(), Vec3.atBottomCenterOf(base)));
     }
 
@@ -107,7 +107,7 @@ public class ZiplineAnchorEntity extends Entity {
             var position = basePosition().offset(index % 3 - 1, 0, index / 3 - 1);
             if (!level().hasChunkAt(position)) return true;
             var state = level().getBlockState(position);
-            if (!state.is(PGCBlocks.ZIPLINE_BASE) || state.getValue(ZiplineBaseBlock.PART) != index) return false;
+            if (!state.is(PGCBlocks.ZIPLINE_BASE.get()) || state.getValue(ZiplineBaseBlock.PART) != index) return false;
         }
         return true;
     }
@@ -135,7 +135,7 @@ public class ZiplineAnchorEntity extends Entity {
             setBoundingBox(makeBoundingBox());
         } else {
             var base = basePosition();
-            if (level().hasChunkAt(base) && level().getBlockState(base).is(PGCBlocks.ZIPLINE_BASE)) {
+            if (level().hasChunkAt(base) && level().getBlockState(base).is(PGCBlocks.ZIPLINE_BASE.get())) {
                 if (!(level().getBlockEntity(base) instanceof ZiplineBaseBlockEntity))
                     level().setBlockEntity(new ZiplineBaseBlockEntity(base, level().getBlockState(base)));
                 if (level().getBlockEntity(base) instanceof ZiplineBaseBlockEntity blockEntity) blockEntity.bind(this);
@@ -171,9 +171,9 @@ public class ZiplineAnchorEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(TEMPORARY, false);
-        builder.define(BASE, Optional.empty());
+    protected void defineSynchedData() {
+        this.entityData.define(TEMPORARY, false);
+        this.entityData.define(BASE, Optional.empty());
     }
 
     @Override

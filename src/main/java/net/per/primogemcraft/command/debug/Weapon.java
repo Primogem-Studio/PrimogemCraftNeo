@@ -1,5 +1,6 @@
 package net.per.primogemcraft.command.debug;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -146,7 +147,7 @@ public class Weapon {
         if (!(weapon.getItem() instanceof WishWeapon)) return notWeapon(source);
         var recovery = new WeaponRecovery(WeaponState.of(weapon), WishWeapon.isFiveStar(weapon));
         var ore = new ItemStack(PGCItems.SPECIALLY_TREATED_FINE_ORE.get());
-        ore.set(PGCDataComponents.WEAPON_RECOVERY.get(), recovery);
+        StackComponents.set(ore, PGCDataComponents.WEAPON_RECOVERY, recovery);
         PlayerItems.give(player, ore);
         message(source, "command.primogemcraft.weapon.recovery");
         for (var refund : WeaponEnhancement.refund(recovery))

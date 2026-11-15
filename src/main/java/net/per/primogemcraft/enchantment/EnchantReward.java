@@ -64,7 +64,7 @@ public final class EnchantReward {
         var shown = new ArrayList<EnchantOption>();
         for (var option : options) {
             var preview = option.preview();
-            if (preview.isEmpty() || EnchantmentHelper.getEnchantmentsForCrafting(preview).isEmpty()) continue;
+            if (preview.isEmpty() || EnchantmentHelper.getEnchantments(preview).isEmpty()) continue;
             shown.add(option);
         }
         return shown;

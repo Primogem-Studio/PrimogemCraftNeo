@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.misc;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -40,8 +41,8 @@ public class ExperienceBookItem extends DescribedItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, context, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, level, tooltip, flag);
         var bar = bar(stack);
         tooltip.add(Component.translatable(stack.getDescriptionId() + STORED_SUFFIX, bar.numerator(), bar.denominator()));
     }
@@ -75,10 +76,10 @@ public class ExperienceBookItem extends DescribedItem {
     }
 
     private CustomBar bar(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.CUSTOM_BAR.get(), new CustomBar(0, capacity, true));
+        return StackComponents.getOrDefault(stack, PGCDataComponents.CUSTOM_BAR, new CustomBar(0, capacity, true));
     }
 
     private void store(ItemStack stack, int numerator) {
-        stack.set(PGCDataComponents.CUSTOM_BAR.get(), new CustomBar(numerator, capacity, numerator < capacity));
+        StackComponents.set(stack, PGCDataComponents.CUSTOM_BAR, new CustomBar(numerator, capacity, numerator < capacity));
     }
 }

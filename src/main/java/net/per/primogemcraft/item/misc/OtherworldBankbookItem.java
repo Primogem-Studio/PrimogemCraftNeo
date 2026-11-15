@@ -47,13 +47,14 @@ public class OtherworldBankbookItem extends Item {
     }
 
     @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
-        if (hand == InteractionHand.MAIN_HAND && entity instanceof ServerPlayer player && player.isShiftKeyDown()) deposit(player, stack);
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+        if (entity instanceof ServerPlayer player && player.isShiftKeyDown()
+                && player.getUsedItemHand() == InteractionHand.MAIN_HAND) deposit(player, stack);
         return false;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         var prefix = stack.getDescriptionId() + TOOLTIP_SUFFIX;
         for (var index = 0; index < INSTRUCTION_LINES; index++) tooltip.add(Component.translatable(prefix + index));
         tooltip.add(Component.translatable(prefix + INSTRUCTION_LINES, Component.translatable(modeKey(stack))));

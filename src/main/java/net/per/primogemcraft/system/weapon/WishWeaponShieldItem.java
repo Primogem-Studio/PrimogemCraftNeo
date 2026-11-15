@@ -41,7 +41,7 @@ public abstract class WishWeaponShieldItem extends ShieldItem implements WishWea
 
     protected abstract List<WeaponDescription> description(ItemStack stack);
 
-    protected Holder<MobEffect> heldEffect(ItemStack stack) {
+    protected MobEffect heldEffect(ItemStack stack) {
         return null;
     }
 
@@ -64,7 +64,7 @@ public abstract class WishWeaponShieldItem extends ShieldItem implements WishWea
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable(WeaponType.of(stack).labelKey()));
         tooltip.addAll(WishWeaponTooltips.lines(stack.getDescriptionId(), descriptions(stack)));
     }
@@ -96,7 +96,7 @@ public abstract class WishWeaponShieldItem extends ShieldItem implements WishWea
         var remaining = remainingCooldown(WeaponState.of(stack).level());
         if (remaining > 0) cooldowns.addCooldown(stack.getItem(), remaining);
         PGCTimer.set(player, HANDY_TIMER, remaining);
-        stack.hurtAndBreak(Mth.nextInt(player.getRandom(), MIN_BLOCK_COST, MAX_BLOCK_COST), player.serverLevel(), player, item -> {
+        stack.hurtAndBreak(Mth.nextInt(player.getRandom(), MIN_BLOCK_COST, MAX_BLOCK_COST), player, item -> {
         });
     }
 

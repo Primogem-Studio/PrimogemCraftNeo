@@ -79,7 +79,7 @@ public class NagadusEmeraldHoeItem extends WishWeaponHoeItem {
             level.levelEvent(GROW_EVENT, target, 0);
         level.sendParticles(ParticleTypes.COMPOSTER, target.getX() + 0.5D, target.getY() + 1.5D, target.getZ() + 0.5D,
                 PARTICLE_COUNT, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPEED);
-        stack.hurtAndBreak(BONE_MEAL_DURABILITY, level, player, item -> {
+        stack.hurtAndBreak(BONE_MEAL_DURABILITY, player, item -> {
         });
     }
 }

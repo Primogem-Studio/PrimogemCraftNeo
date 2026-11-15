@@ -21,10 +21,10 @@ public class CodeCurioItem extends CurioItem {
     private static final double RANGE = 8.0D;
     private static final double RATE = 0.02D;
 
-    private final List<Holder<Attribute>> attributes;
+    private final List<Attribute> attributes;
     private final boolean integrated;
 
-    public CodeCurioItem(List<Holder<Attribute>> attributes, boolean integrated, Properties properties) {
+    public CodeCurioItem(List<Attribute> attributes, boolean integrated, Properties properties) {
         super(CurioTrigger.ACTIVE, CurioForm.NORMAL, properties);
         this.attributes = attributes;
         this.integrated = integrated;
@@ -55,7 +55,7 @@ public class CodeCurioItem extends CurioItem {
         context.progress(stacks, limit(player));
         if (stacks <= 0) return;
         for (var index = 0; index < attributes.size(); index++)
-            CurioAttributes.push(player, context.stack(), index, attributes.get(index), RATE * stacks, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+            CurioAttributes.push(player, context.stack(), index, attributes.get(index), RATE * stacks, AttributeModifier.Operation.MULTIPLY_BASE);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class CodeCurioItem extends CurioItem {
     }
 
     private static boolean carriesIntegratedCode(ServerPlayer player) {
-        return player.getInventory().contains(stack -> !stack.isEmpty() && stack.is(PGCItems.INTEGRATED_CODE.get()));
+        return net.per.primogemcraft.compat.item.Inventories120.any(player.getInventory(), stack -> !stack.isEmpty() && stack.is(PGCItems.INTEGRATED_CODE.get()));
     }
 
     private record Stamps(ResourceLocation counter, String timer) {

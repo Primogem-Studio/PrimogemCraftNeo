@@ -13,11 +13,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForgeMod;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-public class MagatamaEffect extends MobEffect {
+public class MagatamaEffect extends MobEffect implements net.per.primogemcraft.compat.event.EffectCallbacks.Started {
     private static final double ATTACK_DAMAGE = 0.3D;
     private static final double ATTACK_SPEED = 0.3D;
     private static final double SWIM_SPEED = 0.3D;
@@ -29,13 +28,12 @@ public class MagatamaEffect extends MobEffect {
 
     public MagatamaEffect() {
         super(MobEffectCategory.NEUTRAL, -1878800);
-        addAttributeModifier(Attributes.ATTACK_DAMAGE, id("attack_damage"), ATTACK_DAMAGE, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
-        addAttributeModifier(Attributes.ATTACK_SPEED, id("attack_speed"), ATTACK_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
-        addAttributeModifier(NeoForgeMod.SWIM_SPEED, id("swim_speed"), SWIM_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
-        addAttributeModifier(Attributes.ARMOR, id("armor"), ARMOR, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+        addAttributeModifier(Attributes.ATTACK_DAMAGE, net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(id("attack_damage")).toString(), ATTACK_DAMAGE, AttributeModifier.Operation.MULTIPLY_BASE);
+        addAttributeModifier(Attributes.ATTACK_SPEED, net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(id("attack_speed")).toString(), ATTACK_SPEED, AttributeModifier.Operation.MULTIPLY_BASE);
+        addAttributeModifier(net.minecraftforge.common.ForgeMod.SWIM_SPEED.get(), net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(id("swim_speed")).toString(), SWIM_SPEED, AttributeModifier.Operation.MULTIPLY_BASE);
+        addAttributeModifier(Attributes.ARMOR, net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(id("armor")).toString(), ARMOR, AttributeModifier.Operation.MULTIPLY_BASE);
     }
 
-    @Override
     public void onEffectStarted(LivingEntity entity, int amplifier) {
         var level = entity.level();
         if (level instanceof ServerLevel serverLevel) {
@@ -46,18 +44,19 @@ public class MagatamaEffect extends MobEffect {
                 serverLevel.addFreshEntity(bolt);
             }
         }
-        level.playSound(null, entity.blockPosition(), SoundEvents.TRIDENT_THUNDER.value(), SoundSource.PLAYERS, THUNDER_VOLUME, THUNDER_PITCH);
+        level.playSound(null, entity.blockPosition(), SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, THUNDER_VOLUME, THUNDER_PITCH);
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    public void applyEffectTick(LivingEntity entity, int amplifier)
+    {
         entity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, FIRE_RESISTANCE_DURATION, FIRE_RESISTANCE_AMPLIFIER, false, false));
-        return true;
+        return;
     }
 
     private static ResourceLocation id(String name) {

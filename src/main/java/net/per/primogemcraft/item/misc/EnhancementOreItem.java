@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.misc;
 
+import net.minecraft.world.level.Level;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -17,8 +18,8 @@ public class EnhancementOreItem extends DescribedItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, context, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, level, tooltip, flag);
         var xp = WeaponEnhancement.xpPerOre(stack.getItem());
         if (xp <= 0) return;
         var prefix = stack.getDescriptionId();

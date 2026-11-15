@@ -35,18 +35,18 @@ public final class TheHunt {
 
     public static void harvest(LivingEntity attacker, LivingEntity victim) {
         if (attacker.level().isClientSide() || attacker == victim) return;
-        if (!victim.hasEffect(PGCEffects.ABUNDANCE)) return;
+        if (!victim.hasEffect(PGCEffects.ABUNDANCE.get())) return;
         if (!PGCTimer.isDone(attacker, COOLDOWN_TIMER)) return;
         var level = levelOf(attacker);
         if (level <= 0) return;
         PGCTimer.set(attacker, COOLDOWN_TIMER, cooldownTicks(level));
-        var instance = victim.getEffect(PGCEffects.ABUNDANCE);
+        var instance = victim.getEffect(PGCEffects.ABUNDANCE.get());
         if (instance != null && level >= TRANSFER_LEVEL && attacker instanceof ServerPlayer player && PGCTimer.isDone(attacker, TRANSFER_TIMER)) {
             PGCTimer.set(attacker, TRANSFER_TIMER, TRANSFER_COOLDOWN);
-            CurioEffects.apply(player, PGCEffects.ABUNDANCE, Math.min(instance.getDuration(), MAX_TRANSFER_TICKS), Math.max(0, instance.getAmplifier() - 1));
+            CurioEffects.apply(player, PGCEffects.ABUNDANCE.get(), Math.min(instance.getDuration(), MAX_TRANSFER_TICKS), Math.max(0, instance.getAmplifier() - 1));
             burst(player);
         }
-        victim.removeEffect(PGCEffects.ABUNDANCE);
+        victim.removeEffect(PGCEffects.ABUNDANCE.get());
     }
 
     public static int levelOf(LivingEntity attacker) {
@@ -69,8 +69,8 @@ public final class TheHunt {
     }
 
     private static int enchantLevel(ItemStack stack) {
-        for (var entry : EnchantmentHelper.getEnchantmentsForCrafting(stack).entrySet())
-            if (entry.getKey().is(PGCEnchantments.THE_HUNT)) return entry.getIntValue();
+        for (var entry : EnchantmentHelper.getEnchantments(stack).entrySet())
+            if (entry.getKey() == net.minecraftforge.registries.ForgeRegistries.ENCHANTMENTS.getValue(PGCEnchantments.THE_HUNT.location())) return entry.getValue();
         return 0;
     }
 

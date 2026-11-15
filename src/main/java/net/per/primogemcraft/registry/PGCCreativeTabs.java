@@ -6,9 +6,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.per.primogemcraft.compat.registries.DeferredHolder;
+import net.per.primogemcraft.compat.registries.DeferredItem;
+import net.per.primogemcraft.compat.registries.DeferredRegister;
 
 import java.util.function.Consumer;
 
@@ -34,7 +34,7 @@ public class PGCCreativeTabs {
         output.accept(CUCKOO_CLOCK_PART);
         output.accept(ARCHAIC_STONE);
         output.accept(DIAMOND_SHARD);
-        output.accept(ELEMENTAL_MOLTEN_BEAD_DUST);
+        output.accept(ELEMENTAL_DISSOLVING_BEAD_DUST);
         output.accept(ELEMENTAL_MOLTEN_BEAD_FRAGMENT);
         output.accept(ELEMENTAL_MOLTEN_BEAD);
         output.accept(DREAM_SAKURA);
@@ -113,7 +113,6 @@ public class PGCCreativeTabs {
         output.accept(ACQUAINT_FATE);
         output.accept(INTERTWINED_FATE);
         output.accept(WISH_CORE);
-        output.accept(TEN_PULL_WISH_CORE);
         output.accept(UNBUFFED_WISH_CORE);
         output.accept(MORA);
         output.accept(REFINED_MORA);
@@ -214,11 +213,6 @@ public class PGCCreativeTabs {
         output.accept(DEATHMATCH);
         output.accept(PRIMORDIAL_JADE_WINGED_SPEAR);
         output.accept(WASTER_GREATSWORD);
-        output.accept(EXAMPLE_WISH_BOW);
-        output.accept(SLINGSHOT);
-        output.accept(SKYWARD_HARP);
-        output.accept(THE_VIRIDESCENT_HUNT);
-        output.accept(THUNDERING_PULSE);
         output.accept(MORA_HOE);
         output.accept(MORA_PICKAXE);
         output.accept(MORA_AXE);

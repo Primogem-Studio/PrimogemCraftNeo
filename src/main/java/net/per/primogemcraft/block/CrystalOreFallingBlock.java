@@ -10,15 +10,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 
 public class CrystalOreFallingBlock extends PGCFallingBlock {
-    public static final MapCodec<CrystalOreFallingBlock> CODEC = simpleCodec(CrystalOreFallingBlock::new);
-
     public CrystalOreFallingBlock(BlockBehaviour.Properties properties) {
         super(properties);
-    }
-
-    @Override
-    protected MapCodec<? extends FallingBlock> codec() {
-        return CODEC;
     }
 
     @Override

@@ -4,8 +4,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.per.primogemcraft.block.ZiplineBaseBlock;
 import net.per.primogemcraft.registry.PGCBlocks;
 
@@ -31,12 +31,12 @@ public final class ZiplineAssembly {
             var pass = result.getField("PASS").get(null);
             register(name, "AttachedCheck", "registerAttachedCheck", (proxy, method, arguments) -> {
                 var state = (BlockState) arguments[0];
-                if (!state.is(PGCBlocks.ZIPLINE_BASE)) return pass;
+                if (!state.is(PGCBlocks.ZIPLINE_BASE.get())) return pass;
                 var level = (Level) arguments[1];
                 var position = (BlockPos) arguments[2];
                 var neighbor = position.relative((Direction) arguments[3]);
                 var other = level.getBlockState(neighbor);
-                return other.is(PGCBlocks.ZIPLINE_BASE)
+                return other.is(PGCBlocks.ZIPLINE_BASE.get())
                         && ZiplineBaseBlock.center(state, position).equals(ZiplineBaseBlock.center(other, neighbor)) ? success : pass;
             });
         } catch (ReflectiveOperationException exception) {
@@ -55,13 +55,13 @@ public final class ZiplineAssembly {
     }
 
     private static List<BlockPos> additionalBlocks(BlockState state, Level level, BlockPos position, Set<?> visited) {
-        if (!state.is(PGCBlocks.ZIPLINE_BASE)) return List.of();
+        if (!state.is(PGCBlocks.ZIPLINE_BASE.get())) return List.of();
         var center = ZiplineBaseBlock.center(state, position);
         var blocks = new ArrayList<BlockPos>(9);
         for (var index = 0; index < 9; index++) {
             var part = center.offset(index % 3 - 1, 0, index / 3 - 1);
             var other = level.getBlockState(part);
-            if (!visited.contains(part) && other.is(PGCBlocks.ZIPLINE_BASE) && other.getValue(ZiplineBaseBlock.PART) == index)
+            if (!visited.contains(part) && other.is(PGCBlocks.ZIPLINE_BASE.get()) && other.getValue(ZiplineBaseBlock.PART) == index)
                 blocks.add(part);
         }
         return blocks;

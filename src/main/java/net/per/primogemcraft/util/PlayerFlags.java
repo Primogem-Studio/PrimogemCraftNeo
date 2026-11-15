@@ -1,5 +1,6 @@
 package net.per.primogemcraft.util;
 
+import net.per.primogemcraft.compat.attachment.Attachments;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -30,7 +31,7 @@ public final class PlayerFlags {
     }
 
     public static PlayerFlags of(Player player) {
-        return player.getData(PGCAttachments.PLAYER_FLAGS);
+        return Attachments.get(player, PGCAttachments.PLAYER_FLAGS);
     }
 
     public int counter(ResourceLocation key) {

@@ -28,25 +28,26 @@ public class PersistentFreezeEffect extends MobEffect {
 
     public PersistentFreezeEffect() {
         super(MobEffectCategory.HARMFUL, -10027009);
-        addAttributeModifier(Attributes.ATTACK_SPEED, ResourceLocation.fromNamespaceAndPath(MOD_ID, "effect/persistent_freeze"), ATTACK_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        addAttributeModifier(Attributes.ATTACK_SPEED, net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(ResourceLocation.fromNamespaceAndPath(MOD_ID, "effect/persistent_freeze")).toString(), ATTACK_SPEED, AttributeModifier.Operation.MULTIPLY_TOTAL);
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    public void applyEffectTick(LivingEntity entity, int amplifier)
+    {
         if (entity.level() instanceof ServerLevel level)
             level.sendParticles(ParticleTypes.SNOWFLAKE, entity.getX(), entity.getY() + entity.getBbHeight() / 2, entity.getZ(), PARTICLES, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPEED);
-        if (!entity.hasEffect(PGCEffects.WARM_POWDER_SNOW)) entity.setTicksFrozen(FROZEN_TICKS);
-        if (PGCTimer.isDone(entity, TIMER) && !entity.hasEffect(PGCEffects.WARM_POWDER_SNOW)) {
+        if (!entity.hasEffect(PGCEffects.WARM_POWDER_SNOW.get())) entity.setTicksFrozen(FROZEN_TICKS);
+        if (PGCTimer.isDone(entity, TIMER) && !entity.hasEffect(PGCEffects.WARM_POWDER_SNOW.get())) {
             PGCTimer.set(entity, TIMER, INTERVAL);
             entity.invulnerableTime = 0;
             entity.hurt(ElementDamage.of(Element.CRYO, entity.damageSources().freeze()), amplifier * GenshinCraftIntegration.freezeDamageScale());
             entity.invulnerableTime = INVULNERABLE_TICKS;
         }
-        return true;
+        return;
     }
 }

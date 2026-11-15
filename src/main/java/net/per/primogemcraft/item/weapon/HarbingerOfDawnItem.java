@@ -25,13 +25,13 @@ public class HarbingerOfDawnItem extends WishWeaponItem {
     private static final String ATTACK_TEXT = "attack";
 
     public HarbingerOfDawnItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant());
     }
 
     @Override
     public List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
         if (isHeld(player, slot, stack)) return List.of();
-        return List.of(WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_MULTIPLIED_BASE,
+        return List.of(WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.MULTIPLY_BASE,
                 (owner, worn, value) -> owner.getHealth() >= owner.getMaxHealth() * HEALTHY_RATIO ? ATTACK_BASE + ATTACK_STEP * (value - 1) : 0.0D));
     }
 

@@ -62,8 +62,7 @@ public class EngulfingLightningItem extends WishWeaponItem {
     private static final String PENALTY_TEXT = "penalty";
 
     public EngulfingLightningItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant(),
-                WeaponModifier.of(Attributes.ATTACK_DAMAGE, POWER_BASE, POWER_STEP, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant(), WeaponModifier.of(Attributes.ATTACK_DAMAGE, POWER_BASE, POWER_STEP, AttributeModifier.Operation.MULTIPLY_TOTAL));
     }
 
     @Override
@@ -72,8 +71,8 @@ public class EngulfingLightningItem extends WishWeaponItem {
         var saturation = player.getFoodData().getSaturationLevel();
         var core = core(saturation, refinement, offhandScale(player, refinement));
         return List.of(
-                WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_VALUE, (owner, worn, value) -> core),
-                WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL,
+                WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADDITION, (owner, worn, value) -> core),
+                WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.MULTIPLY_TOTAL,
                         (owner, worn, value) -> owner.getFoodData().getFoodLevel() < LOW_FOOD_LEVEL
                                 ? -(LOW_FOOD_PENALTY_BASE - LOW_FOOD_PENALTY_STEP * (value - 1)) : 0.0D));
     }

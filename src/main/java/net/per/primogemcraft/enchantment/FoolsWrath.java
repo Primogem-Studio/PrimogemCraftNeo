@@ -19,7 +19,7 @@ public final class FoolsWrath {
         var level = PGCEnchantments.levelOf(attacker.level(), attacker.getMainHandItem(), PGCEnchantments.FOOLS_WRATH)
                 + PGCEnchantments.levelOf(attacker.level(), attacker.getOffhandItem(), PGCEnchantments.FOOLS_WRATH);
         if (level <= 0 || attacker.getRandom().nextDouble() >= level * CHANCE_PER_LEVEL) return;
-        attacker.hurt(new DamageSource(attacker.level().holderOrThrow(DamageTypes.MAGIC)), victim.getHealth() * DAMAGE_RATIO);
+        attacker.hurt(new DamageSource(attacker.level().damageSources().magic().typeHolder()), victim.getHealth() * DAMAGE_RATIO);
     }
 
     public static void cleanse(ServerLevel level, AABB area) {

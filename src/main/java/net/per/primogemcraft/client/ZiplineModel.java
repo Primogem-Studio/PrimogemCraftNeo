@@ -38,9 +38,11 @@ public final class ZiplineModel extends SimplePreparableReloadListener<float[]> 
     public void render(PoseStack poses, VertexConsumer buffer, int light) {
         var pose = poses.last();
         for (var index = 0; index < vertices.length; index += 8) {
-            buffer.addVertex(pose, vertices[index], vertices[index + 1], vertices[index + 2]).setColor(-1)
-                    .setUv(vertices[index + 3], vertices[index + 4]).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light)
-                    .setNormal(pose, vertices[index + 5], vertices[index + 6], vertices[index + 7]);
+            net.per.primogemcraft.compat.client.Vertices.add(buffer, pose, vertices[index], vertices[index + 1], vertices[index + 2])
+                    .color(-1)
+                    .uv(vertices[index + 3], vertices[index + 4]).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light);
+            net.per.primogemcraft.compat.client.Vertices.normal(buffer, pose, vertices[index + 5], vertices[index + 6], vertices[index + 7]);
+            buffer.endVertex();
         }
     }
 

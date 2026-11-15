@@ -20,20 +20,21 @@ public class ScorchingEffect extends MobEffect {
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    public void applyEffectTick(LivingEntity entity, int amplifier)
+    {
         if (entity.level() instanceof ServerLevel level)
             level.sendParticles(ParticleTypes.LAVA, entity.getX(), entity.getY() + PARTICLE_OFFSET, entity.getZ(),
                     PARTICLE_COUNT, 0.0D, 0.0D, 0.0D, 0.0D);
-        if (!PGCTimer.isDone(entity, TIMER)) return true;
+        if (!PGCTimer.isDone(entity, TIMER)) return;
         PGCTimer.set(entity, TIMER, INTERVAL);
         entity.invulnerableTime = 0;
         entity.hurt(entity.damageSources().lava(), (float) Math.max(amplifier, entity.getHealth() * (amplifier + 1) * HEALTH_RATIO));
         entity.invulnerableTime = INVULNERABLE_TICKS;
-        return true;
+        return;
     }
 }

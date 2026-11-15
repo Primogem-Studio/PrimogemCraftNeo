@@ -22,7 +22,7 @@ public class DreamSakuraItem extends DescribedItem {
 
     public void onSaved(ServerPlayer player, ItemStack stack) {
         if (player.getRandom().nextDouble() < BREAK_CHANCE) {
-            stack.hurtAndBreak(WEAR_AMOUNT, player.serverLevel(), player, broken -> {
+            stack.hurtAndBreak(WEAR_AMOUNT, player, broken -> {
             });
             player.displayClientMessage(Component.translatable(BROKEN_KEY), false);
         }

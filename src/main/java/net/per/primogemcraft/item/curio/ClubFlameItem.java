@@ -11,6 +11,6 @@ public class ClubFlameItem extends AttributeCurioItem {
     private static final double SPEED_BONUS = 0.02D;
 
     public ClubFlameItem(Properties properties) {
-        super(CurioForm.FUSION, List.of(new Modifier(Attributes.MOVEMENT_SPEED, SPEED_BONUS, AttributeModifier.Operation.ADD_VALUE)), properties);
+        super(CurioForm.FUSION, List.of(new Modifier(Attributes.MOVEMENT_SPEED, SPEED_BONUS, AttributeModifier.Operation.ADDITION)), properties);
     }
 }

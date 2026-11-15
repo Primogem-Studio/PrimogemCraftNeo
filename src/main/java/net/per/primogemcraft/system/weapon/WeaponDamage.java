@@ -24,7 +24,7 @@ public final class WeaponDamage {
     }
 
     public static DamageSource continuous(Level level, Element element, Entity direct, Entity causing, ElementDamageOptions options) {
-        return ElementDamage.of(element, level.registryAccess().holderOrThrow(CONTINUOUS_DAMAGE), direct, causing, ElementStyle.NORMAL, options);
+        return ElementDamage.of(element, level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE).getHolderOrThrow(CONTINUOUS_DAMAGE), direct, causing, ElementStyle.NORMAL, options);
     }
 
     public static DamageSource lightning(Level level, Element element, Entity direct, Entity causing, ElementDamageOptions options) {
@@ -32,15 +32,14 @@ public final class WeaponDamage {
     }
 
     /**
-     * Applies one extra hit, returns whether it landed, and leaves the target with the vanilla attack interval.
+     * Applies one extra hit and leaves the target with the vanilla attack interval.
      * The target's invulnerability is cleared first so the extra hit lands right after the hit that triggered it,
      * then restored to at least 20 ticks, so no extra damage shortens the interval it is allowed to be hit at.
      */
-    public static boolean extraHit(LivingEntity target, DamageSource source, float damage) {
+    public static void extraHit(LivingEntity target, DamageSource source, float damage) {
         var interval = target.invulnerableTime;
         target.invulnerableTime = 0;
-        var hurt = target.hurt(source, damage);
+        target.hurt(source, damage);
         target.invulnerableTime = Math.max(interval, ATTACK_INTERVAL);
-        return hurt;
     }
 }

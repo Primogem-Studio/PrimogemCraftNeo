@@ -48,19 +48,18 @@ public class ComicBookItem extends CurioItem {
         for (var target : nearby(player)) {
             var scale = Mth.nextInt(context.random(), 0, MAX_SCALE_LEVEL) + 1;
             var amount = context.chance(0.5D) ? scale : -scale;
-            TemporaryAttributes.apply(target, SCALE_ID, Attributes.SCALE, amount, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, DURATION_TICKS);
-            TemporaryAttributes.apply(target, BLOCK_REACH_ID, Attributes.BLOCK_INTERACTION_RANGE, amount, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, DURATION_TICKS);
-            TemporaryAttributes.apply(target, ENTITY_REACH_ID, Attributes.ENTITY_INTERACTION_RANGE, amount, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, DURATION_TICKS);
+            // 1.20.1 没有 SCALE 属性，体型缩放无法表达，予以移除；触及距离与增益效果保留。
+            TemporaryAttributes.apply(target, BLOCK_REACH_ID, net.minecraftforge.common.ForgeMod.BLOCK_REACH.get(), amount, AttributeModifier.Operation.MULTIPLY_TOTAL, DURATION_TICKS);
+            TemporaryAttributes.apply(target, ENTITY_REACH_ID, net.minecraftforge.common.ForgeMod.ENTITY_REACH.get(), amount, AttributeModifier.Operation.MULTIPLY_TOTAL, DURATION_TICKS);
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, DURATION_TICKS, Mth.nextInt(context.random(), 0, MAX_EFFECT_LEVEL), false, false));
             target.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, DURATION_TICKS, Mth.nextInt(context.random(), 0, MAX_EFFECT_LEVEL), false, false));
         }
     }
 
     @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         if (!(entity instanceof ServerPlayer player)) return false;
         for (var target : nearby(player)) {
-            TemporaryAttributes.remove(target, SCALE_ID);
             TemporaryAttributes.remove(target, BLOCK_REACH_ID);
             TemporaryAttributes.remove(target, ENTITY_REACH_ID);
         }

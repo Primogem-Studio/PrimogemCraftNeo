@@ -15,12 +15,12 @@ public class ThalanToxiFlameItem extends AttributeCurioItem {
     private static final double SPEED_BONUS = 0.05D;
 
     public ThalanToxiFlameItem(Properties properties) {
-        super(CurioForm.NORMAL, List.of(new Modifier(Attributes.MOVEMENT_SPEED, SPEED_BONUS, AttributeModifier.Operation.ADD_VALUE)), properties);
+        super(CurioForm.NORMAL, List.of(new Modifier(Attributes.MOVEMENT_SPEED, SPEED_BONUS, AttributeModifier.Operation.ADDITION)), properties);
     }
 
     @Override
     public void presence(CurioContext context) {
         super.presence(context);
-        CurioEffects.ensure(context.player(), PGCEffects.THALAN_TOXI_FLAME, INTERVAL, 0);
+        CurioEffects.ensure(context.player(), PGCEffects.THALAN_TOXI_FLAME.get(), INTERVAL, 0);
     }
 }

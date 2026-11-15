@@ -70,11 +70,11 @@ public class AgnidusAgateAxeItem extends WishWeaponAxeItem {
         if (player.hasEffect(MobEffects.FIRE_RESISTANCE))
             player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, duration * REGENERATION_MULTIPLIER, REGENERATION_AMPLIFIER, true, false));
         else
-            player.addEffect(new MobEffectInstance(PGCEffects.BURNING_RECOVERY, duration, 0, false, false));
+            player.addEffect(new MobEffectInstance(PGCEffects.BURNING_RECOVERY.get(), duration, 0, false, false));
         player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.PYRO, COOLDOWN_TICKS, false));
         level.playSound(null, player.blockPosition(), SoundEvents.GHAST_SHOOT, SoundSource.PLAYERS, SOUND_VOLUME, SOUND_PITCH);
         server.sendParticles(ParticleTypes.LAVA, player.getX(), player.getY(), player.getZ(), LAVA_PARTICLES, 0.0D, LAVA_SPREAD, 0.0D, 0.0D);
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        stack.hurtAndBreak(DURABILITY_LOSS, player, item -> {
         });
         return InteractionResultHolder.success(stack);
     }

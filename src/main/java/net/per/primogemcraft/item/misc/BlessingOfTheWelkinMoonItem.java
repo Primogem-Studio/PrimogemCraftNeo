@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.misc;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -47,7 +48,7 @@ public class BlessingOfTheWelkinMoonItem extends DescribedItem {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+    public int getUseDuration(ItemStack stack) {
         return USE_DURATION;
     }
 
@@ -65,7 +66,7 @@ public class BlessingOfTheWelkinMoonItem extends DescribedItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         appendDescription(stack, tooltip);
         if (!WishTooltips.showsDetails()) return;
         tooltip.add(Component.translatable(REMAINING_KEY, remaining(stack)));
@@ -76,7 +77,7 @@ public class BlessingOfTheWelkinMoonItem extends DescribedItem {
     }
 
     private CustomBar bar(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.CUSTOM_BAR.get(), new CustomBar(0, CAPACITY, true));
+        return StackComponents.getOrDefault(stack, PGCDataComponents.CUSTOM_BAR, new CustomBar(0, CAPACITY, true));
     }
 
     private void claim(ServerPlayer player, ItemStack stack) {
@@ -91,6 +92,6 @@ public class BlessingOfTheWelkinMoonItem extends DescribedItem {
             stack.shrink(1);
             return;
         }
-        stack.set(PGCDataComponents.CUSTOM_BAR.get(), bar(stack).advancedBy(CLAIM_COST));
+        StackComponents.set(stack, PGCDataComponents.CUSTOM_BAR, bar(stack).advancedBy(CLAIM_COST));
     }
 }

@@ -21,12 +21,12 @@ public final class AmbrosialArborAttachment {
         if (stack.getDamageValue() < breakThreshold) return false;
         var enchantment = PGCEnchantments.holder(world, PGCEnchantments.AMBROSIAL_ARBOR_ATTACHMENT);
         if (enchantment.isEmpty()) return false;
-        var level = stack.getEnchantmentLevel(enchantment.get());
+        var level = net.per.primogemcraft.compat.item.Enchantments120.level(stack, enchantment.get());
         if (level <= 0) return false;
         var minimumRestored = Math.min(maximumDamage, elytra ? 2 : 1);
         var restored = Math.max(minimumRestored, (int) ((long) maximumDamage * Math.min(level, 5) / 5));
         stack.setDamageValue(maximumDamage - restored);
-        EnchantmentHelper.updateEnchantments(stack, mutable -> mutable.set(enchantment.get(), level - 1));
+        net.per.primogemcraft.compat.item.Enchantments120.update(stack, mutable -> mutable.set(enchantment.get(), level - 1));
         if (entity != null) {
             world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
         }

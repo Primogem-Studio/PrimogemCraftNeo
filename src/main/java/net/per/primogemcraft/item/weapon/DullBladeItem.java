@@ -31,13 +31,13 @@ public class DullBladeItem extends WishWeaponItem {
     private static final String SPEED_TEXT = "speed";
 
     public DullBladeItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant());
     }
 
     @Override
     public List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
         if (isHeld(player, slot, stack) || PGCTimer.isDone(player, TIMER)) return List.of();
-        return List.of(WeaponModifier.conditional(Attributes.ATTACK_SPEED, AttributeModifier.Operation.ADD_VALUE,
+        return List.of(WeaponModifier.conditional(Attributes.ATTACK_SPEED, AttributeModifier.Operation.ADDITION,
                 (owner, worn, value) -> 1.0D));
     }
 

@@ -20,11 +20,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.client.settings.IKeyConflictContext;
-import net.neoforged.neoforge.client.settings.KeyConflictContext;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.settings.IKeyConflictContext;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.per.primogemcraft.compat.network.PayloadRegistrar;
 import net.per.primogemcraft.client.ChoiceParticles;
 import net.per.primogemcraft.client.ChoicePreviewRenderer;
 import net.per.primogemcraft.network.ChoiceSelectPayload;
@@ -252,7 +252,7 @@ public class ChoiceScreen extends Screen {
     }
 
     private float frameSeconds() {
-        return Mth.clamp(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.0F, FRAME_SECONDS_CAP / SECONDS_PER_TICK) * SECONDS_PER_TICK;
+        return Mth.clamp(Minecraft.getInstance().getDeltaFrameTime(), 0.0F, FRAME_SECONDS_CAP / SECONDS_PER_TICK) * SECONDS_PER_TICK;
     }
 
     private float spinSeconds() {
@@ -264,7 +264,7 @@ public class ChoiceScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderBackground(GuiGraphics graphics) {
     }
 
     @Override
@@ -320,7 +320,7 @@ public class ChoiceScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollY) {
         if (!canHover() || scrollY == 0.0D) return true;
         if (!scrollCardText(scrollY, mouseX, mouseY)) scrollRow(scrollY);
         return true;
@@ -397,7 +397,7 @@ public class ChoiceScreen extends Screen {
         for (var index = 0; index < request.size(); index++) if (isAvailable(index)) pool.add(index);
         if (pool.isEmpty()) return fallbackIndex();
         var player = minecraft.player;
-        return player == null ? pool.getFirst() : pool.get(player.getRandom().nextInt(pool.size()));
+        return player == null ? pool.get(0) : pool.get(player.getRandom().nextInt(pool.size()));
     }
 
     private int timeoutIndex() {
@@ -459,7 +459,7 @@ public class ChoiceScreen extends Screen {
     private void forceAnswer(int index) {
         if (answered) return;
         answered = true;
-        PacketDistributor.sendToServer(new ChoiceSelectPayload(request.id(), index));
+        PayloadRegistrar.sendToServer(new ChoiceSelectPayload(request.id(), index));
         if (isConfirming()) awaitingResult = RESULT_TIMEOUT_TICKS;
         else super.onClose();
     }
@@ -594,7 +594,7 @@ public class ChoiceScreen extends Screen {
         var track = Math.round(width * ROW_FILL);
         var left = (width - track) / 2;
         graphics.fill(left, rowBarY, left + track, rowBarY + ROW_SCROLL_BAR_HEIGHT, SCROLL_TRACK_COLOR);
-        var thumbWidth = Math.clamp(Math.round(track * (track / rowWidth)), ROW_SCROLL_THUMB_MIN_WIDTH, track);
+        var thumbWidth = net.minecraft.util.Mth.clamp(Math.round(track * (track / rowWidth)), ROW_SCROLL_THUMB_MIN_WIDTH, track);
         var travel = track - thumbWidth;
         var thumbLeft = left + Math.round(travel * Mth.clamp(rowScroll / rowScrollMax, 0.0F, 1.0F));
         graphics.fill(thumbLeft, rowBarY, thumbLeft + thumbWidth, rowBarY + ROW_SCROLL_BAR_HEIGHT, SCROLL_THUMB_COLOR);
@@ -893,7 +893,7 @@ public class ChoiceScreen extends Screen {
     private TooltipBox itemTooltipBox(ChoiceCard card, int mouseX) {
         if (!card.itemTooltip() || card.item().isEmpty()) return null;
         var stack = card.item();
-        var elements = ClientHooks.gatherTooltipComponents(stack, getTooltipFromItem(minecraft, stack), stack.getTooltipImage(), mouseX, width, height, font);
+        var elements = ForgeHooksClient.gatherTooltipComponents(stack, getTooltipFromItem(minecraft, stack), stack.getTooltipImage(), mouseX, width, height, font);
         if (elements.isEmpty()) return null;
 
         var boxWidth = 0;
@@ -1078,7 +1078,7 @@ public class ChoiceScreen extends Screen {
         var content = new ArrayList<Component>();
         var minecraft = Minecraft.getInstance();
         if (stack.isEmpty() || minecraft.player == null) return content;
-        var lines = stack.getTooltipLines(Item.TooltipContext.EMPTY, minecraft.player, TooltipFlag.NORMAL);
+        var lines = stack.getTooltipLines(minecraft.player, TooltipFlag.NORMAL);
         for (var index = 1; index < lines.size(); index++) {
             var line = lines.get(index);
             if (isModSignature(line)) continue;

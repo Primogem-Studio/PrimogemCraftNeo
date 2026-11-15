@@ -383,21 +383,21 @@ public class ZiplineCarrierEntity extends Entity {
     }
 
     @Override
-    public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
+    public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps, boolean syncPos) {
         interpolationTarget = new Vec3(x, y, z);
         interpolationSteps = Math.max(1, steps);
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(SOURCE_ANCHOR, -1);
-        builder.define(TARGET_ANCHOR, -1);
-        builder.define(SOURCE, BlockPos.ZERO);
-        builder.define(TARGET, BlockPos.ZERO);
-        builder.define(MOVING, false);
-        builder.define(COMBAT, false);
-        builder.define(SOURCE_OFFSET, new Vector3f());
-        builder.define(HEADING, 0.0F);
+    protected void defineSynchedData() {
+        this.entityData.define(SOURCE_ANCHOR, -1);
+        this.entityData.define(TARGET_ANCHOR, -1);
+        this.entityData.define(SOURCE, BlockPos.ZERO);
+        this.entityData.define(TARGET, BlockPos.ZERO);
+        this.entityData.define(MOVING, false);
+        this.entityData.define(COMBAT, false);
+        this.entityData.define(SOURCE_OFFSET, new Vector3f());
+        this.entityData.define(HEADING, 0.0F);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.misc;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -27,12 +28,12 @@ public class StackOfCosmicBigLottoItem extends DescribedItem {
 
     public static ItemStack rolled(RandomSource random) {
         var stack = new ItemStack(PGCItems.STACK_OF_COSMIC_BIG_LOTTO.get());
-        stack.set(PGCDataComponents.LOTTO_COUNT.get(), Mth.nextInt(random, MIN_LOTTOS, MAX_LOTTOS));
+        StackComponents.set(stack, PGCDataComponents.LOTTO_COUNT, Mth.nextInt(random, MIN_LOTTOS, MAX_LOTTOS));
         return stack;
     }
 
     public static int lottos(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.LOTTO_COUNT.get(), MAX_LOTTOS);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.LOTTO_COUNT, MAX_LOTTOS);
     }
 
     @Override
@@ -42,7 +43,7 @@ public class StackOfCosmicBigLottoItem extends DescribedItem {
         PlayerItems.give(server, new ItemStack(PGCItems.COSMIC_BIG_LOTTO.get()));
         var remaining = lottos(stack) - 1;
         if (remaining < MIN_LOTTOS) stack.shrink(1);
-        else stack.set(PGCDataComponents.LOTTO_COUNT.get(), remaining);
+        else StackComponents.set(stack, PGCDataComponents.LOTTO_COUNT, remaining);
         player.swing(hand, true);
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.VILLAGER_WORK_LIBRARIAN, SoundSource.PLAYERS, VOLUME, 1.0F);
         return InteractionResultHolder.success(stack);

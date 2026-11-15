@@ -1,5 +1,6 @@
 package net.per.primogemcraft.system.element.effect;
 
+import net.per.primogemcraft.compat.attachment.Attachments;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -7,16 +8,16 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.per.primogemcraft.registry.PGCAttachments;
 import net.per.primogemcraft.util.TemporalRecord;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
-public class ThePastEffect extends MobEffect {
+@Mod.EventBusSubscriber(modid = MOD_ID)
+public class ThePastEffect extends MobEffect implements net.per.primogemcraft.compat.event.EffectCallbacks.Started {
     private static final float PLAYER_VOLUME = 0.5F;
     private static final float MOB_VOLUME = 0.1F;
     private static final float START_PITCH = 0.2F;
@@ -28,9 +29,8 @@ public class ThePastEffect extends MobEffect {
         super(MobEffectCategory.BENEFICIAL, -479233);
     }
 
-    @Override
     public void onEffectStarted(LivingEntity entity, int amplifier) {
-        entity.setData(PGCAttachments.TEMPORAL_RECORD.get(), new TemporalRecord(entity.getX(), entity.getY(), entity.getZ(), entity.getHealth()));
+        Attachments.set(entity, PGCAttachments.TEMPORAL_RECORD.get(), new TemporalRecord(entity.getX(), entity.getY(), entity.getZ(), entity.getHealth()));
         var level = entity.level();
         level.playSound(null, entity.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE,
                 entity instanceof Player ? SoundSource.PLAYERS : SoundSource.NEUTRAL,
@@ -39,8 +39,8 @@ public class ThePastEffect extends MobEffect {
 
     @SubscribeEvent
     public static void onEffectExpired(MobEffectEvent.Expired event) {
-        if (!(event.getEffectInstance().getEffect().value() instanceof ThePastEffect)) return;
-        if (!(event.getEntity() instanceof LivingEntity entity)) return;
+        if (!(event.getEffectInstance().getEffect() instanceof ThePastEffect)) return;
+        var entity = event.getEntity();
         rewind(entity);
     }
 
@@ -48,7 +48,7 @@ public class ThePastEffect extends MobEffect {
      * Returns the entity to the position and health recorded when the effect started.
      */
     public static void rewind(LivingEntity entity) {
-        var record = entity.getData(PGCAttachments.TEMPORAL_RECORD.get());
+        var record = Attachments.get(entity, PGCAttachments.TEMPORAL_RECORD.get());
         if (record.health() > 0.0F) {
             entity.teleportTo(record.x(), record.y(), record.z());
             entity.setHealth(record.health());

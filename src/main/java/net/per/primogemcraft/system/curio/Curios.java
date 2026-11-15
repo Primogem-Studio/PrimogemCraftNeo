@@ -1,5 +1,6 @@
 package net.per.primogemcraft.system.curio;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -132,24 +133,24 @@ public final class Curios {
     }
 
     public static void repair(ItemStack stack, int amount) {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         if (bar == null || amount <= 0) return;
-        stack.set(PGCDataComponents.CUSTOM_BAR.get(), bar.reducedBy(amount));
+        StackComponents.set(stack, PGCDataComponents.CUSTOM_BAR, bar.reducedBy(amount));
     }
 
     public static boolean repair(ServerPlayer player, ItemStack stack, int amount) {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         if (bar == null || amount <= 0) return false;
         var before = bar.numerator();
         repair(stack, amount);
-        var after = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var after = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         if (after == null || after.numerator() >= before) return false;
         repaired(player, stack);
         return true;
     }
 
     public static boolean repair(ServerPlayer player, ItemStack stack, float ratio) {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         if (bar == null) return false;
         return repair(player, stack, (int) (bar.denominator() * ratio));
     }
@@ -201,21 +202,21 @@ public final class Curios {
 
     public static boolean hasCurios(TagKey<Item> tag) {
         var tagged = BuiltInRegistries.ITEM.getTag(tag);
-        return tagged.isPresent() && tagged.get().stream().anyMatch(holder -> holder.value() != PGCItems.INTEGRATED_CODE.get());
+        return tagged.isPresent() && tagged.get().stream().anyMatch(holder -> holder != PGCItems.INTEGRATED_CODE.get());
     }
 
     public static boolean marked(ItemStack stack, ResourceLocation mark) {
-        var marks = stack.get(PGCDataComponents.CURIO_MARKS.get());
+        var marks = StackComponents.get(stack, PGCDataComponents.CURIO_MARKS);
         return marks != null && marks.contains(mark);
     }
 
     public static void mark(ItemStack stack, ResourceLocation mark) {
         if (marked(stack, mark)) return;
         var marks = new ArrayList<ResourceLocation>();
-        var existing = stack.get(PGCDataComponents.CURIO_MARKS.get());
+        var existing = StackComponents.get(stack, PGCDataComponents.CURIO_MARKS);
         if (existing != null) marks.addAll(existing);
         marks.add(mark);
-        stack.set(PGCDataComponents.CURIO_MARKS.get(), List.copyOf(marks));
+        StackComponents.set(stack, PGCDataComponents.CURIO_MARKS, List.copyOf(marks));
     }
 
     public static void give(ServerPlayer player, ItemStack stack) {
@@ -300,7 +301,7 @@ public final class Curios {
     }
 
     private static boolean repairable(ItemStack stack, float ratio) {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         if (bar == null) return false;
         var limit = bar.denominator() - 1;
         if (limit <= 0) return false;
@@ -308,7 +309,7 @@ public final class Curios {
     }
 
     private static boolean partiallyUsed(ItemStack stack) {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         return bar != null && bar.numerator() > 0;
     }
 

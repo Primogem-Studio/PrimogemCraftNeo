@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.NeoForgeMod;
+import net.per.primogemcraft.compat.attribute.FlightCompat;
 import net.per.primogemcraft.component.WeaponCharge;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.*;
@@ -48,7 +48,7 @@ public class SkyriderSwordItem extends WishWeaponItem {
     private static final String FLIGHT_TEXT = "flight";
 
     public SkyriderSwordItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant());
     }
 
     @Override
@@ -74,9 +74,9 @@ public class SkyriderSwordItem extends WishWeaponItem {
     public List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
         if (isHeld(player, slot, stack) || WeaponCharge.of(stack) <= 0) return List.of();
         return List.of(
-                WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_MULTIPLIED_BASE,
+                WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.MULTIPLY_BASE,
                         (owner, worn, value) -> powerRatio(value)),
-                WeaponModifier.conditional(Attributes.MOVEMENT_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_BASE,
+                WeaponModifier.conditional(Attributes.MOVEMENT_SPEED, AttributeModifier.Operation.MULTIPLY_BASE,
                         (owner, worn, value) -> powerRatio(value) * MOVE_MULTIPLIER));
     }
 
@@ -86,8 +86,7 @@ public class SkyriderSwordItem extends WishWeaponItem {
         if (level.isClientSide() || player.getCooldowns().isOnCooldown(stack.getItem())) return super.use(level, player, hand);
         var refinement = WeaponState.of(stack).refinements();
         if (player.isShiftKeyDown()) {
-            TemporaryAttributes.apply(player, FLIGHT_ID, NeoForgeMod.CREATIVE_FLIGHT, FLIGHT_LEVEL,
-                    AttributeModifier.Operation.ADD_VALUE, flightTicks(refinement));
+            FlightCompat.grant(player, FLIGHT_ID, flightTicks(refinement));
             player.getCooldowns().addCooldown(stack.getItem(), FLIGHT_COOLDOWN);
             level.playSound(null, player.blockPosition(), SoundEvents.BAT_TAKEOFF, SoundSource.PLAYERS, 1.0F, 1.0F);
             return super.use(level, player, hand);

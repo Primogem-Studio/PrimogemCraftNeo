@@ -17,12 +17,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.per.primogemcraft.block.entity.ContainerWindowBlockEntity;
 
 import java.util.function.Function;
+import net.minecraft.world.InteractionHand;
 
 public class FaceAttachedContainerBlock extends PGCFaceAttachedBlock implements EntityBlock, ContainerWindowBlock {
     private static final int CODEC_CONTAINER_SIZE = 45;
-
-    public static final MapCodec<FaceAttachedContainerBlock> CODEC =
-            simpleCodec(properties -> new FaceAttachedContainerBlock(properties, state -> Shapes.block(), CODEC_CONTAINER_SIZE));
 
     private final int containerSize;
 
@@ -37,29 +35,24 @@ public class FaceAttachedContainerBlock extends PGCFaceAttachedBlock implements 
     }
 
     @Override
-    protected MapCodec<? extends Block> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ContainerWindowBlocks.open(level, pos, player);
         return InteractionResult.SUCCESS;
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock())) ContainerWindowBlocks.dropContents(level, pos);
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
     @Override
-    protected boolean hasAnalogOutputSignal(BlockState state) {
+    public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos));
     }
 

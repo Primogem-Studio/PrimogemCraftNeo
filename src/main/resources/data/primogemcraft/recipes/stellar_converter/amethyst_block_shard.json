@@ -1,0 +1,12 @@
+{
+  "type": "primogemcraft:stellar_converter",
+  "first": {
+    "item": "minecraft:amethyst_block",
+    "count": 1
+  },
+  "second": {
+    "item": "minecraft:amethyst_shard",
+    "count": 4
+  },
+  "cost": 1
+}

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:dendro_core_block"
+  },
+  "result": "primogemcraft:dendro_core",
+  "count": 9
+}

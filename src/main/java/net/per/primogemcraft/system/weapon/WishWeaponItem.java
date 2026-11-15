@@ -10,12 +10,20 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.per.primogemcraft.compat.item.WeaponAttributes120;
 
 public abstract class WishWeaponItem extends SwordItem implements WishWeapon {
+    protected final float baseAttackDamage;
+    protected final float baseAttackSpeed;
+
     private final List<WeaponModifier> passives;
 
-    protected WishWeaponItem(Tier tier, Properties properties, WeaponModifier... passives) {
-        super(tier, properties);
+    protected WishWeaponItem(Tier tier, float attackDamage, float attackSpeed, Properties properties, WeaponModifier... passives) {
+        super(tier, 0, attackSpeed, properties);
+        this.baseAttackDamage = attackDamage;
+        this.baseAttackSpeed = attackSpeed;
         this.passives = List.of(passives);
     }
 
@@ -36,7 +44,7 @@ public abstract class WishWeaponItem extends SwordItem implements WishWeapon {
     protected abstract List<WeaponDescription> description(ItemStack stack);
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable(WeaponType.of(stack).labelKey()));
         tooltip.addAll(WishWeaponTooltips.lines(stack.getDescriptionId(), descriptions(stack)));
     }
@@ -45,5 +53,18 @@ public abstract class WishWeaponItem extends SwordItem implements WishWeapon {
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
         if (level.isClientSide() || !(entity instanceof Player player)) return;
         WeaponAttributes.refreshPassive(stack, player, slot);
+    }
+
+    @Override
+    public com.google.common.collect.Multimap<net.minecraft.world.entity.ai.attributes.Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlot slot) {
+        var modifiers = com.google.common.collect.ImmutableMultimap.<net.minecraft.world.entity.ai.attributes.Attribute, AttributeModifier>builder();
+        modifiers.putAll(super.getDefaultAttributeModifiers(slot));
+        if (slot == EquipmentSlot.MAINHAND) {
+            var mutable = com.google.common.collect.ArrayListMultimap.<net.minecraft.world.entity.ai.attributes.Attribute, AttributeModifier>create();
+            mutable.putAll(modifiers.build());
+            WeaponAttributes120.putWeaponModifiers(mutable, baseAttackDamage, baseAttackSpeed);
+            return com.google.common.collect.ImmutableMultimap.copyOf(mutable);
+        }
+        return modifiers.build();
     }
 }

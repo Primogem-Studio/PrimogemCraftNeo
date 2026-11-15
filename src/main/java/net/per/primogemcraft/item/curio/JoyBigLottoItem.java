@@ -1,19 +1,16 @@
 package net.per.primogemcraft.item.curio;
-
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.core.component.DataComponents;
+import net.per.primogemcraft.compat.component.VanillaComponents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.FireworkExplosion;
-import net.minecraft.world.item.component.Fireworks;
+import net.per.primogemcraft.compat.component.FireworkExplosion;
 import net.per.primogemcraft.item.misc.StackOfCosmicBigLottoItem;
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.system.curio.CurioContext;
 import net.per.primogemcraft.system.curio.CurioForm;
 import net.per.primogemcraft.system.curio.LotteryCurioItem;
-
 import java.util.List;
 
 public class JoyBigLottoItem extends LotteryCurioItem {
@@ -46,7 +43,7 @@ public class JoyBigLottoItem extends LotteryCurioItem {
 
     private static ItemStack rocket(Shell shell) {
         var stack = new ItemStack(Items.FIREWORK_ROCKET);
-        stack.set(DataComponents.FIREWORKS, new Fireworks(shell.flight(), shell.explosions()));
+        VanillaComponents.setFireworks(stack, shell.explosions(), shell.flight());
         return stack;
     }
 

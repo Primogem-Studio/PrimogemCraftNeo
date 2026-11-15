@@ -61,7 +61,7 @@ public class PrithivaTopazShovelItem extends WishWeaponShovelItem {
         var pos = context.getClickedPos();
         server.explode(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
                 Mth.nextInt(server.getRandom(), EXPLOSION_MIN_POWER, (int) (power * 2.0D)), Level.ExplosionInteraction.TNT);
-        stack.hurtAndBreak(Mth.nextInt(server.getRandom(), MIN_DAMAGE, MAX_DAMAGE), server, player, item -> {
+        stack.hurtAndBreak(Mth.nextInt(server.getRandom(), MIN_DAMAGE, MAX_DAMAGE), player, item -> {
         });
         player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.GEO, COOLDOWN_TICKS, false));
         return InteractionResult.SUCCESS;

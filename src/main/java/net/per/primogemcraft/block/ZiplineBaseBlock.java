@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.per.primogemcraft.entity.misc.ZiplineAnchorEntity;
+import net.minecraft.world.InteractionHand;
 
 public class ZiplineBaseBlock extends Block implements EntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -54,7 +55,7 @@ public class ZiplineBaseBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
+    public BlockState rotate(BlockState state, Rotation rotation) {
         var part = state.getValue(PART);
         var offset = new BlockPos(part % 3 - 1, 0, part / 3 - 1).rotate(rotation);
         return state.setValue(PART, (offset.getZ() + 1) * 3 + offset.getX() + 1)
@@ -62,7 +63,7 @@ public class ZiplineBaseBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
+    public BlockState mirror(BlockState state, Mirror mirror) {
         var part = state.getValue(PART);
         var x = part % 3 - 1;
         var z = part / 3 - 1;
@@ -72,12 +73,12 @@ public class ZiplineBaseBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.INVISIBLE;
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos position, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos position, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide()) {
             var anchor = ZiplineAnchorEntity.find(level, center(state, position));
             if (anchor != null) anchor.attach(player);
@@ -86,7 +87,7 @@ public class ZiplineBaseBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos position, BlockState replacement, boolean moving) {
+    public void onRemove(BlockState state, Level level, BlockPos position, BlockState replacement, boolean moving) {
         super.onRemove(state, level, position, replacement, moving);
         if (level.isClientSide() || level.captureBlockSnapshots || state.is(replacement.getBlock())) return;
         var center = center(state, position);

@@ -1,10 +1,11 @@
 package net.per.primogemcraft.component;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
+import net.per.primogemcraft.compat.network.ByteBufCodecs;
+import net.per.primogemcraft.compat.network.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -35,15 +36,15 @@ public record PastDelay(int seconds, boolean descending) {
     private static final float SOUND_PITCH = 1.0F;
 
     public static int secondsOf(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.PAST_DELAY.get(), DEFAULT).seconds();
+        return StackComponents.getOrDefault(stack, PGCDataComponents.PAST_DELAY, DEFAULT).seconds();
     }
 
     public static void adjust(LivingEntity entity, ItemStack stack) {
-        var current = stack.getOrDefault(PGCDataComponents.PAST_DELAY.get(), DEFAULT);
+        var current = StackComponents.getOrDefault(stack, PGCDataComponents.PAST_DELAY, DEFAULT);
         var descending = current.descending();
         var seconds = descending ? current.seconds() - STEP_SECONDS : current.seconds() + STEP_SECONDS;
         var nextDescending = seconds >= MAX_SECONDS || (seconds > MIN_SECONDS && descending);
-        stack.set(PGCDataComponents.PAST_DELAY.get(), new PastDelay(seconds, nextDescending));
+        StackComponents.set(stack, PGCDataComponents.PAST_DELAY, new PastDelay(seconds, nextDescending));
         var level = entity.level();
         level.playSound(null, entity.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, SOUND_VOLUME, SOUND_PITCH);
         if (entity instanceof ServerPlayer player)

@@ -60,7 +60,7 @@ public class VayudaTurquoiseAxeItem extends WishWeaponAxeItem {
         player.addEffect(new MobEffectInstance(effect, EFFECT_DURATION,
                 ElementWeapons.ticks(player, stack, Element.ANEMO, SPEED_AMPLIFIER, true), false, false));
         var damage = ElementWeapons.ticks(player, stack, Element.ANEMO, DURABILITY_LOSS, false);
-        if (damage > 0) stack.hurtAndBreak(damage, server, player, item -> {
+        if (damage > 0) stack.hurtAndBreak(damage, player, item -> {
         });
     }
 }

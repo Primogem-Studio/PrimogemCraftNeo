@@ -80,7 +80,7 @@ public class VajradaAmethystPickaxeItem extends WishWeaponToolItem {
             bolt.setVisualOnly(true);
             server.addFreshEntity(bolt);
         }
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        stack.hurtAndBreak(DURABILITY_LOSS, player, item -> {
         });
         if (server.getRandom().nextDouble() < TRANSFORM_CHANCE) {
             server.playSound(null, pos, SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, SOUND_VOLUME, SOUND_PITCH);

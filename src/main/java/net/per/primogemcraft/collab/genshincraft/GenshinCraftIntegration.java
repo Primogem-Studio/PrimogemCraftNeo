@@ -1,10 +1,10 @@
 package net.per.primogemcraft.collab.genshincraft;
 
-import net.hackermdch.genshincraft.misc.Helper;
+import net.hacker.genshincraft.misc.Helper;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.per.primogemcraft.config.PGCConfig;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamageOptions;
@@ -29,21 +29,16 @@ public final class GenshinCraftIntegration {
     }
 
     public static void register(IEventBus modBus) {
-        if (!loaded) return;
-        GenshinCraftBridge.registerSpellComponents(modBus);
-        modBus.register(GenshinCraftBridge.class);
+        // GenshinCraft 1.4.2 缺少 3.1.3 的效果渲染/战利品/能力 API，
+        // 桥接已不含事件订阅，无需注册到模组事件总线。
     }
 
     public static DamageSource replace(DamageSource origin, Element element, ElementStyle style, ElementDamageOptions options) {
         return loaded ? GenshinCraftBridge.element(origin, element, style, options) : origin;
     }
 
-    public static boolean managesElementDamage() {
-        return loaded;
-    }
-
     public static DamageSource damageOf(ItemStack stack, DamageSource origin) {
-        return loaded ? Helper.getSpecialDamage(stack, origin) : origin;
+        return loaded ? Helper.getElementDamage(stack, origin) : origin;
     }
 
     public static Element elementOf(DamageSource source) {

@@ -49,7 +49,7 @@ public class TheFluteItem extends WishWeaponItem {
     private static final String HEAL_TEXT = "heal";
 
     public TheFluteItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant());
     }
 
     @Override

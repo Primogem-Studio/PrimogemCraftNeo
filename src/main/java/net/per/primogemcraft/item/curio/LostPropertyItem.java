@@ -1,5 +1,7 @@
 package net.per.primogemcraft.item.curio;
 
+import net.minecraft.world.level.Level;
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -51,7 +53,7 @@ public abstract class LostPropertyItem extends CurioItem {
         if (position(stack) != null) return;
         var progress = progress(stack) + 1;
         if (progress < STEPS) {
-            stack.set(PGCDataComponents.CURIO_COUNTER.get(), progress);
+            StackComponents.set(stack, PGCDataComponents.CURIO_COUNTER, progress);
             return;
         }
         generate(context);
@@ -82,7 +84,7 @@ public abstract class LostPropertyItem extends CurioItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         appendTrigger(stack, tooltip);
         var prefix = stack.getDescriptionId() + TOOLTIP_SUFFIX;
         for (var index = 0; index < descriptionLines; index++) tooltip.add(Component.translatable(prefix + index));
@@ -99,11 +101,11 @@ public abstract class LostPropertyItem extends CurioItem {
     protected abstract void grant(CurioContext context);
 
     private static BlockPos position(ItemStack stack) {
-        return stack.get(PGCDataComponents.ENCOUNTER_POSITION.get());
+        return StackComponents.get(stack, PGCDataComponents.ENCOUNTER_POSITION);
     }
 
     private static int progress(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.CURIO_COUNTER.get(), 0);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.CURIO_COUNTER, 0);
     }
 
     private static void generate(CurioContext context) {
@@ -117,7 +119,7 @@ public abstract class LostPropertyItem extends CurioItem {
         var position = new BlockPos(x, y, z);
         while (position.getY() < limit && !level.getBlockState(position).isAir()) position = position.above();
         level.setBlockAndUpdate(position, PGCBlocks.WONDROUS_ENCOUNTER_BLOCK.get().defaultBlockState());
-        context.stack().set(PGCDataComponents.ENCOUNTER_POSITION.get(), position);
+        StackComponents.set(context.stack(), PGCDataComponents.ENCOUNTER_POSITION, position);
         context.announce(Component.translatable(GENERATED_KEY));
     }
 }

@@ -1,5 +1,7 @@
 package net.per.primogemcraft.item.curio;
 
+import net.minecraft.world.level.Level;
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -40,20 +42,20 @@ public class CavitySystemModelItem extends CurioItem {
             var cost = duration / SECONDS_PER_MINUTE;
             if (fragments < cost) return;
             PlayerItems.take(player, fragment, cost);
-            stack.set(PGCDataComponents.CURIO_COUNTER.get(), duration + 1);
+            StackComponents.set(stack, PGCDataComponents.CURIO_COUNTER, duration + 1);
             return;
         }
         PlayerItems.take(player, fragment, fragments);
         var level = fragments / FRAGMENTS_PER_LEVEL;
         if (level > 0) player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, duration * TICKS_PER_SECOND, level - 1, false, false));
         var spent = duration - (int) Math.ceil(fragments / (double) FRAGMENTS_PER_LEVEL) * LEVEL_COST;
-        stack.set(PGCDataComponents.CURIO_COUNTER.get(), Math.max(0, spent));
+        StackComponents.set(stack, PGCDataComponents.CURIO_COUNTER, Math.max(0, spent));
         context.announce(Component.translatable(CONSUMED_KEY));
         if (spent < 1) context.damage(1);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         appendTrigger(stack, tooltip);
         var prefix = stack.getDescriptionId() + ".tooltip.";
         for (var index = 0; index < TOOLTIP_LINES; index++) tooltip.add(Component.translatable(prefix + index));
@@ -61,6 +63,6 @@ public class CavitySystemModelItem extends CurioItem {
     }
 
     private static int duration(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.CURIO_COUNTER.get(), INITIAL_DURATION);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.CURIO_COUNTER, INITIAL_DURATION);
     }
 }

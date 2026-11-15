@@ -7,7 +7,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.entity.EntityTypeTest;
-import net.minecraft.world.phys.Vec3;
 import net.per.primogemcraft.entity.mob.LivingItemEntity;
 import net.per.primogemcraft.entity.misc.LivingItemDrop;
 import net.per.primogemcraft.registry.PGCEntities;
@@ -142,7 +141,7 @@ public final class LivingItemAPI {
     public static int recallDrops(Player player) {
         if (player == null || player.level().isClientSide) return 0;
         var serverLevel = (ServerLevel) player.level();
-        var test = EntityTypeTest.<Entity, LivingItemDrop>forClass(LivingItemDrop.class);
+        EntityTypeTest<Entity, LivingItemDrop> test = EntityTypeTest.forClass(LivingItemDrop.class);
         var count = 0;
         for (var drop : serverLevel.getEntities(test, entity -> player.getUUID().equals(entity.getOwnerUuid()))) {
             if (drop.isRemoved() || !drop.isAlive()) continue;
@@ -175,41 +174,20 @@ public final class LivingItemAPI {
     public static List<LivingItemEntity> collectAll(Player owner) {
         if (owner == null || owner.level().isClientSide) return List.of();
         var serverLevel = (ServerLevel) owner.level();
-        var test = EntityTypeTest.<Entity, LivingItemEntity>forClass(LivingItemEntity.class);
+        EntityTypeTest<Entity, LivingItemEntity> test = EntityTypeTest.forClass(LivingItemEntity.class);
         var items = new ArrayList<LivingItemEntity>();
-        serverLevel.getEntities(test, entity -> entity.isAlive() && !entity.isRemoved()
-                && owner.getUUID().equals(entity.getOwnerUuid()), items);
+        serverLevel.getEntities(test, entity -> owner.getUUID().equals(entity.getOwnerUuid()), items);
         return items;
     }
 
     private static LivingItemEntity summon(Level level, Player player, ItemStack stack, int ticks, boolean takeOffhand) {
-        return summon(level, player, stack, ticks, takeOffhand, player == null ? Vec3.ZERO : player.position().add(0, 1.5, 0), false);
-    }
-
-    /** Consumes one offhand item only after successfully creating its living entity at a free, loaded position. */
-    public static LivingItemEntity summonOneAt(Player player, int ticks, Vec3 position) {
-        if (player == null || player.level().isClientSide || player.getOffhandItem().isEmpty()) return null;
-        var source = player.getOffhandItem();
-        var entity = summon(player.level(), player, source.copyWithCount(1), ticks, false, position, true);
-        if (entity != null) source.shrink(1);
-        return entity;
-    }
-
-    private static LivingItemEntity summon(Level level, Player player, ItemStack stack, int ticks, boolean takeOffhand, Vec3 position, boolean checkPosition) {
         if (level == null || level.isClientSide || player == null || stack == null || stack.isEmpty()) return null;
         if (!(level instanceof ServerLevel serverLevel)) return null;
         var entity = PGCEntities.LIVING_ITEM.get().create(serverLevel);
         if (entity == null) return null;
-        entity.moveTo(position.x, position.y, position.z, player.getYRot(), 0);
-        if (checkPosition && (!level.hasChunkAt(entity.blockPosition())
-                || level.isOutsideBuildHeight(entity.blockPosition())
-                || !level.getWorldBorder().isWithinBounds(entity.getBoundingBox())
-                || !level.noCollision(entity, entity.getBoundingBox()))) return null;
+        entity.moveTo(player.getX(), player.getY() + 1.5, player.getZ(), player.getYRot(), 0);
         entity.startLiving(player, stack, ticks);
-        if (!serverLevel.addFreshEntity(entity)) {
-            serverLevel.getScoreboard().removePlayerFromTeam(entity.getStringUUID());
-            return null;
-        }
+        serverLevel.addFreshEntity(entity);
         if (takeOffhand && !player.getOffhandItem().isEmpty()) player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
         return entity;
     }

@@ -7,12 +7,20 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.per.primogemcraft.compat.item.WeaponAttributes120;
 
 public abstract class WishWeaponAxeItem extends AxeItem implements WishWeapon {
+    protected final float baseAttackDamage;
+    protected final float baseAttackSpeed;
+
     private final List<WeaponModifier> passives;
 
     protected WishWeaponAxeItem(Tier tier, Properties properties, float attackDamage, float attackSpeed, WeaponModifier... passives) {
-        super(tier, properties.attributes(SwordItem.createAttributes(tier, attackDamage, attackSpeed)));
+        super(tier, attackDamage, attackSpeed, properties);
+        this.baseAttackDamage = attackDamage;
+        this.baseAttackSpeed = attackSpeed;
         this.passives = List.of(passives);
     }
 
@@ -29,7 +37,7 @@ public abstract class WishWeaponAxeItem extends AxeItem implements WishWeapon {
     protected abstract List<WeaponDescription> description(ItemStack stack);
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable(WeaponType.of(stack).labelKey()));
         tooltip.addAll(WishWeaponTooltips.lines(stack.getDescriptionId(), descriptions(stack)));
     }

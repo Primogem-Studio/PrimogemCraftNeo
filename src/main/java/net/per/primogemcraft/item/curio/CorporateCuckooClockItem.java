@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.curio;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -36,7 +37,7 @@ public class CorporateCuckooClockItem extends CurioItem {
     }
 
     private static void arm(ServerPlayer player, ItemStack stack) {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         if (bar == null || bar.numerator() > 0) return;
         if (player.experienceLevel < 1) return;
         var ratio = Mth.nextDouble(player.getRandom(), MIN_LOSS, MAX_LOSS);

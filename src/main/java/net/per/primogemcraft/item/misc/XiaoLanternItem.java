@@ -23,10 +23,12 @@ public class XiaoLanternItem extends DescribedItem {
         if (player == null || !level.getBlockState(above).isAir()) return InteractionResult.PASS;
         if (level.isClientSide()) return InteractionResult.SUCCESS;
         player.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
-        context.getItemInHand().consume(1, player);
+        context.getItemInHand().shrink(1);
         player.swing(context.getHand(), true);
-        if (level instanceof ServerLevel server && PGCEntities.XIAO_LANTERN.get().spawn(server, above, MobSpawnType.MOB_SUMMONED) instanceof XiaoLanternEntity lantern)
-            lantern.setYRot(level.getRandom().nextFloat() * 360.0F);
+        if (level instanceof ServerLevel server) {
+            var lantern = PGCEntities.XIAO_LANTERN.get().spawn(server, above, MobSpawnType.MOB_SUMMONED);
+            if (lantern != null) lantern.setYRot(level.getRandom().nextFloat() * 360.0F);
+        }
         return InteractionResult.SUCCESS;
     }
 }

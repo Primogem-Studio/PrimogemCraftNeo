@@ -22,6 +22,6 @@ public class AttributeCurioItem extends CurioItem {
         }
     }
 
-    public record Modifier(Holder<Attribute> attribute, double amount, AttributeModifier.Operation operation) {
+    public record Modifier(Attribute attribute, double amount, AttributeModifier.Operation operation) {
     }
 }

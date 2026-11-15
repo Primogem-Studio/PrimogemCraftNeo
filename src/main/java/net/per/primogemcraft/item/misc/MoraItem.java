@@ -36,7 +36,7 @@ public class MoraItem extends Item {
         }
         level.playSound(null, target, SoundEvents.CHAIN_PLACE, SoundSource.BLOCKS, PLACE_VOLUME,
                 Mth.nextFloat(level.getRandom(), PLACE_PITCH_MIN, PLACE_PITCH_MAX));
-        context.getItemInHand().consume(1, player);
+        context.getItemInHand().shrink(1);
         return InteractionResult.SUCCESS;
     }
 }

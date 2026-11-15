@@ -53,7 +53,7 @@ public class ShivadaJadeShovelItem extends WishWeaponShovelItem {
         server.setBlock(pos, Blocks.BLUE_ICE.defaultBlockState(), Block.UPDATE_ALL);
         server.playSound(null, pos, SoundEvents.TNT_PRIMED, SoundSource.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
         var stack = context.getItemInHand();
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        stack.hurtAndBreak(DURABILITY_LOSS, player, item -> {
         });
         player.getCooldowns().addCooldown(stack.getItem(), COOLDOWN);
         player.swing(context.getHand(), true);

@@ -3,22 +3,21 @@ package net.per.primogemcraft.registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.per.primogemcraft.compat.registries.DeferredHolder;
+import net.per.primogemcraft.compat.registries.DeferredRegister;
 import net.per.primogemcraft.entity.mob.AbundanceBlightZombieEntity;
 import net.per.primogemcraft.entity.mob.LivingItemEntity;
 import net.per.primogemcraft.entity.misc.DendroCoreEntity;
 import net.per.primogemcraft.entity.misc.FallingMoraPileEntity;
 import net.per.primogemcraft.entity.misc.HertaOtherworldBranchTowerEntity;
 import net.per.primogemcraft.entity.misc.RandomEventEntity;
-import net.per.primogemcraft.entity.misc.SkywardHarpVortexEntity;
 import net.per.primogemcraft.entity.misc.WishEntity;
-import net.per.primogemcraft.entity.misc.WishArrowEntity;
 import net.per.primogemcraft.entity.misc.XiaoLanternEntity;
 import net.per.primogemcraft.entity.misc.ZiplineAnchorEntity;
 import net.per.primogemcraft.entity.misc.ZiplineCarrierEntity;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
+import net.minecraft.core.registries.Registries;
 
 public class PGCEntities {
     public static final String WISH_ENTITY_NAME = "wish_entity";
@@ -30,15 +29,7 @@ public class PGCEntities {
     public static final String LIVING_ITEM_NAME = "living_item";
     public static final String FALLING_MORA_PILE_NAME = "falling_mora_pile";
 
-    public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, MOD_ID);
-
-    public static final DeferredHolder<EntityType<?>, EntityType<SkywardHarpVortexEntity>> SKYWARD_HARP_VORTEX =
-            REGISTRY.register("skyward_harp_vortex", () -> EntityType.Builder.<SkywardHarpVortexEntity>of(SkywardHarpVortexEntity::new, MobCategory.MISC)
-                    .sized(5.0F, 5.0F).fireImmune().noSave().noSummon().clientTrackingRange(10).updateInterval(20).build("skyward_harp_vortex"));
-
-    public static final DeferredHolder<EntityType<?>, EntityType<WishArrowEntity>> WISH_ARROW =
-            REGISTRY.register("wish_arrow", () -> EntityType.Builder.<WishArrowEntity>of(WishArrowEntity::new, MobCategory.MISC)
-                    .sized(0.5F, 0.5F).noSave().noSummon().clientTrackingRange(8).updateInterval(1).build("wish_arrow"));
+    public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(Registries.ENTITY_TYPE, MOD_ID);
 
     public static final DeferredHolder<EntityType<?>, EntityType<ZiplineAnchorEntity>> ZIPLINE_ANCHOR =
             REGISTRY.register("zipline_anchor", () -> EntityType.Builder.of(ZiplineAnchorEntity::new, MobCategory.MISC)
@@ -72,7 +63,7 @@ public class PGCEntities {
             REGISTRY.register(ABUNDANCE_BLIGHT_ZOMBIE_NAME, () -> EntityType.Builder.of(AbundanceBlightZombieEntity::new, MobCategory.MONSTER)
                     .sized(0.6F, 1.8F)
                     .fireImmune()
-                    .ridingOffset(-0.6F)
+                    
                     .clientTrackingRange(8)
                     .build(ABUNDANCE_BLIGHT_ZOMBIE_NAME));
 

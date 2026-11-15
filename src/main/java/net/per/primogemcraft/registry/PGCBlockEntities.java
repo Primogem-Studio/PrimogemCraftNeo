@@ -2,10 +2,10 @@ package net.per.primogemcraft.registry;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.per.primogemcraft.compat.registries.DeferredHolder;
+import net.per.primogemcraft.compat.registries.DeferredRegister;
 import net.per.primogemcraft.block.entity.ContainerWindowBlockEntity;
 import net.per.primogemcraft.block.entity.ZiplineBaseBlockEntity;
 import net.per.primogemcraft.block.entity.GorgeousSmithingTableBlockEntity;
@@ -15,11 +15,13 @@ import net.per.primogemcraft.block.entity.UnidentifiedDollBlockEntity;
 import net.per.primogemcraft.block.entity.XiaoLanternLauncherBlockEntity;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
+import net.minecraft.core.registries.Registries;
 
 public class PGCBlockEntities {
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, STELLAR_CONVERTER.get(),
-                (converter, side) -> converter.itemHandler());
+        // 1.20.1 exposes block-entity capabilities through ICapabilityProvider on the
+        // block entity itself (see StellarConverterBlockEntity#getCapability).
+        // IItemHandler is already registered by Forge; registering it again throws.
     }
 
     public static final String UNIDENTIFIED_DOLL_NAME = "unidentified_doll";
@@ -29,7 +31,7 @@ public class PGCBlockEntities {
     public static final String XIAO_LANTERN_LAUNCHER_NAME = "xiao_lantern_launcher";
     public static final String CONTAINER_WINDOW_NAME = "container_window";
 
-    public static final DeferredRegister<BlockEntityType<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> REGISTRY = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MOD_ID);
 
     @SuppressWarnings("DataFlowIssue")
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ZiplineBaseBlockEntity>> ZIPLINE_BASE =

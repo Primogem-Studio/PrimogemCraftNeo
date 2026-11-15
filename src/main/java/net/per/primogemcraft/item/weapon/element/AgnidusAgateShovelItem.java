@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.per.primogemcraft.registry.PGCItems;
@@ -65,9 +65,9 @@ public class AgnidusAgateShovelItem extends WishWeaponShovelItem {
         var player = context.getPlayer();
         if (!(context.getLevel() instanceof ServerLevel server) || player == null || !player.isShiftKeyDown()) return result;
         var pos = context.getClickedPos();
-        var input = new SingleRecipeInput(new ItemStack(server.getBlockState(pos).getBlock()));
+        var input = new SimpleContainer(new ItemStack(server.getBlockState(pos).getBlock()));
         var smelted = server.getRecipeManager().getRecipeFor(RecipeType.SMELTING, input, server)
-                .map(recipe -> recipe.value().getResultItem(server.registryAccess()).copy())
+                .map(recipe -> recipe.getResultItem(server.registryAccess()).copy())
                 .orElse(ItemStack.EMPTY);
         if (smelted.isEmpty() || smelted.is(Blocks.AIR.asItem())) return result;
         var stack = context.getItemInHand();
@@ -80,7 +80,7 @@ public class AgnidusAgateShovelItem extends WishWeaponShovelItem {
             server.addFreshEntity(dropped);
         }
         server.destroyBlock(pos, false);
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        stack.hurtAndBreak(DURABILITY_LOSS, player, item -> {
         });
         player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.PYRO, COOLDOWN_TICKS, false));
         return InteractionResult.SUCCESS;

@@ -94,7 +94,7 @@ public final class ChoiceSupport {
 
     private static boolean contains(List<ItemStack> collected, ItemStack candidate) {
         for (var stack : collected) {
-            if (ItemStack.isSameItemSameComponents(stack, candidate)) return true;
+            if (ItemStack.isSameItemSameTags(stack, candidate)) return true;
         }
         return false;
     }

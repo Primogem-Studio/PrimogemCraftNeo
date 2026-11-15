@@ -1,0 +1,12 @@
+{
+  "type": "primogemcraft:stellar_converter",
+  "first": {
+    "item": "primogemcraft:masterless_stardust",
+    "count": 2
+  },
+  "second": {
+    "item": "primogemcraft:masterless_starglitter",
+    "count": 1
+  },
+  "cost": 1
+}

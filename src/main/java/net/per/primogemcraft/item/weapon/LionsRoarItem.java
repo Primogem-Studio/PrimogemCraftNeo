@@ -49,14 +49,14 @@ public class LionsRoarItem extends WishWeaponItem {
     private static final String FIRE_ASPECT_TEXT = "fire_aspect";
 
     public LionsRoarItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant());
     }
 
     @Override
     public List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
         var stacks = WeaponCharge.of(stack);
         if (isHeld(player, slot, stack) || stacks <= 0) return List.of();
-        return List.of(WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_MULTIPLIED_BASE,
+        return List.of(WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.MULTIPLY_BASE,
                 (owner, worn, value) -> stacks * FIRE_DAMAGE_STEP));
     }
 
@@ -93,7 +93,7 @@ public class LionsRoarItem extends WishWeaponItem {
         }
         var stacks = WeaponCharge.of(stack);
         if (level.getRandom().nextDouble() >= igniteChance(refinement, stacks)) return result;
-        target.igniteForSeconds(BURN_BASE_SECONDS + BURN_STEP_SECONDS * (refinement - 1));
+        target.setSecondsOnFire((int) (BURN_BASE_SECONDS + BURN_STEP_SECONDS * (refinement - 1)));
         return result;
     }
 
@@ -101,13 +101,13 @@ public class LionsRoarItem extends WishWeaponItem {
     public void inventoryTick(ItemStack stack, Level level, net.minecraft.world.entity.Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, level, entity, slot, selected);
         if (level.isClientSide()) return;
-        var fire = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).get(FIRE_ASPECT);
-        if (fire.isEmpty()) return;
-        var innate = stack.getEnchantmentLevel(fire.get());
+        var fire = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).get(FIRE_ASPECT);
+        if (fire == null) return;
+        var innate = net.per.primogemcraft.compat.item.Enchantments120.level(stack, fire);
         var stacks = WeaponCharge.of(stack);
         if (innate <= 0 || stacks >= MAX_FIRE_STACKS) return;
         WeaponCharge.set(stack, Math.min(MAX_FIRE_STACKS, stacks + innate));
-        EnchantmentHelper.updateEnchantments(stack, enchantments -> enchantments.set(fire.get(), 0));
+        net.per.primogemcraft.compat.item.Enchantments120.update(stack, enchantments -> enchantments.set(fire, 0));
     }
 
     private static double igniteChance(int refinement, int stacks) {

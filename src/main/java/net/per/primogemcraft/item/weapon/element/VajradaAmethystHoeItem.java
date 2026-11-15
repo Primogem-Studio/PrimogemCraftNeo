@@ -63,7 +63,7 @@ public class VajradaAmethystHoeItem extends WishWeaponHoeItem {
         level.playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, SOUND_VOLUME, SOUND_PITCH);
         player.swing(hand, true);
         var damage = ElementWeapons.ticks(player, stack, Element.ELECTRO, DURABILITY_LOSS, false);
-        if (damage > 0) stack.hurtAndBreak(damage, server, player, item -> {
+        if (damage > 0) stack.hurtAndBreak(damage, player, item -> {
         });
         var cooldown = ElementWeapons.ticks(player, stack, Element.ELECTRO, COOLDOWN_TICKS, false);
         if (cooldown > 0) player.getCooldowns().addCooldown(stack.getItem(), cooldown);

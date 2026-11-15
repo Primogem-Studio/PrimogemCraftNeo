@@ -1,5 +1,6 @@
 package net.per.primogemcraft.system.curio;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
@@ -56,10 +57,10 @@ public class EnchantingCurioItem extends CurioItem {
             context.announce(Component.translatable(Curios.randomInventoryItem(player, spec.target()::matches).isEmpty() ? INVALID_KEY : USED_KEY));
             return;
         }
-        int used = target.getOrDefault(PGCDataComponents.CURIO_COUNTER.get(), 0);
+        int used = StackComponents.getOrDefault(target, PGCDataComponents.CURIO_COUNTER, 0);
         var rolled = roll(player, target);
         if (used > 0) CurioEnchanting.raise(rolled.preview(), 1);
-        if (spec.maxUses() > 0) target.set(PGCDataComponents.CURIO_COUNTER.get(), used + 1);
+        if (spec.maxUses() > 0) StackComponents.set(target, PGCDataComponents.CURIO_COUNTER, used + 1);
         offhand(player);
         context.damage(1);
         EnchantReward.open(player, List.of(rolled.option(target)));
@@ -83,7 +84,7 @@ public class EnchantingCurioItem extends CurioItem {
     }
 
     private boolean enchantable(ItemStack stack) {
-        int used = stack.getOrDefault(PGCDataComponents.CURIO_COUNTER.get(), 0);
+        int used = StackComponents.getOrDefault(stack, PGCDataComponents.CURIO_COUNTER, 0);
         if (spec.maxUses() > 0 && used >= spec.maxUses()) return false;
         return used > 0 || spec.target().matches(stack);
     }

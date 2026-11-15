@@ -56,8 +56,7 @@ public class SplendorOfTranquilWatersItem extends WishWeaponItem {
     private static final String HEALTH_TEXT = "health";
 
     public SplendorOfTranquilWatersItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant(),
-                WeaponModifier.of(Attributes.MAX_HEALTH, HEALTH_BASE, HEALTH_STEP, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant(), WeaponModifier.of(Attributes.MAX_HEALTH, HEALTH_BASE, HEALTH_STEP, AttributeModifier.Operation.MULTIPLY_BASE));
     }
 
     @Override
@@ -102,8 +101,8 @@ public class SplendorOfTranquilWatersItem extends WishWeaponItem {
     }
 
     @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
-        var result = super.onEntitySwing(stack, entity, hand);
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+        var result = super.onEntitySwing(stack, entity);
         if (entity.level().isClientSide() || !(entity instanceof Player player)) return result;
         if (player.getCooldowns().isOnCooldown(stack.getItem())) return result;
         if (!player.isShiftKeyDown()) return result;
@@ -121,12 +120,12 @@ public class SplendorOfTranquilWatersItem extends WishWeaponItem {
         var ratio = tradeRatio(refinement);
         if (!PGCTimer.isDone(player, DAMAGE_MODE))
             return List.of(
-                    WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, (owner, worn, value) -> ratio),
-                    WeaponModifier.conditional(Attributes.MAX_HEALTH, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, (owner, worn, value) -> -HEALTH_LOSS));
+                    WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.MULTIPLY_TOTAL, (owner, worn, value) -> ratio),
+                    WeaponModifier.conditional(Attributes.MAX_HEALTH, AttributeModifier.Operation.MULTIPLY_TOTAL, (owner, worn, value) -> -HEALTH_LOSS));
         if (!PGCTimer.isDone(player, HEALTH_MODE))
             return List.of(
-                    WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, (owner, worn, value) -> -ATTACK_LOSS),
-                    WeaponModifier.conditional(Attributes.MAX_HEALTH, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, (owner, worn, value) -> ratio));
+                    WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.MULTIPLY_TOTAL, (owner, worn, value) -> -ATTACK_LOSS),
+                    WeaponModifier.conditional(Attributes.MAX_HEALTH, AttributeModifier.Operation.MULTIPLY_TOTAL, (owner, worn, value) -> ratio));
         return List.of();
     }
 

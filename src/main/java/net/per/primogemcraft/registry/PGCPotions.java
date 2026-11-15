@@ -4,8 +4,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.alchemy.Potion;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.per.primogemcraft.compat.registries.DeferredHolder;
+import net.per.primogemcraft.compat.registries.DeferredRegister;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
@@ -18,7 +18,7 @@ public class PGCPotions {
 
     public static final DeferredHolder<Potion, Potion> ABUNDANCE_ELIXIR = REGISTRY.register("abundance_elixir",
             () -> new Potion(
-                    new MobEffectInstance(PGCEffects.ABUNDANCE, DURATION_TICKS, ABUNDANCE_AMPLIFIER, false, true),
+                    new MobEffectInstance(PGCEffects.ABUNDANCE.get(), DURATION_TICKS, ABUNDANCE_AMPLIFIER, false, true),
                     new MobEffectInstance(MobEffects.CONFUSION, DURATION_TICKS, CONFUSION_AMPLIFIER, false, false),
                     new MobEffectInstance(MobEffects.DIG_SLOWDOWN, DURATION_TICKS, 0, false, false),
                     new MobEffectInstance(MobEffects.WEAKNESS, DURATION_TICKS, 0, false, false),

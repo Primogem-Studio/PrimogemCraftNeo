@@ -1,11 +1,10 @@
 package net.per.primogemcraft.client;
-
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.FireworkParticles;
-import net.minecraft.world.item.component.FireworkExplosion;
+import net.per.primogemcraft.compat.component.FireworkExplosion;
+import net.per.primogemcraft.compat.component.VanillaComponents;
 import net.per.primogemcraft.network.ParticleBurstPayload;
-
 import java.util.List;
 
 public final class ChoiceParticles {
@@ -40,7 +39,7 @@ public final class ChoiceParticles {
     private static void burst(double x, double y, double z, double radius, int count, IntList colors, IntList fadeColors) {
         var level = Minecraft.getInstance().level;
         if (level == null) return;
-        var starter = new FireworkParticles.Starter(level, x, y, z, 0.0D, 0.0D, 0.0D, Minecraft.getInstance().particleEngine, List.of(FireworkExplosion.DEFAULT));
-        starter.createParticleBall(radius, count, colors, fadeColors, true, false);
+        var starter = new FireworkParticles.Starter(level, x, y, z, 0.0D, 0.0D, 0.0D, Minecraft.getInstance().particleEngine, VanillaComponents.starterTag(List.of(FireworkExplosion.DEFAULT)));
+        starter.createParticleBall(radius, count, colors.toIntArray(), fadeColors.toIntArray(), true, false);
     }
 }

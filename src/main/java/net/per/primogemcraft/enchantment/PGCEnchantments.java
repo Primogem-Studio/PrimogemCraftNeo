@@ -27,27 +27,27 @@ public final class PGCEnchantments {
         return ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath(MOD_ID, name));
     }
 
-    public static Optional<Holder.Reference<Enchantment>> holder(Level level, ResourceKey<Enchantment> enchantment) {
-        return level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).get(enchantment);
+    public static Optional<Enchantment> holder(Level level, ResourceKey<Enchantment> enchantment) {
+        return Optional.ofNullable(level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).get(enchantment));
     }
 
     public static int levelOf(Level level, ItemStack stack, ResourceKey<Enchantment> enchantment) {
-        return holder(level, enchantment).map(stack::getEnchantmentLevel).orElse(0);
+        return holder(level, enchantment).map(e -> net.per.primogemcraft.compat.item.Enchantments120.level(stack, e)).orElse(0);
     }
 
     public static boolean supports(Level level, ItemStack stack, ResourceKey<Enchantment> enchantment) {
-        return holder(level, enchantment).map(stack::supportsEnchantment).orElse(false);
+        return holder(level, enchantment).map(e -> net.per.primogemcraft.compat.item.Enchantments120.supports(stack, e)).orElse(false);
     }
 
     public static void apply(Level level, ItemStack stack, ResourceKey<Enchantment> enchantment, int enchantmentLevel) {
         var holder = holder(level, enchantment);
-        if (holder.isEmpty() || !stack.supportsEnchantment(holder.get())) return;
+        if (holder.isEmpty() || !net.per.primogemcraft.compat.item.Enchantments120.supports(stack, holder.get())) return;
         stack.enchant(holder.get(), enchantmentLevel);
     }
 
     public static void remove(Level level, ItemStack stack, ResourceKey<Enchantment> enchantment) {
         var holder = holder(level, enchantment);
-        if (holder.isEmpty() || stack.getEnchantmentLevel(holder.get()) <= 0) return;
-        EnchantmentHelper.updateEnchantments(stack, mutable -> mutable.set(holder.get(), 0));
+        if (holder.isEmpty() || net.per.primogemcraft.compat.item.Enchantments120.level(stack, holder.get()) <= 0) return;
+        net.per.primogemcraft.compat.item.Enchantments120.update(stack, mutable -> mutable.set(holder.get(), 0));
     }
 }

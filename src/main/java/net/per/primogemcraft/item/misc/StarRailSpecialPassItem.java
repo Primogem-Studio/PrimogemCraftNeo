@@ -42,7 +42,7 @@ public class StarRailSpecialPassItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("item.primogemcraft.star_rail_special_pass.tooltip.0"));
         tooltip.add(Component.translatable("item.primogemcraft.star_rail_special_pass.tooltip.1"));
         tooltip.add(Component.translatable("item.primogemcraft.star_rail_special_pass.tooltip.2"));

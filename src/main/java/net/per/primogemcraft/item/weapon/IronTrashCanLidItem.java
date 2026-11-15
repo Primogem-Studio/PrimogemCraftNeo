@@ -36,8 +36,8 @@ public class IronTrashCanLidItem extends WishWeaponShieldItem {
     }
 
     @Override
-    protected Holder<MobEffect> heldEffect(ItemStack stack) {
-        return PGCEffects.TRASH_CAN_TENACITY;
+    protected MobEffect heldEffect(ItemStack stack) {
+        return PGCEffects.TRASH_CAN_TENACITY.get();
     }
 
     @Override

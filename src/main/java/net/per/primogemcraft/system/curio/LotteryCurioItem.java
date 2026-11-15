@@ -65,6 +65,6 @@ public class LotteryCurioItem extends CurioItem {
     }
 
     private static boolean lucky(ServerPlayer player) {
-        return player.getInventory().contains(stack -> !stack.isEmpty() && stack.is(PGCItems.UNLUCKY_VOUCHER.get()));
+        return net.per.primogemcraft.compat.item.Inventories120.any(player.getInventory(), stack -> !stack.isEmpty() && stack.is(PGCItems.UNLUCKY_VOUCHER.get()));
     }
 }

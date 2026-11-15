@@ -58,29 +58,27 @@ public class ContainerWindowScreen extends AbstractContainerScreen<ContainerWind
         }
         renderGrid(graphics);
         pose.popPose();
-    }
 
-    @Override
-    protected void renderSlot(GuiGraphics graphics, Slot slot) {
-        if (slot.container != menu.container()) {
-            super.renderSlot(graphics, slot);
-            return;
-        }
-        var y = cellY(slot.index);
-        if (y + SLOT_ITEM <= ContainerWindowLayout.gridTop()
-                || y >= ContainerWindowLayout.gridTop() + ContainerWindowLayout.gridHeight(menu.visibleRows())) return;
+        var firstRow = Mth.floor(scroll.shown());
+        var top = cellY(firstRow * ContainerWindowLayout.COLUMNS);
         clipGrid(graphics);
-        graphics.pose().pushPose();
-        graphics.pose().translate(ContainerWindowLayout.columnX(slot.index % ContainerWindowLayout.COLUMNS) - slot.x,
-                y - slot.y, 0.0F);
-        super.renderSlot(graphics, slot);
-        graphics.pose().popPose();
+        for (var row = 0; row <= menu.visibleRows(); row++) {
+            var y = top + row * ContainerWindowLayout.SLOT;
+            for (var column = 0; column < ContainerWindowLayout.COLUMNS; column++) {
+                var index = (firstRow + row) * ContainerWindowLayout.COLUMNS + column;
+                if (index >= menu.containerSlots()) break;
+                var slot = menu.getSlot(index);
+                var x = ContainerWindowLayout.columnX(column);
+                var stack = slot.getItem();
+                if (!stack.isEmpty()) {
+                    graphics.renderItem(stack, leftPos + x, topPos + y);
+                    graphics.renderItemDecorations(font, stack, leftPos + x, topPos + y);
+                }
+                if (index == hoveredCell && menu.getCarried().isEmpty())
+                    renderSlotHighlight(graphics, leftPos + x, topPos + y, 0);
+            }
+        }
         graphics.disableScissor();
-    }
-
-    @Override
-    protected void renderSlotHighlight(GuiGraphics graphics, Slot slot, int mouseX, int mouseY, float partialTick) {
-        if (slot.container != menu.container()) super.renderSlotHighlight(graphics, slot, mouseX, mouseY, partialTick);
     }
 
     @Override
@@ -93,8 +91,8 @@ public class ContainerWindowScreen extends AbstractContainerScreen<ContainerWind
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (scrollY == 0.0D || !gridContains(mouseX, mouseY)) return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollY) {
+        if (scrollY == 0.0D || !gridContains(mouseX, mouseY)) return super.mouseScrolled(mouseX, mouseY, scrollY);
         scroll.scroll(scrollY);
         return true;
     }
@@ -256,6 +254,6 @@ public class ContainerWindowScreen extends AbstractContainerScreen<ContainerWind
 
     private float frameSeconds() {
         if (minecraft == null) return 0.0F;
-        return Mth.clamp(minecraft.getTimer().getGameTimeDeltaTicks(), 0.0F, 4.0F) * 0.05F;
+        return Mth.clamp(minecraft.getDeltaFrameTime(), 0.0F, 4.0F) * 0.05F;
     }
 }

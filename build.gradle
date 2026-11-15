@@ -1,92 +1,118 @@
 plugins {
     id 'java-library'
+    id 'eclipse'
     id 'idea'
-    id 'net.neoforged.moddev' version '2.0.146'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '6.0.+'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'org.spongepowered.mixin' version '0.7.+'
 }
 
-def mod_id = "primogemcraft"
+def mod_id = project.mod_id
 
-version = mod_version
-
-repositories {
-    mavenLocal()
-    maven { url = 'https://maven.theillusivec4.top/' }
-    maven { url = 'https://maven.shedaniel.me/' }
-    maven {
-        url = 'https://maven.blamejared.com/'
-        content {
-            includeGroup 'mezz.jei'
-            includeGroup 'net.mezzdev.config'
-        }
-    }
-    exclusiveContent {
-        forRepository {
-            maven { url = 'https://api.modrinth.com/maven' }
-        }
-        filter {
-            includeGroup "maven.modrinth"
-        }
-    }
-    exclusiveContent {
-        forRepository {
-            maven { url = 'https://cursemaven.com' }
-        }
-        filter {
-            includeGroup "curse.maven"
-        }
-    }
-}
+version = project.mod_version
+group = 'net.per'
 
 base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+// 1.20.1 Forge 使用 Java 17
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-neoForge {
-    version = project.neo_version
+minecraft {
+    mappings channel: project.mapping_channel, version: project.mapping_version
 
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
+    // 项目原本没有 accessTransformer 文件，保持为空
+    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    copyIdeResources = true
 
     runs {
+        configureEach {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+
+            // 开发环境 Mixin refmap 重映射：第三方模组 refmap 用 SRG 名，需映射回 MCP 名
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', project.file('run/srg-mcp.srg').absolutePath
+
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+
         client {
-            client()
-            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+            property 'forge.enabledGameTestNamespaces', mod_id
         }
 
         server {
-            server()
-            programArgument '--nogui'
-            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+            property 'forge.enabledGameTestNamespaces', mod_id
+            args '--nogui'
         }
 
         gameTestServer {
-            type = "gameTestServer"
-            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+            property 'forge.enabledGameTestNamespaces', mod_id
         }
 
         data {
-            data()
-            programArguments.addAll '--mod', mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-        }
-
-        configureEach {
-            systemProperty 'forge.logging.markers', 'REGISTRIES'
-            logLevel = org.slf4j.event.Level.DEBUG
-        }
-    }
-
-    mods {
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
         }
     }
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    mavenLocal()
+    maven {
+        name = 'Curios'
+        url = 'https://maven.theillusivec4.top/'
+    }
+    maven {
+        name = 'Cloth Config / REI'
+        url = 'https://maven.shedaniel.me/'
+    }
+    maven {
+        name = 'JEI'
+        url = 'https://maven.blamejared.com/'
+        content {
+            includeGroup 'mezz.jei'
+            includeGroup 'net.mezzdev'
+            includeGroup 'net.mezzdev.config'
+        }
+    }
+    maven {
+        name = 'Create'
+        url = 'https://maven.createmod.net/'
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Modrinth'
+                url = 'https://api.modrinth.com/maven'
+            }
+        }
+        filter {
+            includeGroup 'maven.modrinth'
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'CurseMaven'
+                url = 'https://cursemaven.com'
+            }
+        }
+        filter {
+            includeGroup 'curse.maven'
+        }
+    }
+}
 
 configurations {
     localRuntime {
@@ -97,34 +123,107 @@ configurations {
 }
 
 dependencies {
-    localRuntime "maven.modrinth:create:6.0.10+mc1.21.1"
-    localRuntime "maven.modrinth:create-aeronautics:1.3.2+mc1.21.1"
-    localRuntime "maven.modrinth:sable:2.0.5+mc1.21.1"
-    implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
-    compileOnly "maven.modrinth:genshincraft:3.3.0"
-    implementation "maven.modrinth:elixir_dan:1.3.4"
-    api "me.shedaniel:RoughlyEnoughItems-neoforge:16.0.799"
-    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
-    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
-    api "me.shedaniel.cloth:cloth-config-neoforge:15.0.140"
-    implementation "maven.modrinth:jade:15.10.5+neoforge"
-    implementation "maven.modrinth:timeless-and-classics-zero:1.2.0-neoforge,1.21.1"
-    implementation "maven.modrinth:farmers-delight:1.21.1-1.3.4"
-    implementation "maven.modrinth:teyvats-delight:fAfWpzji"
+    minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
+    // Mixin 注解处理器：生成 refmap（ForgeGradle 需要它，1.20.1 用 SRG 中间名）
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    // ===== 联动模组（可选依赖）=====
+
+    // Create 6.0.8（原 6.0.10+mc1.21.1，仅运行时开发依赖）
+    // [临时测试] Create 的 @Accessor mixin 与改造 jar 不兼容，暂移出运行时
+    // localRuntime "maven.modrinth:create:${project.create_version}"
+    // 已移除：create-aeronautics、sable（1.20.1 无版本，且源码中无编译期引用）
+
+    // Curios API：5.14.1+1.20.1（原 9.5.1+1.21.1）
+    // [临时测试] mixin 与改造 jar 不兼容，暂改为仅编译依赖
+    compileOnly "top.theillusivec4.curios:curios-forge:${project.curios_version}:api"
+    compileOnly "top.theillusivec4.curios:curios-forge:${project.curios_version}"
+
+    // GenshinCraft：1.4.2（原 3.1.3，跨大版本，API 需重新对接）
+    compileOnly "maven.modrinth:genshincraft:${project.genshincraft_version}"
+
+    // 已移除：elixir_dan（无任何 1.20.1 版本，collab/elixir 需删除）
+
+    // REI：12.1.785（原 16.0.799）
+    // [临时测试] mixin 与改造 jar 不兼容，暂改为仅编译依赖
+    compileOnly "me.shedaniel:RoughlyEnoughItems-forge:${project.rei_version}"
+
+    // JEI：15.74.0.234（原 19.57.0.444）
+    // [临时测试] mixin 与改造 jar 不兼容，暂改为仅编译依赖
+    compileOnly "mezz.jei:jei-${project.minecraft_version}-common-api:${project.jei_version}"
+    compileOnly "mezz.jei:jei-${project.minecraft_version}-forge:${project.jei_version}"
+
+    // Cloth Config：11.1.136（原 15.0.140）
+    api "me.shedaniel.cloth:cloth-config-forge:${project.cloth_version}"
+
+    // Jade：11.13.3+forge（原 15.10.5+neoforge）
+    // [临时测试] mixin 与改造 jar 不兼容，暂改为仅编译依赖
+    compileOnly "maven.modrinth:jade:${project.jade_version}"
+
+    // TaCZ 永恒枪械匠：1.1.8-hotfix2（原 tacz-1.21.1:1.1.8-hotfix-r6）
+    // [临时测试] mixin 与改造 jar 不兼容，暂改为仅编译依赖
+    compileOnly "maven.modrinth:timeless-and-classics-zero:${project.tacz_version}"
+
+    // Farmer's Delight：1.20.1-1.3.4
+    // [临时测试] mixin 与改造 jar 不兼容，暂改为仅编译依赖
+    compileOnly "maven.modrinth:farmers-delight:${project.farmersdelight_version}"
+
+    // Teyvat's Delight：1.1.15-forge-1.20.1（原 0.2.31）
+    // [临时测试] mixin 与改造 jar 不兼容，暂改为仅编译依赖
+    compileOnly "maven.modrinth:teyvats-delight:${project.teyvatdelight_version}"
 }
 
-var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
-    var replaceProperties = [neo_version: neo_version,
-                             mod_version: mod_version,
-                             mod_id     : mod_id]
+// 原 NeoForge 构建从 src/main/templates 生成 neoforge.mods.toml；
+// 1.20.1 Forge 直接读取 src/main/resources/META-INF/mods.toml，因此改为就地展开属性。
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [
+            minecraft_version      : project.minecraft_version,
+            forge_version          : project.forge_version,
+            mod_version            : project.mod_version,
+            mod_id                 : mod_id,
+            curios_version         : project.curios_version,
+            jei_version            : project.jei_version,
+            genshincraft_version   : project.genshincraft_version,
+            farmersdelight_version : project.farmersdelight_version,
+            teyvatdelight_version  : project.teyvatdelight_version
+    ]
     inputs.properties replaceProperties
-    expand replaceProperties
-    from "src/main/templates"
-    into "build/generated/sources/modMetadata"
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
 }
 
-sourceSets.main.resources.srcDir generateModMetadata
-neoForge.ideSyncTask generateModMetadata
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : 'Primogem Studio',
+                'Specification-Version'   : '1',
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : 'Primogem Studio',
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'MixinConfigs'            : "${mod_id}.mixins.json"
+        ])
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+    // 移植期：不限制错误条数，便于一次性拿到完整清单
+    options.compilerArgs << '-Xmaxerrs' << '100000'
+    // 强制英文诊断输出（中文输出经管道会乱码，无法分类统计）
+    options.fork = true
+    options.forkOptions.jvmArgs += ['-Duser.language=en', '-Duser.country=US']
+}
+
+mixin {
+    add sourceSets.main, "${mod_id}.mixins.refmap.json"
+    config "${mod_id}.mixins.json"
+}
 
 idea {
     module {

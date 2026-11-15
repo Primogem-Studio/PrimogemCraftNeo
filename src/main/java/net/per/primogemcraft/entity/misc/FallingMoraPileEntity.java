@@ -11,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.portal.DimensionTransition;
 import net.per.primogemcraft.block.MoraPileBlock;
 import net.per.primogemcraft.registry.PGCEntities;
 import net.per.primogemcraft.registry.PGCItems;
@@ -27,7 +26,7 @@ public class FallingMoraPileEntity extends FallingBlockEntity {
         data.put("BlockState", NbtUtils.writeBlockState(state));
         data.putBoolean("DropItem", true);
         var blockEntity = level.getBlockEntity(pos);
-        if (blockEntity != null) data.put("TileEntityData", blockEntity.saveWithoutMetadata(level.registryAccess()));
+        if (blockEntity != null) data.put("TileEntityData", blockEntity.saveWithoutMetadata());
         entity.readAdditionalSaveData(data);
         entity.blocksBuilding = true;
         entity.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
@@ -50,10 +49,11 @@ public class FallingMoraPileEntity extends FallingBlockEntity {
         return super.spawnAtLocation(stack, offsetY);
     }
 
+    /** 1.21 用 DimensionTransition 承载传送信息；1.20.1 直接传目标 ServerLevel。 */
     @Override
-    public Entity changeDimension(DimensionTransition transition) {
-        var entity = super.changeDimension(transition);
-        forceTickAfterTeleportToDuplicate = false;
+    public Entity changeDimension(net.minecraft.server.level.ServerLevel destination) {
+        var entity = super.changeDimension(destination);
+        
         return entity;
     }
 }

@@ -1,6 +1,5 @@
 package net.per.primogemcraft.item.curio;
-
-import net.minecraft.core.component.DataComponents;
+import net.per.primogemcraft.compat.component.VanillaComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
@@ -40,7 +39,7 @@ public class FoolsMaskItem extends CurioItem {
 
     private static ItemStack enchantedBook(ItemStack source) {
         var book = new ItemStack(Items.ENCHANTED_BOOK);
-        book.set(DataComponents.STORED_ENCHANTMENTS, EnchantmentHelper.getEnchantmentsForCrafting(source));
+        VanillaComponents.setStoredEnchantments(book, source);
         return book;
     }
 }

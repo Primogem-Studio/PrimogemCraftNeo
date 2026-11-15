@@ -1,39 +1,22 @@
 package net.per.primogemcraft.network;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.per.primogemcraft.compat.network.RegisterPayloadHandlersEvent;
 import net.per.primogemcraft.client.ChoiceParticles;
 import net.per.primogemcraft.client.ItemActivationFx;
 import net.per.primogemcraft.client.WishMaterialValues;
 import net.per.primogemcraft.client.WishLootItems;
-import net.per.primogemcraft.client.SkyTargetOverlay;
 import net.per.primogemcraft.client.gui.ChoiceClientHandler;
 import net.per.primogemcraft.entity.misc.ZiplineCarrierEntity;
 import net.per.primogemcraft.item.misc.LuckySpecialTicketItem;
-import net.per.primogemcraft.item.weapon.ThunderingPulseItem;
 import net.per.primogemcraft.system.choice.ChoiceRegistry;
 import net.per.primogemcraft.system.element.AnemoEffectMode;
-import net.per.primogemcraft.system.wish.WishCoreTransfer;
 
-import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
-
-@EventBusSubscriber(modid = MOD_ID)
 public final class PGCNetwork {
     private static final String PROTOCOL_VERSION = "1.1";
 
-    @SubscribeEvent
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar(PROTOCOL_VERSION);
-        registrar.playToClient(SkyTargetPayload.TYPE, SkyTargetPayload.STREAM_CODEC, (payload, context) -> SkyTargetOverlay.update(payload));
-        registrar.playToClient(SkyBulletPayload.TYPE, SkyBulletPayload.STREAM_CODEC, (payload, context) -> SkyTargetOverlay.updateBullet(payload));
-        registrar.playToServer(ThunderingPulsePayload.TYPE, ThunderingPulsePayload.STREAM_CODEC, (payload, context) -> {
-            if (context.player() instanceof ServerPlayer player) ThunderingPulseItem.dash(player);
-        });
-        registrar.playToServer(WishCoreTransferPayload.TYPE, WishCoreTransferPayload.STREAM_CODEC, (payload, context) -> {
-            if (context.player() instanceof ServerPlayer player) WishCoreTransfer.transfer(player, payload.containerId());
-        });
         registrar.playToServer(ZiplineControlPayload.TYPE, ZiplineControlPayload.STREAM_CODEC, (payload, context) -> {
             if (context.player().getVehicle() instanceof ZiplineCarrierEntity carrier) {
                 if (payload.targetId() == -1) carrier.release();

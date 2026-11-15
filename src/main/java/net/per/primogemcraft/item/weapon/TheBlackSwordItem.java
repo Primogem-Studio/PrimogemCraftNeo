@@ -18,7 +18,7 @@ import java.util.List;
 public class TheBlackSwordItem extends WishWeaponItem {
     private static final Tier TIER = new WeaponTier(1500, 5.0F, 20, WeaponTier.WOODEN_INCORRECT, PGCItems.PRITHIVA_TOPAZ_FRAGMENT);
 
-    private static final WeaponModifier PASSIVE = WeaponModifier.of(Attributes.ATTACK_DAMAGE, 0.2D, 0.05D, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+    private static final WeaponModifier PASSIVE = WeaponModifier.of(Attributes.ATTACK_DAMAGE, 0.2D, 0.05D, AttributeModifier.Operation.MULTIPLY_TOTAL);
     private static final double HEAL_BASE = 0.3D;
     private static final double HEAL_STEP = 0.075D;
     private static final double HEAL_CHANCE = 0.5D;
@@ -32,7 +32,7 @@ public class TheBlackSwordItem extends WishWeaponItem {
     private static final String ATTACK_TEXT = "attack";
 
     public TheBlackSwordItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant(), PASSIVE);
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant(), PASSIVE);
     }
 
     @Override

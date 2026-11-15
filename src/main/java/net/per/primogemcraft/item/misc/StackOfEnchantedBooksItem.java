@@ -39,10 +39,8 @@ public class StackOfEnchantedBooksItem extends DescribedItem {
         var stack = player.getItemInHand(hand);
         if (level.isClientSide()) return InteractionResultHolder.sidedSuccess(stack, true);
         var random = player.getRandom();
-        var candidates = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).holders()
-                .map(reference -> (Holder<Enchantment>) reference).toList();
         for (var index = Mth.nextInt(random, MIN_BOOKS, MAX_BOOKS); index > 0; index--) {
-            var book = EnchantmentHelper.enchantItem(random, new ItemStack(Items.BOOK), Mth.nextInt(random, MIN_LEVEL, MAX_LEVEL), candidates.stream());
+            var book = EnchantmentHelper.enchantItem(random, new ItemStack(Items.BOOK), Mth.nextInt(random, MIN_LEVEL, MAX_LEVEL), false);
             var entity = new ItemEntity(level, player.getX(), player.getY(), player.getZ(), book);
             entity.setPickUpDelay(PICKUP_DELAY);
             level.addFreshEntity(entity);

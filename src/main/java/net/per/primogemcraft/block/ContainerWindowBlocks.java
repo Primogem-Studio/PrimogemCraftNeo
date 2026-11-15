@@ -6,6 +6,7 @@ import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.network.NetworkHooks;
 import net.per.primogemcraft.block.entity.ContainerWindowBlockEntity;
 import net.per.primogemcraft.system.menu.ContainerWindowSound;
 
@@ -19,7 +20,7 @@ public final class ContainerWindowBlocks {
     public static void open(Level level, BlockPos pos, Player player) {
         if (level.isClientSide()) return;
         if (player instanceof ServerPlayer serverPlayer && level.getBlockEntity(pos) instanceof ContainerWindowBlockEntity window) {
-            serverPlayer.openMenu(window);
+            NetworkHooks.openScreen(serverPlayer, window, buffer -> window.writeOpeningData(buffer));
             ContainerWindowSound.TRASH_CAN_OPEN.play(level, pos.getX(), pos.getY(), pos.getZ(), level.getRandom());
         }
     }

@@ -14,11 +14,11 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.TickEvent;
 import net.per.primogemcraft.item.curio.FissionCuckooClockItem;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCItems;
@@ -28,7 +28,7 @@ import java.util.List;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
+@Mod.EventBusSubscriber(modid = MOD_ID)
 public final class CuckooClockDuplicates {
     public static final ResourceLocation DECORATION = ResourceLocation.fromNamespaceAndPath(MOD_ID, "curio/fission_cuckoo_clock/decoration");
     private static final List<EquipmentSlot> SLOTS = List.of(EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND,
@@ -47,7 +47,7 @@ public final class CuckooClockDuplicates {
     public static void spawn(CurioContext context, LivingEntity source, int tier) {
         var spawned = source.getType().spawn(context.level(), source.blockPosition(), MobSpawnType.MOB_SUMMONED);
         if (!(spawned instanceof LivingEntity duplicate)) return;
-        duplicate.addEffect(new MobEffectInstance(PGCEffects.CUCKOO_CLOCK_TRICK, TRICK_TICKS, 0, false, false));
+        duplicate.addEffect(new MobEffectInstance(PGCEffects.CUCKOO_CLOCK_TRICK.get(), TRICK_TICKS, 0, false, false));
         equip(duplicate, tier);
     }
 
@@ -58,8 +58,8 @@ public final class CuckooClockDuplicates {
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         var entity = event.getEntity();
-        if (!entity.getType().is(EntityTypeTags.UNDEAD)) return;
-        if (!entity.hasEffect(PGCEffects.CUCKOO_CLOCK_TRICK)) return;
+        if (entity.getMobType() != net.minecraft.world.entity.MobType.UNDEAD) return;
+        if (!entity.hasEffect(PGCEffects.CUCKOO_CLOCK_TRICK.get())) return;
         if (!(entity.level() instanceof ServerLevel level)) return;
         event.setCanceled(true);
         level.sendParticles(ParticleTypes.LARGE_SMOKE, entity.getX(), entity.getY(), entity.getZ(), SMOKE_COUNT, 0.0D, SMOKE_HEIGHT, 0.0D, SMOKE_SPREAD);
@@ -74,8 +74,8 @@ public final class CuckooClockDuplicates {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (!(event.player instanceof ServerPlayer player)) return;
         player.getInventory().clearOrCountMatchingItems(CuckooClockDuplicates::isDecoration, CLEAR_ALL, player.inventoryMenu.getCraftSlots());
         for (var stack : CuriosIntegration.equipped(player)) if (isDecoration(stack)) stack.setCount(0);
     }

@@ -71,14 +71,14 @@ public class ShivadaJadeAxeItem extends WishWeaponAxeItem {
         for (var target : server.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(RADIUS), candidate -> candidate != player))
             target.hurt(ElementDamage.of(Element.CRYO, server.damageSources().generic()), Mth.nextInt(server.getRandom(), MIN_DAMAGE, MAX_DAMAGE));
         player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.CRYO, COOLDOWN, false));
-        level.playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.NEUTRAL, SOUND_VOLUME, SOUND_PITCH);
+        level.playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.NEUTRAL, SOUND_VOLUME, SOUND_PITCH);
         server.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        stack.hurtAndBreak(DURABILITY_LOSS, player, item -> {
         });
         return InteractionResultHolder.success(stack);
     }
 
     private static boolean hasFragment(Player player) {
-        return player.getInventory().contains(candidate -> candidate.is(PGCItems.VAJRADA_AMETHYST_SLIVER.get()));
+        return net.per.primogemcraft.compat.item.Inventories120.any(player.getInventory(), candidate -> candidate.is(PGCItems.VAJRADA_AMETHYST_SLIVER.get()));
     }
 }

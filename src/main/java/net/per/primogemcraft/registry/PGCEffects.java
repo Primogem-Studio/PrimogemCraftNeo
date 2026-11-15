@@ -6,9 +6,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.per.primogemcraft.compat.registries.DeferredHolder;
+import net.per.primogemcraft.compat.registries.DeferredRegister;
 import net.per.primogemcraft.system.abundance.AbundanceEffect;
 import net.per.primogemcraft.system.curio.effect.*;
 import net.per.primogemcraft.system.element.effect.*;
@@ -76,20 +75,19 @@ public class PGCEffects {
 
     private static Prescription reductionPrescription() {
         return new Prescription("absolute_failure_prescription_one", "prescription.primogemcraft.one")
-                .modifier(Attributes.ATTACK_DAMAGE, PRESCRIPTION_PENALTY, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
-                .modifier(Attributes.MAX_HEALTH, PRESCRIPTION_PENALTY, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
-                .modifier(Attributes.ARMOR, PRESCRIPTION_PENALTY, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+                .modifier(Attributes.ATTACK_DAMAGE, PRESCRIPTION_PENALTY, AttributeModifier.Operation.MULTIPLY_BASE)
+                .modifier(Attributes.MAX_HEALTH, PRESCRIPTION_PENALTY, AttributeModifier.Operation.MULTIPLY_BASE)
+                .modifier(Attributes.ARMOR, PRESCRIPTION_PENALTY, AttributeModifier.Operation.MULTIPLY_BASE);
     }
 
     private static Prescription slownessPrescription() {
+        // 1.20.1 没有 BLOCK_BREAK_SPEED / SNEAKING_SPEED / SUBMERGED_MINING_SPEED 属性，
+        // 这三项减速无法表达，予以移除；其余减速效果保留。
         return new Prescription("absolute_failure_prescription_two", "prescription.primogemcraft.two")
-                .modifier(Attributes.ATTACK_SPEED, PRESCRIPTION_PENALTY, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
-                .modifier(Attributes.BLOCK_BREAK_SPEED, PRESCRIPTION_PENALTY, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
-                .modifier(Attributes.FLYING_SPEED, PRESCRIPTION_PENALTY, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
-                .modifier(Attributes.MOVEMENT_SPEED, PRESCRIPTION_PENALTY, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
-                .modifier(Attributes.SNEAKING_SPEED, PRESCRIPTION_PENALTY, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
-                .modifier(Attributes.SUBMERGED_MINING_SPEED, PRESCRIPTION_PENALTY, AttributeModifier.Operation.ADD_MULTIPLIED_BASE)
-                .modifier(NeoForgeMod.SWIM_SPEED, PRESCRIPTION_PENALTY, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+                .modifier(Attributes.ATTACK_SPEED, PRESCRIPTION_PENALTY, AttributeModifier.Operation.MULTIPLY_BASE)
+                .modifier(Attributes.FLYING_SPEED, PRESCRIPTION_PENALTY, AttributeModifier.Operation.MULTIPLY_BASE)
+                .modifier(Attributes.MOVEMENT_SPEED, PRESCRIPTION_PENALTY, AttributeModifier.Operation.MULTIPLY_BASE)
+                .modifier(net.minecraftforge.common.ForgeMod.SWIM_SPEED, PRESCRIPTION_PENALTY, AttributeModifier.Operation.MULTIPLY_BASE);
     }
 
     private static void strike(ServerPlayer player) {

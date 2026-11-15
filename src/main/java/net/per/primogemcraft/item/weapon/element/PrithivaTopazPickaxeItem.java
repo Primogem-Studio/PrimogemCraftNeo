@@ -73,11 +73,11 @@ public class PrithivaTopazPickaxeItem extends WishWeaponToolItem {
         if (!transmutable(state)) return result;
         var stack = context.getItemInHand();
         var chance = ElementWeapons.scaled(player, stack, Element.GEO, SUCCESS_CHANCE, true);
-        stack.hurtAndBreak((int) Mth.nextDouble(server.getRandom(), 1.0D, DAMAGE_MAX * chance), server, player, item -> {
+        stack.hurtAndBreak((int) Mth.nextDouble(server.getRandom(), 1.0D, DAMAGE_MAX * chance), player, item -> {
         });
         player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.GEO, COOLDOWN_TICKS, false));
         if (server.getRandom().nextDouble() < chance) {
-            server.playSound(null, pos, SoundEvents.TRIDENT_THUNDER.value(), SoundSource.BLOCKS, THUNDER_VOLUME, THUNDER_PITCH);
+            server.playSound(null, pos, SoundEvents.TRIDENT_THUNDER, SoundSource.BLOCKS, THUNDER_VOLUME, THUNDER_PITCH);
             if (server.getRandom().nextDouble() < chance / ALLOY_DIVISOR)
                 server.setBlock(pos, PGCBlocks.CHEAP_NETHERITE_BLOCK.get().defaultBlockState(), 3);
             else

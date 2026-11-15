@@ -62,17 +62,17 @@ public class VajradaAmethystShovelItem extends WishWeaponShovelItem {
         if (!player.isShiftKeyDown()) return InteractionResultHolder.pass(stack);
         if (!(level instanceof ServerLevel server)) return InteractionResultHolder.success(stack);
         var ticks = PastDelay.secondsOf(stack) * TICKS_PER_SECOND;
-        stack.hurtAndBreak((int) (stack.getMaxDamage() * DURABILITY_RATIO), server, player, item -> {
+        stack.hurtAndBreak((int) (stack.getMaxDamage() * DURABILITY_RATIO), player, item -> {
         });
         var cooldown = ElementWeapons.ticks(player, stack, Element.ELECTRO, ticks * COOLDOWN_FACTOR, false);
         player.getCooldowns().addCooldown(stack.getItem(), cooldown);
-        player.addEffect(new MobEffectInstance(PGCEffects.THE_PAST, ticks, 0));
+        player.addEffect(new MobEffectInstance(PGCEffects.THE_PAST.get(), ticks, 0));
         return InteractionResultHolder.success(stack);
     }
 
     @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         if (!entity.level().isClientSide() && entity.isShiftKeyDown()) PastDelay.adjust(entity, stack);
-        return super.onEntitySwing(stack, entity, hand);
+        return super.onEntitySwing(stack, entity);
     }
 }

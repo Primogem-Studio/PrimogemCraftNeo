@@ -3,7 +3,7 @@ package net.per.primogemcraft.client;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.IItemDecorator;
+import net.minecraftforge.client.IItemDecorator;
 import net.per.primogemcraft.system.weapon.WishWeapon;
 
 public class WeaponStacksDecorator implements IItemDecorator {

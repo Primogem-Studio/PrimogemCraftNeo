@@ -28,9 +28,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.per.primogemcraft.block.entity.UnidentifiedDollBlockEntity;
 import net.per.primogemcraft.registry.PGCBlockEntities;
 import net.per.primogemcraft.registry.PGCSounds;
+import net.minecraft.world.InteractionHand;
 
 public class UnidentifiedDollBlock extends BaseEntityBlock {
-    public static final MapCodec<UnidentifiedDollBlock> CODEC = simpleCodec(properties -> new UnidentifiedDollBlock(properties, Shapes.block()));
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final int LIT_LIGHT = 9;
 
@@ -47,18 +47,13 @@ public class UnidentifiedDollBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         var offset = state.getOffset(level, pos);
         return shape.move(offset.x, offset.y, offset.z);
     }
 
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
@@ -68,13 +63,13 @@ public class UnidentifiedDollBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         if (level.isClientSide() || oldState.is(state.getBlock())) return;
         level.playSound(null, pos, PGCSounds.BOMB_PLANTED.get(), SoundSource.BLOCKS, PLANTED_VOLUME, 1.0F);
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide()) return InteractionResult.SUCCESS;
         if (level instanceof ServerLevel server && level.getBlockEntity(pos) instanceof UnidentifiedDollBlockEntity doll && !doll.ticking()) {
             doll.arm(server, pos, state, true);

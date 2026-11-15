@@ -173,8 +173,9 @@ public class GorgeousSmithingTableScreen extends AbstractContainerScreen<Gorgeou
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBg(graphics, partialTick, mouseX, mouseY);
+    public void renderBackground(GuiGraphics graphics) {
+        // 1.20.1 calls renderBackground without cursor/partial-tick arguments;
+        // the panel itself is drawn by renderBg during the normal render pass.
     }
 
     @Override
@@ -195,10 +196,13 @@ public class GorgeousSmithingTableScreen extends AbstractContainerScreen<Gorgeou
         renderLevel(graphics);
         renderButtons(graphics);
         renderHints(graphics);
+
+        for (var index = 0; index < GorgeousSmithingTableMenu.FIRST_INVENTORY_SLOT; index++)
+            renderContainerSlot(graphics, menu.getSlot(index));
     }
 
-    @Override
-    protected void renderSlot(GuiGraphics graphics, Slot slot) {
+    /** 1.20.1 keeps renderSlot private; called from renderBg instead. */
+    private void renderContainerSlot(GuiGraphics graphics, Slot slot) {
         if (slot.index >= GorgeousSmithingTableMenu.FIRST_INVENTORY_SLOT) return;
         var rect = layout.materialSlot(slot.index);
         slotCell(graphics, rect.x(), rect.y(), SLOT_CELL, SLOT_CELL, FRAME_HOVER, hoveredMaterialSlot == slot.index ? slotHover : 0.0F);
@@ -208,16 +212,14 @@ public class GorgeousSmithingTableScreen extends AbstractContainerScreen<Gorgeou
         graphics.renderItemDecorations(font, stack, rect.x() + SLOT_INSET, rect.y() + SLOT_INSET);
     }
 
-    @Override
-    protected void renderSlotHighlight(GuiGraphics graphics, Slot slot, int mouseX, int mouseY, float partialTick) {
-    }
+
 
     @Override
     protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollY) {
         if (scrollY == 0.0D) return false;
         if (layout.weaponPanel.contains(mouseX, mouseY)) {
             weaponScroll.scroll(scrollY);
@@ -227,7 +229,7 @@ public class GorgeousSmithingTableScreen extends AbstractContainerScreen<Gorgeou
             materialScroll.scroll(scrollY);
             return true;
         }
-        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        return super.mouseScrolled(mouseX, mouseY, scrollY);
     }
 
     @Override
@@ -897,7 +899,7 @@ public class GorgeousSmithingTableScreen extends AbstractContainerScreen<Gorgeou
 
     private float frameSeconds() {
         if (minecraft == null) return 0.0F;
-        return Mth.clamp(minecraft.getTimer().getGameTimeDeltaTicks(), 0.0F, 4.0F) * 0.05F;
+        return Mth.clamp(minecraft.getDeltaFrameTime(), 0.0F, 4.0F) * 0.05F;
     }
 
     private void click(int id) {

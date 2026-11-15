@@ -52,10 +52,12 @@ public class ZiplineCarrierRenderer extends EntityRenderer<ZiplineCarrierEntity>
             var x = offset.x * sign;
             var y = offset.y * sign;
             var z = offset.z * sign;
-            buffer.addVertex(pose, (float) (source.x + x), (float) (source.y + y), (float) (source.z + z))
-                    .setColor(235, 210, 100, 255).setLight(LightTexture.FULL_BRIGHT);
-            buffer.addVertex(pose, (float) (target.x + x), (float) (target.y + y), (float) (target.z + z))
-                    .setColor(235, 210, 100, 255).setLight(LightTexture.FULL_BRIGHT);
+            net.per.primogemcraft.compat.client.Vertices.add(buffer, pose, (float) (source.x + x), (float) (source.y + y), (float) (source.z + z))
+                    .color(235, 210, 100, 255).uv2(LightTexture.FULL_BRIGHT);
+            buffer.endVertex();
+            net.per.primogemcraft.compat.client.Vertices.add(buffer, pose, (float) (target.x + x), (float) (target.y + y), (float) (target.z + z))
+                    .color(235, 210, 100, 255).uv2(LightTexture.FULL_BRIGHT);
+            buffer.endVertex();
         }
     }
 

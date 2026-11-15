@@ -13,7 +13,7 @@ public record ChoiceSpin(int turns, ChoiceSpinSpeed speed, float tilt) {
     private static final float MAX_TILT = 45.0F;
 
     public ChoiceSpin {
-        turns = turns <= 0 ? 0 : Math.clamp(turns, 1, MAX_TURNS);
+        turns = turns <= 0 ? 0 : net.minecraft.util.Mth.clamp(turns, 1, MAX_TURNS);
         tilt = Mth.clamp(tilt, 0.0F, MAX_TILT);
     }
 

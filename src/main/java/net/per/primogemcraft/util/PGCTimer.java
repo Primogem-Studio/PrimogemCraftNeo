@@ -1,16 +1,16 @@
 package net.per.primogemcraft.util;
 
 import net.minecraft.world.entity.Entity;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.TickEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
+@Mod.EventBusSubscriber(modid = MOD_ID)
 public final class PGCTimer {
     private static final Map<Entity, Map<String, Integer>> TIMERS = new HashMap<>();
 
@@ -22,9 +22,9 @@ public final class PGCTimer {
     }
 
     public static boolean isDone(Entity entity, String name) {
-        var timers = TIMERS.get(entity);
+        Map<String, Integer> timers = TIMERS.get(entity);
         if (timers == null) return true;
-        var remaining = timers.get(name);
+        Integer remaining = timers.get(name);
         return remaining == null || remaining <= 0;
     }
 
@@ -43,7 +43,7 @@ public final class PGCTimer {
     }
 
     @SubscribeEvent
-    public static void onServerTick(ServerTickEvent.Post event) {
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
         TIMERS.values().forEach(timers -> timers.entrySet().removeIf(entry -> entry.setValue(entry.getValue() - 1) <= 0));
     }
 }

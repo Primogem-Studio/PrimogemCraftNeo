@@ -24,8 +24,6 @@ import net.per.primogemcraft.registry.PGCEntities;
 import net.per.primogemcraft.registry.PGCItems;
 
 public class XiaoLanternLauncherBlock extends BaseEntityBlock {
-    public static final MapCodec<XiaoLanternLauncherBlock> CODEC = simpleCodec(XiaoLanternLauncherBlock::new);
-
     private static final int TRIGGER_LIMIT = 11;
     private static final int DROP_PICKUP_DELAY = 10;
     private static final int DESTROY_EVENT = 2001;
@@ -37,17 +35,12 @@ public class XiaoLanternLauncherBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, fromPos, movedByPiston);
         if (level.isClientSide() || !level.hasNeighborSignal(pos)) return;
         var above = pos.above();

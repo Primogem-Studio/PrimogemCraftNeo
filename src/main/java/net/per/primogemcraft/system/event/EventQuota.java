@@ -31,7 +31,7 @@ public final class EventQuota {
 
     public static void addAvailable(ServerLevel level, int amount) {
         var data = data(level);
-        data.available = Math.clamp(data.available + amount, 0, data.limit);
+        data.available = net.minecraft.util.Mth.clamp(data.available + amount, 0, data.limit);
         data.setDirty();
     }
 
@@ -76,22 +76,22 @@ public final class EventQuota {
     }
 
     private static Data data(ServerLevel level) {
-        return level.getServer().overworld().getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), DATA_NAME);
+        return level.getServer().overworld().getDataStorage().computeIfAbsent(Data::load, Data::new, DATA_NAME);
     }
 
     public static final class Data extends SavedData {
         private int limit = PGCConfig.EVENT_WORLD_LIMIT.get();
         private int available = limit;
 
-        public static Data load(CompoundTag tag, HolderLookup.Provider registries) {
+        public static Data load(CompoundTag tag) {
             var data = new Data();
             data.limit = Math.max(0, tag.getInt("limit"));
-            data.available = Math.clamp(tag.getInt("available"), 0, data.limit);
+            data.available = net.minecraft.util.Mth.clamp(tag.getInt("available"), 0, data.limit);
             return data;
         }
 
         @Override
-        public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+        public CompoundTag save(CompoundTag tag) {
             tag.putInt("available", available);
             tag.putInt("limit", limit);
             return tag;

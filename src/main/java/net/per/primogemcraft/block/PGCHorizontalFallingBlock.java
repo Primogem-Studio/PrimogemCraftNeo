@@ -18,8 +18,6 @@ import java.util.function.Function;
 
 public class PGCHorizontalFallingBlock extends FallingBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    public static final MapCodec<PGCHorizontalFallingBlock> CODEC = simpleCodec(properties -> new PGCHorizontalFallingBlock(properties, Shapes.block()));
-
     private final Function<BlockState, VoxelShape> shape;
 
     public PGCHorizontalFallingBlock(BlockBehaviour.Properties properties, VoxelShape shape) {
@@ -33,29 +31,24 @@ public class PGCHorizontalFallingBlock extends FallingBlock {
     }
 
     @Override
-    protected MapCodec<? extends FallingBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         var offset = state.getOffset(level, pos);
         return shape.apply(state).move(offset.x, offset.y, offset.z);
     }
 
     @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
+    public BlockState rotate(BlockState state, Rotation rotation) {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
+    public BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 

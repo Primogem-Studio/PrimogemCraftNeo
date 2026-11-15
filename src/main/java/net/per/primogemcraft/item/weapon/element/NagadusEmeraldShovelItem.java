@@ -108,7 +108,7 @@ public class NagadusEmeraldShovelItem extends WishWeaponShovelItem {
         var stack = context.getItemInHand();
         player.swing(context.getHand(), true);
         player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.DENDRO, COOLDOWN, false));
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        stack.hurtAndBreak(DURABILITY_LOSS, player, item -> {
         });
         server.playSound(null, pos, PGCSounds.SOIL_SHAPING.get(), SoundSource.NEUTRAL, SOUND_VOLUME, SOUND_PITCH);
         var reshaped = reshaped(server.getRandom());

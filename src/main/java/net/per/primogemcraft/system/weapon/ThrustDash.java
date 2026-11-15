@@ -6,9 +6,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.TickEvent;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamage;
 
@@ -25,7 +25,7 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
  * the player ends up, and deals the thrust's contact damage to every creature passed on the way.
  * Each creature is damaged at most once per dash.
  */
-@EventBusSubscriber(modid = MOD_ID)
+@Mod.EventBusSubscriber(modid = MOD_ID)
 public final class ThrustDash {
     private static final Map<UUID, Dash> ACTIVE = new HashMap<>();
     private static final double STEP = 0.35D;
@@ -42,8 +42,8 @@ public final class ThrustDash {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (!(event.player instanceof ServerPlayer player)) return;
         var dash = ACTIVE.get(player.getUUID());
         if (dash == null) return;
         var level = player.serverLevel();

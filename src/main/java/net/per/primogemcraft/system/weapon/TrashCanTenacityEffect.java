@@ -4,14 +4,14 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.per.primogemcraft.registry.PGCEffects;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
+@Mod.EventBusSubscriber(modid = MOD_ID)
 public class TrashCanTenacityEffect extends MobEffect {
     public static final double NEGATE_BASE_CHANCE = 0.04D;
     public static final double NEGATE_CHANCE_PER_LEVEL = 0.01D;
@@ -27,9 +27,9 @@ public class TrashCanTenacityEffect extends MobEffect {
     }
 
     @SubscribeEvent
-    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+    public static void onIncomingDamage(LivingHurtEvent event) {
         var entity = event.getEntity();
-        var instance = entity.getEffect(PGCEffects.TRASH_CAN_TENACITY);
+        var instance = entity.getEffect(PGCEffects.TRASH_CAN_TENACITY.get());
         if (instance == null) return;
         if (entity.getRandom().nextDouble() >= negateChance(instance.getAmplifier())) return;
         event.setCanceled(true);

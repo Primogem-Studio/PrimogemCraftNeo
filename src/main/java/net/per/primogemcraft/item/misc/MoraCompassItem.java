@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.misc;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -43,13 +44,13 @@ public class MoraCompassItem extends DescribedItem {
             player.sendSystemMessage(Component.translatable("message.primogemcraft.compass.restricted"));
             return;
         }
-        stack.set(PGCDataComponents.COMPASS_TARGET.get(), BuiltInRegistries.ITEM.getKey(state.getBlock().asItem()));
+        StackComponents.set(stack, PGCDataComponents.COMPASS_TARGET, BuiltInRegistries.ITEM.getKey(state.getBlock().asItem()));
         player.displayClientMessage(Component.translatable("message.primogemcraft.compass.recorded", state.getBlock().getName()), true);
     }
 
     private void search(ServerPlayer player, ItemStack stack) {
         player.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
-        var target = stack.get(PGCDataComponents.COMPASS_TARGET.get());
+        var target = StackComponents.get(stack, PGCDataComponents.COMPASS_TARGET);
         if (target == null) {
             player.sendSystemMessage(Component.translatable("message.primogemcraft.compass.no_target"));
             return;

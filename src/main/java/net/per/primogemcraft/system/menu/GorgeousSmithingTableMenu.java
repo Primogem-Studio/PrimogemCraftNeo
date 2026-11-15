@@ -238,7 +238,7 @@ public class GorgeousSmithingTableMenu extends AbstractContainerMenu {
             setCarried(source.split(amount));
         } else {
             if (!acceptsMaterial(carried)) return false;
-            if (source.isEmpty() || ItemStack.isSameItemSameComponents(source, carried)) {
+            if (source.isEmpty() || ItemStack.isSameItemSameTags(source, carried)) {
                 var room = source.isEmpty() ? carried.getMaxStackSize() : source.getMaxStackSize() - source.getCount();
                 var wanted = mode == BLUE_PICKUP_HALF ? 1 : carried.getCount();
                 var moved = Math.min(wanted, room);
@@ -297,7 +297,7 @@ public class GorgeousSmithingTableMenu extends AbstractContainerMenu {
             if (available.isEmpty()) break;
             var target = slots.get(FIRST_MATERIAL_SLOT + offset);
             var stored = target.getItem();
-            if (!stored.isEmpty() && !ItemStack.isSameItemSameComponents(stored, available)) continue;
+            if (!stored.isEmpty() && !ItemStack.isSameItemSameTags(stored, available)) continue;
             var room = stored.isEmpty() ? available.getMaxStackSize() : stored.getMaxStackSize() - stored.getCount();
             if (room <= 0) continue;
             var taken = source.removeItem(index, room);

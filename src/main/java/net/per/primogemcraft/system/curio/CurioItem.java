@@ -1,5 +1,6 @@
 package net.per.primogemcraft.system.curio;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -76,9 +77,9 @@ public class CurioItem extends DescribedItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         appendTrigger(stack, tooltip);
-        super.appendHoverText(stack, context, tooltip, flag);
+        super.appendHoverText(stack, level, tooltip, flag);
         appendBar(stack, tooltip);
     }
 
@@ -87,7 +88,7 @@ public class CurioItem extends DescribedItem {
     }
 
     protected void appendBar(ItemStack stack, List<Component> tooltip) {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         if (bar == null || !bar.visible() || bar.denominator() <= 0) return;
         var fillsUp = barFillsUp();
         var shown = fillsUp ? bar.numerator() : bar.remaining();

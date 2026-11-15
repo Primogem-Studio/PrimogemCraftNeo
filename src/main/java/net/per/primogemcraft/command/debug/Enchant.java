@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.neoforged.neoforge.server.command.EnumArgument;
+import net.minecraftforge.server.command.EnumArgument;
 import net.per.primogemcraft.enchantment.EnchantChoice;
 import net.per.primogemcraft.enchantment.EnchantCost;
 import net.per.primogemcraft.enchantment.EnchantGrade;
@@ -59,7 +59,7 @@ public class Enchant {
 
     private static ItemStack book(ItemStack result) {
         var book = new ItemStack(Items.ENCHANTED_BOOK);
-        EnchantmentHelper.setEnchantments(book, EnchantmentHelper.getEnchantmentsForCrafting(result));
+        EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(result), book);
         return book;
     }
 }

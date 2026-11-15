@@ -23,8 +23,10 @@ public class PrescriptionEffect extends CurioEffect {
     public PrescriptionEffect(Prescription prescription) {
         super(MobEffectCategory.HARMFUL, COLOR);
         this.prescription = prescription;
-        for (var modifier : prescription.modifiers())
-            addAttributeModifier(modifier.attribute(), modifierId(modifier.attribute()), modifier.amount(), modifier.operation());
+        for (var modifier : prescription.modifiers()) {
+            var attribute = modifier.attribute().get();
+            addAttributeModifier(attribute, net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(modifierId(attribute)).toString(), modifier.amount(), modifier.operation());
+        }
     }
 
     public Prescription prescription() {
@@ -36,28 +38,27 @@ public class PrescriptionEffect extends CurioEffect {
         return Component.translatable(NAME_KEY, Component.translatable(prescription.label()));
     }
 
-    @Override
     public void onEffectStarted(LivingEntity entity, int amplifier) {
         if (prescription.started() == null || !(entity instanceof ServerPlayer player)) return;
         prescription.started().accept(player);
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return prescription.period() != null;
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        if (prescription.period() == null || !(entity instanceof ServerPlayer player)) return true;
+    public void applyEffectTick(LivingEntity entity, int amplifier)
+    {
+        if (prescription.period() == null || !(entity instanceof ServerPlayer player)) return;
         var key = TIMER_PREFIX + prescription.id();
-        if (!PGCTimer.isDone(player, key)) return true;
+        if (!PGCTimer.isDone(player, key)) return;
         PGCTimer.set(player, key, prescription.periodTicks());
         prescription.period().accept(player);
-        return true;
+        return;
     }
 
-    @Override
     public void onMobHurt(LivingEntity entity, int amplifier, DamageSource source, float amount) {
         if (prescription.hurt() == null || !(entity instanceof ServerPlayer player)) return;
         var key = TIMER_PREFIX + prescription.id() + "/hurt";
@@ -66,7 +67,7 @@ public class PrescriptionEffect extends CurioEffect {
         prescription.hurt().accept(player);
     }
 
-    private static ResourceLocation modifierId(Holder<Attribute> attribute) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, "prescription/" + attribute.unwrapKey().orElseThrow().location().getPath());
+    private static ResourceLocation modifierId(Attribute attribute) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, "prescription/" + net.minecraft.core.registries.BuiltInRegistries.ATTRIBUTE.getKey(attribute).getPath());
     }
 }

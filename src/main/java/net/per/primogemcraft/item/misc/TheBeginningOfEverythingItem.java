@@ -41,7 +41,7 @@ public class TheBeginningOfEverythingItem extends DescribedItem {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+    public int getUseDuration(ItemStack stack) {
         return USE_DURATION;
     }
 

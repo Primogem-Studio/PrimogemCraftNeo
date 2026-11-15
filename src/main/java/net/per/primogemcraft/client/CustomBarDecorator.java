@@ -1,9 +1,10 @@
 package net.per.primogemcraft.client;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.IItemDecorator;
+import net.minecraftforge.client.IItemDecorator;
 import net.per.primogemcraft.component.CustomBar;
 import net.per.primogemcraft.registry.PGCDataComponents;
 
@@ -18,7 +19,7 @@ public class CustomBarDecorator implements IItemDecorator {
 
     @Override
     public boolean render(GuiGraphics graphics, Font font, ItemStack stack, int x, int y) {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         if (bar == null || !bar.visible()) return false;
         ItemBar.render(graphics, x, y, ItemBar.DURABILITY_TOP, ItemBar.filled(points(bar), bar.denominator()), color);
         return true;

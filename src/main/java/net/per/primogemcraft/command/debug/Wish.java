@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.neoforged.neoforge.server.command.EnumArgument;
+import net.minecraftforge.server.command.EnumArgument;
 import net.per.primogemcraft.entity.misc.WishEntity;
 import net.per.primogemcraft.system.wish.WishBanner;
 import net.per.primogemcraft.system.wish.WishRarity;

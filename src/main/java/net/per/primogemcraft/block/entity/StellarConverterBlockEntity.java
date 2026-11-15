@@ -5,7 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.WorldlyContainer;
@@ -15,10 +15,9 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import net.per.primogemcraft.registry.PGCBlockEntities;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.registry.PGCRecipeTypes;
@@ -28,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.IntStream;
 
-public class StellarConverterBlockEntity extends BaseContainerBlockEntity implements ContainerData, WorldlyContainer {
+public class StellarConverterBlockEntity extends net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity implements ContainerData, WorldlyContainer {
     public static final int SLOT_COUNT = 5;
     public static final int FUEL_SLOT = 0;
     public static final int FIRST_INPUT_SLOT = 1;
@@ -82,23 +81,22 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         charge = tag.getInt(CHARGE_TAG);
         firstDisabled = tag.getBoolean(FIRST_DISABLED_TAG);
         secondDisabled = tag.getBoolean(SECOND_DISABLED_TAG);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putInt(CHARGE_TAG, charge);
         tag.putBoolean(FIRST_DISABLED_TAG, firstDisabled);
         tag.putBoolean(SECOND_DISABLED_TAG, secondDisabled);
     }
 
-    @Override
-    public void writeClientSideData(AbstractContainerMenu menu, RegistryFriendlyByteBuf buffer) {
+    public void writeOpeningData(net.minecraft.network.FriendlyByteBuf buffer) {
         buffer.writeBlockPos(worldPosition);
     }
 
@@ -206,7 +204,7 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
         else secondCost = cost;
         if (conversion == null || charge < cost) return false;
         var output = items.get(outputSlot);
-        if (!output.isEmpty() && !ItemStack.isSameItemSameComponents(output, conversion.output())) return false;
+        if (!output.isEmpty() && !ItemStack.isSameItemSameTags(output, conversion.output())) return false;
         var stored = output.isEmpty() ? 0 : output.getCount();
         if (stored + conversion.output().getCount() > conversion.output().getMaxStackSize()) return false;
         input.shrink(conversion.input().getCount());
@@ -219,9 +217,14 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
     private StellarConverterRecipe.Conversion findConversion(ItemStack stack) {
         if (stack.isEmpty() || !(level instanceof ServerLevel server)) return null;
         for (var holder : server.getRecipeManager().getAllRecipesFor(PGCRecipeTypes.STELLAR_CONVERTER.get())) {
-            var conversion = holder.value().match(stack);
+            var conversion = holder.match(stack);
             if (conversion != null) return conversion;
         }
         return null;
+    }
+
+    @Override
+    public boolean stillValid(net.minecraft.world.entity.player.Player player) {
+        return net.minecraft.world.Container.stillValidBlockEntity(this, player);
     }
 }

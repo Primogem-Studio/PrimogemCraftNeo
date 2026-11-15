@@ -26,7 +26,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.per.primogemcraft.compat.network.PayloadRegistrar;
 import net.per.primogemcraft.network.ParticleBurstPayload;
 import net.per.primogemcraft.registry.PGCEntities;
 import net.per.primogemcraft.registry.PGCItems;
@@ -97,7 +97,7 @@ public class WishEntity extends Entity {
     public static void spawnRing(ServerLevel level, ServerPlayer player, List<WishResult> results) {
         var count = results.size();
         if (count == 1) {
-            spawn(level, player, results.getFirst(), player.getX(), player.getY() + SINGLE_SPAWN_HEIGHT, player.getZ());
+            spawn(level, player, results.get(0), player.getX(), player.getY() + SINGLE_SPAWN_HEIGHT, player.getZ());
             return;
         }
 
@@ -164,7 +164,7 @@ public class WishEntity extends Entity {
     public WishRarity displayRarity() {
         if (!entityData.get(DATA_SUNGLASSES)) return rarity();
         return switch (rarity()) {
-            case BLUE -> WishRarity.BLUE;
+            case BLUE -> WishRarity.PURPLE;
             case PURPLE, GOLD -> WishRarity.GOLD;
         };
     }
@@ -199,7 +199,7 @@ public class WishEntity extends Entity {
 
     public boolean resolve(ServerLevel level, boolean playRevealSound) {
         if (resolved) return false;
-        var table = level.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTable()));
+        var table = level.getServer().getLootData().getLootTable(lootTable());
         var params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, position()).withOptionalParameter(LootContextParams.THIS_ENTITY, this).create(LootContextParamSets.CHEST);
         for (var stack : table.getRandomItems(params)) spawnAtLocation(stack);
         if (playRevealSound)
@@ -266,14 +266,14 @@ public class WishEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA_BANNER, WishBanner.ACQUAINT.ordinal());
-        builder.define(DATA_RARITY, WishRarity.BLUE.ordinal());
-        builder.define(DATA_CAPTURING_RADIANCE, false);
-        builder.define(DATA_COLORFUL, false);
-        builder.define(DATA_SUNGLASSES, false);
-        builder.define(DATA_CAPTURE_STATE, CaptureState.NONE.ordinal());
-        builder.define(DATA_RADIANCE_VISIBLE, false);
+    protected void defineSynchedData() {
+        this.entityData.define(DATA_BANNER, WishBanner.ACQUAINT.ordinal());
+        this.entityData.define(DATA_RARITY, WishRarity.BLUE.ordinal());
+        this.entityData.define(DATA_CAPTURING_RADIANCE, false);
+        this.entityData.define(DATA_COLORFUL, false);
+        this.entityData.define(DATA_SUNGLASSES, false);
+        this.entityData.define(DATA_CAPTURE_STATE, CaptureState.NONE.ordinal());
+        this.entityData.define(DATA_RADIANCE_VISIBLE, false);
     }
 
     @Override
@@ -317,7 +317,7 @@ public class WishEntity extends Entity {
     private void convert(ServerLevel level) {
         entityData.set(DATA_CAPTURE_STATE, CaptureState.READY.ordinal());
         entityData.set(DATA_RADIANCE_VISIBLE, true);
-        PacketDistributor.sendToPlayersNear(level, null, getX(), getY(), getZ(), CULL_RADIUS, ParticleBurstPayload.at(CAPTURE_PARTICLE_KIND, this));
+        PayloadRegistrar.sendToPlayersNear(level, null, getX(), getY(), getZ(), CULL_RADIUS, ParticleBurstPayload.at(CAPTURE_PARTICLE_KIND, this));
         level.playSound(null, getX(), getY(), getZ(), PGCSounds.CAPTURING_RADIANCE.get(), SoundSource.NEUTRAL, 1.0F, 1.0F);
     }
 
@@ -385,7 +385,7 @@ public class WishEntity extends Entity {
     }
 
     private void rollRewards(ServerLevel level) {
-        var table = level.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTable()));
+        var table = level.getServer().getLootData().getLootTable(lootTable());
         var params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, position()).withOptionalParameter(LootContextParams.THIS_ENTITY, this).create(LootContextParamSets.CHEST);
 
         var ordinary = new ArrayList<ItemStack>();

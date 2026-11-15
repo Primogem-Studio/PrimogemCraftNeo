@@ -17,6 +17,6 @@ public final class CanOpener {
         var level = PGCEnchantments.levelOf(player.level(), tool, PGCEnchantments.CAN_OPENER);
         if (level <= 0 || player.getRandom().nextDouble() >= level * EXTRA_LOOT_CHANCE_PER_LEVEL) return;
         CurioLoot.dropTable(CurioLoot.jarLoot(state), player.serverLevel(), position, state, player);
-        tool.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
+        tool.hurtAndBreak(1, player, r -> r.broadcastBreakEvent(EquipmentSlot.MAINHAND));
     }
 }

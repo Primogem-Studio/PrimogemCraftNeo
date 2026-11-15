@@ -1,12 +1,14 @@
 package net.per.primogemcraft.item.curio;
 
+import net.minecraft.world.level.Level;
+import net.per.primogemcraft.compat.component.StackComponents;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.per.primogemcraft.compat.network.ByteBufCodecs;
+import net.per.primogemcraft.compat.network.StreamCodec;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
@@ -37,14 +39,14 @@ public class FootprintsOfFateItem extends CurioItem {
     }
 
     public static Roll roll(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.FOOTPRINTS_ROLL.get(), Roll.NONE);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.FOOTPRINTS_ROLL, Roll.NONE);
     }
 
     public static Roll ensure(ItemStack stack, RandomSource random, boolean creative) {
-        var roll = stack.get(PGCDataComponents.FOOTPRINTS_ROLL.get());
+        var roll = StackComponents.get(stack, PGCDataComponents.FOOTPRINTS_ROLL);
         if (roll != null) return roll;
         var value = new Roll(creative ? 1.0D : Mth.nextDouble(random, MIN_CHANCE, MAX_CHANCE), Mth.nextDouble(random, MIN_DISCOUNT, MAX_DISCOUNT));
-        stack.set(PGCDataComponents.FOOTPRINTS_ROLL.get(), value);
+        StackComponents.set(stack, PGCDataComponents.FOOTPRINTS_ROLL, value);
         return value;
     }
 
@@ -58,7 +60,7 @@ public class FootprintsOfFateItem extends CurioItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         appendTrigger(stack, tooltip);
         var prefix = stack.getDescriptionId() + TOOLTIP_PREFIX;
         tooltip.add(Component.translatable(prefix + 0));

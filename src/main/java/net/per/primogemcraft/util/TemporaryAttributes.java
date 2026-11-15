@@ -1,30 +1,37 @@
 package net.per.primogemcraft.util;
 
-import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.TickEvent;
+import net.per.primogemcraft.compat.attribute.AttributesCompat;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
+/**
+ * 有时限的临时属性加成。
+ *
+ * <p>1.21 用 {@code addOrUpdateTransientModifier(ResourceLocation 版修饰器)}；
+ * 1.20.1 改为经 {@link AttributesCompat} 把 id 映射为 UUID 后先移除再添加，
+ * 保证同一 id 不叠加。到期由服务端 tick 统一回收。
+ */
+@Mod.EventBusSubscriber(modid = MOD_ID)
 public final class TemporaryAttributes {
     private static final Map<LivingEntity, Map<ResourceLocation, Applied>> APPLIED = new HashMap<>();
 
     private TemporaryAttributes() {
     }
 
-    public static void apply(LivingEntity entity, ResourceLocation id, Holder<Attribute> attribute, double amount, AttributeModifier.Operation operation, int ticks) {
+    public static void apply(LivingEntity entity, ResourceLocation id, Attribute attribute, double amount, AttributeModifier.Operation operation, int ticks) {
         var instance = entity.getAttribute(attribute);
         if (instance == null) return;
-        instance.addOrUpdateTransientModifier(new AttributeModifier(id, amount, operation));
+        AttributesCompat.addOrUpdateTransient(instance, AttributesCompat.modifier(id, amount, operation));
         APPLIED.computeIfAbsent(entity, key -> new HashMap<>()).put(id, new Applied(attribute, ticks));
     }
 
@@ -44,27 +51,29 @@ public final class TemporaryAttributes {
     }
 
     @SubscribeEvent
-    public static void onServerTick(ServerTickEvent.Post event) {
-        APPLIED.entrySet().removeIf(entity -> {
-            entity.getValue().entrySet().removeIf(entry -> {
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
+        APPLIED.entrySet().removeIf(entityEntry -> {
+            var entity = entityEntry.getKey();
+            entityEntry.getValue().entrySet().removeIf(entry -> {
                 if (--entry.getValue().remaining > 0) return false;
-                detach(entity.getKey(), entry.getKey(), entry.getValue().attribute);
+                detach(entity, entry.getKey(), entry.getValue().attribute);
                 return true;
             });
-            return entity.getValue().isEmpty();
+            return entityEntry.getValue().isEmpty();
         });
     }
 
-    private static void detach(LivingEntity entity, ResourceLocation id, Holder<Attribute> attribute) {
+    private static void detach(LivingEntity entity, ResourceLocation id, Attribute attribute) {
         var instance = entity.getAttribute(attribute);
-        if (instance != null) instance.removeModifier(id);
+        if (instance != null) AttributesCompat.removeModifier(instance, id);
     }
 
     private static final class Applied {
-        private final Holder<Attribute> attribute;
+        private final Attribute attribute;
         private int remaining;
 
-        private Applied(Holder<Attribute> attribute, int remaining) {
+        private Applied(Attribute attribute, int remaining) {
             this.attribute = attribute;
             this.remaining = remaining;
         }

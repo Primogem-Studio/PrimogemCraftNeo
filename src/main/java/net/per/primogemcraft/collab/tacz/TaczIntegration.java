@@ -1,6 +1,6 @@
 package net.per.primogemcraft.collab.tacz;
 
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 
 /**
  * The TACZ half of the firearm linkage. TACZ is an optional dependency: nothing here reaches TACZ types,

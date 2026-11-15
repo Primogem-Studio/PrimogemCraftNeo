@@ -65,7 +65,7 @@ public class ShivadaJadeHoeItem extends WishWeaponHoeItem {
         server.playSound(null, pos, SoundEvents.SNOW_FALL, SoundSource.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
         var stack = context.getItemInHand();
         player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.CRYO, COOLDOWN, false));
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        stack.hurtAndBreak(DURABILITY_LOSS, player, item -> {
         });
         player.swing(context.getHand(), true);
         return InteractionResult.SUCCESS;

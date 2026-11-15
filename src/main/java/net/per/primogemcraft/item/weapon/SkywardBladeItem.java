@@ -48,17 +48,16 @@ public class SkywardBladeItem extends WishWeaponItem {
     private static final String POWER_TEXT = "power";
 
     public SkywardBladeItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant(),
-                WeaponModifier.of(Attributes.ATTACK_DAMAGE, POWER_BASE, POWER_STEP, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant(), WeaponModifier.of(Attributes.ATTACK_DAMAGE, POWER_BASE, POWER_STEP, AttributeModifier.Operation.MULTIPLY_TOTAL));
     }
 
     @Override
     public List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
         if (isHeld(player, slot, stack) || WeaponCharge.of(stack) <= 0) return List.of();
         return List.of(
-                WeaponModifier.conditional(Attributes.ATTACK_SPEED, AttributeModifier.Operation.ADD_VALUE,
+                WeaponModifier.conditional(Attributes.ATTACK_SPEED, AttributeModifier.Operation.ADDITION,
                         (owner, worn, value) -> SPEED_BASE + SPEED_STEP * (value - 1)),
-                WeaponModifier.conditional(Attributes.MOVEMENT_SPEED, AttributeModifier.Operation.ADD_VALUE,
+                WeaponModifier.conditional(Attributes.MOVEMENT_SPEED, AttributeModifier.Operation.ADDITION,
                         (owner, worn, value) -> MOVE_BASE + MOVE_STEP * (value - 1)));
     }
 
@@ -83,7 +82,7 @@ public class SkywardBladeItem extends WishWeaponItem {
         if (WeaponCharge.of(stack) >= REFRESH_THRESHOLD) return super.use(level, player, hand);
         WeaponCharge.set(stack, ACTIVE_HITS);
         player.getCooldowns().addCooldown(stack.getItem(), ABILITY_COOLDOWN);
-        level.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_RIPTIDE_2.value(), SoundSource.PLAYERS, 1.5F, 3.0F);
+        level.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_RIPTIDE_2, SoundSource.PLAYERS, 1.5F, 3.0F);
         return super.use(level, player, hand);
     }
 

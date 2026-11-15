@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:vajrada_amethyst_ore"
+  },
+  "result": "primogemcraft:vajrada_amethyst_fragment",
+  "count": 1
+}

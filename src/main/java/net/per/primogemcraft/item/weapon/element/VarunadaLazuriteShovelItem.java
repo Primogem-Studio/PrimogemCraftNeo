@@ -56,7 +56,7 @@ public class VarunadaLazuriteShovelItem extends WishWeaponShovelItem {
         var stack = context.getItemInHand();
         server.setBlock(pos, (block == Blocks.CLAY ? Blocks.SAND : Blocks.CLAY).defaultBlockState(), Block.UPDATE_ALL);
         server.playSound(null, pos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        stack.hurtAndBreak(DURABILITY_LOSS, player, item -> {
         });
         if (server.getRandom().nextDouble() < FAILURE_CHANCE)
             server.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);

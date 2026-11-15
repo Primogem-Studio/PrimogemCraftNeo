@@ -126,7 +126,7 @@ public final class EventRegistry {
             current += group.weight();
             if (roll <= current) return group;
         }
-        return all.getLast();
+        return all.get(all.size() - 1);
     }
 
     public static EventGroup randomRichGroup(RandomSource random) {

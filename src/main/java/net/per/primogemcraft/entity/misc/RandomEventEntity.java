@@ -89,13 +89,13 @@ public class RandomEventEntity extends Entity {
     }
 
     @Override
-    public boolean ignoreExplosion(Explosion explosion) {
+    public boolean ignoreExplosion() {
         return true;
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA_GROUP, 0);
+    protected void defineSynchedData() {
+        this.entityData.define(DATA_GROUP, 0);
     }
 
     @Override

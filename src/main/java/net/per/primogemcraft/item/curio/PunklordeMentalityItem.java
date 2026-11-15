@@ -30,7 +30,7 @@ public class PunklordeMentalityItem extends CurioItem {
         }
     }
 
-    private static void inflict(ServerPlayer player, Entity attacker, Holder<MobEffect> effect, int amplifier) {
+    private static void inflict(ServerPlayer player, Entity attacker, MobEffect effect, int amplifier) {
         if (!(attacker instanceof LivingEntity living) || living == player) return;
         living.addEffect(new MobEffectInstance(effect, DURATION, amplifier, false, false));
     }

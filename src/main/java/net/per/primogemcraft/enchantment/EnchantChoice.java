@@ -71,7 +71,7 @@ public final class EnchantChoice {
         if (shown.isEmpty()) return false;
         var cards = new ArrayList<ChoiceCard>();
         for (var option : shown) cards.add(presentation(option));
-        ChoiceRegistry.open(player, Component.translatable(TITLE_KEY), Component.translatable(HINT_KEY), ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, ChoiceSupport.ENCHANT_CARDS, ChoiceSupport.spin(LADDER.getFirst()), cards, index -> {
+        ChoiceRegistry.open(player, Component.translatable(TITLE_KEY), Component.translatable(HINT_KEY), ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, ChoiceSupport.ENCHANT_CARDS, ChoiceSupport.spin(LADDER.get(0)), cards, index -> {
             if (index < 0 || index >= shown.size()) return true;
             var option = shown.get(index);
             if (!option.cost().payable().test(player)) {
@@ -118,7 +118,7 @@ public final class EnchantChoice {
 
     private static boolean applicable(EnchantOption option) {
         var preview = option.preview();
-        return !preview.isEmpty() && !EnchantmentHelper.getEnchantmentsForCrafting(preview).isEmpty();
+        return !preview.isEmpty() && !EnchantmentHelper.getEnchantments(preview).isEmpty();
     }
 
     private static void playEnchantSound(ServerPlayer player) {
@@ -138,8 +138,8 @@ public final class EnchantChoice {
 
     private static Component description(EnchantOption option, ItemStack preview) {
         var content = Component.empty();
-        for (var enchantment : EnchantmentHelper.getEnchantmentsForCrafting(preview).entrySet()) {
-            content.append(Enchantment.getFullname(enchantment.getKey(), enchantment.getIntValue())).append(LINE_BREAK);
+        for (var enchantment : EnchantmentHelper.getEnchantments(preview).entrySet()) {
+            content.append(enchantment.getKey().getFullname(enchantment.getValue())).append(LINE_BREAK);
         }
         return content.append(Component.translatable(LEVEL_KEY, option.level()));
     }

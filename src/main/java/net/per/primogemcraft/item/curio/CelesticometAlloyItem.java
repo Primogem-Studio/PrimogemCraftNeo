@@ -1,6 +1,5 @@
 package net.per.primogemcraft.item.curio;
-
-import net.minecraft.core.component.DataComponents;
+import net.per.primogemcraft.compat.component.VanillaComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.per.primogemcraft.system.curio.*;
@@ -20,8 +19,8 @@ public class CelesticometAlloyItem extends CurioItem {
         if (Curios.marked(stack, mark) || context.player().isCreative()) return;
         Curios.mark(stack, mark);
         switch (Mth.nextInt(context.random(), 1, 3)) {
-            case 2 -> stack.set(DataComponents.CUSTOM_NAME, Component.translatable(TYPE_I_KEY));
-            case 3 -> stack.set(DataComponents.CUSTOM_NAME, Component.translatable(TYPE_II_KEY));
+            case 2 -> VanillaComponents.setCustomName(stack, Component.translatable(TYPE_I_KEY));
+            case 3 -> VanillaComponents.setCustomName(stack, Component.translatable(TYPE_II_KEY));
             default -> {
             }
         }

@@ -20,13 +20,12 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.util.TriState;
+
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.util.Advancements;
+import net.minecraft.world.InteractionHand;
 
 public class March7thStatueBlock extends PGCHorizontalBlock {
-    public static final MapCodec<March7thStatueBlock> CODEC = simpleCodec(properties -> new March7thStatueBlock(properties, Shapes.block()));
-
     private static final float PLACE_VOLUME = 0.4F;
     private static final float BREAK_VOLUME = 0.3F;
     private static final float PITCH = 1.0F;
@@ -37,13 +36,8 @@ public class March7thStatueBlock extends PGCHorizontalBlock {
     }
 
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, BlockState plant) {
-        return TriState.TRUE;
+    public boolean canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, net.minecraftforge.common.IPlantable plantable) {
+        return true;
     }
 
     @Override
@@ -52,13 +46,13 @@ public class March7thStatueBlock extends PGCHorizontalBlock {
     }
 
     @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         super.onPlace(state, level, pos, oldState, movedByPiston);
         puzzled(level, pos);
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, fromPos, movedByPiston);
         puzzled(level, pos);
     }
@@ -83,12 +77,12 @@ public class March7thStatueBlock extends PGCHorizontalBlock {
     }
 
     @Override
-    protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
+    public void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
         startled(level, hit.getBlockPos());
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide()) {
             level.playSound(null, pos, PGCSounds.MARCH_7TH_GIGGLE.get(), SoundSource.BLOCKS, BREAK_VOLUME, PITCH);
             if (player instanceof ServerPlayer serverPlayer) Advancements.grant(serverPlayer, "repeat_maiden");

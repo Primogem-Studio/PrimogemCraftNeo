@@ -26,9 +26,9 @@ import net.per.primogemcraft.util.Advancements;
 import net.per.primogemcraft.util.PlayerFlags;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
+import net.minecraft.world.InteractionHand;
 
 public class TrashCanBlock extends PGCHorizontalBlock implements EntityBlock, ContainerWindowBlock {
-    public static final MapCodec<TrashCanBlock> CODEC = simpleCodec(properties -> new TrashCanBlock(properties, Shapes.block()));
     public static final int CONTAINER_SIZE = 27;
 
     private static final ResourceLocation LOOTED_FLAG = ResourceLocation.fromNamespaceAndPath(MOD_ID, "trash/goods");
@@ -42,17 +42,12 @@ public class TrashCanBlock extends PGCHorizontalBlock implements EntityBlock, Co
     }
 
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     public int containerSize() {
         return CONTAINER_SIZE;
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ContainerWindowBlocks.open(level, pos, player);
         if (player instanceof ServerPlayer serverPlayer) Advancements.grant(serverPlayer, "once_you_set_foot_on_this_path");
         return InteractionResult.SUCCESS;
@@ -64,18 +59,18 @@ public class TrashCanBlock extends PGCHorizontalBlock implements EntityBlock, Co
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         if (!state.is(newState.getBlock())) ContainerWindowBlocks.dropContents(level, pos);
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
     @Override
-    protected boolean hasAnalogOutputSignal(BlockState state) {
+    public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos));
     }
 

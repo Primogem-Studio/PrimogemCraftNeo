@@ -1,17 +1,17 @@
 package net.per.primogemcraft.client;
 
 import net.minecraft.client.Minecraft;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.client.event.InputEvent;
+import net.per.primogemcraft.compat.network.PayloadRegistrar;
 import net.per.primogemcraft.network.LuckySpecialTicketCashOutPayload;
 import net.per.primogemcraft.registry.PGCItems;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
 public final class LuckySpecialTicketInput {
     @SubscribeEvent
     public static void input(InputEvent.InteractionKeyMappingTriggered event) {
@@ -20,6 +20,6 @@ public final class LuckySpecialTicketInput {
         var player = minecraft.player;
         if (minecraft.screen != null || player == null || player.isSpectator()
                 || !player.getMainHandItem().is(PGCItems.LUCKY_SPECIAL_TICKET.get())) return;
-        PacketDistributor.sendToServer(new LuckySpecialTicketCashOutPayload());
+        PayloadRegistrar.sendToServer(new LuckySpecialTicketCashOutPayload());
     }
 }

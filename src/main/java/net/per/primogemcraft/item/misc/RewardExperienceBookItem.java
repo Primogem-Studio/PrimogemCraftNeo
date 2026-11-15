@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.misc;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -9,8 +10,8 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.per.primogemcraft.client.RewardBooks;
 import net.per.primogemcraft.item.tool.DescribedItem;
 import net.per.primogemcraft.registry.PGCDataComponents;
@@ -61,12 +62,12 @@ public class RewardExperienceBookItem extends DescribedItem {
     }
 
     private static List<UUID> learners(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.REWARD_BOOK_LEARNERS.get(), List.of());
+        return StackComponents.getOrDefault(stack, PGCDataComponents.REWARD_BOOK_LEARNERS, List.of());
     }
 
     private static void learn(ItemStack stack, UUID playerId) {
         var learners = new ArrayList<>(learners(stack));
         learners.add(playerId);
-        stack.set(PGCDataComponents.REWARD_BOOK_LEARNERS.get(), List.copyOf(learners));
+        StackComponents.set(stack, PGCDataComponents.REWARD_BOOK_LEARNERS, List.copyOf(learners));
     }
 }

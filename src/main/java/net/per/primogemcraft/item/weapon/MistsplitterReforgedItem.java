@@ -48,7 +48,7 @@ public class MistsplitterReforgedItem extends WishWeaponItem {
     private static final String SATURATION_TEXT = "saturation";
 
     public MistsplitterReforgedItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant());
     }
 
     @Override
@@ -94,7 +94,7 @@ public class MistsplitterReforgedItem extends WishWeaponItem {
                 strike(server, candidate.blockPosition());
                 player.getFoodData().setFoodLevel(Math.max(0, player.getFoodData().getFoodLevel() - FOOD_COST));
             }
-        server.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_THUNDER.value(), SoundSource.PLAYERS, 2.0F, 0.3F);
+        server.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, 2.0F, 0.3F);
         return super.use(level, player, hand);
     }
 

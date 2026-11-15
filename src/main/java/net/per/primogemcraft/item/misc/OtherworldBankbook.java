@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.misc;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -36,11 +37,11 @@ public final class OtherworldBankbook {
     }
 
     public static int stored(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.BANKBOOK_FRAGMENTS.get(), 0);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.BANKBOOK_FRAGMENTS, 0);
     }
 
     public static int mode(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.BANKBOOK_MODE.get(), MODE_OFF);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.BANKBOOK_MODE, MODE_OFF);
     }
 
     public static int room(ItemStack stack) {
@@ -49,7 +50,7 @@ public final class OtherworldBankbook {
 
     public static int cycle(ItemStack stack) {
         var next = (mode(stack) + 1) % MODE_COUNT;
-        stack.set(PGCDataComponents.BANKBOOK_MODE.get(), next);
+        StackComponents.set(stack, PGCDataComponents.BANKBOOK_MODE, next);
         return next;
     }
 
@@ -62,16 +63,16 @@ public final class OtherworldBankbook {
     }
 
     public static int store(ItemStack stack, int amount) {
-        var accepted = Math.clamp(amount, 0, room(stack));
+        var accepted = net.minecraft.util.Mth.clamp(amount, 0, room(stack));
         if (accepted <= 0) return 0;
-        stack.set(PGCDataComponents.BANKBOOK_FRAGMENTS.get(), stored(stack) + accepted);
+        StackComponents.set(stack, PGCDataComponents.BANKBOOK_FRAGMENTS, stored(stack) + accepted);
         return accepted;
     }
 
     public static int withdraw(ItemStack stack, int amount) {
-        var taken = Math.clamp(amount, 0, stored(stack));
+        var taken = net.minecraft.util.Mth.clamp(amount, 0, stored(stack));
         if (taken <= 0) return 0;
-        stack.set(PGCDataComponents.BANKBOOK_FRAGMENTS.get(), stored(stack) - taken);
+        StackComponents.set(stack, PGCDataComponents.BANKBOOK_FRAGMENTS, stored(stack) - taken);
         return taken;
     }
 
@@ -146,7 +147,7 @@ public final class OtherworldBankbook {
     }
 
     private static int takeFragments(ServerPlayer player, int amount) {
-        var taken = Math.clamp(amount, 0, PlayerItems.count(player, PGCItems.COSMIC_FRAGMENT.get()));
+        var taken = net.minecraft.util.Mth.clamp(amount, 0, PlayerItems.count(player, PGCItems.COSMIC_FRAGMENT.get()));
         if (taken <= 0) return 0;
         PlayerItems.take(player, PGCItems.COSMIC_FRAGMENT.get(), taken);
         return taken;

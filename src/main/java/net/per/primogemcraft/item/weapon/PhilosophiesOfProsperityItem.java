@@ -74,7 +74,7 @@ public class PhilosophiesOfProsperityItem extends WishWeaponItem {
     private static final int AMPLIFIER_OFFSET = 1;
 
     public PhilosophiesOfProsperityItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant());
     }
 
     @Override
@@ -138,7 +138,7 @@ public class PhilosophiesOfProsperityItem extends WishWeaponItem {
         var stack = player.getItemInHand(hand);
         if (Element.of(stack) != Element.ELECTRO || !player.isShiftKeyDown()) return InteractionResultHolder.pass(stack);
         if (!(level instanceof ServerLevel)) return InteractionResultHolder.success(stack);
-        player.addEffect(new MobEffectInstance(PGCEffects.MAGATAMA, MAGATAMA_DURATION,
+        player.addEffect(new MobEffectInstance(PGCEffects.MAGATAMA.get(), MAGATAMA_DURATION,
                 ElementWeapons.ticks(player, stack, Element.ELECTRO, MAGATAMA_AMPLIFIER, true)));
         player.getCooldowns().addCooldown(stack.getItem(),
                 Math.max(ElementWeapons.ticks(player, stack, Element.ELECTRO, MAGATAMA_COOLDOWN, false), MAGATAMA_MIN_COOLDOWN));
@@ -153,14 +153,14 @@ public class PhilosophiesOfProsperityItem extends WishWeaponItem {
                 target.addEffect(new MobEffectInstance(MobEffects.LEVITATION,
                         ElementWeapons.ticks(attacker, stack, element, ANEMO_DURATION, true), ANEMO_AMPLIFIER, false, false));
                 target.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, ANEMO_SLOW_FALLING_TICKS, 0, false, false));
-                level.playSound(null, target.blockPosition(), SoundEvents.TRIDENT_RIPTIDE_2.value(), SoundSource.PLAYERS,
+                level.playSound(null, target.blockPosition(), SoundEvents.TRIDENT_RIPTIDE_2, SoundSource.PLAYERS,
                         ANEMO_SOUND_VOLUME, Mth.nextFloat(random, ANEMO_SOUND_PITCH_MIN, ANEMO_SOUND_PITCH_MAX));
             }
             case GEO -> target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,
                     ElementWeapons.ticks(attacker, stack, element, GEO_DURATION, true),
                     ElementWeapons.ticks(attacker, stack, element, GenshinCraftIntegration.geoWeaknessAmplifier(GEO_AMPLIFIER), true), false, false));
             case ELECTRO -> {
-                if (attacker.hasEffect(PGCEffects.MAGATAMA)) return;
+                if (attacker.hasEffect(PGCEffects.MAGATAMA.get())) return;
                 if (random.nextDouble() >= ElementWeapons.scaled(attacker, stack, element, ELECTRO_CHANCE, true)) return;
                 var bolt = EntityType.LIGHTNING_BOLT.create(level);
                 if (bolt == null) return;
@@ -176,13 +176,13 @@ public class PhilosophiesOfProsperityItem extends WishWeaponItem {
             }
             case HYDRO -> {
                 if (random.nextDouble() >= ElementWeapons.scaled(attacker, stack, element, HYDRO_CHANCE, true)) return;
-                attacker.addEffect(new MobEffectInstance(PGCEffects.CLEANSING_BUBBLE,
+                attacker.addEffect(new MobEffectInstance(PGCEffects.CLEANSING_BUBBLE.get(),
                         ElementWeapons.ticks(attacker, stack, element, HYDRO_DURATION, true),
                         ElementWeapons.ticks(attacker, stack, element, HYDRO_AMPLIFIER, true)));
             }
             case PYRO -> {
                 if (random.nextDouble() >= ElementWeapons.scaled(attacker, stack, element, PYRO_CHANCE, true)) return;
-                target.addEffect(new MobEffectInstance(PGCEffects.SCORCHING,
+                target.addEffect(new MobEffectInstance(PGCEffects.SCORCHING.get(),
                         ElementWeapons.ticks(attacker, stack, element, PYRO_DURATION, true),
                         ElementWeapons.ticks(attacker, stack, element, PYRO_AMPLIFIER, true)));
             }

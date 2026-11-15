@@ -38,8 +38,7 @@ public class DeathmatchItem extends WishWeaponItem {
     private static final String ARMOR_TEXT = "armor";
 
     public DeathmatchItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant(),
-                WeaponModifier.of(Attributes.ARMOR, ARMOR_BASE, ARMOR_STEP, AttributeModifier.Operation.ADD_VALUE));
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant(), WeaponModifier.of(Attributes.ARMOR, ARMOR_BASE, ARMOR_STEP, AttributeModifier.Operation.ADDITION));
     }
 
     @Override
@@ -51,8 +50,8 @@ public class DeathmatchItem extends WishWeaponItem {
                 ? CROWD_ATTACK_BASE + CROWD_ATTACK_STEP * (refinement - 1)
                 : SOLO_ATTACK_BASE + SOLO_ATTACK_STEP * (refinement - 1);
         return List.of(
-                WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_MULTIPLIED_BASE, (owner, worn, value) -> attack),
-                WeaponModifier.conditional(Attributes.ARMOR, AttributeModifier.Operation.ADD_MULTIPLIED_BASE,
+                WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.MULTIPLY_BASE, (owner, worn, value) -> attack),
+                WeaponModifier.conditional(Attributes.ARMOR, AttributeModifier.Operation.MULTIPLY_BASE,
                         (owner, worn, value) -> nearby > 1 ? CROWD_ATTACK_BASE + CROWD_ATTACK_STEP * (value - 1) : 0.0D));
     }
 

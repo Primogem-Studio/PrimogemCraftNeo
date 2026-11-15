@@ -17,35 +17,30 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.util.TriState;
+import net.minecraft.world.InteractionHand;
+
 
 public class LuckyStatueBlock extends PGCHorizontalBlock {
-    public static final MapCodec<LuckyStatueBlock> CODEC = simpleCodec(properties -> new LuckyStatueBlock(properties, Shapes.block()));
-
     private static final int LUCK_AMPLIFIER = 2;
-    private static final int BEACON_COLOR = FastColor.ARGB32.opaque(-256);
+    private static final int BEACON_COLOR = 0xFFFFFF00;
 
     public LuckyStatueBlock(BlockBehaviour.Properties properties, VoxelShape shape) {
         super(properties, shape);
     }
 
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
+    public boolean canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, net.minecraftforge.common.IPlantable plantable) {
+        return true;
     }
 
     @Override
-    public TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, BlockState plant) {
-        return TriState.TRUE;
+    public float[] getBeaconColorMultiplier(BlockState state, LevelReader level, BlockPos pos, BlockPos beaconPos) {
+        // 1.20.1 expects normalised RGB floats; the original colour is opaque yellow.
+        return new float[]{1.0F, 1.0F, 0.0F};
     }
 
     @Override
-    public Integer getBeaconColorMultiplier(BlockState state, LevelReader level, BlockPos pos, BlockPos beaconPos) {
-        return BEACON_COLOR;
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide()) player.addEffect(new MobEffectInstance(MobEffects.LUCK, MobEffectInstance.INFINITE_DURATION, LUCK_AMPLIFIER));
         return InteractionResult.SUCCESS;
     }

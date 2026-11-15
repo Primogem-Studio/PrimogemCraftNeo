@@ -17,10 +17,9 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.per.primogemcraft.block.entity.UnidentifiedDollBlockEntity;
 import net.per.primogemcraft.registry.PGCBlocks;
+import net.minecraft.world.InteractionHand;
 
 public class DetonatorBlock extends PGCHorizontalBlock {
-    public static final MapCodec<DetonatorBlock> CODEC = simpleCodec(properties -> new DetonatorBlock(properties, Shapes.block()));
-
     private static final int REACH = 16;
     private static final int REACH_DOWN = 4;
     private static final int REACH_UP = 5;
@@ -31,12 +30,7 @@ public class DetonatorBlock extends PGCHorizontalBlock {
     }
 
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide()) return InteractionResult.SUCCESS;
         if (level instanceof ServerLevel server) {
             for (var target : BlockPos.betweenClosed(pos.offset(-REACH, -REACH_DOWN, -REACH), pos.offset(REACH, REACH_UP, REACH)))
@@ -48,7 +42,7 @@ public class DetonatorBlock extends PGCHorizontalBlock {
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         level.destroyBlock(pos, false);
     }
 

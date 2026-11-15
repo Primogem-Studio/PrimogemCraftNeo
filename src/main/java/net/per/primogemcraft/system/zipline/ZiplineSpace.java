@@ -2,7 +2,7 @@ package net.per.primogemcraft.system.zipline;
 
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 import net.per.primogemcraft.PrimogemCraft;
 
 import java.lang.reflect.Method;

@@ -2,21 +2,16 @@ package net.per.primogemcraft.client;
 
 import com.mojang.datafixers.util.Either;
 import net.minecraft.client.Minecraft;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
-import net.neoforged.neoforge.client.event.RenderTooltipEvent;
-import net.per.primogemcraft.system.weapon.WeaponEnhancement;
-import net.per.primogemcraft.system.weapon.WeaponStacks;
-import net.per.primogemcraft.system.weapon.WeaponState;
-import net.per.primogemcraft.system.weapon.WeaponTooltip;
-import net.per.primogemcraft.system.weapon.WishWeapon;
-import net.per.primogemcraft.system.wish.WishTooltips;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
+import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.per.primogemcraft.system.weapon.*;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
 public final class WeaponTooltips {
     private static final int NAME_INDEX = 1;
 
@@ -26,7 +21,6 @@ public final class WeaponTooltips {
     @SubscribeEvent
     public static void registerFactories(RegisterClientTooltipComponentFactoriesEvent event) {
         event.register(WeaponTooltip.class, WeaponTooltipRenderer::new);
-        event.register(WeaponTutorialRenderer.Content.class, WeaponTutorialRenderer::new);
     }
 
     @SubscribeEvent
@@ -39,7 +33,5 @@ public final class WeaponTooltips {
         var permanent = stacks.permanent() && stacks.visible() ? stacks : WeaponStacks.NONE;
         event.getTooltipElements().add(NAME_INDEX, Either.right(
                 new WeaponTooltip(state.level(), state.refinements(), extra, permanent.value(), permanent.capacity())));
-        if (WishTooltips.showsTutorial()) event.getTooltipElements().add(Either.right(
-                new WeaponTutorialRenderer.Content(stack.getItem().getDefaultInstance())));
     }
 }

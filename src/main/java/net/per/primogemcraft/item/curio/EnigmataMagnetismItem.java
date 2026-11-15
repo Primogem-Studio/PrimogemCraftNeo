@@ -40,7 +40,7 @@ public class EnigmataMagnetismItem extends CurioItem {
             return;
         }
         if (impact.signal() != CurioSignal.ATTACK) return;
-        if (!victim.getType().is(EntityTypeTags.UNDEAD)) return;
+        if (victim.getMobType() != net.minecraft.world.entity.MobType.UNDEAD) return;
         var data = victim.getPersistentData();
         if (data.getBoolean(CONVERTED)) return;
         if (!context.chance(CHANCE)) return;
@@ -48,7 +48,7 @@ public class EnigmataMagnetismItem extends CurioItem {
         data.putLong(MARK, victim.level().getGameTime() + MARK_TICKS);
         impact.level().playSound(null, victim.getX(), victim.getY(), victim.getZ(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1.0F, 20.0F);
         reinforce(victim);
-        if (context.player().getInventory().contains(stack -> !stack.isEmpty() && stack.is(PGCItems.MAGNETIC_FLAME.get()))) {
+        if (net.per.primogemcraft.compat.item.Inventories120.any(context.player().getInventory(), stack -> !stack.isEmpty() && stack.is(PGCItems.MAGNETIC_FLAME.get()))) {
             context.player().getPersistentData().putBoolean(FLAME_FLAG, true);
             duplicate(impact.level(), victim);
         }
@@ -56,7 +56,7 @@ public class EnigmataMagnetismItem extends CurioItem {
     }
 
     private static void fragments(CurioContext context, CurioImpact impact, LivingEntity victim) {
-        if (!victim.getType().is(EntityTypeTags.UNDEAD)) return;
+        if (victim.getMobType() != net.minecraft.world.entity.MobType.UNDEAD) return;
         if (victim.getPersistentData().getLong(MARK) <= victim.level().getGameTime()) return;
         CurioLoot.spawn(impact.level(), victim.position(), new ItemStack(PGCItems.COSMIC_FRAGMENT.get(), Mth.nextInt(context.random(), 2, 20)));
     }

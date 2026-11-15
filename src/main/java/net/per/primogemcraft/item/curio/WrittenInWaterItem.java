@@ -1,5 +1,7 @@
 package net.per.primogemcraft.item.curio;
 
+import net.minecraft.world.level.Level;
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -38,13 +40,13 @@ public class WrittenInWaterItem extends CurioItem {
         data.setFoodLevel(MAX_FOOD);
         data.setSaturation(MAX_FOOD);
         player.removeAllEffects();
-        context.stack().set(PGCDataComponents.RECALL_POSITION.get(), player.blockPosition());
+        StackComponents.set(context.stack(), PGCDataComponents.RECALL_POSITION, player.blockPosition());
     }
 
     @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         if (!(entity instanceof ServerPlayer player)) return false;
-        var position = stack.get(PGCDataComponents.RECALL_POSITION.get());
+        var position = StackComponents.get(stack, PGCDataComponents.RECALL_POSITION);
         if (position == null) return false;
         player.teleportTo(player.serverLevel(), position.getX() + 0.5D, position.getY(), position.getZ() + 0.5D, player.getYRot(), player.getXRot());
         player.level().playSound(null, position.getX(), position.getY(), position.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.8F, 0.9F);
@@ -52,11 +54,11 @@ public class WrittenInWaterItem extends CurioItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         appendTrigger(stack, tooltip);
         var prefix = stack.getDescriptionId() + ".tooltip.";
         for (var index = 0; index < TOOLTIP_LINES; index++) tooltip.add(Component.translatable(prefix + index));
-        var position = stack.get(PGCDataComponents.RECALL_POSITION.get());
+        var position = StackComponents.get(stack, PGCDataComponents.RECALL_POSITION);
         tooltip.add(Component.translatable(prefix + TOOLTIP_LINES,
                 position == null ? 0 : position.getX(),
                 position == null ? 0 : position.getY(),

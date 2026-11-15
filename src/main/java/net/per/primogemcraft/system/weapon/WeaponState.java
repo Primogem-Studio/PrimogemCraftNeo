@@ -1,10 +1,11 @@
 package net.per.primogemcraft.system.weapon;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
+import net.per.primogemcraft.compat.network.ByteBufCodecs;
+import net.per.primogemcraft.compat.network.StreamCodec;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.per.primogemcraft.registry.PGCDataComponents;
@@ -32,11 +33,11 @@ public record WeaponState(int level, int refinements, int xp, int duplicateRefin
             WeaponState::new);
 
     public static WeaponState of(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.WEAPON_STATE.get(), INITIAL).normalized();
+        return StackComponents.getOrDefault(stack, PGCDataComponents.WEAPON_STATE, INITIAL).normalized();
     }
 
     public static void set(ItemStack stack, WeaponState state) {
-        stack.set(PGCDataComponents.WEAPON_STATE.get(), state);
+        StackComponents.set(stack, PGCDataComponents.WEAPON_STATE, state);
     }
 
     public int spentRefinements() {

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:prithiva_topaz_ore"
+  },
+  "result": "primogemcraft:prithiva_topaz_fragment",
+  "count": 1
+}

@@ -6,10 +6,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.event.level.BlockEvent;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
 import net.per.primogemcraft.system.weapon.WeaponTier;
@@ -19,7 +19,7 @@ import java.util.List;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
+@Mod.EventBusSubscriber(modid = MOD_ID)
 public class PhilosophiesOfGoldItem extends WishWeaponHoeItem {
     private static final Tier TIER = new WeaponTier(800, 4.0F, 5, WeaponTier.NETHERITE_INCORRECT, PGCItems.MORA_PILE);
 
@@ -37,7 +37,7 @@ public class PhilosophiesOfGoldItem extends WishWeaponHoeItem {
 
     @SubscribeEvent
     public static void onBlockToolModification(BlockEvent.BlockToolModificationEvent event) {
-        if (event.isSimulated() || event.getItemAbility() != ItemAbilities.HOE_TILL) return;
+        if (event.isSimulated() || event.getToolAction() != ToolActions.HOE_TILL) return;
         var context = event.getContext();
         var player = event.getPlayer();
         if (player == null) return;

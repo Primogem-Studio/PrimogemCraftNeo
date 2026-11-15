@@ -85,7 +85,7 @@ public class EnigmataGiftBoxItem extends DescribedItem {
         var candidates = new ArrayList<Holder<Item>>();
         for (var holder : BuiltInRegistries.ITEM.getTagOrEmpty(tag)) candidates.add(holder);
         if (candidates.isEmpty()) return ItemStack.EMPTY;
-        return new ItemStack(candidates.get(random.nextInt(candidates.size())).value());
+        return new ItemStack(candidates.get(random.nextInt(candidates.size())));
     }
 
     private static TagKey<Item> tag(String name) {

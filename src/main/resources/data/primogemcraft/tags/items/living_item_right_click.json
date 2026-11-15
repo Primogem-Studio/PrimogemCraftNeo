@@ -1,0 +1,35 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#primogemcraft:weapon/one_handed_sword",
+      "required": false
+    },
+    {
+      "id": "#primogemcraft:weapon/polearm",
+      "required": false
+    },
+    {
+      "id": "#primogemcraft:weapon/claymore",
+      "required": false
+    },
+    {
+      "id": "#primogemcraft:weapon/tool",
+      "required": false
+    },
+    "minecraft:water_bucket",
+    "minecraft:lava_bucket",
+    "minecraft:ender_pearl",
+    {
+      "id": "minecraft:wind_charge",
+      "required": false
+    },
+    "minecraft:powder_snow_bucket",
+    "minecraft:flint_and_steel",
+    "minecraft:fishing_rod",
+    {
+      "id": "the_original_world:judgment_food",
+      "required": false
+    }
+  ]
+}

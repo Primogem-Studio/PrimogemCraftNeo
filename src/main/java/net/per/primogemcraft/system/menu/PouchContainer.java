@@ -1,11 +1,12 @@
 package net.per.primogemcraft.system.menu;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemContainerContents;
+import net.per.primogemcraft.compat.component.ItemContainerContents;
 import net.per.primogemcraft.registry.PGCDataComponents;
 
 /**
@@ -19,7 +20,7 @@ public final class PouchContainer implements Container {
     public PouchContainer(ItemStack pouch, int capacity) {
         this.pouch = pouch;
         items = NonNullList.withSize(capacity, ItemStack.EMPTY);
-        var contents = pouch.get(PGCDataComponents.POUCH_CONTENTS.get());
+        var contents = StackComponents.get(pouch, PGCDataComponents.POUCH_CONTENTS);
         if (contents == null) return;
         var stored = Math.min(capacity, contents.getSlots());
         for (var index = 0; index < stored; index++) items.set(index, contents.getStackInSlot(index));
@@ -61,7 +62,7 @@ public final class PouchContainer implements Container {
 
     @Override
     public void setChanged() {
-        pouch.set(PGCDataComponents.POUCH_CONTENTS.get(), ItemContainerContents.fromItems(items));
+        StackComponents.set(pouch, PGCDataComponents.POUCH_CONTENTS, ItemContainerContents.fromItems(items));
     }
 
     @Override

@@ -69,7 +69,7 @@ public class FissionCuckooClockItem extends CurioItem {
     public void impacted(CurioContext context, CurioImpact impact) {
         if (impact.signal() != CurioSignal.ATTACK) return;
         if (!(impact.subject() instanceof LivingEntity victim)) return;
-        if (!victim.getType().is(EntityTypeTags.UNDEAD)) return;
+        if (victim.getMobType() != net.minecraft.world.entity.MobType.UNDEAD) return;
         var player = context.player();
         if (!PlayerFlags.of(player).flag(ARMED)) return;
         if (victim.getMaxHealth() > player.getMaxHealth()) return;
@@ -100,7 +100,7 @@ public class FissionCuckooClockItem extends CurioItem {
         }
         flags.setFlag(ARMED, false);
         flags.setFlag(SETTLED, true);
-        CurioEffects.release(player, PGCEffects.FISSION_CUCKOO_CLOCK);
+        CurioEffects.release(player, PGCEffects.FISSION_CUCKOO_CLOCK.get());
         context.announce(Component.translatable(STOP_KEY));
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
     }
@@ -116,11 +116,11 @@ public class FissionCuckooClockItem extends CurioItem {
         var effect = PGCEffects.FISSION_CUCKOO_CLOCK;
         var replicas = replicas(player);
         if (replicas <= 0 && !PlayerFlags.of(player).flag(ARMED)) {
-            CurioEffects.release(player, effect);
+            CurioEffects.release(player, effect.get());
             return;
         }
-        if (CurioEffects.amplifier(player, effect) != replicas) CurioEffects.replace(player, effect, EFFECT_TICKS, replicas);
-        CurioEffects.hold(player, effect, EFFECT_TICKS, replicas);
+        if (CurioEffects.amplifier(player, effect.get()) != replicas) CurioEffects.replace(player, effect.get(), EFFECT_TICKS, replicas);
+        CurioEffects.hold(player, effect.get(), EFFECT_TICKS, replicas);
     }
 
     public static void resetSplit(ServerPlayer player) {

@@ -19,7 +19,7 @@ public class LottoPunishmentEffect extends CurioEffect {
 
     public LottoPunishmentEffect() {
         super(MobEffectCategory.NEUTRAL, -39169);
-        addAttributeModifier(Attributes.MAX_HEALTH, MODIFIER, HEALTH_PENALTY, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        addAttributeModifier(Attributes.MAX_HEALTH, net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(MODIFIER).toString(), HEALTH_PENALTY, AttributeModifier.Operation.MULTIPLY_TOTAL);
     }
 
     @Override
@@ -33,12 +33,12 @@ public class LottoPunishmentEffect extends CurioEffect {
     }
 
     public static void apply(ServerPlayer player) {
-        player.addEffect(new MobEffectInstance(PGCEffects.LOTTO_PUNISHMENT, MobEffectInstance.INFINITE_DURATION, 0));
+        player.addEffect(new MobEffectInstance(PGCEffects.LOTTO_PUNISHMENT.get(), MobEffectInstance.INFINITE_DURATION, 0));
     }
 
     public static void cure(ServerPlayer player) {
         PlayerFlags.of(player).setFlag(CURED, true);
-        player.removeEffect(PGCEffects.LOTTO_PUNISHMENT);
+        player.removeEffect(PGCEffects.LOTTO_PUNISHMENT.get());
     }
 
     private static void restore(ServerPlayer player) {

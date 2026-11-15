@@ -41,7 +41,7 @@ public class ShieldOfWealthAndHopeItem extends WishWeaponShieldItem {
     }
 
     @Override
-    protected Holder<MobEffect> heldEffect(ItemStack stack) {
+    protected MobEffect heldEffect(ItemStack stack) {
         return MobEffects.DAMAGE_RESISTANCE;
     }
 

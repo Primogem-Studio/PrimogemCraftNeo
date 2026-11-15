@@ -29,8 +29,8 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 public class IntertwinedFatePickaxeItem extends WishWeaponToolItem {
     private static final Tier TIER = new WeaponTier(2000, 20.0F, 3, WeaponTier.NETHERITE_INCORRECT, PGCItems.INTERTWINED_FATE);
 
-    private static final ResourceKey<LootTable> LOOT_TABLE =
-            ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(MOD_ID, "blocks/intertwined_fate_pickaxe_loot"));
+    private static final ResourceLocation LOOT_TABLE =
+            ResourceLocation.fromNamespaceAndPath(MOD_ID, "blocks/intertwined_fate_pickaxe_loot");
     private static final double LOOT_BASE = 0.3D;
     private static final double LOOT_STEP = 0.075D;
     private static final double COOLDOWN_BASE = 1.0D;
@@ -68,7 +68,7 @@ public class IntertwinedFatePickaxeItem extends WishWeaponToolItem {
         if (!state.canOcclude()) return result;
         var refinement = WeaponState.of(stack).refinements();
         if (server.getRandom().nextDouble() >= LOOT_BASE + LOOT_STEP * (refinement - 1)) return result;
-        var table = server.getServer().reloadableRegistries().getLootTable(LOOT_TABLE);
+        var table = server.getServer().getLootData().getLootTable(LOOT_TABLE);
         var params = new LootParams.Builder(server)
                 .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
                 .withParameter(LootContextParams.TOOL, stack)

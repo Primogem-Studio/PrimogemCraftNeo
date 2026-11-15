@@ -15,6 +15,7 @@ import net.per.primogemcraft.system.weapon.WeaponTier;
 import net.per.primogemcraft.system.weapon.WishWeaponToolItem;
 
 import java.util.List;
+import net.minecraft.world.InteractionHand;
 
 
 public class VarunadaLazuriteHoeItem extends WishWeaponToolItem {
@@ -45,8 +46,9 @@ public class VarunadaLazuriteHoeItem extends WishWeaponToolItem {
         level.playSound(null, BlockPos.containing(context.getClickLocation()), SoundEvents.HOE_TILL, SoundSource.NEUTRAL, TILL_VOLUME, 1.0F);
         var stack = context.getItemInHand();
         var player = context.getPlayer();
-        if (player != null) stack.hurtAndBreak(1, player, player.getUsedItemHand() == net.minecraft.world.InteractionHand.MAIN_HAND
-                ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND);
+        if (player != null) stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(
+                p.getUsedItemHand() == net.minecraft.world.InteractionHand.MAIN_HAND
+                        ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND));
         return InteractionResult.SUCCESS;
     }
 

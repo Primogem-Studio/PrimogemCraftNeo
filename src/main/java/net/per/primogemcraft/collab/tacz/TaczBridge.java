@@ -8,8 +8,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamage;
 import net.per.primogemcraft.system.element.ElementDamageOptions;
@@ -34,8 +34,7 @@ public final class TaczBridge {
     }
 
     static void register() {
-        NeoForge.EVENT_BUS.register(TaczBridge.class);
-        NeoForge.EVENT_BUS.register(SkyTargeting.class);
+        MinecraftForge.EVENT_BUS.register(TaczBridge.class);
     }
 
     @SubscribeEvent
@@ -61,7 +60,7 @@ public final class TaczBridge {
                 level.addFreshEntity(bolt);
             }
             case DENDRO -> entity.addEffect(new MobEffectInstance(MobEffects.POISON, POISON_DURATION, 0, false, false));
-            case PYRO -> entity.igniteForSeconds(IGNITE_SECONDS);
+            case PYRO -> entity.setSecondsOnFire((int) (IGNITE_SECONDS));
             case CRYO -> entity.setTicksFrozen(FROZEN_TICKS);
             case GEO, HYDRO -> {
             }

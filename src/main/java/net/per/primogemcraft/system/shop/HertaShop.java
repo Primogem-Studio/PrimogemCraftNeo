@@ -105,7 +105,7 @@ public final class HertaShop {
         var params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, player.position()).create(LootContextParamSets.CHEST);
         var options = new ArrayList<ItemStack>();
         for (var pool : POOLS) {
-            var table = level.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, pool));
+            var table = level.getServer().getLootData().getLootTable(pool);
             for (var stack : table.getRandomItems(params)) {
                 if (stack.isEmpty()) continue;
                 var option = stack.copy();

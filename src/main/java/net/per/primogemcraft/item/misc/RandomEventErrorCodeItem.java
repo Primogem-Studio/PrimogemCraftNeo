@@ -31,7 +31,7 @@ public class RandomEventErrorCodeItem extends DescribedItem {
         var rolled = EventLoot.roll(serverLevel, ERROR_CODE_LOOT);
         if (rolled.isEmpty()) return InteractionResultHolder.fail(stack);
         serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundSource.PLAYERS, VOLUME, PITCH);
-        OtherworldBankbook.give(serverPlayer, rolled.getFirst());
+        OtherworldBankbook.give(serverPlayer, rolled.get(0));
         stack.shrink(1);
         return InteractionResultHolder.success(stack);
     }

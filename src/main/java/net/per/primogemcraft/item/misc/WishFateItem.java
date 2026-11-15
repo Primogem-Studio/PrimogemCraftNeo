@@ -31,7 +31,7 @@ public class WishFateItem extends Item {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+    public int getUseDuration(ItemStack stack) {
         return USE_DURATION;
     }
 
@@ -53,7 +53,7 @@ public class WishFateItem extends Item {
         }
 
         var pulls = serverPlayer.isShiftKeyDown() ? stack.getCount() : 1;
-        var wishValue = WishValue.perPull(stack);
+        var wishValue = WishValue.get(stack);
         stack.shrink(pulls);
 
         level.playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), pulls > 1 ? PGCSounds.WISH_TEN.get() : PGCSounds.WISH_ROLL.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -63,7 +63,7 @@ public class WishFateItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable(tooltipKey(0)));
         tooltip.add(Component.translatable(tooltipKey(1)));
         if (!banner.countsPity()) {
@@ -71,7 +71,7 @@ public class WishFateItem extends Item {
             return;
         }
 
-        var wishValue = WishValue.perPull(stack);
+        var wishValue = WishValue.get(stack);
         if (WishTooltips.showsDetails()) {
             tooltip.add(Component.translatable(tooltipKey(3), WishReports.percent(WishRoller.purpleChance(banner, wishValue), ChatFormatting.LIGHT_PURPLE)));
             tooltip.add(Component.translatable(tooltipKey(4), WishReports.percent(WishRoller.goldChance(banner, wishValue), ChatFormatting.GOLD)));

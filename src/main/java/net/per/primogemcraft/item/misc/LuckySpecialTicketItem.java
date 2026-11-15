@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.misc;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -77,11 +78,11 @@ public class LuckySpecialTicketItem extends DescribedItem {
         if (level.isClientSide()) return;
         var waited = waitedTicks(stack);
         if (waited == NOT_JOINED || waited >= WAIT_TICKS) return;
-        stack.set(PGCDataComponents.TICKET_PROGRESS.get(), waited + 1);
+        StackComponents.set(stack, PGCDataComponents.TICKET_PROGRESS, waited + 1);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         appendDescription(stack, tooltip);
         var waited = waitedTicks(stack);
         if (waited == NOT_JOINED) return;
@@ -109,7 +110,7 @@ public class LuckySpecialTicketItem extends DescribedItem {
     private void join(ServerPlayer player, ItemStack stack) {
         stack.shrink(1);
         var joined = new ItemStack(this);
-        joined.set(PGCDataComponents.TICKET_PROGRESS.get(), 0);
+        StackComponents.set(joined, PGCDataComponents.TICKET_PROGRESS, 0);
         var dropped = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), joined);
         dropped.setPickUpDelay(0);
         player.level().addFreshEntity(dropped);
@@ -157,6 +158,6 @@ public class LuckySpecialTicketItem extends DescribedItem {
     }
 
     private static int waitedTicks(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.TICKET_PROGRESS.get(), NOT_JOINED);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.TICKET_PROGRESS, NOT_JOINED);
     }
 }

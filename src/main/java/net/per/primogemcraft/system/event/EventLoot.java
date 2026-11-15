@@ -15,8 +15,8 @@ public final class EventLoot {
     }
 
     public static List<ItemStack> roll(ServerLevel level, ResourceLocation table) {
-        var key = ResourceKey.create(Registries.LOOT_TABLE, table);
+        var key = table;
         var params = new LootParams.Builder(level).create(LootContextParamSets.EMPTY);
-        return level.getServer().reloadableRegistries().getLootTable(key).getRandomItems(params);
+        return level.getServer().getLootData().getLootTable(key).getRandomItems(params);
     }
 }

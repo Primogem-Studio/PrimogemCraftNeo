@@ -23,8 +23,7 @@ public class MoraSwordItem extends WishWeaponItem {
     private static final String ATTACK_TEXT = "attack";
 
     public MoraSwordItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant(),
-                WeaponModifier.of(Attributes.ATTACK_DAMAGE, ATTACK_BASE, ATTACK_STEP, AttributeModifier.Operation.ADD_VALUE));
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant(), WeaponModifier.of(Attributes.ATTACK_DAMAGE, ATTACK_BASE, ATTACK_STEP, AttributeModifier.Operation.ADDITION));
     }
 
     @Override

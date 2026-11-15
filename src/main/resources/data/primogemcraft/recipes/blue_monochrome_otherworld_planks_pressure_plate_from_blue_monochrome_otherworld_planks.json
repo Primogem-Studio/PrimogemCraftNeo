@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "item": "primogemcraft:blue_monochrome_otherworld_planks"
+    }
+  },
+  "result": {
+    "item": "primogemcraft:blue_monochrome_otherworld_planks_pressure_plate",
+    "count": 1
+  }
+}

@@ -13,7 +13,7 @@ public class AttackBoostEffect extends MobEffect {
 
     public AttackBoostEffect() {
         super(MobEffectCategory.BENEFICIAL, -1);
-        addAttributeModifier(Attributes.ATTACK_DAMAGE, ResourceLocation.fromNamespaceAndPath(MOD_ID, "attack_boost"), ATTACK_BOOST_PER_LEVEL,
-                AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        addAttributeModifier(Attributes.ATTACK_DAMAGE, net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(ResourceLocation.fromNamespaceAndPath(MOD_ID, "attack_boost")).toString(), ATTACK_BOOST_PER_LEVEL,
+                AttributeModifier.Operation.MULTIPLY_TOTAL);
     }
 }

@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Inventory;
@@ -50,18 +50,18 @@ public class ContainerWindowBlockEntity extends RandomizableContainerBlockEntity
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         if (tryLoadLootTable(tag)) return;
         items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(tag, items, registries);
+        ContainerHelper.loadAllItems(tag, items);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         if (trySaveLootTable(tag)) return;
-        ContainerHelper.saveAllItems(tag, items, registries);
+        ContainerHelper.saveAllItems(tag, items);
     }
 
     @Override
@@ -70,8 +70,7 @@ public class ContainerWindowBlockEntity extends RandomizableContainerBlockEntity
                 ContainerLevelAccess.create(level, worldPosition), ContainerWindowSound.TRASH_CAN_CLOSE);
     }
 
-    @Override
-    public void writeClientSideData(AbstractContainerMenu menu, RegistryFriendlyByteBuf buffer) {
+    public void writeOpeningData(net.minecraft.network.FriendlyByteBuf buffer) {
         buffer.writeByte(ContainerWindowMenu.SOURCE_BLOCK);
         buffer.writeVarInt(items.size());
         buffer.writeBlockPos(worldPosition);
@@ -79,5 +78,10 @@ public class ContainerWindowBlockEntity extends RandomizableContainerBlockEntity
 
     private static int containerSize(BlockState state) {
         return state.getBlock() instanceof ContainerWindowBlock window ? window.containerSize() : 0;
+    }
+
+    @Override
+    public boolean stillValid(net.minecraft.world.entity.player.Player player) {
+        return net.minecraft.world.Container.stillValidBlockEntity(this, player);
     }
 }

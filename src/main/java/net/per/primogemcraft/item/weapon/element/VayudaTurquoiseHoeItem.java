@@ -45,7 +45,7 @@ public class VayudaTurquoiseHoeItem extends WishWeaponHoeItem {
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, level, entity, slot, selected);
         if (!(level instanceof ServerLevel server) || !(entity instanceof ServerPlayer player)) return;
-        var knockback = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.KNOCKBACK);
+        var knockback = Enchantments.KNOCKBACK;
         if (EnchantmentHelper.getItemEnchantmentLevel(knockback, stack) != 0) return;
         stack.enchant(knockback, player.isCreative() ? CREATIVE_KNOCKBACK : Mth.nextInt(server.getRandom(), KNOCKBACK_MIN, KNOCKBACK_MAX));
     }

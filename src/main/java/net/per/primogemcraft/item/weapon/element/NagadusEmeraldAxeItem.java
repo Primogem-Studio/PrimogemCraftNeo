@@ -68,7 +68,7 @@ public class NagadusEmeraldAxeItem extends WishWeaponAxeItem {
         if (!player.isShiftKeyDown()) return InteractionResultHolder.pass(stack);
         if (!(level instanceof ServerLevel server)) return InteractionResultHolder.success(stack);
         level.playSound(null, player.blockPosition(), SoundEvents.DRAGON_FIREBALL_EXPLODE, SoundSource.NEUTRAL, SOUND_VOLUME, SOUND_PITCH);
-        stack.hurtAndBreak((int) (stack.getMaxDamage() * DURABILITY_RATIO), server, player, item -> {
+        stack.hurtAndBreak((int) (stack.getMaxDamage() * DURABILITY_RATIO), player, item -> {
         });
         player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.DENDRO, COOLDOWN, false));
         var origin = BlockPos.containing(player.getX() - TREE_OFFSET, player.getY(), player.getZ() - TREE_OFFSET);

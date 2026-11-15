@@ -12,7 +12,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -41,7 +41,6 @@ import java.util.List;
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public class MoraPileBlock extends FallingBlock implements EntityBlock {
-    public static final MapCodec<MoraPileBlock> CODEC = simpleCodec(MoraPileBlock::new);
     public static final IntegerProperty TIER = IntegerProperty.create("tier", 0, 3);
     public static final IntegerProperty BASE_AMOUNT = IntegerProperty.create("base_amount", 1, 4);
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
@@ -61,11 +60,6 @@ public class MoraPileBlock extends FallingBlock implements EntityBlock {
     }
 
     @Override
-    protected MapCodec<? extends FallingBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, TIER, BASE_AMOUNT);
     }
@@ -76,42 +70,44 @@ public class MoraPileBlock extends FallingBlock implements EntityBlock {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         var offset = state.getOffset(level, pos);
         return shape(state).move(offset.x, offset.y, offset.z);
     }
 
     @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
+    public BlockState rotate(BlockState state, Rotation rotation) {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
+    public BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
     @Override
-    protected boolean isSignalSource(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+    public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
         return state.getValue(TIER) == MAX_TIER ? 2 : 1;
     }
 
+    /** 1.21 的 useItemOn 在 1.20.1 合并进 use；仅手持摩拉时生效。 */
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (stack.isEmpty() || !stack.is(PGCItems.MORA.get())) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        if (level.isClientSide()) return ItemInteractionResult.SUCCESS;
-        if (deposit(level, pos, state)) stack.consume(1, player);
-        return ItemInteractionResult.SUCCESS;
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        var stack = player.getItemInHand(hand);
+        if (stack.isEmpty() || !stack.is(PGCItems.MORA.get())) return InteractionResult.PASS;
+        if (level.isClientSide()) return InteractionResult.SUCCESS;
+        if (deposit(level, pos, state)) stack.shrink(1);
+        return InteractionResult.CONSUME;
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, fromPos, movedByPiston);
         level.scheduleTick(pos, this, getDelayAfterPlace());
     }
@@ -132,7 +128,7 @@ public class MoraPileBlock extends FallingBlock implements EntityBlock {
     }
 
     @Override
-    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         var blockEntity = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         var count = blockEntity instanceof MoraPileBlockEntity pile
                 ? amount(state, pile.stored()) - pile.retainedAmount() : amount(state, 0);
@@ -173,7 +169,7 @@ public class MoraPileBlock extends FallingBlock implements EntityBlock {
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         var below = level.getBlockState(pos.below());
         if (pos.getY() < level.getMinBuildHeight()) return;
         if (isFree(below) || below.is(MORA_PILES) && !below.is(PGCBlocks.PACKED_MORA_PILE.get())) {

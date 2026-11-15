@@ -28,17 +28,18 @@ public class WarmPowderSnowEffect extends MobEffect {
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!(entity instanceof Player player)) return true;
+    public void applyEffectTick(LivingEntity entity, int amplifier)
+    {
+        if (!(entity instanceof Player player)) return;
         var flags = PlayerFlags.of(player);
         var frozen = flags.counter(FROZEN_TICKS);
         if (entity.getTicksFrozen() > 1) {
-            if (!entity.hasEffect(PGCEffects.PERSISTENT_FREEZE)) {
+            if (!entity.hasEffect(PGCEffects.PERSISTENT_FREEZE.get())) {
                 flags.set(FROZEN_TICKS, frozen + 1);
                 if (PGCTimer.isDone(entity, HEAL_TIMER)) {
                     PGCTimer.set(entity, HEAL_TIMER, HEAL_BASE_INTERVAL - amplifier * HEAL_AMPLIFIER_REDUCTION);
@@ -46,18 +47,18 @@ public class WarmPowderSnowEffect extends MobEffect {
                 }
             }
             entity.setTicksFrozen(1);
-            return true;
+            return;
         }
-        if (frozen <= 0 || !PGCTimer.isDone(entity, RELEASE_TIMER)) return true;
+        if (frozen <= 0 || !PGCTimer.isDone(entity, RELEASE_TIMER)) return;
         PGCTimer.set(entity, RELEASE_TIMER, RELEASE_INTERVAL);
         flags.set(FROZEN_TICKS, 0);
         if (amplifier < RELEASE_AMPLIFIER_THRESHOLD) {
             var damage = Math.min(entity.getHealth() - 1.0F, frozen / FROZEN_TICKS_PER_DAMAGE);
             if (damage > 0.0F) entity.hurt(entity.damageSources().freeze(), (float) damage);
-            return true;
+            return;
         }
         entity.heal((float) (frozen / FROZEN_TICKS_PER_HEAL * amplifier * 0.5D));
-        return true;
+        return;
     }
 
     private static ResourceLocation counter() {

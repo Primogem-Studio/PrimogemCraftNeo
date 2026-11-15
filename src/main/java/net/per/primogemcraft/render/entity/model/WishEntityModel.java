@@ -48,7 +48,7 @@ public class WishEntityModel extends EntityModel<WishEntity> {
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        core.render(poseStack, buffer, packedLight, packedOverlay, color);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        core.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }

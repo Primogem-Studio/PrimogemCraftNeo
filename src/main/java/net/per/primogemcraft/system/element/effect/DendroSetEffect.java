@@ -13,6 +13,6 @@ public class DendroSetEffect extends MobEffect {
 
     public DendroSetEffect() {
         super(MobEffectCategory.NEUTRAL, -1);
-        addAttributeModifier(Attributes.MAX_HEALTH, ResourceLocation.fromNamespaceAndPath(MOD_ID, "effect/dendro_set"), MAX_HEALTH, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+        addAttributeModifier(Attributes.MAX_HEALTH, net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(ResourceLocation.fromNamespaceAndPath(MOD_ID, "effect/dendro_set")).toString(), MAX_HEALTH, AttributeModifier.Operation.MULTIPLY_BASE);
     }
 }

@@ -51,7 +51,7 @@ public class AgnidusAgateHoeItem extends WishWeaponHoeItem {
         var stack = context.getItemInHand();
         server.setBlock(pos, PGCBlocks.NETHERRACK_FARMLAND.get().defaultBlockState(), Block.UPDATE_ALL);
         server.playSound(null, pos, SoundEvents.NETHERRACK_HIT, SoundSource.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        stack.hurtAndBreak(DURABILITY_LOSS, player, item -> {
         });
         player.swing(context.getHand(), true);
         return InteractionResult.SUCCESS;

@@ -150,7 +150,7 @@ public final class Zipline {
                 var surface = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, column).below();
                 var state = level.getBlockState(surface);
                 if (level.isOutsideBuildHeight(surface) || !state.getFluidState().isEmpty()
-                        || !state.isFaceSturdy(level, surface, Direction.UP) || state.is(PGCBlocks.ZIPLINE_BASE)) return false;
+                        || !state.isFaceSturdy(level, surface, Direction.UP) || state.is(PGCBlocks.ZIPLINE_BASE.get())) return false;
                 surfaces.add(surface);
                 highest = Math.max(highest, surface.getY());
             }

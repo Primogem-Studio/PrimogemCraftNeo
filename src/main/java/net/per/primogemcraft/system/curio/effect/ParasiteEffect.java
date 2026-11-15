@@ -13,6 +13,6 @@ public class ParasiteEffect extends CurioEffect {
 
     public ParasiteEffect() {
         super(MobEffectCategory.BENEFICIAL, -4756225);
-        addAttributeModifier(Attributes.ATTACK_DAMAGE, MODIFIER_ID, DAMAGE_BONUS, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+        addAttributeModifier(Attributes.ATTACK_DAMAGE, net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(MODIFIER_ID).toString(), DAMAGE_BONUS, AttributeModifier.Operation.MULTIPLY_BASE);
     }
 }

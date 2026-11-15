@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:refined_mora_block"
+  },
+  "result": "primogemcraft:mora",
+  "count": 19
+}

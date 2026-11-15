@@ -39,7 +39,7 @@ public class WishEntityRenderer extends EntityRenderer<WishEntity> {
         poseStack.scale(MODEL_MIRROR, MODEL_MIRROR, 1.0F);
         poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw));
         poseStack.translate(0.0F, MODEL_GROUND_OFFSET, 0.0F);
-        model.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entity))), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, NO_TINT);
+        model.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entity))), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         poseStack.popPose();
     }
 

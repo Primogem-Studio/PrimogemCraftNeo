@@ -1,10 +1,11 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.food.FoodProperties;
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCSounds;
@@ -28,14 +29,14 @@ public class WhimsicalFanciesMachineryCrewItem extends CurioItem {
     public void presence(CurioContext context) {
         var player = context.player();
         var counter = PGCDataComponents.CURIO_COUNTER.get();
-        int state = context.stack().getOrDefault(counter, 0);
+        int state = StackComponents.getOrDefault(context.stack(), counter, 0);
         if (state == CLEANSED) {
-            CurioEffects.release(player, PGCEffects.WHIMSICAL_FANCIES_MACHINERY_CREW);
+            CurioEffects.release(player, PGCEffects.WHIMSICAL_FANCIES_MACHINERY_CREW.get());
             return;
         }
-        CurioEffects.hold(player, PGCEffects.WHIMSICAL_FANCIES_MACHINERY_CREW, MobEffectInstance.INFINITE_DURATION, 0);
+        CurioEffects.hold(player, PGCEffects.WHIMSICAL_FANCIES_MACHINERY_CREW.get(), MobEffectInstance.INFINITE_DURATION, 0);
         if (state == TRIGGERED) return;
-        context.stack().set(counter, TRIGGERED);
+        StackComponents.set(context.stack(), counter, TRIGGERED);
         context.announce(Component.translatable(TRIGGER_KEY, context.stack().getHoverName()));
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
     }
@@ -44,18 +45,21 @@ public class WhimsicalFanciesMachineryCrewItem extends CurioItem {
     public void impacted(CurioContext context, CurioImpact impact) {
         if (impact.signal() != CurioSignal.ITEM_USED) return;
         var player = context.player();
-        if (!CurioEffects.active(player, PGCEffects.WHIMSICAL_FANCIES_MACHINERY_CREW)) return;
-        var food = impact.item().get(DataComponents.FOOD);
-        if (food == null || food.nutrition() <= 0) return;
+        if (!CurioEffects.active(player, PGCEffects.WHIMSICAL_FANCIES_MACHINERY_CREW.get())) return;
+        // 1.20.1 没有 FOOD 数据组件，食物数值由 Item.getFoodProperties 提供
+        FoodProperties food = impact.item().getFoodProperties(player);
+        if (food == null || food.getNutrition() <= 0) return;
         var data = player.getFoodData();
-        data.setFoodLevel(Math.min(MAX_FOOD, data.getFoodLevel() - (int) (food.nutrition() * FOOD_LOSS)));
-        if (food.saturation() > 0.0F) data.setSaturation(Math.min(MAX_SATURATION, data.getSaturationLevel() - food.saturation() * SATURATION_LOSS));
+        data.setFoodLevel(Math.min(MAX_FOOD, data.getFoodLevel() - (int) (food.getNutrition() * FOOD_LOSS)));
+        if (food.getSaturationModifier() > 0.0F)
+            data.setSaturation(Math.min(MAX_SATURATION, data.getSaturationLevel() - food.getSaturationModifier() * SATURATION_LOSS));
     }
 
     public static void clear(ServerPlayer player) {
         var counter = PGCDataComponents.CURIO_COUNTER.get();
         for (var context : Curios.held(player))
-            if (context.stack().getItem() instanceof WhimsicalFanciesMachineryCrewItem) context.stack().set(counter, CLEANSED);
-        CurioEffects.release(player, PGCEffects.WHIMSICAL_FANCIES_MACHINERY_CREW);
+            if (context.stack().getItem() instanceof WhimsicalFanciesMachineryCrewItem)
+                StackComponents.set(context.stack(), counter, CLEANSED);
+        CurioEffects.release(player, PGCEffects.WHIMSICAL_FANCIES_MACHINERY_CREW.get());
     }
 }

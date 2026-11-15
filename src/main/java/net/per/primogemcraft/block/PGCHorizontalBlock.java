@@ -17,8 +17,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.function.Function;
 
 public class PGCHorizontalBlock extends HorizontalDirectionalBlock {
-    public static final MapCodec<PGCHorizontalBlock> CODEC = simpleCodec(properties -> new PGCHorizontalBlock(properties, Shapes.block()));
-
     private final Function<BlockState, VoxelShape> shape;
 
     public PGCHorizontalBlock(BlockBehaviour.Properties properties, VoxelShape shape) {
@@ -32,17 +30,12 @@ public class PGCHorizontalBlock extends HorizontalDirectionalBlock {
     }
 
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         var offset = state.getOffset(level, pos);
         return shape.apply(state).move(offset.x, offset.y, offset.z);
     }

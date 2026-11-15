@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "primogemcraft:justice_metal"
+    }
+  ],
+  "result": {
+    "item": "primogemcraft:justice_metal_grain",
+    "count": 9
+  }
+}

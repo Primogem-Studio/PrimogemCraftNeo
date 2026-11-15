@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:cheap_mora_block"
+  },
+  "result": "primogemcraft:cheap_mora_block_slab",
+  "count": 2
+}

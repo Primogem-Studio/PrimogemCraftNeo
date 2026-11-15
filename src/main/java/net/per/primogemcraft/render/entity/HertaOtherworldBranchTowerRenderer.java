@@ -34,7 +34,7 @@ public class HertaOtherworldBranchTowerRenderer extends EntityRenderer<HertaOthe
         poseStack.scale(MODEL_MIRROR, MODEL_MIRROR, 1.0F);
         poseStack.translate(0.0F, MODEL_GROUND_OFFSET, 0.0F);
         model.setupAnim(entity, 0.0F, 0.0F, entity.tickCount + partialTicks, 0.0F, 0.0F);
-        model.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), packedLight, OverlayTexture.NO_OVERLAY);
+        model.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         poseStack.popPose();
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }

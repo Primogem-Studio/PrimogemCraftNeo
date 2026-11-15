@@ -1,7 +1,6 @@
 package net.per.primogemcraft.system.element;
-
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
+import net.per.primogemcraft.compat.component.VanillaComponents;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,20 +10,18 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.armortrim.TrimPattern;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.TickEvent;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.curio.compat.CuriosIntegration;
 import net.per.primogemcraft.util.PGCTimer;
-
 import java.util.*;
-
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
+@Mod.EventBusSubscriber(modid = MOD_ID)
 public final class ElementSets {
     public static final double BEAD_POINTS = 8.0D;
 
@@ -44,15 +41,15 @@ public final class ElementSets {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (!(event.player instanceof ServerPlayer player)) return;
         if (!PGCTimer.isDone(player, TIMER)) return;
         PGCTimer.set(player, TIMER, INTERVAL);
         evaluate(player);
     }
 
     @SubscribeEvent
-    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+    public static void onIncomingDamage(LivingHurtEvent event) {
         var attacker = event.getSource().getEntity();
         if (attacker == null) return;
         retaliateBurning(event.getEntity(), attacker);
@@ -61,7 +58,7 @@ public final class ElementSets {
 
     public static void evaluate(ServerPlayer player) {
         var totals = new EnumMap<Element, Double>(Element.class);
-        for (var stack : player.getInventory().armor) accumulate(stack, totals);
+        for (var stack : player.getInventory().armor) accumulate(player, stack, totals);
         var beads = collectBeads(player);
         for (var element : Element.values()) {
             var points = totals.getOrDefault(element, 0.0D);
@@ -72,30 +69,45 @@ public final class ElementSets {
     }
 
     private static void retaliateBurning(LivingEntity victim, Entity attacker) {
-        var effect = victim.getEffect(PGCEffects.BURNING_RETALIATION);
+        var effect = victim.getEffect(PGCEffects.BURNING_RETALIATION.get());
         if (effect == null) return;
-        if (attacker instanceof LivingEntity living && living.hasEffect(PGCEffects.RETALIATION_COOLDOWN)) return;
+        if (attacker instanceof LivingEntity living && living.hasEffect(PGCEffects.RETALIATION_COOLDOWN.get())) return;
         var amplifier = effect.getAmplifier();
         if (amplifier <= 0) return;
         attacker.hurt(victim.level().damageSources().lava(), (float) (victim.getHealth() * amplifier * BURNING_RETALIATION_HEALTH_RATIO));
-        attacker.igniteForSeconds(amplifier * BURNING_SECONDS_PER_AMPLIFIER);
+        attacker.setSecondsOnFire((int) (amplifier * BURNING_SECONDS_PER_AMPLIFIER));
         if (attacker instanceof LivingEntity living)
-            living.addEffect(new MobEffectInstance(PGCEffects.RETALIATION_COOLDOWN, amplifier * COOLDOWN_TICKS_PER_AMPLIFIER, 0, false, false));
+            living.addEffect(new MobEffectInstance(PGCEffects.RETALIATION_COOLDOWN.get(), amplifier * COOLDOWN_TICKS_PER_AMPLIFIER, 0, false, false));
     }
 
     private static void retaliateFreeze(LivingEntity victim, Entity attacker) {
-        var effect = victim.getEffect(PGCEffects.POWDER_SNOW_BACKLASH);
+        var effect = victim.getEffect(PGCEffects.POWDER_SNOW_BACKLASH.get());
         if (effect == null || !(attacker instanceof LivingEntity living)) return;
         var amplifier = effect.getAmplifier();
-        living.addEffect(new MobEffectInstance(PGCEffects.PERSISTENT_FREEZE, amplifier * COOLDOWN_TICKS_PER_AMPLIFIER, amplifier, false, false));
+        living.addEffect(new MobEffectInstance(PGCEffects.PERSISTENT_FREEZE.get(), amplifier * COOLDOWN_TICKS_PER_AMPLIFIER, amplifier, false, false));
     }
 
-    private static void accumulate(ItemStack stack, Map<Element, Double> totals) {
-        var trim = stack.get(DataComponents.TRIM);
+    /**
+     * 1.20.1 keeps trim materials/patterns in data-driven registries, so they must be
+     * resolved through a level's registry access rather than BuiltInRegistries.
+     */
+    private static <T> net.minecraft.core.Registry<T> trimRegistry(ServerPlayer player,
+                                                                  net.minecraft.resources.ResourceKey<net.minecraft.core.Registry<T>> key) {
+        return player.level().registryAccess().registryOrThrow(key);
+    }
+
+    private static void accumulate(ServerPlayer player, ItemStack stack, Map<Element, Double> totals) {
+        var trim = VanillaComponents.trim(stack).orElse(null);
         if (trim == null) return;
-        var element = Element.ofTrimMaterial(trim.material());
+        var materialHolder = trimRegistry(player, net.minecraft.core.registries.Registries.TRIM_MATERIAL)
+                .getHolder(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.TRIM_MATERIAL, trim.material())).orElse(null);
+        if (materialHolder == null) return;
+        var element = Element.ofTrimMaterial(materialHolder);
         if (element == null) return;
-        totals.merge(element, trimWeight(trim.pattern()), Double::sum);
+        var patternHolder = trimRegistry(player, net.minecraft.core.registries.Registries.TRIM_PATTERN)
+                .getHolder(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.TRIM_PATTERN, trim.pattern())).orElse(null);
+        if (patternHolder == null) return;
+        totals.merge(element, trimWeight(patternHolder), Double::sum);
     }
 
     private static double trimWeight(Holder<TrimPattern> pattern) {

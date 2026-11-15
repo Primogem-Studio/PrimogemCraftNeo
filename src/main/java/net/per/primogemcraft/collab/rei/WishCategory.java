@@ -52,7 +52,7 @@ public class WishCategory implements DisplayCategory<WishDisplay> {
         widgets.add(Widgets.createRecipeBase(bounds));
         widgets.add(Widgets.createDrawableWidget((graphics, mouseX, mouseY, delta) -> renderEntity(graphics, entity, bounds)));
         widgets.add(Widgets.createArrow(new Point(bounds.x + ARROW_LEFT, bounds.y + ARROW_TOP)));
-        widgets.add(Widgets.createSlot(new Point(bounds.x + SLOT_LEFT, bounds.y + SLOT_TOP)).entries(display.getOutputEntries().getFirst()).markOutput());
+        widgets.add(Widgets.createSlot(new Point(bounds.x + SLOT_LEFT, bounds.y + SLOT_TOP)).entries(display.getOutputEntries().get(0)).markOutput());
         return widgets.build();
     }
 

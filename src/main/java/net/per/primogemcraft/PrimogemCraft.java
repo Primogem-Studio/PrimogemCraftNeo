@@ -1,16 +1,17 @@
 package net.per.primogemcraft;
 
 import com.mojang.logging.LogUtils;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
-import net.per.primogemcraft.collab.elixir.ElixirIntegration;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
 import net.per.primogemcraft.collab.tacz.TaczIntegration;
 import net.per.primogemcraft.collab.teyvatdelight.TeyvatDelightIntegration;
+import net.per.primogemcraft.compat.network.RegisterPayloadHandlersEvent;
 import net.per.primogemcraft.config.PGCConfig;
-import net.per.primogemcraft.config.PGCClientConfig;
+import net.per.primogemcraft.network.PGCNetwork;
 import net.per.primogemcraft.system.zipline.ZiplineAssembly;
 import net.per.primogemcraft.registry.*;
 import org.slf4j.Logger;
@@ -20,7 +21,8 @@ public class PrimogemCraft {
     public static final String MOD_ID = "primogemcraft";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public PrimogemCraft(IEventBus modBus, ModContainer container) {
+    public PrimogemCraft() {
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         PGCBlocks.REGISTRY.register(modBus);
         PGCBlockEntities.REGISTRY.register(modBus);
         modBus.addListener(PGCBlockEntities::registerCapabilities);
@@ -32,7 +34,6 @@ public class PrimogemCraft {
         PGCParticles.REGISTRY.register(modBus);
         PGCPotions.REGISTRY.register(modBus);
         PGCAttachments.REGISTRY.register(modBus);
-        PGCArmorMaterials.REGISTRY.register(modBus);
         PGCEntities.REGISTRY.register(modBus);
         PGCFeatures.REGISTRY.register(modBus);
         PGCPointsOfInterest.REGISTRY.register(modBus);
@@ -43,10 +44,10 @@ public class PrimogemCraft {
         PGCLootConditions.REGISTRY.register(modBus);
         PGCCreativeTabs.REGISTRY.register(modBus);
         GenshinCraftIntegration.register(modBus);
-        ElixirIntegration.register(modBus);
+        // Elixir Dan 无任何 1.20.1 版本，其联动（collab/elixir）已移除。
         TaczIntegration.register();
         TeyvatDelightIntegration.register(modBus);
-        container.registerConfig(ModConfig.Type.COMMON, PGCConfig.SPEC);
-        container.registerConfig(ModConfig.Type.CLIENT, PGCClientConfig.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PGCConfig.SPEC);
+        PGCNetwork.registerPayloads(new RegisterPayloadHandlersEvent());
     }
 }

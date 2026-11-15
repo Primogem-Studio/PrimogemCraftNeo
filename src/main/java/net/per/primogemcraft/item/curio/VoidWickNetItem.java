@@ -25,7 +25,7 @@ public class VoidWickNetItem extends CurioItem {
         if (repairs <= seen) return;
         flags.set(SEEN, repairs);
         var gained = Math.min(repairs - seen, MAX_LEVEL);
-        var current = player.getEffect(PGCEffects.PARASITE);
+        var current = player.getEffect(PGCEffects.PARASITE.get());
         var level = current == null ? 0 : current.getAmplifier() + 1;
         var ticks = (current == null ? 0 : Math.max(current.getDuration(), 0)) + gained * BONUS_TICKS;
         Parasitism.apply(player, Math.min(level + gained, MAX_LEVEL), ticks);

@@ -35,7 +35,7 @@ public class ZiplineBaseBlockEntity extends BlockEntity {
         var existing = base.anchorId == null ? null : server.getEntity(base.anchorId);
         var anchor = existing instanceof ZiplineAnchorEntity found && !found.isRemoved()
                 && (found.basePosition().equals(position) || level.hasChunkAt(found.basePosition())
-                && !level.getBlockState(found.basePosition()).is(PGCBlocks.ZIPLINE_BASE))
+                && !level.getBlockState(found.basePosition()).is(PGCBlocks.ZIPLINE_BASE.get()))
                 ? found : ZiplineAnchorEntity.find(level, position);
         if (anchor == null) {
             anchor = new ZiplineAnchorEntity(PGCEntities.ZIPLINE_ANCHOR.get(), level);
@@ -47,14 +47,14 @@ public class ZiplineBaseBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         anchorId = tag.hasUUID("Anchor") ? tag.getUUID("Anchor") : null;
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         if (anchorId != null) tag.putUUID("Anchor", anchorId);
     }
 }

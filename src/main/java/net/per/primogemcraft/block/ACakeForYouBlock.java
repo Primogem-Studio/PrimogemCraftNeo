@@ -6,7 +6,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -23,7 +22,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.per.primogemcraft.registry.PGCItems;
 
 public class ACakeForYouBlock extends PGCHorizontalBlock {
-    public static final MapCodec<ACakeForYouBlock> CODEC = simpleCodec(properties -> new ACakeForYouBlock(properties, Shapes.block()));
     public static final int MAX_BITES = 8;
     public static final IntegerProperty BITES = IntegerProperty.create("bites", 0, MAX_BITES);
 
@@ -39,30 +37,27 @@ public class ACakeForYouBlock extends PGCHorizontalBlock {
     }
 
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(BITES);
     }
 
+    /**
+     * 1.21 把交互拆成 {@code useItemOn}（持物）与 {@code useWithoutItem}（空手）；
+     * 1.20.1 只有单一的 {@code use}，这里按手持物品分派，行为与原版一致。
+     */
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!stack.is(PGCItems.MORA.get())) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-        var bites = state.getValue(BITES);
-        if (!level.isClientSide() && bites > 0 && level.setBlock(pos, state.setValue(BITES, bites - 1), Block.UPDATE_ALL)) {
-            stack.shrink(1);
-            level.playSound(null, pos, SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, VOLUME, PITCH);
-            level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        var stack = player.getItemInHand(hand);
+        if (stack.is(PGCItems.MORA.get())) {
+            var bites = state.getValue(BITES);
+            if (!level.isClientSide() && bites > 0 && level.setBlock(pos, state.setValue(BITES, bites - 1), Block.UPDATE_ALL)) {
+                stack.shrink(1);
+                level.playSound(null, pos, SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, VOLUME, PITCH);
+                level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide());
         }
-        return ItemInteractionResult.SUCCESS;
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (state.getValue(BITES) == MAX_BITES) return InteractionResult.PASS;
         var food = player.getFoodData();
         var hungry = food.getFoodLevel() < MAX_LEVEL;
@@ -72,6 +67,6 @@ public class ACakeForYouBlock extends PGCHorizontalBlock {
             level.playSound(null, pos, SoundEvents.PLAYER_BURP, hungry ? SoundSource.NEUTRAL : SoundSource.PLAYERS, VOLUME, PITCH);
             level.gameEvent(player, GameEvent.EAT, pos);
         }
-        return InteractionResult.SUCCESS;
+        return InteractionResult.sidedSuccess(level.isClientSide());
     }
 }

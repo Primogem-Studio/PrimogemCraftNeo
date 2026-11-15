@@ -16,9 +16,6 @@ import net.per.primogemcraft.registry.PGCItems;
 import java.util.function.Function;
 
 public class OtherworldCrystalClusterBlock extends PGCFaceAttachedBlock {
-    public static final MapCodec<OtherworldCrystalClusterBlock> CODEC =
-            simpleCodec(properties -> new OtherworldCrystalClusterBlock(properties, state -> Shapes.block()));
-
     private static final int PICKUP_DELAY = 10;
 
     public OtherworldCrystalClusterBlock(BlockBehaviour.Properties properties, Function<BlockState, VoxelShape> shape) {
@@ -26,12 +23,7 @@ public class OtherworldCrystalClusterBlock extends PGCFaceAttachedBlock {
     }
 
     @Override
-    protected MapCodec<? extends Block> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, fromPos, movedByPiston);
         if (!(level instanceof ServerLevel server)) return;
         level.destroyBlock(pos, false);

@@ -12,11 +12,9 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.neoforged.neoforge.common.util.TriState;
+
 
 public class CrystalOreBlock extends Block {
-    public static final MapCodec<CrystalOreBlock> CODEC = simpleCodec(CrystalOreBlock::new);
-
     private static final float SHATTER_VOLUME = 0.5F;
     private static final float SHATTER_PITCH = 1.0F;
 
@@ -25,13 +23,8 @@ public class CrystalOreBlock extends Block {
     }
 
     @Override
-    protected MapCodec<? extends Block> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, BlockState plant) {
-        return TriState.TRUE;
+    public boolean canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, net.minecraftforge.common.IPlantable plantable) {
+        return true;
     }
 
     @Override

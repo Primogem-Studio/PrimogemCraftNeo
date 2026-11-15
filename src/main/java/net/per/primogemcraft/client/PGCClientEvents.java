@@ -1,25 +1,26 @@
 package net.per.primogemcraft.client;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.client.renderer.entity.FallingBlockRenderer;
 import net.minecraft.client.renderer.item.ClampedItemPropertyFunction;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.IItemDecorator;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
-import net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
-import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.client.IItemDecorator;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.event.RegisterItemDecorationsEvent;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.client.ConfigScreenHandler;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.per.primogemcraft.client.gui.ContainerWindowScreen;
 import net.per.primogemcraft.client.gui.GorgeousSmithingTableScreen;
 import net.per.primogemcraft.client.gui.StellarConverterScreen;
@@ -32,14 +33,13 @@ import net.per.primogemcraft.render.entity.model.HertaOtherworldBranchTowerModel
 import net.per.primogemcraft.render.entity.model.WishEntityModel;
 import net.per.primogemcraft.render.entity.model.XiaoLanternModel;
 import net.per.primogemcraft.system.weapon.WishWeapon;
-import net.per.primogemcraft.system.curio.compat.CuriosIntegration;
 import net.per.primogemcraft.system.wish.WishDrops;
 
 import java.util.List;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class PGCClientEvents {
     private static final String CLOTH_CONFIG_ID = "cloth_config";
     private static final ResourceLocation WEAPON_RECOVERY_PROPERTY = ResourceLocation.fromNamespaceAndPath(MOD_ID, "weapon_recovery");
@@ -52,25 +52,20 @@ public class PGCClientEvents {
     private static final IItemDecorator STACKS_DECORATOR = new WeaponStacksDecorator();
 
     @SubscribeEvent
-    public static void registerCurioRenderers(FMLClientSetupEvent event) {
-        if (CuriosIntegration.loaded()) ColorfulSunglassesCurioRenderer.register();
-    }
-
-    @SubscribeEvent
     public static void registerConfigScreen(FMLClientSetupEvent event) {
         if (!ModList.get().isLoaded(CLOTH_CONFIG_ID)) return;
-        ModList.get().getModContainerById(MOD_ID).orElseThrow().registerExtensionPoint(IConfigScreenFactory.class, PGCConfigScreen::create);
+        net.minecraftforge.fml.ModLoadingContext.get().registerExtensionPoint(net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory.class, () -> new net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory((minecraft, parent) -> PGCConfigScreen.create(null, parent)));
     }
 
     @SubscribeEvent
     public static void registerModelProperties(FMLClientSetupEvent event) {
         event.enqueueWork(() -> ItemProperties.registerGeneric(
                 WEAPON_RECOVERY_PROPERTY,
-                (ClampedItemPropertyFunction) (stack, level, entity, seed) -> stack.get(PGCDataComponents.WEAPON_RECOVERY.get()) == null ? 0.0F : 1.0F));
+                (ClampedItemPropertyFunction) (stack, level, entity, seed) -> StackComponents.get(stack, PGCDataComponents.WEAPON_RECOVERY) == null ? 0.0F : 1.0F));
         event.enqueueWork(() -> ItemProperties.registerGeneric(
                 ELEMENT_TYPE_PROPERTY,
                 (ClampedItemPropertyFunction) (stack, level, entity, seed) -> {
-                    var type = stack.get(PGCDataComponents.ELEMENT_TYPE.get());
+                    var type = StackComponents.get(stack, PGCDataComponents.ELEMENT_TYPE);
                     return type == null ? 0.0F : type * ELEMENT_TYPE_STEP;
                 }));
         event.enqueueWork(() -> ItemProperties.register(
@@ -99,7 +94,6 @@ public class PGCClientEvents {
 
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(PGCEntities.SKYWARD_HARP_VORTEX.get(), SkywardHarpVortexRenderer::new);
         event.registerEntityRenderer(PGCEntities.ZIPLINE_ANCHOR.get(), ZiplineAnchorRenderer::new);
         event.registerEntityRenderer(PGCEntities.ZIPLINE_CARRIER.get(), ZiplineCarrierRenderer::new);
         event.registerEntityRenderer(PGCEntities.FALLING_MORA_PILE.get(), FallingBlockRenderer::new);
@@ -118,8 +112,8 @@ public class PGCClientEvents {
     }
 
     @SubscribeEvent
-    public static void registerGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAbove(VanillaGuiLayers.EXPERIENCE_LEVEL, SPEAR_CHARGE_LAYER, new JadeWingedSpearOverlay());
+    public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
+        event.registerAbove(VanillaGuiOverlay.EXPERIENCE_BAR.id(), SPEAR_CHARGE_LAYER.getPath(), JadeWingedSpearOverlay.INSTANCE);
     }
 
     @SubscribeEvent
@@ -136,11 +130,14 @@ public class PGCClientEvents {
                 PGCItems.DENDRO_CORE_SPAWN_EGG.get());
     }
 
+    /** 1.20.1 没有 RegisterMenuScreensEvent，改用 MenuScreens.register（客户端 setup 阶段）。 */
     @SubscribeEvent
-    public static void registerMenuScreens(RegisterMenuScreensEvent event) {
-        event.register(PGCMenus.GORGEOUS_SMITHING_TABLE.get(), GorgeousSmithingTableScreen::new);
-        event.register(PGCMenus.STELLAR_CONVERTER.get(), StellarConverterScreen::new);
-        event.register(PGCMenus.CONTAINER_WINDOW.get(), ContainerWindowScreen::new);
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            MenuScreens.register(PGCMenus.GORGEOUS_SMITHING_TABLE.get(), GorgeousSmithingTableScreen::new);
+            MenuScreens.register(PGCMenus.STELLAR_CONVERTER.get(), StellarConverterScreen::new);
+            MenuScreens.register(PGCMenus.CONTAINER_WINDOW.get(), ContainerWindowScreen::new);
+        });
     }
 
     @SubscribeEvent

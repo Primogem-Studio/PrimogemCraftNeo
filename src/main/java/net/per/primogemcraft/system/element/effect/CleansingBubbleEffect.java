@@ -8,17 +8,17 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCSounds;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
-public class CleansingBubbleEffect extends MobEffect {
+@Mod.EventBusSubscriber(modid = MOD_ID)
+public class CleansingBubbleEffect extends MobEffect implements net.per.primogemcraft.compat.event.EffectCallbacks.Started {
     private static final int LIMIT_DURATION = 40;
     private static final double RADIUS = 4.5D;
     private static final float BURST_HEALTH_RATIO = 0.4F;
@@ -30,28 +30,29 @@ public class CleansingBubbleEffect extends MobEffect {
         super(MobEffectCategory.NEUTRAL, -3342337);
     }
 
-    @Override
     public void onEffectStarted(LivingEntity entity, int amplifier) {
-        entity.removeEffect(PGCEffects.BUBBLE_LIMIT);
+        entity.removeEffect(PGCEffects.BUBBLE_LIMIT.get());
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        if (entity.level().isClientSide() || !entity.isAlive() || entity.hasEffect(PGCEffects.BUBBLE_LIMIT)) return true;
-        entity.addEffect(new MobEffectInstance(PGCEffects.BUBBLE_LIMIT, LIMIT_DURATION, 0, false, false));
+    public void applyEffectTick(LivingEntity entity, int amplifier)
+    {
+        if (entity.level().isClientSide() || !entity.isAlive() || entity.hasEffect(PGCEffects.BUBBLE_LIMIT.get())) return;
+        entity.addEffect(new MobEffectInstance(PGCEffects.BUBBLE_LIMIT.get(), LIMIT_DURATION, 0, false, false));
         entity.heal(amplifier + GenshinCraftIntegration.bubbleHeal());
-        return true;
+        return;
     }
 
     @SubscribeEvent
     public static void onEffectExpired(MobEffectEvent.Expired event) {
-        if (!(event.getEffectInstance().getEffect().value() instanceof CleansingBubbleEffect)) return;
-        if (!(event.getEntity() instanceof LivingEntity entity) || !(entity.level() instanceof ServerLevel level)) return;
+        if (!(event.getEffectInstance().getEffect() instanceof CleansingBubbleEffect)) return;
+        var entity = event.getEntity();
+        if (!(entity.level() instanceof ServerLevel level)) return;
         var server = level.getServer();
         server.tell(new TickTask(server.getTickCount() + BURST_DELAY, () -> burst(level, entity)));
     }

@@ -3,25 +3,24 @@ package net.per.primogemcraft.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.asm.enumextension.EnumProxy;
-import net.neoforged.neoforge.client.IArmPoseTransformer;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.client.event.RenderPlayerEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.fml.common.Mod;
+import net.per.primogemcraft.compat.EnumProxy;
+import net.minecraftforge.client.IArmPoseTransformer;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RenderBlockScreenEffectEvent;
+import net.minecraftforge.client.event.RenderGuiEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.per.primogemcraft.compat.network.PayloadRegistrar;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.per.primogemcraft.entity.misc.ZiplineCarrierEntity;
 import net.per.primogemcraft.entity.misc.ZiplineAnchorEntity;
 import net.per.primogemcraft.network.ZiplineControlPayload;
@@ -37,7 +36,7 @@ import java.util.List;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
 public final class ZiplineClientEvents {
     private static ZiplineCarrierEntity currentCarrier;
     private static boolean releaseReady;
@@ -85,7 +84,7 @@ public final class ZiplineClientEvents {
             });
 
     @SubscribeEvent
-    public static void tick(ClientTickEvent.Post event) {
+    public static void tick(TickEvent.ClientTickEvent event) {
         var minecraft = Minecraft.getInstance();
         var carrier = minecraft.player != null && minecraft.player.getVehicle() instanceof ZiplineCarrierEntity hanging ? hanging : null;
         if (carrier != currentCarrier) {
@@ -135,12 +134,12 @@ public final class ZiplineClientEvents {
         if (event.getHand() != InteractionHand.MAIN_HAND) return;
         if (event.isUseItem()) {
             if (carrier == currentCarrier && releaseReady) {
-                PacketDistributor.sendToServer(new ZiplineControlPayload(-1));
+                PayloadRegistrar.sendToServer(new ZiplineControlPayload(-1));
                 releaseReady = false;
             }
         } else if (event.isAttack()) {
             var target = carrier.select(minecraft.player, candidates);
-            if (target != null) PacketDistributor.sendToServer(new ZiplineControlPayload(target.getId()));
+            if (target != null) PayloadRegistrar.sendToServer(new ZiplineControlPayload(target.getId()));
         }
     }
 
@@ -152,7 +151,7 @@ public final class ZiplineClientEvents {
         player.yBodyRot = bodyYaw;
         player.yBodyRotO = bodyYaw;
         renderAge = player.tickCount + event.getPartialTick();
-        var hand = ZiplineGrip.handOffset(player.getSkin().model() == PlayerSkin.Model.SLIM, player.getScale(), bodyYaw);
+        var hand = ZiplineGrip.handOffset("slim".equals(((net.minecraft.client.player.AbstractClientPlayer) player).getModelName()), player.getScale(), bodyYaw);
         var correction = carrier.getPosition(event.getPartialTick()).subtract(player.getPosition(event.getPartialTick())).subtract(hand);
         event.getPoseStack().pushPose();
         event.getPoseStack().translate(correction.x, correction.y, correction.z);
@@ -179,7 +178,7 @@ public final class ZiplineClientEvents {
         var camera = event.getCamera();
         var offset = target.attachment().subtract(camera.getPosition());
         var projected = new Vector4f((float) offset.x, (float) offset.y, (float) offset.z, 1)
-                .mul(event.getModelViewMatrix()).mul(event.getProjectionMatrix());
+                .mul(net.per.primogemcraft.compat.client.Vertices.modelView(event.getPoseStack())).mul(event.getProjectionMatrix());
         if (projected.w <= 0.05F) return;
         targetX = projected.x / projected.w;
         targetY = projected.y / projected.w;

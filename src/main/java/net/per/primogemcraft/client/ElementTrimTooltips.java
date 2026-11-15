@@ -1,22 +1,19 @@
 package net.per.primogemcraft.client;
-
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.component.DataComponents;
+import net.per.primogemcraft.compat.component.VanillaComponents;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.per.primogemcraft.system.element.Element;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
 public final class ElementTrimTooltips {
     private static final String TRIM_PREFIX = "trim_material." + MOD_ID + ".";
     private static final String TOOLTIP_SUFFIX = ".tooltip.";
@@ -26,13 +23,19 @@ public final class ElementTrimTooltips {
 
     @SubscribeEvent
     public static void addLines(ItemTooltipEvent event) {
-        var trim = event.getItemStack().get(DataComponents.TRIM);
+        var trim = VanillaComponents.trim(event.getItemStack()).orElse(null);
         if (trim == null) return;
-        var element = Element.ofTrimMaterial(trim.material());
+        var registry = net.minecraft.client.Minecraft.getInstance().level;
+        if (registry == null) return;
+        var materialHolder = registry.registryAccess()
+                .registryOrThrow(net.minecraft.core.registries.Registries.TRIM_MATERIAL)
+                .getHolder(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.TRIM_MATERIAL, trim.material())).orElse(null);
+        if (materialHolder == null) return;
+        var element = Element.ofTrimMaterial(materialHolder);
         if (element == null) return;
         var tooltip = event.getToolTip();
-        var material = trim.material().value();
-        var materialLine = CommonComponents.space().append(material.description());
+        var material = materialHolder.value();
+        var materialLine = Component.literal(" ").append(material.description());
         for (var index = 0; index < tooltip.size(); index++) {
             if (!materialLine.equals(tooltip.get(index))) continue;
             var lines = lines(element, material.description().getStyle().getColor());

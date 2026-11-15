@@ -28,7 +28,7 @@ public class ClubFaithVoucherItem extends CurioItem {
         if (impact.signal() != CurioSignal.ATTACK) return;
         if (!(impact.subject() instanceof LivingEntity victim)) return;
         if (!context.ready(COOLDOWN, COOLDOWN_TICKS)) return;
-        victim.addEffect(new MobEffectInstance(PGCEffects.AT_DEATHS_DOOR, EFFECT_TICKS, AtDeathsDoorEffect.amplifierFor(context.player()), false, false));
+        victim.addEffect(new MobEffectInstance(PGCEffects.AT_DEATHS_DOOR.get(), EFFECT_TICKS, AtDeathsDoorEffect.amplifierFor(context.player()), false, false));
         if (context.chance(FRAGMENT_CHANCE)) CurioLoot.spawn(impact.level(), victim.position(), new ItemStack(PGCItems.COSMIC_FRAGMENT.get()));
     }
 }

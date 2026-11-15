@@ -1,0 +1,19 @@
+{
+  "forge:conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "genshincraft"
+    }
+  ],
+  "type": "genshincraft:crafting",
+  "materials": [
+    {
+      "item": "primogemcraft:stellar_jade",
+      "count": 6
+    }
+  ],
+  "result": {
+    "item": "genshincraft:primogems",
+    "count": 1
+  }
+}

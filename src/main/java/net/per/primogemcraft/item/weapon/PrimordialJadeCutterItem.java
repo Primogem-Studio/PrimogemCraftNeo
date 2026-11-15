@@ -40,15 +40,13 @@ public class PrimordialJadeCutterItem extends WishWeaponItem {
     private static final String BASE_ATTACK_TEXT = "base_attack";
 
     public PrimordialJadeCutterItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant(),
-                WeaponModifier.of(Attributes.MAX_HEALTH, BASE_BASE, BASE_STEP, AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
-                WeaponModifier.of(Attributes.ATTACK_DAMAGE, BASE_BASE, BASE_STEP, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant(), WeaponModifier.of(Attributes.MAX_HEALTH, BASE_BASE, BASE_STEP, AttributeModifier.Operation.MULTIPLY_BASE), WeaponModifier.of(Attributes.ATTACK_DAMAGE, BASE_BASE, BASE_STEP, AttributeModifier.Operation.MULTIPLY_TOTAL));
     }
 
     @Override
     public List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
         if (isHeld(player, slot, stack)) return List.of();
-        return List.of(WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_VALUE,
+        return List.of(WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADDITION,
                 (owner, worn, value) -> {
                     var scale = owner.getHealth() < owner.getMaxHealth() * LOW_HEALTH_RATIO ? LOW_HEALTH_MULTIPLIER : 1;
                     var ratio = (ATTACK_BASE + ATTACK_STEP * (value - 1)) * GenshinCraftIntegration.healthConversionScale();

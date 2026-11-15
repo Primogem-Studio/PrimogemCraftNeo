@@ -1,5 +1,6 @@
 package net.per.primogemcraft.system.weapon;
 
+import net.per.primogemcraft.compat.attachment.Attachments;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.entity.player.Player;
@@ -20,11 +21,11 @@ public final class Equilibrium {
     }
 
     private Equilibrium(int tier) {
-        this.tier = Math.clamp(tier, 0, TIER_BONUS.length - 1);
+        this.tier = net.minecraft.util.Mth.clamp(tier, 0, TIER_BONUS.length - 1);
     }
 
     public static Equilibrium of(Player player) {
-        return player.getData(PGCAttachments.EQUILIBRIUM);
+        return Attachments.get(player, PGCAttachments.EQUILIBRIUM);
     }
 
     public int tier() {

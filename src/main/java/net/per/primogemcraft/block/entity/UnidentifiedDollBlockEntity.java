@@ -1,9 +1,8 @@
 package net.per.primogemcraft.block.entity;
-
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponents;
+import net.per.primogemcraft.compat.component.VanillaComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -12,8 +11,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.FireworkExplosion;
-import net.minecraft.world.item.component.Fireworks;
+import net.per.primogemcraft.compat.component.FireworkExplosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -23,7 +21,6 @@ import net.per.primogemcraft.block.UnidentifiedDollBlock;
 import net.per.primogemcraft.enchantment.FoolsWrath;
 import net.per.primogemcraft.registry.PGCBlockEntities;
 import net.per.primogemcraft.registry.PGCSounds;
-
 import java.util.List;
 
 public class UnidentifiedDollBlockEntity extends BlockEntity {
@@ -128,14 +125,14 @@ public class UnidentifiedDollBlockEntity extends BlockEntity {
     }
 
     private static void fizzle(ServerLevel level, BlockPos pos) {
-        playSound(level, pos, SoundEvents.GENERIC_EXPLODE.value());
+        playSound(level, pos, SoundEvents.GENERIC_EXPLODE);
         FoolsWrath.cleanse(level, new AABB(pos).inflate(CLEANSE_RADIUS));
         for (var shell : SHELLS) level.addFreshEntity(rocket(level, pos, shell));
     }
 
     private static FireworkRocketEntity rocket(ServerLevel level, BlockPos pos, Shell shell) {
         var stack = new ItemStack(Items.FIREWORK_ROCKET);
-        stack.set(DataComponents.FIREWORKS, new Fireworks(shell.flight(), shell.explosions()));
+        VanillaComponents.setFireworks(stack, shell.explosions(), shell.flight());
         return new FireworkRocketEntity(level, pos.getX() + shell.x(), pos.getY() + shell.y(), pos.getZ() + shell.z(), stack);
     }
 
@@ -152,8 +149,8 @@ public class UnidentifiedDollBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putBoolean(TICKING_KEY, ticking);
         tag.putBoolean(ARMED_KEY, armed);
         tag.putLong(DETONATION_KEY, detonation);
@@ -161,8 +158,8 @@ public class UnidentifiedDollBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         ticking = tag.getBoolean(TICKING_KEY);
         armed = tag.getBoolean(ARMED_KEY);
         detonation = tag.getLong(DETONATION_KEY);

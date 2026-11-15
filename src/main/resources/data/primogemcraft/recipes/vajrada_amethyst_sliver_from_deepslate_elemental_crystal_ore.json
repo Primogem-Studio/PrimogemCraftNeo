@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:deepslate_elemental_crystal_ore"
+  },
+  "result": "primogemcraft:vajrada_amethyst_sliver",
+  "count": 4
+}

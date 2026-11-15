@@ -83,11 +83,12 @@ public class RandomEventRenderer extends EntityRenderer<RandomEventEntity> {
     }
 
     private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float u, float v, float normalX, float normalY, float normalZ) {
-        consumer.addVertex(pose, x, y, z)
-                .setColor(255, 255, 255, 255)
-                .setUv(u, v)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(LightTexture.FULL_BRIGHT)
-                .setNormal(pose, normalX, normalY, normalZ);
+        net.per.primogemcraft.compat.client.Vertices.add(consumer, pose, x, y, z)
+                .color(255, 255, 255, 255)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT);
+        net.per.primogemcraft.compat.client.Vertices.normal(consumer, pose, normalX, normalY, normalZ);
+        consumer.endVertex();
     }
 }

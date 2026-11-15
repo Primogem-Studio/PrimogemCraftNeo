@@ -1,5 +1,6 @@
 package net.per.primogemcraft.system.curio;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,27 +35,27 @@ public record CurioContext(ServerPlayer player, ItemStack stack, CurioForm form,
     }
 
     public void damage(int amount) {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         if (bar == null || bar.denominator() <= 0) return;
         var advanced = bar.advancedBy(amount);
-        stack.set(PGCDataComponents.CUSTOM_BAR.get(), advanced);
+        StackComponents.set(stack, PGCDataComponents.CUSTOM_BAR, advanced);
         if (advanced.remaining() > 0) return;
         destroy();
     }
 
     public int remaining() {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         return bar == null ? 0 : bar.remaining();
     }
 
     public int progress() {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         return bar == null ? 0 : bar.numerator();
     }
 
     public void progress(int numerator, int denominator) {
         if (denominator <= 0) return;
-        stack.set(PGCDataComponents.CUSTOM_BAR.get(), new CustomBar(Mth.clamp(numerator, 0, denominator), denominator, true));
+        StackComponents.set(stack, PGCDataComponents.CUSTOM_BAR, new CustomBar(Mth.clamp(numerator, 0, denominator), denominator, true));
     }
 
     public void destroy() {

@@ -2,15 +2,13 @@
   "required": true,
   "minVersion": "0.8",
   "package": "net.per.primogemcraft.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "plugin": "net.per.primogemcraft.mixin.MixinPlugin",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
     "ItemStackMixin",
     "PowderSnowBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixinextras": {
-    "minVersion": "0.5.3"
   }
 }

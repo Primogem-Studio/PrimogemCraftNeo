@@ -75,11 +75,11 @@ public class VayudaTurquoisePickaxeItem extends WishWeaponToolItem {
                 ElementWeapons.ticks(player, stack, Element.ANEMO, SLOW_FALLING_TICKS, true), SLOW_FALLING_AMPLIFIER, false, false));
         player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.ANEMO, COOLDOWN_TICKS, false));
         player.swing(hand, true);
-        level.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_RIPTIDE_2.value(), SoundSource.PLAYERS,
+        level.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_RIPTIDE_2, SoundSource.PLAYERS,
                 RIPTIDE_VOLUME, Mth.nextFloat(server.getRandom(), RIPTIDE_PITCH_MIN, RIPTIDE_PITCH_MAX));
         server.sendParticles(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, player.getX(), player.getY(), player.getZ(),
                 SMOKE_COUNT, 0.0D, SMOKE_VERTICAL_SPREAD, 0.0D, SMOKE_SPEED);
-        stack.hurtAndBreak(1, server, player, item -> {
+        stack.hurtAndBreak(1, player, item -> {
         });
         return InteractionResultHolder.success(stack);
     }

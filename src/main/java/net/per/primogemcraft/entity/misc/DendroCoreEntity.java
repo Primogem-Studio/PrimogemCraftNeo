@@ -87,12 +87,12 @@ public class DendroCoreEntity extends Entity {
                 .withParameter(LootContextParams.ORIGIN, position())
                 .withParameter(LootContextParams.DAMAGE_SOURCE, serverLevel.damageSources().generic())
                 .create(LootContextParamSets.ENTITY);
-        var table = serverLevel.getServer().reloadableRegistries().getLootTable(getType().getDefaultLootTable());
+        var table = serverLevel.getServer().getLootData().getLootTable(getType().getDefaultLootTable());
         for (var stack : table.getRandomItems(params)) spawnAtLocation(stack);
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData() {
     }
 
     @Override

@@ -3,7 +3,6 @@ package net.per.primogemcraft.entity.mob;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -20,14 +19,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -37,16 +29,10 @@ import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
-import net.minecraft.world.item.EnderpearlItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.ProjectileItem;
-import net.minecraft.world.item.TridentItem;
-import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Explosion;
@@ -59,27 +45,15 @@ import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
-import net.neoforged.neoforge.fluids.FluidType;
+import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.fluids.FluidType;
 import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
 import net.per.primogemcraft.entity.misc.LivingItemDrop;
-import net.per.primogemcraft.system.living.LivingItemFormation;
-import net.per.primogemcraft.system.living.LivingItemUsePlayer;
-import net.per.primogemcraft.system.weapon.WishWeaponBowItem;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
@@ -133,13 +107,6 @@ public class LivingItemEntity extends PathfinderMob {
     private double orbitAngle = Double.NaN;
     private double lastChaseDist = Double.MAX_VALUE;
     private int chaseStuckTicks;
-    private LivingItemUsePlayer usePlayer;
-    private LivingItemFormation formation = LivingItemFormation.NONE;
-    private int formationIndex;
-    private int formationCount = 1;
-    private double formationSpacing = 1.5;
-    private Vec3 commandPosition;
-    private UUID commandTarget;
     private final Map<UUID, Long> ownerAttackMemory = new HashMap<>();
     private final Map<UUID, Long> attackBlacklist = new HashMap<>();
 
@@ -182,7 +149,7 @@ public class LivingItemEntity extends PathfinderMob {
     /** Adds {@code ticks} to a finite item's duration, preserving infinite duration and preventing overflow. */
     public void addRemainingTicks(int ticks) {
         if (isInfinite()) return;
-        setRemainingTicks(Math.clamp((long) remainingTicks + ticks, 1, Integer.MAX_VALUE));
+        setRemainingTicks((int) net.minecraft.util.Mth.clamp((long) remainingTicks + ticks, 1L, (long) Integer.MAX_VALUE));
     }
 
     /** Increases an infinite item's maximum and current health by the health equivalent of {@code ticks}. */
@@ -204,8 +171,8 @@ public class LivingItemEntity extends PathfinderMob {
     }
 
     @Override
-    public double getAttributeValue(Holder<Attribute> attribute) {
-        if (attribute.is(Attributes.MAX_HEALTH)) return getAttributeBaseValue(attribute);
+    public double getAttributeValue(Attribute attribute) {
+        if (attribute == Attributes.MAX_HEALTH) return getAttributeBaseValue(attribute);
         return super.getAttributeValue(attribute);
     }
 
@@ -220,7 +187,7 @@ public class LivingItemEntity extends PathfinderMob {
 
     public void applyItemStats() {
         var stack = getCarriedStack();
-        var mods = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
+        var mods = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
         attackInterval = getAttackInterval();
 
         var attack = getAttribute(Attributes.ATTACK_DAMAGE);
@@ -237,33 +204,32 @@ public class LivingItemEntity extends PathfinderMob {
         var owner = getOwner();
         if (owner != null && owner.getAttribute(Attributes.ATTACK_SPEED) != null) {
             attackSpeed.replaceFrom(owner.getAttribute(Attributes.ATTACK_SPEED));
-            owner.getMainHandItem().forEachModifier(EquipmentSlot.MAINHAND, (attribute, modifier) -> {
-                if (attribute.is(Attributes.ATTACK_SPEED)) attackSpeed.removeModifier(modifier.id());
-            });
+            for (var modifier : owner.getMainHandItem().getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_SPEED))
+                attackSpeed.removeModifier(modifier.getId());
         }
-        getCarriedStack().forEachModifier(EquipmentSlot.MAINHAND, (attribute, modifier) -> {
-            if (attribute.is(Attributes.ATTACK_SPEED)) {
-                attackSpeed.removeModifier(modifier.id());
-                attackSpeed.addTransientModifier(modifier);
-            }
-        });
+        for (var modifier : getCarriedStack().getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_SPEED)) {
+            attackSpeed.removeModifier(modifier.getId());
+            attackSpeed.addTransientModifier(modifier);
+        }
         return Math.max(1, (int) Math.ceil(20.0 / attackSpeed.getValue()));
     }
 
     private void clearItemModifiers(AttributeInstance instance) {
-        for (var modifier : instance.getModifiers()) {
-            if (modifier.id().getNamespace().equals(MOD_ID) && modifier.id().getPath().startsWith(MODIFIER_PREFIX))
-                instance.removeModifier(modifier.id());
+        for (var modifier : List.copyOf(instance.getModifiers())) {
+            // 1.20.1 淇グ鍣ㄧ敤 UUID 鏍囪瘑锛涙湰妯＄粍鍐欏叆鏃舵妸鍓嶇紑缂栬繘鍚嶇О
+            if (modifier.getName().startsWith(MODIFIER_PREFIX)) instance.removeModifier(modifier.getId());
         }
     }
 
-    private void addItemModifiers(AttributeInstance instance, ItemAttributeModifiers mods) {
+    private void addItemModifiers(AttributeInstance instance,
+                                  com.google.common.collect.Multimap<Attribute, AttributeModifier> mods) {
         if (mods == null) return;
-        for (var entry : mods.modifiers()) {
-            if (!entry.attribute().is(Attributes.ATTACK_DAMAGE)) continue;
-            var source = entry.modifier();
-            var id = ResourceLocation.fromNamespaceAndPath(MOD_ID, MODIFIER_PREFIX + source.id().getNamespace() + "_" + source.id().getPath());
-            instance.addTransientModifier(new AttributeModifier(id, source.amount(), source.operation()));
+        for (var source : mods.get(Attributes.ATTACK_DAMAGE)) {
+            var name = MODIFIER_PREFIX + source.getName();
+            instance.addTransientModifier(new AttributeModifier(
+                    net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(
+                            ResourceLocation.fromNamespaceAndPath(MOD_ID, name)),
+                    name, source.getAmount(), source.getOperation()));
         }
     }
 
@@ -301,86 +267,7 @@ public class LivingItemEntity extends PathfinderMob {
     public void joinOwnerTeam(Player owner) {
         if (level().isClientSide) return;
         var team = owner.getTeam();
-        if (team != null) level().getScoreboard().addPlayerToTeam(getStringUUID(), team);
-    }
-
-    /** Clears spell orders and resumes the normal follow and defense behavior. */
-    public void clearCommand() {
-        stopCarriedItemUse();
-        formation = LivingItemFormation.NONE;
-        commandPosition = null;
-        commandTarget = null;
-        hoverTarget = null;
-        ownerAttackMemory.clear();
-        setTarget(null);
-        setDeltaMovement(Vec3.ZERO);
-    }
-
-    /** Assigns an idle formation slot while preserving an explicit focus target. */
-    public void commandFormation(LivingItemFormation shape, int index, int count, double spacing) {
-        stopCarriedItemUse();
-        commandPosition = null;
-        hoverTarget = null;
-        ownerAttackMemory.clear();
-        if (commandTarget == null) setTarget(null);
-        formation = shape;
-        formationIndex = Math.max(0, index);
-        formationCount = Math.max(1, count);
-        formationSpacing = Double.isFinite(spacing) ? Math.clamp(spacing, 0.5, 3) : 1.5;
-    }
-
-    /** Moves to and holds a position without attacking or automatically using the carried item. */
-    public void commandMove(Vec3 position) {
-        clearCommand();
-        commandPosition = position;
-    }
-
-    /** Focuses an eligible target until it dies, leaves range, or another order replaces it. */
-    public void commandAttack(LivingEntity target) {
-        var owner = getOwner();
-        if (owner == null || !canCommandAttack(owner, target)) return;
-        stopCarriedItemUse();
-        commandPosition = null;
-        hoverTarget = null;
-        ownerAttackMemory.clear();
-        commandTarget = target.getUUID();
-        setTarget(target);
-    }
-
-    /** Checks ownership, allies and server PvP restrictions for a spell-directed attack. */
-    public static boolean canCommandAttack(Player owner, LivingEntity target) {
-        if (target == owner || !target.isAlive() || target.isRemoved() || target.isSpectator()
-                || target.isInvulnerable() || target.level() != owner.level()
-                || target.isAlliedTo(owner) || owner.isAlliedTo(target)
-                || target instanceof LivingItemEntity item && owner.getUUID().equals(item.getOwnerUuid())
-                || target instanceof TamableAnimal pet && owner.getUUID().equals(pet.getOwnerUUID())) return false;
-        return !(target instanceof Player player) || !player.getAbilities().invulnerable
-                && owner.level() instanceof ServerLevel level && level.getServer().isPvpAllowed() && owner.canHarmPlayer(player);
-    }
-
-    private boolean tickCommand(Player owner) {
-        if (commandTarget != null && level() instanceof ServerLevel level) {
-            if (level.getEntity(commandTarget) instanceof LivingEntity target && canCommandAttack(owner, target)
-                    && owner.distanceToSqr(target) <= 64 * 64) {
-                setTarget(target);
-                return false;
-            }
-            stopCarriedItemUse();
-            commandTarget = null;
-            setTarget(null);
-        }
-        if (formation == LivingItemFormation.NONE && commandPosition == null) return false;
-        stopCarriedItemUse();
-        setTarget(null);
-        var destination = commandPosition != null ? commandPosition : owner.position().add(0, 2, 0)
-                .add(formation.offset(formationIndex, formationCount, formationSpacing, owner.getLookAngle()));
-        if (commandPosition != null && owner.distanceToSqr(commandPosition) > 64 * 64) {
-            clearCommand();
-            return false;
-        }
-        if (distanceToSqr(owner) > 64 * 64) teleportTo(owner.getX(), owner.getY() + 2, owner.getZ());
-        steerTo(destination.x, destination.y, destination.z, MOVE_SPEED_ATTACK);
-        return true;
+        if (team instanceof net.minecraft.world.scores.PlayerTeam playerTeam) level().getScoreboard().addPlayerToTeam(getStringUUID(), playerTeam);
     }
 
     @Override
@@ -444,7 +331,7 @@ public class LivingItemEntity extends PathfinderMob {
     }
 
     @Override
-    public boolean ignoreExplosion(Explosion explosion) {
+    public boolean ignoreExplosion() {
         return true;
     }
 
@@ -507,47 +394,34 @@ public class LivingItemEntity extends PathfinderMob {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_ITEM, ItemStack.EMPTY);
-        builder.define(DATA_SWING, 0);
-        builder.define(DATA_ROTATE, 0);
-        builder.define(DATA_OWNER, Optional.empty());
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_ITEM, ItemStack.EMPTY);
+        this.entityData.define(DATA_SWING, 0);
+        this.entityData.define(DATA_ROTATE, 0);
+        this.entityData.define(DATA_OWNER, Optional.empty());
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         var stack = getCarriedStack();
-        if (!stack.isEmpty()) compound.put(NBT_ITEM, stack.save(level().registryAccess()));
+        if (!stack.isEmpty()) compound.put(NBT_ITEM, stack.save(new net.minecraft.nbt.CompoundTag()));
         entityData.get(DATA_OWNER).ifPresent(uuid -> compound.putUUID(NBT_OWNER, uuid));
         compound.putInt(NBT_TICKS, remainingTicks);
         compound.putInt(NBT_ATTACK_CD, attackCooldown);
         compound.putInt(NBT_USE_CD, useCooldown);
         compound.putDouble(NBT_RANGE, attackRange);
         compound.putFloat(NBT_INFINITE_MAX_HEALTH, infiniteMaxHealth);
-        compound.putString("LivingItemFormation", formation.name());
-        compound.putInt("LivingItemFormationIndex", formationIndex);
-        compound.putInt("LivingItemFormationCount", formationCount);
-        compound.putDouble("LivingItemFormationSpacing", formationSpacing);
-        if (commandPosition != null) {
-            var position = new CompoundTag();
-            position.putDouble("X", commandPosition.x);
-            position.putDouble("Y", commandPosition.y);
-            position.putDouble("Z", commandPosition.z);
-            compound.put("LivingItemCommandPosition", position);
-        }
-        if (commandTarget != null) compound.putUUID("LivingItemCommandTarget", commandTarget);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
-        stopCarriedItemUse();
         durationHealthInitialized = false;
         super.readAdditionalSaveData(compound);
         setNoGravity(true);
         if (compound.contains(NBT_ITEM))
-            ItemStack.parse(level().registryAccess(), compound.get(NBT_ITEM)).ifPresent(this::setCarriedStackSilent);
+            setCarriedStackSilent(ItemStack.of(compound.getCompound(NBT_ITEM)));
         if (compound.hasUUID(NBT_OWNER)) entityData.set(DATA_OWNER, Optional.of(compound.getUUID(NBT_OWNER)));
         remainingTicks = compound.getInt(NBT_TICKS);
         var savedMaxHealth = compound.getFloat(NBT_INFINITE_MAX_HEALTH);
@@ -558,22 +432,6 @@ public class LivingItemEntity extends PathfinderMob {
         applyItemStats();
         durationHealthInitialized = true;
         syncDurationHealth(false);
-        clearCommand();
-        try {
-            formation = LivingItemFormation.valueOf(compound.getString("LivingItemFormation"));
-        } catch (IllegalArgumentException ignored) {
-            formation = LivingItemFormation.NONE;
-        }
-        formationIndex = Math.max(0, compound.getInt("LivingItemFormationIndex"));
-        formationCount = Math.max(1, compound.getInt("LivingItemFormationCount"));
-        var spacing = compound.getDouble("LivingItemFormationSpacing");
-        formationSpacing = Double.isFinite(spacing) ? Math.clamp(spacing, 0.5, 3) : 1.5;
-        if (compound.contains("LivingItemCommandPosition")) {
-            var position = compound.getCompound("LivingItemCommandPosition");
-            var point = new Vec3(position.getDouble("X"), position.getDouble("Y"), position.getDouble("Z"));
-            if (Double.isFinite(point.x) && Double.isFinite(point.y) && Double.isFinite(point.z)) commandPosition = point;
-        }
-        if (compound.hasUUID("LivingItemCommandTarget")) commandTarget = compound.getUUID("LivingItemCommandTarget");
     }
 
     private void setCarriedStackSilent(ItemStack stack) {
@@ -592,7 +450,7 @@ public class LivingItemEntity extends PathfinderMob {
         if (isRemoved() || isDeadOrDying()) return;
         var owner = getOwner();
         if (owner != null && owner.isAlive() && level() != owner.level()) {
-            clearCommand();
+            setTarget(null);
             followOwner(owner);
             return;
         }
@@ -610,20 +468,13 @@ public class LivingItemEntity extends PathfinderMob {
             }
             syncDurationHealth(false);
         }
-        if (owner == null) {
-            stopCarriedItemUse();
-            return;
-        }
+        if (owner == null) return;
         if (owner.isDeadOrDying() || !owner.isAlive()) {
-            stopCarriedItemUse();
             if (isInfinite()) return;
             revertToItem();
             return;
         }
         syncInvisibility(owner);
-        if (tickCommand(owner)) return;
-        if (usePlayer != null) tickCarriedItemUse(owner);
-        if (isRemoved()) return;
         if (useCooldown > 0) {
             useCooldown--;
         } else {
@@ -719,16 +570,20 @@ public class LivingItemEntity extends PathfinderMob {
 
     private void updateCombat(Player owner, LivingEntity target) {
         hoverTarget = null;
+        lookAt(target, 30.0F, 30.0F);
         var stack = getCarriedStack();
-        if (usePlayer == null || !(stack.getItem() instanceof WishWeaponBowItem)) lookAt(target, 30.0F, 30.0F);
         if (isBowLike(stack)) {
-            if (usePlayer == null && attackCooldown-- <= 0) {
-                useAsPlayer(owner, stack);
+            if (attackCooldown > 0) {
+                attackCooldown--;
+                entityData.set(DATA_SWING, attackCooldown);
+            } else if (bowShot(owner, target)) {
+                entityData.set(DATA_SWING, 0);
                 attackCooldown = Math.max(10, attackInterval);
+            } else {
+                attackCooldown = 5;
             }
             return;
         }
-        if (usePlayer != null) return;
         if (attackCooldown > 0 && --attackCooldown > 0) return;
         var distanceSquared = target.getBoundingBox().distanceToSqr(position());
         if (distanceSquared > attackRange * attackRange) {
@@ -736,7 +591,7 @@ public class LivingItemEntity extends PathfinderMob {
             return;
         }
         if (target.invulnerableTime > 0) {
-            if (commandTarget == null && random.nextFloat() < 0.25F) {
+            if (random.nextFloat() < 0.25F) {
                 var alternative = findTarget(owner);
                 if (alternative != null && alternative != target && isValidTarget(alternative, owner))
                     setTarget(alternative);
@@ -747,7 +602,7 @@ public class LivingItemEntity extends PathfinderMob {
         attackCooldown = attackInterval;
         if (attackWithStack(owner, target)) {
             entityData.set(DATA_SWING, 5);
-            if (commandTarget == null && random.nextFloat() < RETARGET_CHANCE) {
+            if (random.nextFloat() < RETARGET_CHANCE) {
                 var alternative = findTarget(owner);
                 if (alternative != null && alternative != target && isValidTarget(alternative, owner))
                     setTarget(alternative);
@@ -803,39 +658,39 @@ public class LivingItemEntity extends PathfinderMob {
         if (!(level() instanceof ServerLevel serverLevel)) return false;
         var stack = getCarriedStack().copy();
         if (stack.isEmpty()) return false;
-        if (NeoForge.EVENT_BUS.post(new AttackEntityEvent(owner, target)).isCanceled()) return false;
+        if (MinecraftForge.EVENT_BUS.post(new AttackEntityEvent(owner, target))) return false;
         var source = elementSource(stack, level().damageSources().playerAttack(owner));
         var baseDamage = (float) getAttributeValue(Attributes.ATTACK_DAMAGE);
-        var finalDamage = EnchantmentHelper.modifyDamage(serverLevel, stack, target, source, baseDamage);
+        var finalDamage = baseDamage + EnchantmentHelper.getDamageBonus(stack, target.getMobType());
         if (!target.hurt(source, finalDamage)) {
             attackBlacklist.put(target.getUUID(), level().getGameTime());
             setTarget(null);
             return false;
         }
         target.invulnerableTime = ATTACK_INVULNERABLE_TICKS;
-        if (stack.canPerformAction(ItemAbilities.SWORD_SWEEP) || stack.getItem().getAttackDamageBonus(target, baseDamage, source) > 0.0F)
+        if (stack.canPerformAction(ToolActions.SWORD_SWEEP) || EnchantmentHelper.getDamageBonus(stack, target.getMobType()) > 0.0F)
             sweepAttack(serverLevel, owner, target, stack, baseDamage);
-        var knockback = getAttributeValue(Attributes.ATTACK_KNOCKBACK) + EnchantmentHelper.modifyKnockback(serverLevel, stack, target, source, 0.0F);
+        var knockback = getAttributeValue(Attributes.ATTACK_KNOCKBACK) + EnchantmentHelper.getKnockbackBonus(owner);
         if (knockback > 0.0) {
             var dx = target.getX() - getX();
             var dz = target.getZ() - getZ();
             target.knockback(knockback * 0.5, dx, dz);
         }
         var hurtEnemy = stack.getItem().hurtEnemy(stack, target, owner);
-        EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, target, source, stack);
-        if (hurtEnemy) stack.getItem().postHurtEnemy(stack, target, owner);
-        if (!stack.isEmpty() && !isInfinite()) stack.hurtAndBreak(1, owner, EquipmentSlot.MAINHAND);
+        EnchantmentHelper.doPostDamageEffects(owner, target);
+        
+        if (!stack.isEmpty() && !isInfinite()) stack.hurtAndBreak(1, owner, p -> p.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         entityData.set(DATA_ITEM, stack.copy());
         level().playSound(null, getX(), getY(), getZ(), SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.HOSTILE, 1.0F, 0.8F + random.nextFloat() * 0.4F);
-        if (stack.isEmpty()) revertByDeath();
+        if (stack.isEmpty()) revertToItem();
         return true;
     }
 
     private void sweepAttack(ServerLevel serverLevel, Player owner, LivingEntity target, ItemStack stack, float baseDamage) {
-        var event = new SweepAttackEvent(owner, target, true);
-        NeoForge.EVENT_BUS.post(event);
-        if (!event.isSweeping()) return;
-        var sweepLevel = stack.getEnchantmentLevel(serverLevel.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SWEEPING_EDGE));
+        var event = new AttackEntityEvent(owner, target);
+        MinecraftForge.EVENT_BUS.post(event);
+        
+        var sweepLevel = net.per.primogemcraft.compat.item.Enchantments120.level(stack, Enchantments.SWEEPING_EDGE);
         var ratio = sweepLevel <= 0 ? 0.0F : 1.0F - 1.0F / (sweepLevel + 1.0F);
         var sweepDamage = 1.0F + ratio * baseDamage;
         var source = elementSource(stack, serverLevel.damageSources().playerAttack(owner));
@@ -845,9 +700,8 @@ public class LivingItemEntity extends PathfinderMob {
                         && !(entity instanceof LivingItemEntity living && Objects.equals(living.getOwnerUuid(), getOwnerUuid()))
                         && distanceToSqr(entity) < 9.0);
         for (var entity : targets) {
-            if (commandTarget != null && !canCommandAttack(owner, entity)) continue;
             if (entity.invulnerableTime > 0) continue;
-            if (entity.hurt(source, EnchantmentHelper.modifyDamage(serverLevel, stack, entity, source, sweepDamage)))
+            if (entity.hurt(source, sweepDamage + EnchantmentHelper.getDamageBonus(stack, entity.getMobType())))
                 entity.invulnerableTime = ATTACK_INVULNERABLE_TICKS;
         }
         serverLevel.playSound(null, getX(), getY(), getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -911,8 +765,6 @@ public class LivingItemEntity extends PathfinderMob {
     }
 
     private boolean isValidTarget(LivingEntity target, Player owner) {
-        if (commandTarget != null && commandTarget.equals(target.getUUID()))
-            return canCommandAttack(owner, target) && owner.distanceToSqr(target) <= 64 * 64;
         var now = level().getGameTime();
         if (distanceToSqr(target) > MAX_CHASE_DISTANCE * MAX_CHASE_DISTANCE) return false;
         if (target instanceof Mob mob && (mob.getTarget() == owner || mob.getTarget() == this)) return true;
@@ -922,7 +774,6 @@ public class LivingItemEntity extends PathfinderMob {
 
     public void onOwnerAttack(Entity target) {
         if (level().isClientSide || isRemoved()) return;
-        if (formation != LivingItemFormation.NONE || commandPosition != null || commandTarget != null) return;
         if (target == this || target instanceof LivingItemEntity other && Objects.equals(other.getOwnerUuid(), getOwnerUuid()))
             return;
         if (target instanceof LivingEntity living && living.isAlive() && !living.isRemoved()) {
@@ -933,22 +784,24 @@ public class LivingItemEntity extends PathfinderMob {
 
     private void attemptRightClick(Player owner) {
         var stack = getCarriedStack();
-        if (stack.isEmpty() || owner == null || usePlayer != null) return;
+        if (stack.isEmpty() || owner == null) return;
         var item = stack.getItem();
         if (owner.getCooldowns().isOnCooldown(item)) return;
         var focus = getTarget() != null ? getTarget() : owner;
         if (isBowLike(stack)) {
+            if (focus != owner) bowShot(owner, focus);
             return;
         }
         if (item == Items.WATER_BUCKET || item == Items.LAVA_BUCKET || item == Items.POWDER_SNOW_BUCKET) {
             placeFluidAt(focus, item);
             return;
         }
-        if (item instanceof ProjectileItem) {
+        if (item instanceof net.minecraft.world.item.SnowballItem || item instanceof net.minecraft.world.item.EggItem
+                || item instanceof net.minecraft.world.item.PotionItem || item instanceof net.minecraft.world.item.ExperienceBottleItem) {
             launchProjectile(owner, focus, stack);
             return;
         }
-        if (!canRightClick(stack) && stack.getUseDuration(this) <= 0) return;
+        if (!canRightClick(stack)) return;
         entityData.set(DATA_ROTATE, 10);
         useAsPlayer(owner, stack);
     }
@@ -956,11 +809,11 @@ public class LivingItemEntity extends PathfinderMob {
     private void launchProjectile(Player owner, LivingEntity focus, ItemStack stack) {
         var position = position().add(0, getBbHeight() * 0.8, 0);
         var direction = focus.getEyePosition().subtract(position).normalize();
-        if (throwProjectile(owner, stack.copyWithCount(1), position, direction)) return;
-        if (!isInfinite() || stack.getItem() instanceof TridentItem) stack.shrink(1);
+        if (throwProjectile(owner, stack.copy(), position, direction)) return;
+        if (!isInfinite()) stack.shrink(1);
         if (stack.isEmpty()) {
             entityData.set(DATA_ITEM, ItemStack.EMPTY);
-            revertByDeath();
+            revertToItem();
         } else {
             entityData.set(DATA_ITEM, stack.copy());
         }
@@ -974,16 +827,28 @@ public class LivingItemEntity extends PathfinderMob {
             pearl.setPos(position.x, position.y, position.z);
             pearl.setItem(thrown);
             pearl.shoot(direction.x, direction.y, direction.z, 1.5F, 1.0F);
-            return !level().addFreshEntity(pearl);
+            level().addFreshEntity(pearl);
+            return false;
         }
-        if (item instanceof ProjectileItem projectileItem) {
-            var projectile = projectileItem.asProjectile(level(), position, thrown, Direction.UP);
+        net.minecraft.world.entity.projectile.ThrowableItemProjectile projectile = null;
+        if (item instanceof net.minecraft.world.item.SnowballItem)
+            projectile = new net.minecraft.world.entity.projectile.Snowball(level(), owner);
+        else if (item instanceof net.minecraft.world.item.EggItem)
+            projectile = new net.minecraft.world.entity.projectile.ThrownEgg(level(), owner);
+        else if (item instanceof net.minecraft.world.item.ExperienceBottleItem)
+            projectile = new net.minecraft.world.entity.projectile.ThrownExperienceBottle(level(), owner);
+        else if (item instanceof net.minecraft.world.item.PotionItem) {
+            var potion = new net.minecraft.world.entity.projectile.ThrownPotion(level(), owner);
+            potion.setItem(thrown);
+            projectile = potion;
+        }
+        if (projectile != null) {
+            if (!(projectile instanceof net.minecraft.world.entity.projectile.ThrownPotion)) projectile.setItem(thrown);
             if (owner != null) projectile.setOwner(owner);
             projectile.setPos(position.x, position.y, position.z);
             projectile.setDeltaMovement(direction.scale(1.2));
-            if (isInfinite() && !(item instanceof TridentItem) && projectile instanceof AbstractArrow arrow)
-                arrow.pickup = AbstractArrow.Pickup.DISALLOWED;
-            return !level().addFreshEntity(projectile);
+            level().addFreshEntity(projectile);
+            return false;
         }
         return true;
     }
@@ -1009,66 +874,23 @@ public class LivingItemEntity extends PathfinderMob {
     }
 
     private void useAsPlayer(Player owner, ItemStack stack) {
-        if (!(level() instanceof ServerLevel serverLevel)) return;
-        if (stack.getUseDuration(owner) <= 0) {
-            if (owner.isUsingItem()) return;
-            var slot = owner.getInventory().selected;
-            var previous = owner.getInventory().getItem(slot);
-            var used = stack.copy();
-            var result = used;
-            owner.getInventory().setItem(slot, used);
-            try {
-                var interaction = used.use(level(), owner, InteractionHand.MAIN_HAND);
-                result = interaction.getObject() == used ? owner.getInventory().getItem(slot) : interaction.getObject();
-            } finally {
-                owner.stopUsingItem();
-                owner.getInventory().setItem(slot, previous);
-            }
+        var slot = owner.getInventory().selected;
+        var previous = owner.getInventory().getItem(slot);
+        owner.getInventory().setItem(slot, stack);
+        ItemStack result;
+        try {
+            result = stack.getItem().use(level(), owner, InteractionHand.MAIN_HAND).getObject();
+        } finally {
+            owner.getInventory().setItem(slot, previous);
+        }
+        if (result.isEmpty()) {
+            if (isInfinite()) return;
+            entityData.set(DATA_ITEM, ItemStack.EMPTY);
+            revertToItem();
+            return;
+        }
+        if (!ItemStack.isSameItemSameTags(stack, result) || stack.getCount() != result.getCount())
             entityData.set(DATA_ITEM, result.copy());
-            if (getCarriedStack().isEmpty()) revertByDeath();
-            return;
-        }
-        usePlayer = new LivingItemUsePlayer(serverLevel, this, owner);
-        usePlayer.aim(this, getTarget() != null ? getTarget() : owner);
-        usePlayer.useCarriedItem(true);
-        syncCarriedItemUse();
-    }
-
-    private void tickCarriedItemUse(Player owner) {
-        if (usePlayer.level() != level() || usePlayer.owner() != owner) {
-            stopCarriedItemUse();
-            return;
-        }
-        if (isBowLike(getCarriedStack()) && (getTarget() == null || !getTarget().isAlive()
-                || !isValidTarget(getTarget(), owner))) {
-            stopCarriedItemUse();
-            return;
-        }
-        usePlayer.aim(this, getTarget() != null ? getTarget() : owner);
-        usePlayer.useCarriedItem(false);
-        entityData.set(DATA_SWING, Math.max(1, BOW_DRAW_TICKS - usePlayer.getTicksUsingItem()));
-        syncCarriedItemUse();
-    }
-
-    private void syncCarriedItemUse() {
-        if (!ItemStack.matches(getCarriedStack(), usePlayer.getMainHandItem()))
-            entityData.set(DATA_ITEM, usePlayer.getMainHandItem().copy());
-        if (!usePlayer.isUsingItem()) stopCarriedItemUse();
-        if (getCarriedStack().isEmpty()) revertByDeath();
-    }
-
-    private void stopCarriedItemUse() {
-        if (usePlayer == null) return;
-        usePlayer.stopUsingItem();
-        entityData.set(DATA_ITEM, usePlayer.getMainHandItem().copy());
-        usePlayer = null;
-        entityData.set(DATA_SWING, 0);
-    }
-
-    @Override
-    public void remove(RemovalReason reason) {
-        stopCarriedItemUse();
-        super.remove(reason);
     }
 
     private static boolean canRightClick(ItemStack stack) {
@@ -1081,19 +903,48 @@ public class LivingItemEntity extends PathfinderMob {
         return animation == UseAnim.BOW || animation == UseAnim.CROSSBOW;
     }
 
+    private static ItemStack findArrow(Player owner) {
+        var inventory = owner.getInventory();
+        for (var stack : inventory.items) {
+            if (isArrow(stack)) return stack;
+        }
+        for (var stack : inventory.offhand) {
+            if (isArrow(stack)) return stack;
+        }
+        return ItemStack.EMPTY;
+    }
+
+    private static boolean isArrow(ItemStack stack) {
+        var item = stack.getItem();
+        return item == Items.ARROW || item == Items.SPECTRAL_ARROW || item == Items.TIPPED_ARROW;
+    }
+
+    private boolean bowShot(Player owner, LivingEntity target) {
+        var ammo = findArrow(owner);
+        if (ammo == null || ammo.isEmpty()) return false;
+        var arrowStack = ammo.copy();
+        ammo.shrink(1);
+        var arrow = ProjectileUtil.getMobArrow(owner, arrowStack, 2.5F);
+        var y = getY() + getBbHeight() * 0.8;
+        arrow.setPos(getX(), y, getZ());
+        var to = new Vec3(target.getX() - getX(), target.getEyeY() - y, target.getZ() - getZ());
+        arrow.shoot(to.x, to.y, to.z, 2.2F, 0.8F);
+        level().addFreshEntity(arrow);
+        return true;
+    }
+
     private boolean tryThrowSelf() {
         var stack = getCarriedStack();
         if (stack.isEmpty()) return false;
         var owner = getOwner();
-        if (owner == null && stack.getCount() > 1) return false;
         var aim = getTarget() != null ? getTarget() : owner;
         var position = position().add(0, getBbHeight() * 0.8, 0);
         var direction = aim != null ? aim.getEyePosition().subtract(position).normalize() : getLookAngle();
-        if (throwProjectile(owner, stack.copyWithCount(1), position, direction)) return false;
+        if (throwProjectile(owner, stack, position, direction)) return false;
         if (owner != null && stack.getCount() > 1) {
             var rest = stack.copy();
             rest.setCount(stack.getCount() - 1);
-            if (!owner.getInventory().add(rest)) owner.drop(rest, false);
+            owner.getInventory().add(rest);
         }
         playDisappearEffects();
         reverted = true;
@@ -1124,7 +975,6 @@ public class LivingItemEntity extends PathfinderMob {
 
     private void revert() {
         if (reverted) return;
-        stopCarriedItemUse();
         reverted = true;
         playDisappearEffects();
         var stack = getCarriedStack();
@@ -1159,10 +1009,10 @@ public class LivingItemEntity extends PathfinderMob {
                 .add(Attributes.ARMOR, 0)
                 .add(Attributes.ATTACK_DAMAGE, 2.0)
                 .add(Attributes.FOLLOW_RANGE, 32)
-                .add(Attributes.STEP_HEIGHT, 0.6)
+                .add(net.minecraftforge.common.ForgeMod.STEP_HEIGHT_ADDITION.get(), 0.6)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1)
                 .add(Attributes.ATTACK_KNOCKBACK, 0.5)
                 .add(Attributes.FLYING_SPEED, 0.8)
-                .add(NeoForgeMod.SWIM_SPEED, 1);
+                .add(net.minecraftforge.common.ForgeMod.SWIM_SPEED.get(), 1);
     }
 }

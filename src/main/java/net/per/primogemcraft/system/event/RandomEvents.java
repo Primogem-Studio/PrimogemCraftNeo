@@ -1,7 +1,6 @@
 package net.per.primogemcraft.system.event;
 
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -277,12 +276,12 @@ public final class RandomEvents {
 
         supplyRedstone = register(SUPPLY_REDSTONE, context -> {
             var redstone = new ItemStack(Items.REDSTONE, 8);
-            redstone.set(DataComponents.CUSTOM_NAME, text(SUPPLY_REDSTONE, "name"));
+            redstone.setHoverName(text(SUPPLY_REDSTONE, "name"));
             return context.give(redstone);
         });
         supplySilkTouchChest = register(SUPPLY_SILK_TOUCH_CHEST, context -> {
             var chest = new ItemStack(Items.CHEST);
-            chest.enchant(context.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH), 1);
+            chest.enchant(Enchantments.SILK_TOUCH, 1);
             return context.give(chest);
         });
 
@@ -410,7 +409,7 @@ public final class RandomEvents {
         return EventRegistry.randomEvent(RandomSource.create());
     }
 
-    private static void baseValue(LivingEntity living, Holder<Attribute> attribute, double value) {
+    private static void baseValue(LivingEntity living, Attribute attribute, double value) {
         var instance = living.getAttribute(attribute);
         if (instance != null) instance.setBaseValue(value);
     }

@@ -18,7 +18,7 @@ public class AtDeathsDoorEffect extends MobEffect {
 
     public AtDeathsDoorEffect() {
         super(MobEffectCategory.NEUTRAL, COLOR);
-        addAttributeModifier(Attributes.MAX_HEALTH, ResourceLocation.fromNamespaceAndPath(MOD_ID, "effect.at_deaths_door"), -HEALTH_PER_LEVEL, AttributeModifier.Operation.ADD_VALUE);
+        addAttributeModifier(Attributes.MAX_HEALTH, net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(ResourceLocation.fromNamespaceAndPath(MOD_ID, "effect.at_deaths_door")).toString(), -HEALTH_PER_LEVEL, AttributeModifier.Operation.ADDITION);
     }
 
     public static int amplifierFor(LivingEntity source) {

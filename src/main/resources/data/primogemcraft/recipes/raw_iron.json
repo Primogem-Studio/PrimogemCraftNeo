@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "primogemcraft:white_iron_ore"
+  },
+  "result": "minecraft:raw_iron",
+  "count": 2
+}

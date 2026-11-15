@@ -12,6 +12,6 @@ public class PrimogemShovelItem extends ShovelItem {
     private static final float ATTACK_SPEED = -3.0F;
 
     public PrimogemShovelItem(Properties properties) {
-        super(TIER, properties.attributes(DiggerItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant());
     }
 }

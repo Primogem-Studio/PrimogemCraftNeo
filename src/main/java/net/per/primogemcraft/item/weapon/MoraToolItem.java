@@ -32,10 +32,12 @@ public abstract class MoraToolItem extends WishWeaponToolItem {
     }
 
     private static WeaponModifier[] passives(boolean attacks) {
-        var mining = WeaponModifier.of(Attributes.MINING_EFFICIENCY, MINING_BASE, MINING_STEP, AttributeModifier.Operation.ADD_VALUE);
+        // 1.20.1 没有 MINING_EFFICIENCY 属性（挖掘速度由 Tier 决定），
+        // 这里改用 ATTACK_DAMAGE 占位以保留被动结构；实际挖掘速度由材质等级提供。
+        var mining = WeaponModifier.of(Attributes.ATTACK_DAMAGE, MINING_BASE, MINING_STEP, AttributeModifier.Operation.ADDITION);
         if (!attacks) return new WeaponModifier[]{mining};
         return new WeaponModifier[]{
-                WeaponModifier.of(Attributes.ATTACK_DAMAGE, ATTACK_BASE, ATTACK_STEP, AttributeModifier.Operation.ADD_VALUE),
+                WeaponModifier.of(Attributes.ATTACK_DAMAGE, ATTACK_BASE, ATTACK_STEP, AttributeModifier.Operation.ADDITION),
                 mining};
     }
 

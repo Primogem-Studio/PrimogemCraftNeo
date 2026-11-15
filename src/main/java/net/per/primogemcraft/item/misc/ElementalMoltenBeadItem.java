@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.misc;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
@@ -36,7 +37,7 @@ public class ElementalMoltenBeadItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         var element = Element.of(stack);
         var prefix = stack.getDescriptionId() + (element == null ? "" : "." + element.id()) + TOOLTIP_SUFFIX;
         for (var index = 0; Language.getInstance().has(prefix + index); index++)
@@ -45,6 +46,6 @@ public class ElementalMoltenBeadItem extends Item {
 
     private static void activate(ItemStack stack, RandomSource random) {
         if (Element.of(stack) != null) return;
-        stack.set(PGCDataComponents.ELEMENT_TYPE.get(), random.nextInt(Element.values().length) + 1);
+        StackComponents.set(stack, PGCDataComponents.ELEMENT_TYPE, random.nextInt(Element.values().length) + 1);
     }
 }

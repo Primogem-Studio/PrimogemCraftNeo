@@ -32,7 +32,7 @@ public final class CurioLoot {
     }
 
     public static void dropTable(ResourceLocation table, ServerLevel level, Vec3 position, BlockState state, Entity agent) {
-        var loot = level.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, table));
+        var loot = level.getServer().getLootData().getLootTable(table);
         var params = new LootParams.Builder(level)
                 .withParameter(LootContextParams.ORIGIN, position)
                 .withParameter(LootContextParams.BLOCK_STATE, state)

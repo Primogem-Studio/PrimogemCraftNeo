@@ -7,7 +7,7 @@ import net.minecraft.world.item.ArmorMaterial;
 public class MoraArmorItem extends ArmorItem {
     private static final int DURABILITY_MULTIPLIER = 64;
 
-    public MoraArmorItem(ArmorItem.Type type, Holder<ArmorMaterial> material, Properties properties) {
-        super(material, type, properties.durability(type.getDurability(DURABILITY_MULTIPLIER)));
+    public MoraArmorItem(ArmorItem.Type type, ArmorMaterial material, Properties properties) {
+        super(material, type, properties.durability(11 * DURABILITY_MULTIPLIER));
     }
 }

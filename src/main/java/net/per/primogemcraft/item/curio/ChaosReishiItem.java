@@ -1,6 +1,7 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.core.component.DataComponentType;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.per.primogemcraft.compat.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -26,11 +27,11 @@ public class ChaosReishiItem extends CurioItem {
     public void impacted(CurioContext context, CurioImpact impact) {
         if (impact.signal() != CurioSignal.KILL) return;
         if (!(impact.subject() instanceof LivingEntity victim)) return;
-        if (!victim.getType().is(EntityTypeTags.UNDEAD) && !victim.getType().is(EntityTypeTags.ARTHROPOD)) return;
+        if (victim.getMobType() != net.minecraft.world.entity.MobType.UNDEAD && victim.getMobType() != net.minecraft.world.entity.MobType.ARTHROPOD) return;
         var counter = PGCDataComponents.CURIO_COUNTER.get();
-        var progress = context.stack().getOrDefault(counter, 0) + 1;
+        var progress = StackComponents.getOrDefault(context.stack(), counter, 0) + 1;
         if (progress < KILLS) {
-            context.stack().set(counter, progress);
+            StackComponents.set(context.stack(), counter, progress);
             return;
         }
         enchant(context, counter);
@@ -45,14 +46,14 @@ public class ChaosReishiItem extends CurioItem {
             return;
         }
         CurioEnchanting.tablePool(player, target, LEVEL);
-        target.set(counter, target.getOrDefault(counter, 0) + 1);
-        context.stack().set(counter, 0);
+        StackComponents.set(target, counter, StackComponents.getOrDefault(target, counter, 0) + 1);
+        StackComponents.set(context.stack(), counter, 0);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, VOLUME, PITCH);
     }
 
     private boolean enchantable(ItemStack stack) {
         if (stack.getItem() instanceof ChaosReishiItem) return false;
-        int used = stack.getOrDefault(PGCDataComponents.CURIO_COUNTER.get(), 0);
+        int used = StackComponents.getOrDefault(stack, PGCDataComponents.CURIO_COUNTER, 0);
         if (used >= MAX_USES) return false;
         return used > 0 || stack.isEnchantable();
     }

@@ -6,7 +6,7 @@ public record ChoiceCardIcons(ResourceLocation texture, int count) {
     private static final int MAX_COUNT = 6;
 
     public ChoiceCardIcons {
-        count = Math.clamp(count, 1, MAX_COUNT);
+        count = net.minecraft.util.Mth.clamp(count, 1, MAX_COUNT);
     }
 
     public static ChoiceCardIcons of(ResourceLocation texture, int count) {

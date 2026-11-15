@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.misc;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -30,7 +31,7 @@ public class TreatedFineOreItem extends DescribedItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         var stack = player.getItemInHand(hand);
-        var recovery = stack.get(PGCDataComponents.WEAPON_RECOVERY.get());
+        var recovery = StackComponents.get(stack, PGCDataComponents.WEAPON_RECOVERY);
         if (recovery == null) return InteractionResultHolder.pass(stack);
         if (player instanceof ServerPlayer server) {
             for (var reward : WeaponEnhancement.refund(recovery)) PlayerItems.give(server, reward);
@@ -41,10 +42,10 @@ public class TreatedFineOreItem extends DescribedItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, context, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, level, tooltip, flag);
         var prefix = stack.getDescriptionId();
-        var recovery = stack.get(PGCDataComponents.WEAPON_RECOVERY.get());
+        var recovery = StackComponents.get(stack, PGCDataComponents.WEAPON_RECOVERY);
         if (recovery == null) {
             tooltip.add(Component.translatable(prefix + EMPTY_SUFFIX));
             return;

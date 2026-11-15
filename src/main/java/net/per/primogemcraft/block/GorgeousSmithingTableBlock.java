@@ -12,30 +12,29 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.network.NetworkHooks;
 import net.per.primogemcraft.block.entity.GorgeousSmithingTableBlockEntity;
+import net.per.primogemcraft.system.menu.LinkedContainers;
+import net.minecraft.world.InteractionHand;
 
 public class GorgeousSmithingTableBlock extends BaseEntityBlock {
-    public static final MapCodec<GorgeousSmithingTableBlock> CODEC = simpleCodec(GorgeousSmithingTableBlock::new);
-
     public GorgeousSmithingTableBlock(BlockBehaviour.Properties properties) {
         super(properties);
     }
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide()) return InteractionResult.SUCCESS;
         if (player instanceof ServerPlayer serverPlayer && level.getBlockEntity(pos) instanceof GorgeousSmithingTableBlockEntity table)
-            serverPlayer.openMenu(table);
+            NetworkHooks.openScreen(serverPlayer, table, buffer -> {
+                buffer.writeBlockPos(pos);
+                LinkedContainers.write(buffer, LinkedContainers.scan(level, pos));
+            });
         return InteractionResult.SUCCESS;
     }
 

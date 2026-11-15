@@ -46,6 +46,6 @@ public class RewardCasketBlock extends Block {
                 .withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity)
                 .withOptionalParameter(LootContextParams.THIS_ENTITY, player)
                 .create(LootContextParamSets.BLOCK);
-        return level.getServer().reloadableRegistries().getLootTable(getLootTable()).getRandomItems(params);
+        return level.getServer().getLootData().getLootTable(getLootTable()).getRandomItems(params);
     }
 }

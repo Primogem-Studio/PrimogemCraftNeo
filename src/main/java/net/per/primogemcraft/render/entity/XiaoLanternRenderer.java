@@ -27,8 +27,8 @@ public class XiaoLanternRenderer extends EntityRenderer<XiaoLanternEntity> {
 
     @Override
     public void render(XiaoLanternEntity entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-        model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), packedLight, OverlayTexture.NO_OVERLAY, GLOW_COLOR);
-        model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.eyes(TEXTURE)), packedLight, OverlayTexture.NO_OVERLAY, GLOW_COLOR);
+        model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.eyes(TEXTURE)), packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }
 

@@ -5,9 +5,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.event.level.BlockEvent;
 import net.per.primogemcraft.registry.PGCBlocks;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCItems;
@@ -21,7 +21,7 @@ import java.util.List;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
+@Mod.EventBusSubscriber(modid = MOD_ID)
 public final class TrueGalaxyLottoEvents {
     private static final double TRIGGER_CHANCE = 0.3D;
     private static final double CURIO_CHANCE = 0.4D;
@@ -42,7 +42,7 @@ public final class TrueGalaxyLottoEvents {
         var offhand = player.getOffhandItem();
         if (!offhand.is(PGCItems.TRUE_GALAXY_LOTTO.get())) return;
         if (player.getRandom().nextDouble() >= TRIGGER_CHANCE) return;
-        if (player.gameMode.getGameModeForPlayer() == GameType.CREATIVE || !player.hasEffect(PGCEffects.LOTTO_PUNISHMENT)) {
+        if (player.gameMode.getGameModeForPlayer() == GameType.CREATIVE || !player.hasEffect(PGCEffects.LOTTO_PUNISHMENT.get())) {
             if (player.getRandom().nextDouble() < CURIO_CHANCE) {
                 CurioReward.open(player, ChoiceSupport.CURIO_CARDS, List.of(Curios.randomCurio(player.getRandom())));
                 player.displayClientMessage(Component.translatable(GAINED_KEY), false);

@@ -21,18 +21,19 @@ public class AbundanceEffect extends MobEffect {
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    public void applyEffectTick(LivingEntity entity, int amplifier)
+    {
         if (entity.level() instanceof ServerLevel level && level.getRandom().nextDouble() < PARTICLE_CHANCE)
             level.sendParticles(PGCParticles.MARA.get(), entity.getX() + jitter(entity), entity.getY(), entity.getZ() + jitter(entity),
                     PARTICLE_COUNT, 0.0D, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPEED);
-        if (entity instanceof Player) return true;
-        if (entity.hasEffect(PGCEffects.CUCKOO_CLOCK_TRICK)) entity.removeEffect(PGCEffects.ABUNDANCE);
-        return true;
+        if (entity instanceof Player) return;
+        if (entity.hasEffect(PGCEffects.CUCKOO_CLOCK_TRICK.get())) entity.removeEffect(PGCEffects.ABUNDANCE.get());
+        return;
     }
 
     private static double jitter(LivingEntity entity) {

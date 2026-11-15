@@ -1,6 +1,5 @@
 package net.per.primogemcraft.system.curio.compat;
 
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -12,7 +11,6 @@ import net.per.primogemcraft.system.curio.CurioContext;
 import net.per.primogemcraft.system.curio.CurioForm;
 import net.per.primogemcraft.system.curio.CurioItem;
 import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +26,7 @@ public final class CuriosBridge {
     }
 
     public static void register() {
-        CuriosApi.registerCurioPredicate(PREDICATE, result -> result.stack().is(CurioForm.ANY) || OtherworldBankbook.isBankbook(result.stack()) || result.stack().is(PGCItems.VIOLANE.get()) || result.stack().is(PGCItems.COLORFUL_SUNGLASSES.get()));
-        CuriosApi.registerCurio(PGCItems.COLORFUL_SUNGLASSES.get(), new ICurioItem() {
-            @Override
-            public List<Component> getSlotsTooltip(List<Component> tooltips, Item.TooltipContext context, ItemStack stack) {
-                return List.of();
-            }
-        });
+        CuriosApi.registerCurioPredicate(PREDICATE, result -> result.stack().is(CurioForm.ANY) || OtherworldBankbook.isBankbook(result.stack()) || result.stack().is(PGCItems.VIOLANE.get()));
     }
 
     public static List<ItemStack> equipped(Player player) {

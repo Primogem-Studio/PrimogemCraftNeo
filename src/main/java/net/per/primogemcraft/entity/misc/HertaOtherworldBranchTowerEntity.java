@@ -30,7 +30,7 @@ public class HertaOtherworldBranchTowerEntity extends Entity {
             return InteractionResult.SUCCESS;
         }
         if (player instanceof ServerPlayer serverPlayer) {
-            playSound(SoundEvents.DONKEY_CHEST, 0.4F, Mth.nextFloat(getRandom(), 0.2F, 1.0F));
+            playSound(SoundEvents.DONKEY_CHEST, 0.4F, Mth.nextFloat(random, 0.2F, 1.0F));
             HertaShop.open(serverPlayer);
         }
         return InteractionResult.SUCCESS;
@@ -57,12 +57,12 @@ public class HertaOtherworldBranchTowerEntity extends Entity {
     }
 
     @Override
-    public boolean ignoreExplosion(Explosion explosion) {
+    public boolean ignoreExplosion() {
         return true;
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData() {
     }
 
     @Override

@@ -1,6 +1,5 @@
 package net.per.primogemcraft.system.curio.effect;
 
-import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -8,6 +7,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public final class Prescription {
     private final String id;
@@ -25,7 +25,11 @@ public final class Prescription {
         this.label = label;
     }
 
-    public Prescription modifier(Holder<Attribute> attribute, double amount, AttributeModifier.Operation operation) {
+    public Prescription modifier(Attribute attribute, double amount, AttributeModifier.Operation operation) {
+        return modifier(() -> attribute, amount, operation);
+    }
+
+    public Prescription modifier(Supplier<? extends Attribute> attribute, double amount, AttributeModifier.Operation operation) {
         modifiers.add(new Modifier(attribute, amount, operation));
         return this;
     }
@@ -88,6 +92,6 @@ public final class Prescription {
         return duration;
     }
 
-    public record Modifier(Holder<Attribute> attribute, double amount, AttributeModifier.Operation operation) {
+    public record Modifier(Supplier<? extends Attribute> attribute, double amount, AttributeModifier.Operation operation) {
     }
 }

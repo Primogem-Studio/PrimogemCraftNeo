@@ -31,7 +31,7 @@ public class CuckooClockSandwichItem extends DescribedItem {
         BlackForestCuckooClockItem.clear(player);
         WhimsicalFanciesMachineryCrewItem.clear(player);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ANVIL_PLACE, SoundSource.PLAYERS, VOLUME, 1.0F);
-        if (player.hasEffect(PGCEffects.LOTTO_PUNISHMENT)) LottoPunishmentEffect.cure(player);
+        if (player.hasEffect(PGCEffects.LOTTO_PUNISHMENT.get())) LottoPunishmentEffect.cure(player);
         else player.hurt(level.damageSources().fallingBlock(null), PUNISHMENT_DAMAGE);
         return result;
     }

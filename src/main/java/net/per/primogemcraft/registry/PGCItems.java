@@ -1,5 +1,6 @@
 package net.per.primogemcraft.registry;
 
+import net.per.primogemcraft.compat.item.DiscItem;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -17,11 +18,11 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
-import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.common.ForgeSpawnEggItem;
+import net.minecraftforge.common.Tags;
+import net.per.primogemcraft.compat.registries.DeferredHolder;
+import net.per.primogemcraft.compat.registries.DeferredItem;
+import net.per.primogemcraft.compat.registries.DeferredRegister;
 import net.per.primogemcraft.enchantment.EnchantChoice;
 import net.per.primogemcraft.enchantment.EnchantGrade;
 import net.per.primogemcraft.enchantment.PGCEnchantments;
@@ -37,9 +38,6 @@ import net.per.primogemcraft.system.curio.effect.LottoPunishmentEffect;
 import net.per.primogemcraft.system.curio.effect.PrescriptionEffect;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.wish.WishBanner;
-import net.per.primogemcraft.system.weapon.BowAttackCycle;
-import net.per.primogemcraft.system.weapon.WishWeaponBowItem;
-import net.minecraft.sounds.SoundEvents;
 import net.per.primogemcraft.util.EffectSpecs;
 import net.per.primogemcraft.util.PlayerItems;
 
@@ -54,19 +52,21 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 public class PGCItems {
     public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(MOD_ID);
 
-    public static final DeferredItem<WishWeaponBowItem> EXAMPLE_WISH_BOW = REGISTRY.registerItem("example_wish_bow", properties ->
-            new WishWeaponBowItem(properties,
-                    new BowAttackCycle(8, 16, 5), 3.0F,
-                    ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/item/example_wish_bow.png"),
-                    ResourceLocation.withDefaultNamespace("textures/entity/projectiles/arrow.png"), SoundEvents.ARROW_SHOOT));
-
-    public static final DeferredItem<ThunderingPulseItem> THUNDERING_PULSE = fiveStarWeapon("thundering_pulse", ThunderingPulseItem::new);
-    public static final DeferredItem<SkywardHarpItem> SKYWARD_HARP = fiveStarWeapon("skyward_harp", SkywardHarpItem::new);
-    public static final DeferredItem<TheViridescentHuntItem> THE_VIRIDESCENT_HUNT = REGISTRY.registerItem("the_viridescent_hunt", TheViridescentHuntItem::new);
-    public static final DeferredItem<SlingshotItem> SLINGSHOT = REGISTRY.registerItem("slingshot", SlingshotItem::new);
-
     private static final int FROSTED_SLIME_JUMP_TICKS = 100;
     private static final int PRAISE_OF_HIGH_MORALS_TICKS = 1200;
+
+    /** comparator_output and length_in_seconds from the original data/primogemcraft/jukebox_song/*.json. */
+    private static final java.util.Map<String, int[]> DISC_DATA = java.util.Map.ofEntries(
+            java.util.Map.entry("a_day_of_hope", new int[]{10, 250}),
+            java.util.Map.entry("ballad_of_many_waters", new int[]{4, 250}),
+            java.util.Map.entry("chasing_starlight_with_you", new int[]{15, 400}),
+            java.util.Map.entry("hakushins_lullaby", new int[]{10, 250}),
+            java.util.Map.entry("netherite_ingot", new int[]{15, 60}),
+            java.util.Map.entry("salty_moon", new int[]{10, 250}),
+            java.util.Map.entry("space_walk", new int[]{10, 250}),
+            java.util.Map.entry("take_the_journey", new int[]{5, 150}),
+            java.util.Map.entry("the_village_no_longer_young", new int[]{10, 250}),
+            java.util.Map.entry("village_surrounded_by_green", new int[]{10, 250}));
 
     public static final DeferredItem<PrimogemItem> PRIMOGEM = REGISTRY.registerItem("primogem",
             properties -> new PrimogemItem(properties.fireResistant().rarity(Rarity.RARE).food(food(9, 0.4F))));
@@ -74,7 +74,7 @@ public class PGCItems {
     public static final DeferredItem<Item> PRIMOGEM_SHARD = REGISTRY.registerSimpleItem("primogem_shard");
     public static final DeferredItem<DescribedItem> PRIMOGEM_BILLET = REGISTRY.registerItem("primogem_billet", properties -> new DescribedItem(properties.fireResistant()));
     public static final DeferredItem<GenesisCrystalItem> GENESIS_CRYSTAL = REGISTRY.registerItem("genesis_crystal",
-            properties -> new GenesisCrystalItem(properties.food(new FoodProperties.Builder().nutrition(5).saturationModifier(3.0F).alwaysEdible().build())));
+            properties -> new GenesisCrystalItem(properties.food(new FoodProperties.Builder().nutrition(5).saturationMod(3.0F).alwaysEat().build())));
     public static final DeferredItem<Item> LUCENT_AFTERGLOW = REGISTRY.registerSimpleItem("lucent_afterglow");
 
     public static final DeferredItem<DescribedItem> PRITHIVA_TOPAZ_GEMSTONE = described("prithiva_topaz_gemstone");
@@ -139,7 +139,7 @@ public class PGCItems {
     public static final DeferredItem<ElementalMoltenBeadItem> ELEMENTAL_MOLTEN_BEAD = REGISTRY.registerItem("elemental_molten_bead",
             properties -> new ElementalMoltenBeadItem(properties.stacksTo(1).fireResistant()));
     public static final DeferredItem<DescribedItem> ELEMENTAL_MOLTEN_BEAD_FRAGMENT = described("elemental_molten_bead_fragment", Rarity.EPIC);
-    public static final DeferredItem<DescribedItem> ELEMENTAL_MOLTEN_BEAD_DUST = described("elemental_molten_bead_dust", Rarity.RARE);
+    public static final DeferredItem<DescribedItem> ELEMENTAL_DISSOLVING_BEAD_DUST = described("elemental_dissolving_bead_dust", Rarity.RARE);
     public static final DeferredItem<DescribedItem> ELEMENTAL_CRYSTAL_DUST = described("elemental_crystal_dust");
     public static final DeferredItem<DescribedItem> PRIMOGEM_DUST = described("primogem_dust");
     public static final DeferredItem<DescribedItem> DIAMOND_SHARD = described("diamond_shard");
@@ -159,28 +159,28 @@ public class PGCItems {
     public static final DeferredItem<DescribedItem> CUCKOO_CLOCK_PART = described("cuckoo_clock_part");
     public static final DeferredItem<CuckooClockSandwichItem> CUCKOO_CLOCK_SANDWICH = REGISTRY.registerItem("cuckoo_clock_sandwich",
             properties -> new CuckooClockSandwichItem(properties.fireResistant().rarity(Rarity.UNCOMMON)
-                    .food(new FoodProperties.Builder().nutrition(1).saturationModifier(-0.4F).alwaysEdible().build())));
+                    .food(new FoodProperties.Builder().nutrition(1).saturationMod(-0.4F).alwaysEat().build())));
     public static final DeferredItem<EffectFoodItem> FROSTED_SLIME = REGISTRY.registerItem("frosted_slime",
             properties -> new EffectFoodItem(properties.food(food(10, 0.8F)), PGCItems::frostedSlimeBonus,
                     EffectSpecs.hidden(MobEffects.JUMP, FROSTED_SLIME_JUMP_TICKS, 0)));
     public static final DeferredItem<EffectFoodItem> ADEPTUS_TEMPTATION = REGISTRY.registerItem("adeptus_temptation",
             properties -> new EffectFoodItem(properties.stacksTo(8).fireResistant().rarity(Rarity.EPIC).food(
-                    new FoodProperties.Builder().nutrition(12).saturationModifier(0.8F).alwaysEdible().build()),
-                    null, EffectSpecs.of(PGCEffects.ATTACK_BOOST, 6000, 19)));
+                    new FoodProperties.Builder().nutrition(12).saturationMod(0.8F).alwaysEat().build()),
+                    null, EffectSpecs.of(PGCEffects.ATTACK_BOOST.get(), 6000, 19)));
     public static final DeferredItem<OrdinaryCoffeeItem> ORDINARY_COFFEE = REGISTRY.registerItem("ordinary_coffee",
             properties -> new OrdinaryCoffeeItem(properties.stacksTo(1)));
     public static final DeferredItem<DescribedItem> THREE_MOONS_BLESSING = REGISTRY.registerItem("three_moons_blessing",
             properties -> new DescribedItem(properties.stacksTo(1).fireResistant()));
-    public static final DeferredItem<DescribedItem> HAKUSHINS_LULLABY = disc("hakushins_lullaby");
-    public static final DeferredItem<DescribedItem> BALLAD_OF_MANY_WATERS = disc("ballad_of_many_waters");
+    public static final DeferredItem<DiscItem> HAKUSHINS_LULLABY = disc("hakushins_lullaby");
+    public static final DeferredItem<DiscItem> BALLAD_OF_MANY_WATERS = disc("ballad_of_many_waters");
     public static final DeferredItem<ChasingStarlightWithYouItem> CHASING_STARLIGHT_WITH_YOU = REGISTRY.registerItem("chasing_starlight_with_you", ChasingStarlightWithYouItem::new);
     public static final DeferredItem<TheBeginningOfEverythingItem> THE_BEGINNING_OF_EVERYTHING = REGISTRY.registerItem("the_beginning_of_everything", TheBeginningOfEverythingItem::new);
     public static final DeferredItem<TakeTheJourneyItem> TAKE_THE_JOURNEY = REGISTRY.registerItem("take_the_journey", TakeTheJourneyItem::new);
-    public static final DeferredItem<DescribedItem> SPACE_WALK = disc("space_walk");
-    public static final DeferredItem<DescribedItem> SALTY_MOON = disc("salty_moon");
-    public static final DeferredItem<DescribedItem> A_DAY_OF_HOPE = disc("a_day_of_hope");
-    public static final DeferredItem<DescribedItem> VILLAGE_SURROUNDED_BY_GREEN = disc("village_surrounded_by_green");
-    public static final DeferredItem<DescribedItem> THE_VILLAGE_NO_LONGER_YOUNG = disc("the_village_no_longer_young");
+    public static final DeferredItem<DiscItem> SPACE_WALK = disc("space_walk");
+    public static final DeferredItem<DiscItem> SALTY_MOON = disc("salty_moon");
+    public static final DeferredItem<DiscItem> A_DAY_OF_HOPE = disc("a_day_of_hope");
+    public static final DeferredItem<DiscItem> VILLAGE_SURROUNDED_BY_GREEN = disc("village_surrounded_by_green");
+    public static final DeferredItem<DiscItem> THE_VILLAGE_NO_LONGER_YOUNG = disc("the_village_no_longer_young");
     public static final DeferredItem<EffectFoodItem> PRAISE_OF_HIGH_MORALS = REGISTRY.registerItem("praise_of_high_morals",
             properties -> new EffectFoodItem(properties.fireResistant().rarity(Rarity.UNCOMMON).food(food(0, 0.0F)), null,
                     EffectSpecs.of(MobEffects.HERO_OF_THE_VILLAGE, PRAISE_OF_HIGH_MORALS_TICKS, 0)));
@@ -394,7 +394,7 @@ public class PGCItems {
     public static final DeferredItem<DiamondLotteryItem> DIAMOND_LOTTERY = REGISTRY.registerItem("diamond_lottery", DiamondLotteryItem::new);
     public static final DeferredItem<MysteryLotteryItem> MYSTERY_LOTTERY = REGISTRY.registerItem("mystery_lottery", MysteryLotteryItem::new);
     public static final DeferredItem<DescribedItem> TRUE_GALAXY_LOTTO = REGISTRY.registerItem("true_galaxy_lotto", properties -> new DescribedItem(properties.durability(1).fireResistant().rarity(Rarity.EPIC)));
-    public static final DeferredItem<DescribedItem> NETHERITE_INGOT = disc("netherite_ingot");
+    public static final DeferredItem<DiscItem> NETHERITE_INGOT = disc("netherite_ingot");
 
     public static final DeferredItem<DescribedItem> DAMAGED_FORTUNE_GLUE = damaged("damaged_fortune_glue");
     public static final DeferredItem<DescribedItem> DAMAGED_INTERASTRAL_BIG_LOTTO = damaged("damaged_interastral_big_lotto");
@@ -421,13 +421,13 @@ public class PGCItems {
     public static final DeferredItem<InvalidThoughtCodeMachineItem> INVALID_THOUGHT_CODE_MACHINE = REGISTRY.registerItem("invalid_thought_code_machine", InvalidThoughtCodeMachineItem::new);
     public static final DeferredItem<ComicBookItem> COMIC_BOOK = REGISTRY.registerItem("comic_book", ComicBookItem::new);
 
-    private static final List<Holder<Attribute>> CODE_ARMOR_TOUGHNESS = List.of(Attributes.ARMOR_TOUGHNESS);
-    private static final List<Holder<Attribute>> CODE_MAX_HEALTH = List.of(Attributes.MAX_HEALTH);
-    private static final List<Holder<Attribute>> CODE_ARMOR = List.of(Attributes.ARMOR);
-    private static final List<Holder<Attribute>> CODE_MOVEMENT_SPEED = List.of(Attributes.MOVEMENT_SPEED);
-    private static final List<Holder<Attribute>> CODE_ATTACK_SPEED = List.of(Attributes.ATTACK_SPEED);
-    private static final List<Holder<Attribute>> CODE_ATTACK_DAMAGE = List.of(Attributes.ATTACK_DAMAGE);
-    private static final List<Holder<Attribute>> CODE_ALL = List.of(Attributes.ARMOR_TOUGHNESS, Attributes.MAX_HEALTH, Attributes.ARMOR, Attributes.MOVEMENT_SPEED, Attributes.ATTACK_SPEED, Attributes.ATTACK_DAMAGE);
+    private static final List<Attribute> CODE_ARMOR_TOUGHNESS = List.of(Attributes.ARMOR_TOUGHNESS);
+    private static final List<Attribute> CODE_MAX_HEALTH = List.of(Attributes.MAX_HEALTH);
+    private static final List<Attribute> CODE_ARMOR = List.of(Attributes.ARMOR);
+    private static final List<Attribute> CODE_MOVEMENT_SPEED = List.of(Attributes.MOVEMENT_SPEED);
+    private static final List<Attribute> CODE_ATTACK_SPEED = List.of(Attributes.ATTACK_SPEED);
+    private static final List<Attribute> CODE_ATTACK_DAMAGE = List.of(Attributes.ATTACK_DAMAGE);
+    private static final List<Attribute> CODE_ALL = List.of(Attributes.ARMOR_TOUGHNESS, Attributes.MAX_HEALTH, Attributes.ARMOR, Attributes.MOVEMENT_SPEED, Attributes.ATTACK_SPEED, Attributes.ATTACK_DAMAGE);
 
     private static final int DAMAGED_STACK_SIZE = 8;
     private static final float FROSTED_SLIME_HEAL = 4.0F;
@@ -564,18 +564,17 @@ public class PGCItems {
     public static final DeferredItem<WishFateItem> ACQUAINT_FATE = REGISTRY.registerItem("acquaint_fate", properties -> new WishFateItem(properties.rarity(Rarity.UNCOMMON), WishBanner.ACQUAINT));
     public static final DeferredItem<WishFateItem> INTERTWINED_FATE = REGISTRY.registerItem("intertwined_fate", properties -> new WishFateItem(properties.rarity(Rarity.UNCOMMON), WishBanner.INTERTWINED));
     public static final DeferredItem<WishCoreItem> WISH_CORE = REGISTRY.registerItem("wish_core", properties -> new WishCoreItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
-    public static final DeferredItem<WishCoreItem> TEN_PULL_WISH_CORE = REGISTRY.registerItem("ten_pull_wish_core", properties -> new WishCoreItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON), WishCoreItem.TEN_PULL_CAPACITY));
     public static final DeferredItem<DescribedItem> UNBUFFED_WISH_CORE = described("unbuffed_wish_core");
     public static final DeferredItem<WishingStaffItem> WISHING_STAFF = REGISTRY.registerItem("wishing_staff", WishingStaffItem::new);
     public static final DeferredItem<WishDataExporterItem> WISH_DATA_EXPORTER = REGISTRY.registerItem("wish_data_exporter", WishDataExporterItem::new);
     public static final DeferredItem<StarRailSpecialPassItem> STAR_RAIL_SPECIAL_PASS = REGISTRY.registerItem("star_rail_special_pass", StarRailSpecialPassItem::new);
-    public static final DeferredItem<ColorfulSunglassesItem> COLORFUL_SUNGLASSES = REGISTRY.registerItem("colorful_sunglasses", properties -> new ColorfulSunglassesItem(PGCArmorMaterials.COLORFUL_SUNGLASSES, properties.durability(ArmorItem.Type.HELMET.getDurability(15))));
+    public static final DeferredItem<ColorfulSunglassesItem> COLORFUL_SUNGLASSES = REGISTRY.registerItem("colorful_sunglasses", properties -> new ColorfulSunglassesItem(PGCArmorMaterials.COLORFUL_SUNGLASSES, properties.durability(11 * 15)));
     public static final DeferredItem<ViolaneItem> VIOLANE = REGISTRY.registerItem("violane", properties -> new ViolaneItem(properties.stacksTo(1).rarity(Rarity.RARE)));
     public static final DeferredItem<ArmorItem> SPECIAL_01_HELMET = REGISTRY.registerItem("special_01_helmet",
-            properties -> new ArmorItem(PGCArmorMaterials.SPECIAL_01, ArmorItem.Type.HELMET, properties.durability(ArmorItem.Type.HELMET.getDurability(225))));
+            properties -> new ArmorItem(PGCArmorMaterials.SPECIAL_01, ArmorItem.Type.HELMET, properties.durability(11 * 225)));
 
     public static final DeferredItem<DendroCoreSpawnEggItem> DENDRO_CORE_SPAWN_EGG = REGISTRY.registerItem("dendro_core_spawn_egg", DendroCoreSpawnEggItem::new);
-    public static final DeferredItem<DeferredSpawnEggItem> ABUNDANCE_BLIGHT_ZOMBIE_SPAWN_EGG = REGISTRY.registerItem("abundance_blight_zombie_spawn_egg", properties -> new DeferredSpawnEggItem(PGCEntities.ABUNDANCE_BLIGHT_ZOMBIE, -1, -1, properties));
+    public static final DeferredItem<ForgeSpawnEggItem> ABUNDANCE_BLIGHT_ZOMBIE_SPAWN_EGG = REGISTRY.registerItem("abundance_blight_zombie_spawn_egg", properties -> new ForgeSpawnEggItem(() -> PGCEntities.ABUNDANCE_BLIGHT_ZOMBIE.get(), -1, -1, properties));
     public static final DeferredItem<XiaoLanternSpawnEggItem> XIAO_LANTERN_SPAWN_EGG = REGISTRY.registerItem("xiao_lantern_spawn_egg", XiaoLanternSpawnEggItem::new);
     public static final DeferredItem<HertaOtherworldBranchTowerSpawnEggItem> HERTA_OTHERWORLD_BRANCH_TOWER_SPAWN_EGG = REGISTRY.registerItem("herta_otherworld_branch_tower_spawn_egg", HertaOtherworldBranchTowerSpawnEggItem::new);
 
@@ -708,9 +707,23 @@ public class PGCItems {
         return REGISTRY.registerItem(name, properties -> new ExperienceBookItem(properties.stacksTo(1).fireResistant().rarity(rarity), capacity));
     }
 
-    private static DeferredItem<DescribedItem> disc(String name) {
-        return REGISTRY.registerItem(name, properties -> new DescribedItem(properties.stacksTo(1).rarity(Rarity.RARE)
-                .jukeboxPlayable(ResourceKey.create(Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(MOD_ID, name)))));
+    /**
+     * Disc registration. 1.21 uses the jukeboxPlayable component plus data/jukebox_song JSON;
+     * 1.20.1 requires a RecordItem, so comparator output and length come from DISC_DATA below.
+     */
+    private static DeferredItem<DiscItem> disc(String name) {
+        var data = DISC_DATA.get(name);
+        var comparator = data == null ? 10 : data[0];
+        var seconds = data == null ? 250 : data[1];
+        return REGISTRY.registerItem(name, properties -> new DiscItem(comparator,
+                () -> net.minecraftforge.registries.ForgeRegistries.SOUND_EVENTS.getValue(
+                        ResourceLocation.fromNamespaceAndPath(MOD_ID, discSound(name))),
+                properties.stacksTo(1).rarity(Rarity.RARE), seconds));
+    }
+
+    /** netherite_ingot mars to the "scam" sound in the original JSON; others match their item name. */
+    private static String discSound(String name) {
+        return name.equals("netherite_ingot") ? "scam" : name;
     }
 
     private static TagKey<Block> blockTag(String name) {
@@ -728,11 +741,11 @@ public class PGCItems {
     }
 
     private static FoodProperties food(int nutrition, float saturation) {
-        return new FoodProperties.Builder().nutrition(nutrition).saturationModifier(saturation).alwaysEdible().build();
+        return new FoodProperties.Builder().nutrition(nutrition).saturationMod(saturation).alwaysEat().build();
     }
 
     private static void cureLottoPunishment(ServerPlayer player) {
-        if (player.hasEffect(PGCEffects.LOTTO_PUNISHMENT)) LottoPunishmentEffect.cure(player);
+        if (player.hasEffect(PGCEffects.LOTTO_PUNISHMENT.get())) LottoPunishmentEffect.cure(player);
     }
 
     private static void frostedSlimeBonus(ServerPlayer player) {
@@ -749,7 +762,7 @@ public class PGCItems {
     }
 
     private static Item.Properties cheese(Item.Properties properties) {
-        return properties.food(new FoodProperties.Builder().nutrition(0).saturationModifier(0.0F).alwaysEdible().build());
+        return properties.food(new FoodProperties.Builder().nutrition(0).saturationMod(0.0F).alwaysEat().build());
     }
 
     private static void omniscientCheeseBonus(CurioContext context, CurioImpact impact) {
@@ -816,7 +829,7 @@ public class PGCItems {
         return REGISTRY.registerItem(effect.getId().getPath(), properties -> new PrescriptionCurioItem(effect, properties));
     }
 
-    private static DeferredItem<CodeCurioItem> code(String name, List<Holder<Attribute>> attributes, boolean integrated) {
+    private static DeferredItem<CodeCurioItem> code(String name, List<Attribute> attributes, boolean integrated) {
         return REGISTRY.registerItem(name, properties -> new CodeCurioItem(attributes, integrated, properties));
     }
 

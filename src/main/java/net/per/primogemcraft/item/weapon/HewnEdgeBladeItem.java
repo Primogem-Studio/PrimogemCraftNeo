@@ -48,7 +48,7 @@ public class HewnEdgeBladeItem extends WishWeaponItem {
     private static final String CONSUME_TEXT = "consume";
 
     public HewnEdgeBladeItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant());
     }
 
     @Override
@@ -98,7 +98,7 @@ public class HewnEdgeBladeItem extends WishWeaponItem {
             player.removeEffect(MobEffects.ABSORPTION);
             player.heal((float) (player.getMaxHealth() * healRatio(refinement)));
             player.getCooldowns().addCooldown(stack.getItem(), healCooldown(refinement));
-            level.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_THUNDER.value(), SoundSource.PLAYERS, 0.5F, 3.0F);
+            level.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, 0.5F, 3.0F);
             return super.use(level, player, hand);
         }
         player.removeEffect(MobEffects.ABSORPTION);

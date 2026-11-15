@@ -133,7 +133,7 @@ public final class WeaponEnhancement {
             }
             layers += Math.max(0, gainOf(weapon, material));
         }
-        var applied = Math.clamp(MAX_REFINEMENT - refinement, 0, layers);
+        var applied = net.minecraft.util.Mth.clamp(MAX_REFINEMENT - refinement, 0, layers);
         var cap = maxLevel(state.refinements() + applied);
         var level = state.level();
         var xp = state.xp() + transferred;

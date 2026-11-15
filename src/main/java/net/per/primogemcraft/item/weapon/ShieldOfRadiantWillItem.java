@@ -1,13 +1,11 @@
 package net.per.primogemcraft.item.weapon;
-
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
+import net.per.primogemcraft.compat.component.VanillaComponents;
 import net.minecraft.world.item.ItemStack;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
 import net.per.primogemcraft.system.weapon.WishWeaponShieldItem;
 import net.per.primogemcraft.system.wish.WishReports;
-
 import java.util.List;
 
 public class ShieldOfRadiantWillItem extends WishWeaponShieldItem {
@@ -34,8 +32,8 @@ public class ShieldOfRadiantWillItem extends WishWeaponShieldItem {
     @Override
     protected void refresh(ItemStack stack) {
         var maximum = DURABILITY + DURABILITY_PER_REFINEMENT * (refinementOf(stack) - 1);
-        if (stack.getOrDefault(DataComponents.MAX_DAMAGE, 0) == maximum) return;
-        stack.set(DataComponents.MAX_DAMAGE, maximum);
+        if (VanillaComponents.maxDamage(stack) == maximum) return;
+        VanillaComponents.setMaxDamage(stack, maximum);
     }
 
     @Override

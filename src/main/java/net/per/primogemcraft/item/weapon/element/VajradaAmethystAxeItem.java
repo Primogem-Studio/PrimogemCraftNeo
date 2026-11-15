@@ -56,14 +56,14 @@ public class VajradaAmethystAxeItem extends WishWeaponAxeItem {
         if (attacker.level().isClientSide || !(attacker instanceof Player player)) return result;
         if (player.getCooldowns().isOnCooldown(stack.getItem())) return result;
         var ticks = PastDelay.secondsOf(stack) * TICKS_PER_SECOND;
-        target.addEffect(new MobEffectInstance(PGCEffects.THE_PAST, ticks, 0));
+        target.addEffect(new MobEffectInstance(PGCEffects.THE_PAST.get(), ticks, 0));
         player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.ELECTRO, ticks * COOLDOWN_FACTOR, false));
         return result;
     }
 
     @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         if (!entity.level().isClientSide() && entity.isShiftKeyDown()) PastDelay.adjust(entity, stack);
-        return super.onEntitySwing(stack, entity, hand);
+        return super.onEntitySwing(stack, entity);
     }
 }

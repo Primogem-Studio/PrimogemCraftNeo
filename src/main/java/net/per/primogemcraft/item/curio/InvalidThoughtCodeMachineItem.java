@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.curio;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -27,14 +28,14 @@ public class InvalidThoughtCodeMachineItem extends CurioItem {
     public void presence(CurioContext context) {
         var player = context.player();
         var counter = PGCDataComponents.CURIO_COUNTER.get();
-        int state = context.stack().getOrDefault(counter, 0);
+        int state = StackComponents.getOrDefault(context.stack(), counter, 0);
         if (state == CLEANSED) {
-            CurioEffects.release(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE);
+            CurioEffects.release(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE.get());
             return;
         }
-        CurioEffects.hold(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE, MobEffectInstance.INFINITE_DURATION, 0);
+        CurioEffects.hold(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE.get(), MobEffectInstance.INFINITE_DURATION, 0);
         if (state == TRIGGERED) return;
-        context.stack().set(counter, TRIGGERED);
+        StackComponents.set(context.stack(), counter, TRIGGERED);
         context.announce(Component.translatable(TRIGGER_KEY, context.stack().getHoverName()));
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
     }
@@ -43,7 +44,7 @@ public class InvalidThoughtCodeMachineItem extends CurioItem {
     public void impacted(CurioContext context, CurioImpact impact) {
         if (impact.signal() != CurioSignal.ATTACK) return;
         var player = context.player();
-        if (!CurioEffects.active(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE)) return;
+        if (!CurioEffects.active(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE.get())) return;
         if (!(impact.subject() instanceof LivingEntity victim)) return;
         if (victim.getHealth() < victim.getMaxHealth()) return;
         if (!context.ready(COOLDOWN, COOLDOWN_TICKS)) return;
@@ -54,7 +55,7 @@ public class InvalidThoughtCodeMachineItem extends CurioItem {
     public static void clear(ServerPlayer player) {
         var counter = PGCDataComponents.CURIO_COUNTER.get();
         for (var context : Curios.held(player))
-            if (context.stack().getItem() instanceof InvalidThoughtCodeMachineItem) context.stack().set(counter, CLEANSED);
-        CurioEffects.release(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE);
+            if (context.stack().getItem() instanceof InvalidThoughtCodeMachineItem) StackComponents.set(context.stack(), counter, CLEANSED);
+        CurioEffects.release(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE.get());
     }
 }

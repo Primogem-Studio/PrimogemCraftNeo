@@ -24,7 +24,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCItems;
 
@@ -55,7 +54,7 @@ public class AbundanceBlightZombieEntity extends Monster {
                 .add(Attributes.ARMOR, 2.0D)
                 .add(Attributes.ATTACK_DAMAGE, 5.0D)
                 .add(Attributes.FOLLOW_RANGE, 16.0D)
-                .add(Attributes.STEP_HEIGHT, 0.8D)
+                .add(net.minecraftforge.common.ForgeMod.STEP_HEIGHT_ADDITION.get(), 0.8D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D);
     }
 
@@ -77,10 +76,10 @@ public class AbundanceBlightZombieEntity extends Monster {
 
     @SuppressWarnings("deprecation")
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, SpawnGroupData spawnGroupData) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, SpawnGroupData spawnGroupData, net.minecraft.nbt.CompoundTag tag) {
         setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PGCItems.FRUIT_OF_THE_ALIEN_TREE.get()));
-        addEffect(new MobEffectInstance(PGCEffects.ABUNDANCE, MobEffectInstance.INFINITE_DURATION, BLIGHT_AMPLIFIER));
-        return super.finalizeSpawn(level, difficulty, reason, spawnGroupData);
+        addEffect(new MobEffectInstance(PGCEffects.ABUNDANCE.get(), MobEffectInstance.INFINITE_DURATION, BLIGHT_AMPLIFIER));
+        return super.finalizeSpawn(level, difficulty, reason, spawnGroupData, tag);
     }
 
     @Override
@@ -113,6 +112,6 @@ public class AbundanceBlightZombieEntity extends Monster {
         for (var damageType : IMMUNE_DAMAGE_TYPES) if (damageSource.is(damageType)) return true;
         return damageSource.getDirectEntity() instanceof ThrownPotion
                 || damageSource.getDirectEntity() instanceof AreaEffectCloud
-                || damageSource.typeHolder().is(NeoForgeMod.POISON_DAMAGE);
+                || damageSource.is(net.minecraft.world.damagesource.DamageTypes.MAGIC);
     }
 }

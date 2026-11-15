@@ -1,5 +1,6 @@
 package net.per.primogemcraft.system.tool.effect;
 
+import net.per.primogemcraft.compat.attachment.Attachments;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,7 +18,7 @@ import net.per.primogemcraft.registry.PGCAttachments;
 import net.per.primogemcraft.registry.PGCBlocks;
 import org.joml.Vector3f;
 
-public class YijiEffect extends MobEffect {
+public class YijiEffect extends MobEffect implements net.per.primogemcraft.compat.event.EffectCallbacks.Started {
     private static final int SLOWNESS_TICKS = 300;
     private static final int SLOWNESS_AMPLIFIER = 127;
     private static final int DETONATION_TICK = 160;
@@ -43,27 +44,27 @@ public class YijiEffect extends MobEffect {
         super(MobEffectCategory.NEUTRAL, -8123894);
     }
 
-    @Override
     public void onEffectStarted(LivingEntity entity, int amplifier) {
         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, SLOWNESS_TICKS, SLOWNESS_AMPLIFIER, false, false));
-        entity.setData(PGCAttachments.YIJI_TIMER.get(), 0);
+        Attachments.set(entity, PGCAttachments.YIJI_TIMER.get(), 0);
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!(entity.level() instanceof ServerLevel level)) return true;
+    public void applyEffectTick(LivingEntity entity, int amplifier)
+    {
+        if (!(entity.level() instanceof ServerLevel level)) return;
         emitParticles(level, entity);
-        var elapsed = entity.getData(PGCAttachments.YIJI_TIMER.get()) + 1;
-        entity.setData(PGCAttachments.YIJI_TIMER.get(), elapsed);
+        var elapsed = Attachments.get(entity, PGCAttachments.YIJI_TIMER.get()) + 1;
+        Attachments.set(entity, PGCAttachments.YIJI_TIMER.get(), elapsed);
         if (elapsed == DETONATION_TICK) detonate(level, entity);
         if (elapsed == DETONATION_TICK + SECOND_STRIKE_DELAY && entity instanceof ServerPlayer player && player.isAlive())
             player.hurt(level.damageSources().magic(), MAGIC_DAMAGE);
-        return true;
+        return;
     }
 
     private static void detonate(ServerLevel level, LivingEntity entity) {

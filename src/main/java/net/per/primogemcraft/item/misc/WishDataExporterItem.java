@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.misc;
 
+import net.per.primogemcraft.compat.attachment.Attachments;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -23,7 +24,7 @@ public class WishDataExporterItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         var stack = player.getItemInHand(hand);
         if (player instanceof ServerPlayer sp) {
-            for (var line : WishReports.record(sp, sp.getData(PGCAttachments.WISH_PITY.get()))) {
+            for (var line : WishReports.record(sp, Attachments.get(sp, PGCAttachments.WISH_PITY.get()))) {
                 sp.displayClientMessage(line, false);
             }
         }
@@ -31,7 +32,7 @@ public class WishDataExporterItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("item.primogemcraft.wish_data_exporter.tooltip.0"));
     }
 }

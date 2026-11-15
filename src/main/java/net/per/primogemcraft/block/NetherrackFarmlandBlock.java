@@ -12,24 +12,16 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.util.TriState;
+
 
 public class NetherrackFarmlandBlock extends PGCShapeBlock {
-    public static final MapCodec<NetherrackFarmlandBlock> CODEC =
-            simpleCodec(properties -> new NetherrackFarmlandBlock(properties, Shapes.block()));
-
     public NetherrackFarmlandBlock(BlockBehaviour.Properties properties, VoxelShape shape) {
         super(properties, shape);
     }
 
     @Override
-    protected MapCodec<? extends Block> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, BlockState plant) {
-        return TriState.TRUE;
+    public boolean canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, net.minecraftforge.common.IPlantable plantable) {
+        return true;
     }
 
     @Override
@@ -38,7 +30,7 @@ public class NetherrackFarmlandBlock extends PGCShapeBlock {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
         super.neighborChanged(state, level, pos, neighborBlock, fromPos, movedByPiston);
         if (level.isClientSide()) return;
         var above = level.getBlockState(pos.above());

@@ -52,7 +52,7 @@ public class BlackTasselItem extends WishWeaponItem {
     private static final String ABUNDANCE_CAP_TEXT = "abundance_cap";
 
     public BlackTasselItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireResistant());
     }
 
     @Override
@@ -60,7 +60,7 @@ public class BlackTasselItem extends WishWeaponItem {
         if (isHeld(player, slot, stack)) return List.of();
         var state = PlayerFlags.of(player).counter(STATE_KEY);
         if (state == NO_STATE) return List.of();
-        return List.of(WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_MULTIPLIED_BASE,
+        return List.of(WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.MULTIPLY_BASE,
                 (owner, worn, value) -> state == BONUS_STATE ? POWER_BASE + POWER_STEP * (value - 1) : NON_UNDEAD_PENALTY));
     }
 
@@ -86,14 +86,14 @@ public class BlackTasselItem extends WishWeaponItem {
         var result = super.hurtEnemy(stack, target, attacker);
         if (!(attacker.level() instanceof ServerLevel) || !(attacker instanceof Player player)) return result;
         var flags = PlayerFlags.of(player);
-        if (!target.getType().is(EntityTypeTags.UNDEAD)) {
+        if (target.getMobType() != net.minecraft.world.entity.MobType.UNDEAD) {
             flags.set(STATE_KEY, PENALTY_STATE);
             return result;
         }
         flags.set(STATE_KEY, BONUS_STATE);
         if (player.getCooldowns().isOnCooldown(stack.getItem())) return result;
         TemporaryAttributes.apply(target, IMMOBILIZE_ID, Attributes.MOVEMENT_SPEED, IMMOBILIZE_SPEED,
-                AttributeModifier.Operation.ADD_VALUE, immobilizeTicks(WeaponState.of(stack).refinements()));
+                AttributeModifier.Operation.ADDITION, immobilizeTicks(WeaponState.of(stack).refinements()));
         player.getCooldowns().addCooldown(stack.getItem(), IMMOBILIZE_COOLDOWN);
         return result;
     }

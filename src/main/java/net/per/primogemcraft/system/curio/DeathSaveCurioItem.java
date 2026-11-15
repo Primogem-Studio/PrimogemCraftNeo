@@ -10,7 +10,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.per.primogemcraft.compat.network.PayloadRegistrar;
 import net.per.primogemcraft.network.ItemActivationPayload;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCParticles;
@@ -56,10 +56,10 @@ public class DeathSaveCurioItem extends CurioItem {
         if (!flags.flag(READY)) return;
         flags.setFlag(READY, false);
         flags.set(IMMUNITIES, spec.immunities());
-        CurioEffects.apply(player, PGCEffects.DEATHBED, spec.duration(), spec.immunities() - 1);
+        CurioEffects.apply(player, PGCEffects.DEATHBED.get(), spec.duration(), spec.immunities() - 1);
         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, spec.duration(), spec.speedAmplifier(), false, false));
         player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, spec.duration(), WEAKNESS_AMPLIFIER, false, false));
-        PacketDistributor.sendToPlayer(player, new ItemActivationPayload(context.stack()));
+        PayloadRegistrar.sendToPlayer(player, new ItemActivationPayload(context.stack()));
         if (spec.wears()) context.damage(1);
         if (onSave != null) onSave.accept(context);
     }
@@ -90,7 +90,7 @@ public class DeathSaveCurioItem extends CurioItem {
         flags.setFlag(PUNISH_EXEMPT, false);
         flags.setFlag(REVENGE_ARMED, false);
         flags.setFlag(PUNISHING, false);
-        CurioEffects.discard(player, PGCEffects.DEATHBED);
+        CurioEffects.discard(player, PGCEffects.DEATHBED.get());
         PGCTimer.clearMatching(player, LOCK_TIMER + "/");
     }
 
@@ -121,12 +121,12 @@ public class DeathSaveCurioItem extends CurioItem {
     @Override
     public boolean absorbsDamage(CurioContext context, CurioImpact impact) {
         var player = context.player();
-        var instance = player.getEffect(PGCEffects.DEATHBED);
+        var instance = player.getEffect(PGCEffects.DEATHBED.get());
         if (instance == null) return false;
         var flags = PlayerFlags.of(player);
         if (flags.counter(IMMUNITIES) <= 0) return false;
         flags.set(IMMUNITIES, flags.counter(IMMUNITIES) - 1);
-        CurioEffects.replace(player, PGCEffects.DEATHBED, instance.getDuration(), flags.counter(IMMUNITIES) - 1);
+        CurioEffects.replace(player, PGCEffects.DEATHBED.get(), instance.getDuration(), flags.counter(IMMUNITIES) - 1);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ANVIL_PLACE, SoundSource.PLAYERS, 0.2F, 20.0F);
         if (onAbsorb != null) onAbsorb.accept(context, impact);
         return true;
@@ -136,10 +136,10 @@ public class DeathSaveCurioItem extends CurioItem {
     public void impacted(CurioContext context, CurioImpact impact) {
         if (!spec.restoresOnXp() || impact.signal() != CurioSignal.XP_PICKED) return;
         var player = context.player();
-        var instance = player.getEffect(PGCEffects.DEATHBED);
+        var instance = player.getEffect(PGCEffects.DEATHBED.get());
         if (instance == null) return;
         PlayerFlags.of(player).set(IMMUNITIES, spec.immunities());
-        CurioEffects.replace(player, PGCEffects.DEATHBED, instance.getDuration(), spec.immunities() - 1);
+        CurioEffects.replace(player, PGCEffects.DEATHBED.get(), instance.getDuration(), spec.immunities() - 1);
     }
 
     public static void exemptNextPunishment(ServerPlayer player) {

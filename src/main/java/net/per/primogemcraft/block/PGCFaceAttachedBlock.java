@@ -21,20 +21,12 @@ import java.util.function.Function;
 public class PGCFaceAttachedBlock extends Block {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final EnumProperty<AttachFace> FACE = FaceAttachedHorizontalDirectionalBlock.FACE;
-    public static final MapCodec<PGCFaceAttachedBlock> CODEC =
-            simpleCodec(properties -> new PGCFaceAttachedBlock(properties, state -> Shapes.block()));
-
     private final Function<BlockState, VoxelShape> shape;
 
     public PGCFaceAttachedBlock(BlockBehaviour.Properties properties, Function<BlockState, VoxelShape> shape) {
         super(properties);
         this.shape = shape;
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FACE, AttachFace.WALL));
-    }
-
-    @Override
-    protected MapCodec<? extends Block> codec() {
-        return CODEC;
     }
 
     @Override
@@ -49,19 +41,19 @@ public class PGCFaceAttachedBlock extends Block {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         var offset = state.getOffset(level, pos);
         return shape.apply(state).move(offset.x, offset.y, offset.z);
     }
 
     @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
+    public BlockState rotate(BlockState state, Rotation rotation) {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
+    public BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 

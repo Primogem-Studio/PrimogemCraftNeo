@@ -1,5 +1,6 @@
 package net.per.primogemcraft.item.tool;
 
+import net.minecraft.world.level.Level;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
@@ -24,11 +25,11 @@ public class ProtocolOriginiumSwordItem extends SwordItem {
     private static final int PLACEMENT_COOLDOWN = 200;
     private static final int TOOLTIP_LINES = 9;
     public ProtocolOriginiumSwordItem(Properties properties) {
-        super(Tiers.NETHERITE, properties.attributes(createAttributes(Tiers.NETHERITE, 4, -2.8F)).fireResistant());
+        super(Tiers.NETHERITE, 4, -2.8F, properties.fireResistant());
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         var prefix = stack.getDescriptionId() + ".tooltip.";
         for (var index = 0; index < TOOLTIP_LINES; index++) tooltip.add(Component.translatable(prefix + index));
     }
@@ -47,7 +48,7 @@ public class ProtocolOriginiumSwordItem extends SwordItem {
         var level = context.getLevel();
         if (player == null) return InteractionResult.PASS;
         if (player.getVehicle() instanceof ZiplineCarrierEntity) return InteractionResult.SUCCESS;
-        if (level.getBlockState(context.getClickedPos()).is(PGCBlocks.ZIPLINE_BASE)) return InteractionResult.PASS;
+        if (level.getBlockState(context.getClickedPos()).is(PGCBlocks.ZIPLINE_BASE.get())) return InteractionResult.PASS;
         if (!player.isShiftKeyDown()) return InteractionResult.PASS;
         if (!player.isCreative() && player.getCooldowns().isOnCooldown(this)) return InteractionResult.FAIL;
         if (context.getClickedFace() != Direction.UP || !player.mayBuild()) return InteractionResult.FAIL;

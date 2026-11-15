@@ -1,5 +1,7 @@
 package net.per.primogemcraft.item.curio;
 
+import net.minecraft.world.level.Level;
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -41,7 +43,7 @@ public class CharmonyFestivalItem extends CurioItem {
         var food = player.getFoodData();
         food.setFoodLevel(food.getFoodLevel() + RESTORED_FOOD);
         food.setSaturation(food.getSaturationLevel() + RESTORED_SATURATION);
-        context.stack().set(PGCDataComponents.CURIO_COUNTER.get(), points(context.stack()) + 1);
+        StackComponents.set(context.stack(), PGCDataComponents.CURIO_COUNTER, points(context.stack()) + 1);
     }
 
     @Override
@@ -55,12 +57,12 @@ public class CharmonyFestivalItem extends CurioItem {
         }
         WeaponEnhancement.setLevel(weapon, WeaponState.INITIAL.level());
         WeaponAttributes.refreshLevel(weapon, context.player());
-        stack.set(PGCDataComponents.CURIO_COUNTER.get(), points - 1);
+        StackComponents.set(stack, PGCDataComponents.CURIO_COUNTER, points - 1);
         if (context.chance(BREAK_CHANCE)) context.damage(1);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @org.jetbrains.annotations.Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         appendTrigger(stack, tooltip);
         var prefix = stack.getDescriptionId() + TOOLTIP_SUFFIX;
         for (var index = 0; index < FIXED_LINES; index++) tooltip.add(Component.translatable(prefix + index));
@@ -70,6 +72,6 @@ public class CharmonyFestivalItem extends CurioItem {
     }
 
     private static int points(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.CURIO_COUNTER.get(), 0);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.CURIO_COUNTER, 0);
     }
 }
