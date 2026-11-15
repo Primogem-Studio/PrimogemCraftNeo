@@ -1,46 +1,40 @@
 package net.per.primogemcraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.World;
+import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.hit.BlockHitResult;
 import net.per.primogemcraft.block.entity.GorgeousSmithingTableBlockEntity;
+import net.minecraft.util.Hand;
 
-public class GorgeousSmithingTableBlock extends BaseEntityBlock {
-    public static final MapCodec<GorgeousSmithingTableBlock> CODEC = simpleCodec(GorgeousSmithingTableBlock::new);
-
-    public GorgeousSmithingTableBlock(BlockBehaviour.Properties properties) {
+public class GorgeousSmithingTableBlock extends BlockWithEntity {
+    public GorgeousSmithingTableBlock(AbstractBlock.Settings properties) {
         super(properties);
     }
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+    public ActionResult onUse(BlockState state, World level, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (level.isClient()) return ActionResult.SUCCESS;
+        if (player instanceof ServerPlayerEntity serverPlayer && level.getBlockEntity(pos) instanceof GorgeousSmithingTableBlockEntity table)
+            serverPlayer.openHandledScreen(table);
+        return ActionResult.SUCCESS;
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (level.isClientSide()) return InteractionResult.SUCCESS;
-        if (player instanceof ServerPlayer serverPlayer && level.getBlockEntity(pos) instanceof GorgeousSmithingTableBlockEntity table)
-            serverPlayer.openMenu(table);
-        return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new GorgeousSmithingTableBlockEntity(pos, state);
     }
 }

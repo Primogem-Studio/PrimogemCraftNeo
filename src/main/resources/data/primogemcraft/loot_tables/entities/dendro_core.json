@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "bonus_rolls": 1,
+      "entries": [
+        {"type":"minecraft:item","name":"primogemcraft:dendro_core","weight":2000,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":2}}]},
+        {"type":"minecraft:item","name":"minecraft:beetroot","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"minecraft:golden_carrot","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:nagadus_emerald_sliver","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"minecraft:melon_slice","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"minecraft:slime_ball","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"minecraft:wheat","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"minecraft:carrot","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"minecraft:potato","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"minecraft:apple","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"minecraft:golden_apple","weight":5,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"minecraft:enchanted_golden_apple","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"minecraft:baked_potato","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"minecraft:poisonous_potato","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"minecraft:emerald","weight":5,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:primogem","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":2}}]},
+        {"type":"minecraft:item","name":"primogemcraft:mora","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":32}}]},
+        {"type":"minecraft:item","name":"primogemcraft:refined_mora","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:intertwined_fate","weight":5,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:acquaint_fate","weight":5,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:genesis_crystal","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:true_galaxy_lotto","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:corporate_cuckoo_clock","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:ambergris_cheese","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]}
+      ]
+    }
+  ],
+  "random_sequence": "primogemcraft:entities/dendro_core"
+}

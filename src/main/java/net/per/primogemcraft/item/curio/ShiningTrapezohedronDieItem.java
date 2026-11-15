@@ -1,17 +1,17 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.system.choice.ChoiceSupport;
 import net.per.primogemcraft.system.curio.*;
 
 public class ShiningTrapezohedronDieItem extends CurioItem {
-    public ShiningTrapezohedronDieItem(Properties properties) {
+    public ShiningTrapezohedronDieItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.NORMAL, properties);
     }
 
     @Override
-    public void pickedUp(ServerPlayer player, ItemStack stack) {
+    public void pickedUp(ServerPlayerEntity player, ItemStack stack) {
         trigger(player, stack);
     }
 
@@ -20,7 +20,7 @@ public class ShiningTrapezohedronDieItem extends CurioItem {
         trigger(context.player(), context.stack());
     }
 
-    private void trigger(ServerPlayer player, ItemStack stack) {
+    private void trigger(ServerPlayerEntity player, ItemStack stack) {
         var context = CurioContext.of(player, stack, form());
         var rewards = Curios.convert(context, 0.0D);
         context.destroy();

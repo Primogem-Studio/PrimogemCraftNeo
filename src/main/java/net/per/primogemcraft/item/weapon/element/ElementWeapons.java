@@ -1,7 +1,7 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.weapon.WeaponEnhancement;
 
@@ -16,11 +16,11 @@ public final class ElementWeapons {
     private ElementWeapons() {
     }
 
-    public static double scaled(Player player, ItemStack stack, Element element, double base, boolean increasing) {
+    public static double scaled(PlayerEntity player, ItemStack stack, Element element, double base, boolean increasing) {
         return scaled(WeaponEnhancement.refinementOf(player, stack), base, increasing, Element.holdsWaxSeal(player, element));
     }
 
-    public static int ticks(Player player, ItemStack stack, Element element, double base, boolean increasing) {
+    public static int ticks(PlayerEntity player, ItemStack stack, Element element, double base, boolean increasing) {
         return (int) scaled(player, stack, element, base, increasing);
     }
 

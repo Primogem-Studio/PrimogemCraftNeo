@@ -1,19 +1,19 @@
 package net.per.primogemcraft.system.event;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.util.math.Vec3d;
 import net.per.primogemcraft.config.PGCConfig;
 
 import java.util.*;
@@ -47,84 +47,84 @@ public final class EventCombat {
         return spawn(context, type, count, modifier, true, null, Math.max(0, required), completion);
     }
 
-    public static boolean loot(EventContext context, EntityType<?> type, int count, ResourceLocation table) {
+    public static boolean loot(EventContext context, EntityType<?> type, int count, Identifier table) {
         return spawn(context, type, count, null, false, table, NO_CHALLENGE, null);
     }
 
-    public static void killed(ServerPlayer killer, LivingEntity dead) {
-        var dropped = LOOT_DROPS.remove(dead.getUUID());
+    public static void killed(ServerPlayerEntity killer, LivingEntity dead) {
+        var dropped = LOOT_DROPS.remove(dead.getUuid());
         if (dropped != null) dropped.context().lootTable(dropped.table(), LOOT_OPTIONS);
-        var challenge = CHALLENGES.get(killer.getUUID());
-        if (challenge == null || !challenge.targets.remove(dead.getUUID())) return;
-        killer.displayClientMessage(Component.translatable(TARGET_KILLED_KEY), true);
+        var challenge = CHALLENGES.get(killer.getUuid());
+        if (challenge == null || !challenge.targets.remove(dead.getUuid())) return;
+        killer.sendMessage(Text.translatable(TARGET_KILLED_KEY), true);
         if (++challenge.killed < challenge.required) return;
-        CHALLENGES.remove(killer.getUUID());
+        CHALLENGES.remove(killer.getUuid());
         if (challenge.completion != null) challenge.completion.accept(challenge.context);
     }
 
     public static void tick(MinecraftServer server) {
         if (CHALLENGES.isEmpty()) return;
-        var time = server.overworld().getGameTime();
+        var time = server.getOverworld().getTime();
         var iterator = CHALLENGES.entrySet().iterator();
         while (iterator.hasNext()) {
             var entry = iterator.next();
             if (entry.getValue().deadline > time) continue;
-            var player = server.getPlayerList().getPlayer(entry.getKey());
-            if (player != null) player.displayClientMessage(Component.translatable(CHALLENGE_TIMEOUT_KEY), true);
+            var player = server.getPlayerManager().getPlayer(entry.getKey());
+            if (player != null) player.sendMessage(Text.translatable(CHALLENGE_TIMEOUT_KEY), true);
             iterator.remove();
         }
     }
 
-    private static boolean spawn(EventContext context, EntityType<?> type, int count, Consumer<LivingEntity> modifier, boolean guard, ResourceLocation table, int required, Consumer<EventContext> completion) {
-        var level = context.level();
+    private static boolean spawn(EventContext context, EntityType<?> type, int count, Consumer<LivingEntity> modifier, boolean guard, Identifier table, int required, Consumer<EventContext> completion) {
+        var level = context.getWorld();
         var player = context.player();
         var targets = new HashSet<UUID>();
         for (var index = 0; index < count; index++) {
-            if (!(type.spawn(level, spawnPosition(level, player.position()), MobSpawnType.MOB_SUMMONED) instanceof LivingEntity living)) continue;
+            if (!(type.spawn(level, spawnPosition(level, player.getPos()), SpawnReason.MOB_SUMMONED) instanceof LivingEntity living)) continue;
             if (modifier != null) modifier.accept(living);
             if (guard) mark(living, player);
-            if (table != null) LOOT_DROPS.put(living.getUUID(), new LootDrop(context, table));
-            targets.add(living.getUUID());
+            if (table != null) LOOT_DROPS.put(living.getUuid(), new LootDrop(context, table));
+            targets.add(living.getUuid());
         }
         if (targets.isEmpty()) return false;
         if (required != NO_CHALLENGE) {
-            var deadline = level.getServer().overworld().getGameTime() + PGCConfig.EVENT_CHALLENGE_TICKS.get();
-            CHALLENGES.put(player.getUUID(), new Challenge(context, targets, Mth.clamp(required, 1, targets.size()), completion, deadline));
+            var deadline = level.getServer().getOverworld().getTime() + PGCConfig.EVENT_CHALLENGE_TICKS.get();
+            CHALLENGES.put(player.getUuid(), new Challenge(context, targets, MathHelper.clamp(required, 1, targets.size()), completion, deadline));
         }
         return true;
     }
 
-    private static void mark(LivingEntity living, ServerPlayer player) {
+    private static void mark(LivingEntity living, ServerPlayerEntity player) {
         int ticks = PGCConfig.EVENT_CHALLENGE_TICKS.get();
-        living.addEffect(new MobEffectInstance(MobEffects.GLOWING, ticks, 0, false, false));
-        living.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, ticks, 0, false, false));
-        if (living instanceof Mob mob) mob.setTarget(player);
+        living.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, ticks, 0, false, false));
+        living.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, ticks, 0, false, false));
+        if (living instanceof MobEntity mob) mob.setTarget(player);
     }
 
-    private static BlockPos spawnPosition(ServerLevel level, Vec3 center) {
+    private static BlockPos spawnPosition(ServerWorld level, Vec3d center) {
         var random = level.random;
         for (var attempt = 0; attempt < SPAWN_ATTEMPTS; attempt++) {
             var angle = random.nextDouble() * Math.PI * 2.0D;
             var distance = SPAWN_RADIUS * Math.sqrt(random.nextDouble());
-            var x = Mth.floor(center.x + distance * Math.cos(angle));
-            var z = Mth.floor(center.z + distance * Math.sin(angle));
-            var base = Mth.floor(center.y);
+            var x = MathHelper.floor(center.x + distance * Math.cos(angle));
+            var z = MathHelper.floor(center.z + distance * Math.sin(angle));
+            var base = MathHelper.floor(center.y);
             for (var offset = 0; offset <= VERTICAL_SCAN; offset++) {
                 if (suitable(level, new BlockPos(x, base + offset, z))) return new BlockPos(x, base + offset, z);
                 if (offset > 0 && suitable(level, new BlockPos(x, base - offset, z))) return new BlockPos(x, base - offset, z);
             }
         }
-        return BlockPos.containing(center);
+        return BlockPos.ofFloored(center);
     }
 
-    private static boolean suitable(ServerLevel level, BlockPos pos) {
-        if (level.isOutsideBuildHeight(pos) || level.isOutsideBuildHeight(pos.above())) return false;
-        if (!level.getBlockState(pos).isAir() || !level.getBlockState(pos.above()).isAir()) return false;
-        var below = level.getBlockState(pos.below());
-        return below.isSolid() || below.isCollisionShapeFullBlock(level, pos.below());
+    private static boolean suitable(ServerWorld level, BlockPos pos) {
+        if (level.isOutOfHeightLimit(pos) || level.isOutOfHeightLimit(pos.up())) return false;
+        if (!level.getBlockState(pos).isAir() || !level.getBlockState(pos.up()).isAir()) return false;
+        var below = level.getBlockState(pos.down());
+        return below.isSolidBlock(level, pos.down()) || below.isOpaqueFullCube(level, pos.down());
     }
 
-    private record LootDrop(EventContext context, ResourceLocation table) {
+    private record LootDrop(EventContext context, Identifier table) {
     }
 
     private static final class Challenge {

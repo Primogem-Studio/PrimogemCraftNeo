@@ -1,12 +1,12 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.Formatting;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
 import net.per.primogemcraft.system.weapon.WishWeaponShieldItem;
@@ -31,18 +31,18 @@ public class ShieldOfWealthAndHopeItem extends WishWeaponShieldItem {
     private static final String HANDY_BLOCK = "handy_block";
     private static final String HANDY_COOLDOWN = "handy_cooldown";
 
-    public ShieldOfWealthAndHopeItem(Properties properties) {
-        super(properties.durability(DURABILITY).fireResistant());
+    public ShieldOfWealthAndHopeItem(Settings properties) {
+        super(properties.maxDamage(DURABILITY).fireproof());
     }
 
     @Override
-    public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
-        return repairCandidate.is(PGCItems.REFINED_MORA.get()) || repairCandidate.is(PGCItems.FINE_ENHANCEMENT_ORE.get());
+    public boolean canRepair(ItemStack stack, ItemStack repairCandidate) {
+        return repairCandidate.isOf(PGCItems.REFINED_MORA.get()) || repairCandidate.isOf(PGCItems.FINE_ENHANCEMENT_ORE.get());
     }
 
     @Override
-    protected Holder<MobEffect> heldEffect(ItemStack stack) {
-        return MobEffects.DAMAGE_RESISTANCE;
+    protected StatusEffect heldEffect(ItemStack stack) {
+        return StatusEffects.RESISTANCE;
     }
 
     @Override
@@ -51,12 +51,12 @@ public class ShieldOfWealthAndHopeItem extends WishWeaponShieldItem {
     }
 
     @Override
-    protected void heldTick(ServerPlayer player, ItemStack stack) {
+    protected void heldTick(ServerPlayerEntity player, ItemStack stack) {
         var overflow = refinementOf(stack) - MAX_RESISTANCE;
         if (overflow <= 0) return;
         if (!PGCTimer.isDone(player, ABSORPTION_TIMER)) return;
         PGCTimer.set(player, ABSORPTION_TIMER, ABSORPTION_TICKS);
-        player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, ABSORPTION_TICKS, overflow - 1, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, ABSORPTION_TICKS, overflow - 1, false, false));
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ShieldOfWealthAndHopeItem extends WishWeaponShieldItem {
                 WeaponDescription.note(RESISTANCE_EFFECT),
                 WeaponDescription.note(ABSORPTION),
                 WeaponDescription.note(ABSORPTION_EFFECT,
-                        WishReports.number(ABSORPTION_TICKS / TICKS_PER_SECOND, ChatFormatting.AQUA)),
+                        WishReports.number(ABSORPTION_TICKS / TICKS_PER_SECOND, Formatting.AQUA)),
                 WeaponDescription.note(HANDY),
                 WeaponDescription.note(HANDY_BLOCK),
                 WeaponDescription.note(HANDY_COOLDOWN, cooldownReduction()));

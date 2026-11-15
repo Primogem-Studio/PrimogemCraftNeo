@@ -1,15 +1,15 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.world.World;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VajradaAmethystHoeItem extends WishWeaponHoeItem {
-    private static final Tier TIER = new WeaponTier(1561, 8.0F, 10, WeaponTier.DIAMOND_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 8.0F, 10, WeaponTier.DIAMOND_INCORRECT,
             PGCItems.PRIMOGEM, PGCItems.VAJRADA_AMETHYST_SLIVER);
 
     private static final float ATTACK_DAMAGE = 3.0F;
@@ -37,8 +37,8 @@ public class VajradaAmethystHoeItem extends WishWeaponHoeItem {
     private static final String WEATHER_TEXT = "weather";
     private static final String REFINEMENT_TEXT = "refinement";
 
-    public VajradaAmethystHoeItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public VajradaAmethystHoeItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -48,25 +48,25 @@ public class VajradaAmethystHoeItem extends WishWeaponHoeItem {
         var descriptions = new ArrayList<WeaponDescription>();
         if (sealed) descriptions.add(WeaponDescription.note(REFINEMENT_TEXT));
         descriptions.add(WeaponDescription.of(RIGHT_CLICK, WEATHER_TEXT,
-                WishReports.number(ElementWeapons.ticks(refinement, DURABILITY_LOSS, false, sealed), ChatFormatting.AQUA),
-                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN_TICKS, false, sealed), ChatFormatting.AQUA)));
+                WishReports.number(ElementWeapons.ticks(refinement, DURABILITY_LOSS, false, sealed), Formatting.AQUA),
+                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN_TICKS, false, sealed), Formatting.AQUA)));
         return List.copyOf(descriptions);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (!(level instanceof ServerLevel server)) return InteractionResultHolder.success(stack);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (!(level instanceof ServerWorld server)) return TypedActionResult.success(stack);
         var weather = server.getRandom().nextDouble() < RAIN_CHANCE ? "rain" : (server.getRandom().nextDouble() < RAIN_CHANCE ? "thunder" : "clear");
-        var source = server.getServer().createCommandSourceStack().withSuppressedOutput();
-        server.getServer().getCommands().performPrefixedCommand(source, "weather " + weather);
-        level.playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, SOUND_VOLUME, SOUND_PITCH);
-        player.swing(hand, true);
+        var source = server.getServer().getCommandSource().withSilent();
+        server.getServer().getCommandManager().executeWithPrefix(source, "weather " + weather);
+        level.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, SOUND_VOLUME, SOUND_PITCH);
+        player.swingHand(hand);
         var damage = ElementWeapons.ticks(player, stack, Element.ELECTRO, DURABILITY_LOSS, false);
-        if (damage > 0) stack.hurtAndBreak(damage, server, player, item -> {
+        if (damage > 0) stack.damage(damage, player, item -> {
         });
         var cooldown = ElementWeapons.ticks(player, stack, Element.ELECTRO, COOLDOWN_TICKS, false);
-        if (cooldown > 0) player.getCooldowns().addCooldown(stack.getItem(), cooldown);
-        return InteractionResultHolder.success(stack);
+        if (cooldown > 0) player.getItemCooldownManager().set(stack.getItem(), cooldown);
+        return TypedActionResult.success(stack);
     }
 }

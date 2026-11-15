@@ -1,0 +1,30 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:blaze_powder",
+    "minecraft:brick",
+    "minecraft:cooked_chicken",
+    "minecraft:fermented_spider_eye",
+    "minecraft:feather",
+    "minecraft:poisonous_potato",
+    "minecraft:chorus_fruit",
+    "minecraft:ghast_tear",
+    "minecraft:saddle",
+    "minecraft:ender_pearl",
+    "minecraft:leather",
+    "minecraft:ender_eye",
+    "minecraft:glowstone_dust",
+    "minecraft:bone",
+    "minecraft:slime_ball",
+    "minecraft:rabbit_foot",
+    "minecraft:cooked_beef",
+    "minecraft:golden_carrot",
+    "minecraft:nether_wart",
+    "minecraft:spider_eye",
+    "minecraft:rotten_flesh",
+    "minecraft:rabbit_hide",
+    "minecraft:sunflower",
+    "primogemcraft:primogem_shard",
+    "primogemcraft:mora"
+  ]
+}

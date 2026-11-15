@@ -1,6 +1,6 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 
 public enum CurioTrigger {
     ACTIVE("curio.primogemcraft.trigger.active"),
@@ -14,7 +14,7 @@ public enum CurioTrigger {
         this.key = key;
     }
 
-    public Component label() {
-        return Component.translatable(key);
+    public Text label() {
+        return Text.translatable(key);
     }
 }

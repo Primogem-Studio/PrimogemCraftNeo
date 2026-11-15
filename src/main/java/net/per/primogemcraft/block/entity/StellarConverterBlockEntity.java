@@ -1,24 +1,21 @@
 package net.per.primogemcraft.block.entity;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.nbt.NbtCompound;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
+import net.minecraft.text.Text;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.inventory.SidedInventory;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.registry.PGCBlockEntities;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.registry.PGCRecipeTypes;
@@ -28,7 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.IntStream;
 
-public class StellarConverterBlockEntity extends BaseContainerBlockEntity implements ContainerData, WorldlyContainer {
+public class StellarConverterBlockEntity extends net.minecraft.block.entity.LootableContainerBlockEntity
+        implements SidedInventory, net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory {
     public static final int SLOT_COUNT = 5;
     public static final int FUEL_SLOT = 0;
     public static final int FIRST_INPUT_SLOT = 1;
@@ -49,28 +47,22 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
     private static final String SECOND_DISABLED_TAG = "second_disabled";
     private static final int[] SLOTS = IntStream.range(0, SLOT_COUNT).toArray();
 
-    private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
+    private DefaultedList<ItemStack> items = DefaultedList.ofSize(SLOT_COUNT, ItemStack.EMPTY);
     private int charge;
     private int firstCost;
     private int secondCost;
     private boolean firstDisabled;
     private boolean secondDisabled;
-    private final IItemHandler itemHandler = new SidedInvWrapper(this, Direction.DOWN);
-
-    public IItemHandler itemHandler() {
-        return itemHandler;
-    }
-
     public StellarConverterBlockEntity(BlockPos pos, BlockState state) {
         super(PGCBlockEntities.STELLAR_CONVERTER.get(), pos, state);
     }
 
-    public static void serverTick(Level level, BlockPos pos, BlockState state, StellarConverterBlockEntity converter) {
+    public static void serverTick(World level, BlockPos pos, BlockState state, StellarConverterBlockEntity converter) {
         converter.tick();
     }
 
     public static boolean isFuel(ItemStack stack) {
-        return stack.is(PGCItems.DUST_OF_AZOTH.get());
+        return stack.isOf(PGCItems.DUST_OF_AZOTH.get());
     }
 
     public static boolean accepts(int index, ItemStack stack) {
@@ -82,98 +74,101 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void readNbt(NbtCompound tag) {
+        super.readNbt(tag);
         charge = tag.getInt(CHARGE_TAG);
         firstDisabled = tag.getBoolean(FIRST_DISABLED_TAG);
         secondDisabled = tag.getBoolean(SECOND_DISABLED_TAG);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void writeNbt(NbtCompound tag) {
+        super.writeNbt(tag);
         tag.putInt(CHARGE_TAG, charge);
         tag.putBoolean(FIRST_DISABLED_TAG, firstDisabled);
         tag.putBoolean(SECOND_DISABLED_TAG, secondDisabled);
     }
 
     @Override
-    public void writeClientSideData(AbstractContainerMenu menu, RegistryFriendlyByteBuf buffer) {
-        buffer.writeBlockPos(worldPosition);
+    public void writeScreenOpeningData(net.minecraft.server.network.ServerPlayerEntity player, net.minecraft.network.PacketByteBuf buffer) {
+        buffer.writeBlockPos(pos);
     }
 
     @Override
-    protected Component getDefaultName() {
-        return Component.translatable("block.primogemcraft.stellar_converter");
+    protected Text getContainerName() {
+        return Text.translatable("block.primogemcraft.stellar_converter");
     }
 
     @Override
-    public int getContainerSize() {
+    public int size() {
         return SLOT_COUNT;
     }
 
     @Override
-    protected NonNullList<ItemStack> getItems() {
+    protected DefaultedList<ItemStack> getInvStackList() {
         return items;
     }
 
     @Override
-    protected void setItems(NonNullList<ItemStack> items) {
+    protected void setInvStackList(DefaultedList<ItemStack> items) {
         this.items = items;
     }
 
-    @Override
-    public boolean canPlaceItem(int index, ItemStack stack) {
+    private boolean acceptsInput(int index, ItemStack stack) {
         return accepts(index, stack) && (index != FIRST_INPUT_SLOT || !firstDisabled)
                 && (index != SECOND_INPUT_SLOT || !secondDisabled);
     }
 
     @Override
-    protected AbstractContainerMenu createMenu(int id, Inventory inventory) {
-        return new StellarConverterMenu(id, inventory, this, this, ContainerLevelAccess.create(level, worldPosition));
+    protected ScreenHandler createScreenHandler(int id, PlayerInventory inventory) {
+        return new StellarConverterMenu(id, inventory, this, propertyDelegate(), ScreenHandlerContext.create(world, pos));
     }
 
-    @Override
-    public int getCount() {
-        return DATA_COUNT;
-    }
+    public PropertyDelegate propertyDelegate() {
+        return new PropertyDelegate() {
+            @Override
+            public int size() {
+                return DATA_COUNT;
+            }
 
-    @Override
-    public int get(int index) {
-        return switch (index) {
-            case DATA_CHARGE -> charge;
-            case DATA_FIRST_COST -> firstCost;
-            case DATA_SECOND_COST -> secondCost;
-            case DATA_FIRST_DISABLED -> firstDisabled ? 1 : 0;
-            case DATA_SECOND_DISABLED -> secondDisabled ? 1 : 0;
-            default -> 0;
+            @Override
+            public int get(int index) {
+                return switch (index) {
+                    case DATA_CHARGE -> charge;
+                    case DATA_FIRST_COST -> firstCost;
+                    case DATA_SECOND_COST -> secondCost;
+                    case DATA_FIRST_DISABLED -> firstDisabled ? 1 : 0;
+                    case DATA_SECOND_DISABLED -> secondDisabled ? 1 : 0;
+                    default -> 0;
+                };
+            }
+
+            @Override
+            public void set(int index, int value) {
+                switch (index) {
+                    case DATA_CHARGE -> charge = value;
+                    case DATA_FIRST_COST -> firstCost = value;
+                    case DATA_SECOND_COST -> secondCost = value;
+                    case DATA_FIRST_DISABLED -> firstDisabled = value != 0;
+                    case DATA_SECOND_DISABLED -> secondDisabled = value != 0;
+                }
+                markDirty();
+            }
         };
     }
 
     @Override
-    public void set(int index, int value) {
-        switch (index) {
-            case DATA_CHARGE -> charge = value;
-            case DATA_FIRST_COST -> firstCost = value;
-            case DATA_SECOND_COST -> secondCost = value;
-            case DATA_FIRST_DISABLED -> firstDisabled = value != 0;
-            case DATA_SECOND_DISABLED -> secondDisabled = value != 0;
-        }
-        setChanged();
-    }
-
-    @Override
-    public int[] getSlotsForFace(Direction side) {
+    public int[] getAvailableSlots(Direction side) {
         return SLOTS;
     }
 
     @Override
-    public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction direction) {
-        return canPlaceItem(index, stack) && (index == FUEL_SLOT || !isFuel(stack));
+    public boolean canInsert(int index, ItemStack stack, @Nullable Direction direction) {
+        return acceptsInput(index, stack) && (index == FUEL_SLOT || !isFuel(stack));
     }
 
     @Override
-    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
+    public boolean canExtract(int index, ItemStack stack, Direction direction) {
         return index == FIRST_OUTPUT_SLOT || index == SECOND_OUTPUT_SLOT;
     }
 
@@ -181,14 +176,14 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
         var changed = chargeFromFuel();
         changed |= convert(FIRST_INPUT_SLOT, FIRST_OUTPUT_SLOT);
         changed |= convert(SECOND_INPUT_SLOT, SECOND_OUTPUT_SLOT);
-        if (changed) setChanged();
+        if (changed) markDirty();
     }
 
     private boolean chargeFromFuel() {
         if (charge + CHARGE_PER_DUST > MAX_CHARGE) return false;
         var fuel = items.get(FUEL_SLOT);
         if (!isFuel(fuel)) return false;
-        fuel.shrink(1);
+        fuel.decrement(1);
         charge += CHARGE_PER_DUST;
         return true;
     }
@@ -206,22 +201,27 @@ public class StellarConverterBlockEntity extends BaseContainerBlockEntity implem
         else secondCost = cost;
         if (conversion == null || charge < cost) return false;
         var output = items.get(outputSlot);
-        if (!output.isEmpty() && !ItemStack.isSameItemSameComponents(output, conversion.output())) return false;
+        if (!output.isEmpty() && !ItemStack.canCombine(output, conversion.output())) return false;
         var stored = output.isEmpty() ? 0 : output.getCount();
-        if (stored + conversion.output().getCount() > conversion.output().getMaxStackSize()) return false;
-        input.shrink(conversion.input().getCount());
+        if (stored + conversion.output().getCount() > conversion.output().getMaxCount()) return false;
+        input.decrement(conversion.input().getCount());
         if (output.isEmpty()) items.set(outputSlot, conversion.output().copy());
-        else output.grow(conversion.output().getCount());
+        else output.increment(conversion.output().getCount());
         charge -= cost;
         return true;
     }
 
     private StellarConverterRecipe.Conversion findConversion(ItemStack stack) {
-        if (stack.isEmpty() || !(level instanceof ServerLevel server)) return null;
-        for (var holder : server.getRecipeManager().getAllRecipesFor(PGCRecipeTypes.STELLAR_CONVERTER.get())) {
-            var conversion = holder.value().match(stack);
+        if (stack.isEmpty() || !(world instanceof ServerWorld server)) return null;
+        for (var holder : server.getRecipeManager().listAllOfType(PGCRecipeTypes.STELLAR_CONVERTER.get())) {
+            var conversion = holder.match(stack);
             if (conversion != null) return conversion;
         }
         return null;
+    }
+
+    @Override
+    public boolean canPlayerUse(net.minecraft.entity.player.PlayerEntity player) {
+        return net.minecraft.inventory.Inventory.canPlayerUse(this, player);
     }
 }

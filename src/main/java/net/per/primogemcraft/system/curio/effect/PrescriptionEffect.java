@@ -1,13 +1,13 @@
 package net.per.primogemcraft.system.curio.effect;
 
-import net.minecraft.core.Holder;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.per.primogemcraft.util.PGCTimer;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
@@ -21,52 +21,50 @@ public class PrescriptionEffect extends CurioEffect {
     private final Prescription prescription;
 
     public PrescriptionEffect(Prescription prescription) {
-        super(MobEffectCategory.HARMFUL, COLOR);
+        super(StatusEffectCategory.HARMFUL, COLOR);
         this.prescription = prescription;
         for (var modifier : prescription.modifiers())
-            addAttributeModifier(modifier.attribute(), modifierId(modifier.attribute()), modifier.amount(), modifier.operation());
+            addAttributeModifier(modifier.attribute(), net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(modifierId(modifier.attribute())).toString(), modifier.amount(), modifier.operation());
     }
 
     public Prescription prescription() {
         return prescription;
     }
 
-    @Override
-    public Component getDisplayName() {
-        return Component.translatable(NAME_KEY, Component.translatable(prescription.label()));
+    public Text getDisplayName() {
+        return Text.translatable(NAME_KEY, Text.translatable(prescription.label()));
     }
 
-    @Override
     public void onEffectStarted(LivingEntity entity, int amplifier) {
-        if (prescription.started() == null || !(entity instanceof ServerPlayer player)) return;
+        if (prescription.started() == null || !(entity instanceof ServerPlayerEntity player)) return;
         prescription.started().accept(player);
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean canApplyUpdateEffect(int duration, int amplifier) {
         return prescription.period() != null;
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        if (prescription.period() == null || !(entity instanceof ServerPlayer player)) return true;
+    public void applyUpdateEffect(LivingEntity entity, int amplifier)
+    {
+        if (prescription.period() == null || !(entity instanceof ServerPlayerEntity player)) return;
         var key = TIMER_PREFIX + prescription.id();
-        if (!PGCTimer.isDone(player, key)) return true;
+        if (!PGCTimer.isDone(player, key)) return;
         PGCTimer.set(player, key, prescription.periodTicks());
         prescription.period().accept(player);
-        return true;
+        return;
     }
 
-    @Override
     public void onMobHurt(LivingEntity entity, int amplifier, DamageSource source, float amount) {
-        if (prescription.hurt() == null || !(entity instanceof ServerPlayer player)) return;
+        if (prescription.damage() == null || !(entity instanceof ServerPlayerEntity player)) return;
         var key = TIMER_PREFIX + prescription.id() + "/hurt";
         if (!PGCTimer.isDone(player, key)) return;
         PGCTimer.set(player, key, prescription.hurtCooldown());
-        prescription.hurt().accept(player);
+        prescription.damage().accept(player);
     }
 
-    private static ResourceLocation modifierId(Holder<Attribute> attribute) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, "prescription/" + attribute.unwrapKey().orElseThrow().location().getPath());
+    private static Identifier modifierId(EntityAttribute attribute) {
+        return Identifier.of(MOD_ID, "prescription/" + net.minecraft.registry.Registries.ATTRIBUTE.getId(attribute).getPath());
     }
 }

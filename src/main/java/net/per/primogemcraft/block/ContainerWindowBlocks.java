@@ -1,11 +1,11 @@
 package net.per.primogemcraft.block;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ItemScatterer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.World;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.block.entity.ContainerWindowBlockEntity;
 import net.per.primogemcraft.system.menu.ContainerWindowSound;
 
@@ -16,18 +16,18 @@ public final class ContainerWindowBlocks {
     private ContainerWindowBlocks() {
     }
 
-    public static void open(Level level, BlockPos pos, Player player) {
-        if (level.isClientSide()) return;
-        if (player instanceof ServerPlayer serverPlayer && level.getBlockEntity(pos) instanceof ContainerWindowBlockEntity window) {
-            serverPlayer.openMenu(window);
+    public static void open(World level, BlockPos pos, PlayerEntity player) {
+        if (level.isClient()) return;
+        if (player instanceof ServerPlayerEntity serverPlayer && level.getBlockEntity(pos) instanceof ContainerWindowBlockEntity window) {
+            serverPlayer.openHandledScreen(window);
             ContainerWindowSound.TRASH_CAN_OPEN.play(level, pos.getX(), pos.getY(), pos.getZ(), level.getRandom());
         }
     }
 
-    public static void dropContents(Level level, BlockPos pos) {
+    public static void dropContents(World level, BlockPos pos) {
         if (!(level.getBlockEntity(pos) instanceof ContainerWindowBlockEntity window)) return;
-        Containers.dropContents(level, pos, window);
-        level.updateNeighbourForOutputSignal(pos, level.getBlockState(pos).getBlock());
+        ItemScatterer.spawn(level, pos, window);
+        level.updateComparators(pos, level.getBlockState(pos).getBlock());
     }
 
     public static int size(BlockState state) {

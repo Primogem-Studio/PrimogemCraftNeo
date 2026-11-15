@@ -1,25 +1,25 @@
 package net.per.primogemcraft.entity.misc;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.Level;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ActionResult;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MovementType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.World;
 import net.per.primogemcraft.config.PGCConfig;
 import net.per.primogemcraft.system.event.EventGroup;
 import net.per.primogemcraft.system.event.EventRegistry;
 
 public class RandomEventEntity extends Entity {
-    private static final EntityDataAccessor<Integer> DATA_GROUP = SynchedEntityData.defineId(RandomEventEntity.class, EntityDataSerializers.INT);
+    private static final TrackedData<Integer> DATA_GROUP = DataTracker.registerData(RandomEventEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final double GRAVITY = 0.04D;
     private static final double FRICTION = 0.98D;
     private static final double BOUNCE = 0.5D;
@@ -28,17 +28,17 @@ public class RandomEventEntity extends Entity {
 
     public final float bobOffs;
 
-    public RandomEventEntity(EntityType<? extends RandomEventEntity> entityType, Level level) {
+    public RandomEventEntity(EntityType<? extends RandomEventEntity> entityType, World level) {
         super(entityType, level);
         bobOffs = random.nextFloat() * BOB_OFFSET_RANGE;
     }
 
     public void setGroup(int groupNumber) {
-        entityData.set(DATA_GROUP, groupNumber);
+        dataTracker.set(DATA_GROUP, groupNumber);
     }
 
     public int groupNumber() {
-        return entityData.get(DATA_GROUP);
+        return dataTracker.get(DATA_GROUP);
     }
 
     public EventGroup group() {
@@ -48,32 +48,31 @@ public class RandomEventEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (!level().isClientSide() && tickCount > PGCConfig.EVENT_ENTITY_LIFETIME.get()) {
+        if (!getWorld().isClient() && age > PGCConfig.EVENT_ENTITY_LIFETIME.get()) {
             discard();
             return;
         }
-        setDeltaMovement(getDeltaMovement().add(0.0D, -GRAVITY, 0.0D));
-        move(MoverType.SELF, getDeltaMovement());
-        var movement = getDeltaMovement();
-        var vertical = onGround() ? -movement.y * BOUNCE : movement.y * FRICTION;
-        setDeltaMovement(movement.x * FRICTION, vertical, movement.z * FRICTION);
+        setVelocity(getVelocity().add(0.0D, -GRAVITY, 0.0D));
+        move(MovementType.SELF, getVelocity());
+        var movement = getVelocity();
+        var vertical = isOnGround() ? -movement.y * BOUNCE : movement.y * FRICTION;
+        setVelocity(movement.x * FRICTION, vertical, movement.z * FRICTION);
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
-        if (level().isClientSide()) return InteractionResult.SUCCESS;
+    public ActionResult interact(PlayerEntity player, Hand hand) {
+        if (getWorld().isClient()) return ActionResult.SUCCESS;
         var group = group();
         discard();
-        if (group != null && player instanceof ServerPlayer serverPlayer) EventRegistry.trigger(serverPlayer, group);
-        return InteractionResult.SUCCESS;
+        if (group != null && player instanceof ServerPlayerEntity serverPlayer) EventRegistry.trigger(serverPlayer, group);
+        return ActionResult.SUCCESS;
     }
 
     @Override
-    public boolean isPickable() {
+    public boolean canHit() {
         return true;
     }
 
-    @Override
     public float getPickRadius() {
         return PICK_RADIUS;
     }
@@ -89,20 +88,20 @@ public class RandomEventEntity extends Entity {
     }
 
     @Override
-    public boolean ignoreExplosion(Explosion explosion) {
+    public boolean isImmuneToExplosion() {
         return true;
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA_GROUP, 0);
+    protected void initDataTracker() {
+        this.dataTracker.startTracking(DATA_GROUP, 0);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    protected void readCustomDataFromNbt(NbtCompound compound) {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
+    protected void writeCustomDataToNbt(NbtCompound compound) {
     }
 }

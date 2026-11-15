@@ -1,11 +1,10 @@
 package net.per.primogemcraft.client;
-
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.FireworkParticles;
-import net.minecraft.world.item.component.FireworkExplosion;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.particle.FireworksSparkParticle;
+import net.per.primogemcraft.compat.component.FireworkExplosion;
+import net.per.primogemcraft.compat.component.VanillaComponents;
 import net.per.primogemcraft.network.ParticleBurstPayload;
-
 import java.util.List;
 
 public final class ChoiceParticles {
@@ -26,21 +25,30 @@ public final class ChoiceParticles {
     }
 
     public static void reveal(float screenX, float screenY, int screenWidth, int screenHeight) {
-        var minecraft = Minecraft.getInstance();
-        if (minecraft.level == null) return;
-        var camera = minecraft.gameRenderer.getMainCamera();
-        if (!camera.isInitialized()) return;
+        var client = MinecraftClient.getInstance();
+        if (client.world == null) return;
+        var camera = client.gameRenderer.getCamera();
+        if (!camera.isReady()) return;
 
-        var scaleX = (double) minecraft.getWindow().getWidth() / Math.max(1, screenWidth);
-        var scaleY = (double) minecraft.getWindow().getHeight() / Math.max(1, screenHeight);
-        var cam = camera.getPosition();
+        var scaleX = (double) client.getWindow().getWidth() / Math.max(1, screenWidth);
+        var scaleY = (double) client.getWindow().getHeight() / Math.max(1, screenHeight);
+        var cam = camera.getPos();
         burst(cam.x + screenX * scaleX, cam.y + (screenHeight - screenY) * scaleY, cam.z, REVEAL_RADIUS, REVEAL_COUNT, REVEAL_COLORS, REVEAL_FADE_COLORS);
     }
 
     private static void burst(double x, double y, double z, double radius, int count, IntList colors, IntList fadeColors) {
-        var level = Minecraft.getInstance().level;
+        var level = MinecraftClient.getInstance().world;
         if (level == null) return;
-        var starter = new FireworkParticles.Starter(level, x, y, z, 0.0D, 0.0D, 0.0D, Minecraft.getInstance().particleEngine, List.of(FireworkExplosion.DEFAULT));
-        starter.createParticleBall(radius, count, colors, fadeColors, true, false);
+        var tag = VanillaComponents.starterTag(List.of(FireworkExplosion.DEFAULT));
+        for (var i = 0; i < count; i++) {
+            var angle = level.random.nextDouble() * Math.PI * 2.0;
+            var pitch = (level.random.nextDouble() - 0.5) * Math.PI;
+            var speed = radius * (0.5 + level.random.nextDouble() * 0.5);
+            var vx = Math.cos(angle) * Math.cos(pitch) * speed;
+            var vy = Math.sin(pitch) * speed;
+            var vz = Math.sin(angle) * Math.cos(pitch) * speed;
+            MinecraftClient.getInstance().particleManager.addParticle(new FireworksSparkParticle.FireworkParticle(level, x, y, z, vx, vy, vz,
+                    MinecraftClient.getInstance().particleManager, tag));
+        }
     }
 }

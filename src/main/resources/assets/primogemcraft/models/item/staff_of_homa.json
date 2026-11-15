@@ -1,30 +1,7 @@
 {
-  "loader": "neoforge:separate_transforms",
-  "gui_light": "front",
-  "base": {
-    "parent": "primogemcraft:item/weapon/large_weapon_held",
-    "textures": {
-      "layer0": "primogemcraft:item/staff_of_homa_held"
-    }
-  },
-  "perspectives": {
-    "gui": {
-      "parent": "minecraft:item/generated",
-      "textures": {
-        "layer0": "primogemcraft:item/staff_of_homa_item"
-      }
-    },
-    "fixed": {
-      "parent": "minecraft:item/generated",
-      "textures": {
-        "layer0": "primogemcraft:item/staff_of_homa_item"
-      }
-    },
-    "ground": {
-      "parent": "minecraft:item/generated",
-      "textures": {
-        "layer0": "primogemcraft:item/staff_of_homa_item"
-      }
-    }
-  }
+    "parent":  "primogemcraft:item/weapon/large_weapon_held",
+    "gui_light":  "front",
+    "textures":  {
+                     "layer0":  "primogemcraft:item/staff_of_homa_held"
+                 }
 }

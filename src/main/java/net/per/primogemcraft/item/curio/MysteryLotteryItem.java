@@ -9,7 +9,7 @@ import net.per.primogemcraft.system.event.EventRegistry;
 public class MysteryLotteryItem extends LotteryCurioItem {
     private static final double WIN_ODDS = 0.5D;
 
-    public MysteryLotteryItem(Properties properties) {
+    public MysteryLotteryItem(Settings properties) {
         super(CurioForm.FUSION, WIN_ODDS, MysteryLotteryItem::grantEvent, MysteryLotteryItem::clearQuota, properties);
     }
 

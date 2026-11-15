@@ -1,25 +1,35 @@
 package net.per.primogemcraft.system.loot;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.condition.LootConditionType;
 import net.per.primogemcraft.registry.PGCLootConditions;
 
-public class IsChestCondition implements LootItemCondition {
-    public static final MapCodec<IsChestCondition> CODEC = MapCodec.unit(new IsChestCondition());
+public class IsChestCondition implements LootCondition {
+    public static final net.minecraft.util.JsonSerializer<IsChestCondition> SERIALIZER =
+            new net.minecraft.util.JsonSerializer<>() {
+                @Override
+                public void toJson(com.google.gson.JsonObject json, IsChestCondition value, com.google.gson.JsonSerializationContext context) {
+                }
+
+                @Override
+                public IsChestCondition fromJson(com.google.gson.JsonObject json, com.google.gson.JsonDeserializationContext context) {
+                    return new IsChestCondition();
+                }
+            };
 
     @Override
-    public LootItemConditionType getType() {
+    public LootConditionType getType() {
         return PGCLootConditions.IS_CHEST.get();
     }
 
     @Override
     public boolean test(LootContext context) {
-        var table = context.getResolver().lookupOrThrow(Registries.LOOT_TABLE).get(ResourceKey.create(Registries.LOOT_TABLE, context.getQueriedLootTableId()));
-        return table.filter(holder -> holder.value().getParamSet() == LootContextParamSets.CHEST).isPresent();
+        var state = context.get(net.minecraft.loot.context.LootContextParameters.BLOCK_STATE);
+        return state != null && state.getBlock() instanceof net.minecraft.block.ChestBlock;
     }
 }

@@ -1,8 +1,9 @@
 package net.per.primogemcraft.item.misc;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.curio.Curios;
@@ -28,19 +29,19 @@ public final class OtherworldBankbook {
     }
 
     public static boolean isBankbook(ItemStack stack) {
-        return stack.is(PGCItems.OTHERWORLD_BANKBOOK.get());
+        return stack.isOf(PGCItems.OTHERWORLD_BANKBOOK.get());
     }
 
     public static boolean isFragment(ItemStack stack) {
-        return stack.is(PGCItems.COSMIC_FRAGMENT.get());
+        return stack.isOf(PGCItems.COSMIC_FRAGMENT.get());
     }
 
     public static int stored(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.BANKBOOK_FRAGMENTS.get(), 0);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.BANKBOOK_FRAGMENTS, 0);
     }
 
     public static int mode(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.BANKBOOK_MODE.get(), MODE_OFF);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.BANKBOOK_MODE, MODE_OFF);
     }
 
     public static int room(ItemStack stack) {
@@ -49,7 +50,7 @@ public final class OtherworldBankbook {
 
     public static int cycle(ItemStack stack) {
         var next = (mode(stack) + 1) % MODE_COUNT;
-        stack.set(PGCDataComponents.BANKBOOK_MODE.get(), next);
+        StackComponents.set(stack, PGCDataComponents.BANKBOOK_MODE, next);
         return next;
     }
 
@@ -62,32 +63,32 @@ public final class OtherworldBankbook {
     }
 
     public static int store(ItemStack stack, int amount) {
-        var accepted = Math.clamp(amount, 0, room(stack));
+        var accepted = net.minecraft.util.math.MathHelper.clamp(amount, 0, room(stack));
         if (accepted <= 0) return 0;
-        stack.set(PGCDataComponents.BANKBOOK_FRAGMENTS.get(), stored(stack) + accepted);
+        StackComponents.set(stack, PGCDataComponents.BANKBOOK_FRAGMENTS, stored(stack) + accepted);
         return accepted;
     }
 
     public static int withdraw(ItemStack stack, int amount) {
-        var taken = Math.clamp(amount, 0, stored(stack));
+        var taken = net.minecraft.util.math.MathHelper.clamp(amount, 0, stored(stack));
         if (taken <= 0) return 0;
-        stack.set(PGCDataComponents.BANKBOOK_FRAGMENTS.get(), stored(stack) - taken);
+        StackComponents.set(stack, PGCDataComponents.BANKBOOK_FRAGMENTS, stored(stack) - taken);
         return taken;
     }
 
-    public static List<ItemStack> held(ServerPlayer player) {
+    public static List<ItemStack> held(ServerPlayerEntity player) {
         var stacks = new ArrayList<ItemStack>();
-        for (var stack : player.getInventory().items) if (isBankbook(stack)) stacks.add(stack);
-        for (var stack : player.getInventory().offhand) if (isBankbook(stack)) stacks.add(stack);
+        for (var stack : player.getInventory().main) if (isBankbook(stack)) stacks.add(stack);
+        for (var stack : player.getInventory().offHand) if (isBankbook(stack)) stacks.add(stack);
         for (var stack : CuriosIntegration.equipped(player)) if (isBankbook(stack)) stacks.add(stack);
         return stacks;
     }
 
-    public static void deposit(ServerPlayer player, ItemStack bankbook) {
+    public static void deposit(ServerPlayerEntity player, ItemStack bankbook) {
         store(bankbook, takeFragments(player, room(bankbook)));
     }
 
-    public static boolean canPayFragments(ServerPlayer player, int amount) {
+    public static boolean canPayFragments(ServerPlayerEntity player, int amount) {
         if (amount <= 0) return true;
         if (PlayerItems.count(player, PGCItems.COSMIC_FRAGMENT.get()) >= amount) return true;
         var payable = 0;
@@ -95,7 +96,7 @@ public final class OtherworldBankbook {
         return payable >= amount;
     }
 
-    public static boolean payFragments(ServerPlayer player, int amount) {
+    public static boolean payFragments(ServerPlayerEntity player, int amount) {
         if (!canPayFragments(player, amount)) return false;
         var remaining = amount - takeFragments(player, amount);
         var owed = remaining;
@@ -108,13 +109,13 @@ public final class OtherworldBankbook {
         return remaining <= 0;
     }
 
-    public static int totalStored(ServerPlayer player) {
+    public static int totalStored(ServerPlayerEntity player) {
         var total = 0;
         for (var stack : held(player)) total += stored(stack);
         return total;
     }
 
-    public static void give(ServerPlayer player, ItemStack stack) {
+    public static void give(ServerPlayerEntity player, ItemStack stack) {
         if (!isFragment(stack)) {
             Curios.give(player, stack);
             return;
@@ -123,7 +124,7 @@ public final class OtherworldBankbook {
         if (remaining > 0) Curios.give(player, stack.copyWithCount(remaining));
     }
 
-    public static int storeFragments(ServerPlayer player, int amount) {
+    public static int storeFragments(ServerPlayerEntity player, int amount) {
         var remaining = amount;
         for (var stack : held(player)) {
             if (remaining <= 0) break;
@@ -135,18 +136,18 @@ public final class OtherworldBankbook {
         return banked;
     }
 
-    public static void absorbFragments(ServerPlayer player, ItemStack dropped) {
+    public static void absorbFragments(ServerPlayerEntity player, ItemStack dropped) {
         var accepted = storeFragments(player, dropped.getCount());
-        if (accepted > 0) dropped.shrink(accepted);
+        if (accepted > 0) dropped.decrement(accepted);
     }
 
-    private static void report(ServerPlayer player, String key, int amount) {
+    private static void report(ServerPlayerEntity player, String key, int amount) {
         if (amount <= 0) return;
-        player.displayClientMessage(Component.translatable(key, amount, totalStored(player)), false);
+        player.sendMessage(Text.translatable(key, amount, totalStored(player)), false);
     }
 
-    private static int takeFragments(ServerPlayer player, int amount) {
-        var taken = Math.clamp(amount, 0, PlayerItems.count(player, PGCItems.COSMIC_FRAGMENT.get()));
+    private static int takeFragments(ServerPlayerEntity player, int amount) {
+        var taken = net.minecraft.util.math.MathHelper.clamp(amount, 0, PlayerItems.count(player, PGCItems.COSMIC_FRAGMENT.get()));
         if (taken <= 0) return 0;
         PlayerItems.take(player, PGCItems.COSMIC_FRAGMENT.get(), taken);
         return taken;

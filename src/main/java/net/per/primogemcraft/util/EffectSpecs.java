@@ -1,18 +1,23 @@
 package net.per.primogemcraft.util;
 
-import net.minecraft.core.Holder;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 
+/**
+ * 效果实例构造辅助。
+ *
+ * <p>1.21 的 {@code StatusEffects.*} 是 {@code Holder<MobEffect>}，1.20.1 是
+ * {@code MobEffect}，故这里直接接收 MobEffect。
+ */
 public final class EffectSpecs {
     private EffectSpecs() {
     }
 
-    public static MobEffectInstance of(Holder<MobEffect> effect, int ticks, int amplifier) {
-        return new MobEffectInstance(effect, ticks, amplifier);
+    public static StatusEffectInstance of(StatusEffect effect, int ticks, int amplifier) {
+        return new StatusEffectInstance(effect, ticks, amplifier);
     }
 
-    public static MobEffectInstance hidden(Holder<MobEffect> effect, int ticks, int amplifier) {
-        return new MobEffectInstance(effect, ticks, amplifier, false, false);
+    public static StatusEffectInstance hidden(StatusEffect effect, int ticks, int amplifier) {
+        return new StatusEffectInstance(effect, ticks, amplifier, false, false);
     }
 }

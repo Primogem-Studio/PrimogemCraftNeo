@@ -1,16 +1,16 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.per.primogemcraft.system.curio.*;
 
 public class ObliterationWickTrimmerItem extends CurioItem {
     protected static final int TICKS_PER_HARDNESS = 100;
     protected static final int MAX_STRENGTH_LEVEL = 3;
 
-    public ObliterationWickTrimmerItem(CurioForm form, Properties properties) {
+    public ObliterationWickTrimmerItem(CurioForm form, Settings properties) {
         super(CurioTrigger.ACTIVE, form, properties);
     }
 
@@ -27,12 +27,12 @@ public class ObliterationWickTrimmerItem extends CurioItem {
     }
 
     protected static float hardness(CurioImpact impact) {
-        return impact.state().getDestroySpeed(impact.level(), BlockPos.containing(impact.position()));
+        return impact.state().getHardness(impact.level(), BlockPos.ofFloored(impact.position()));
     }
 
     protected static void strength(CurioContext context, float hardness) {
         var duration = (int) (hardness * TICKS_PER_HARDNESS);
-        var level = Mth.nextInt(context.random(), 0, MAX_STRENGTH_LEVEL);
-        context.player().addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, duration, level, false, false));
+        var level = MathHelper.nextInt(context.random(), 0, MAX_STRENGTH_LEVEL);
+        context.player().addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, duration, level, false, false));
     }
 }

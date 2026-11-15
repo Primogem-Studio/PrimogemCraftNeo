@@ -1,43 +1,43 @@
 package net.per.primogemcraft.entity.misc;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.Level;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ActionResult;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.World;
 import net.per.primogemcraft.item.misc.EnigmataPetalItem;
 import net.per.primogemcraft.system.shop.HertaShop;
 
 public class HertaOtherworldBranchTowerEntity extends Entity {
-    public HertaOtherworldBranchTowerEntity(EntityType<? extends HertaOtherworldBranchTowerEntity> entityType, Level level) {
+    public HertaOtherworldBranchTowerEntity(EntityType<? extends HertaOtherworldBranchTowerEntity> entityType, World level) {
         super(entityType, level);
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
-        if (level().isClientSide()) return InteractionResult.SUCCESS;
-        var stack = player.getItemInHand(hand);
+    public ActionResult interact(PlayerEntity player, Hand hand) {
+        if (getWorld().isClient()) return ActionResult.SUCCESS;
+        var stack = player.getStackInHand(hand);
         if (stack.getItem() instanceof EnigmataPetalItem petal) {
-            if (petal.recall(level(), player, stack)) discard();
-            return InteractionResult.SUCCESS;
+            if (petal.recall(getWorld(), player, stack)) discard();
+            return ActionResult.SUCCESS;
         }
-        if (player instanceof ServerPlayer serverPlayer) {
-            playSound(SoundEvents.DONKEY_CHEST, 0.4F, Mth.nextFloat(getRandom(), 0.2F, 1.0F));
+        if (player instanceof ServerPlayerEntity serverPlayer) {
+            playSound(SoundEvents.ENTITY_DONKEY_CHEST, 0.4F, MathHelper.nextFloat(random, 0.2F, 1.0F));
             HertaShop.open(serverPlayer);
         }
-        return InteractionResult.SUCCESS;
+        return ActionResult.SUCCESS;
     }
 
     @Override
-    public boolean isPickable() {
+    public boolean canHit() {
         return true;
     }
 
@@ -47,7 +47,7 @@ public class HertaOtherworldBranchTowerEntity extends Entity {
     }
 
     @Override
-    public boolean canBeCollidedWith() {
+    public boolean isCollidable() {
         return true;
     }
 
@@ -57,19 +57,19 @@ public class HertaOtherworldBranchTowerEntity extends Entity {
     }
 
     @Override
-    public boolean ignoreExplosion(Explosion explosion) {
+    public boolean isImmuneToExplosion() {
         return true;
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void initDataTracker() {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    protected void readCustomDataFromNbt(NbtCompound compound) {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
+    protected void writeCustomDataToNbt(NbtCompound compound) {
     }
 }

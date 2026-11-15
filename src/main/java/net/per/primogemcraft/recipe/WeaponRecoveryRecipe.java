@@ -1,37 +1,53 @@
 package net.per.primogemcraft.recipe;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import com.google.gson.JsonObject;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.RecipeInputInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.*;
+// removed forge: common.crafting.CraftingHelper;
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.per.primogemcraft.component.WeaponRecovery;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.registry.PGCRecipeSerializers;
 import net.per.primogemcraft.system.weapon.WeaponState;
 import net.per.primogemcraft.system.weapon.WishWeapon;
 
-import java.util.List;
-
+/**
+ * 武器回收配方（无序合成）。
+ *
+ * <p>1.21 用 {@code CraftingInput} + {@code MapCodec}/{@code StreamCodec}；
+ * 1.20.1 的 {@code ShapelessRecipe} 以 {@link CraftingContainer} 为输入，
+ * 构造器为 {@code (Identifier, String, net.minecraft.recipe.book.CraftingRecipeCategory, ItemStack, NonNullList)}，
+ * 序列化器用 {@code fromJson}/{@code fromNetwork}/{@code toNetwork}。
+ *
+ * <p>组装时把来源武器的状态写入产物的回收组件，语义与原版一致。
+ */
 public class WeaponRecoveryRecipe extends ShapelessRecipe {
+    /** 1.20.1 的合成网格上限为 3x3。 */
+    private static final int MAX_INGREDIENTS = 9;
+
     private final ItemStack result;
 
-    public WeaponRecoveryRecipe(String group, CraftingBookCategory category, ItemStack result, NonNullList<Ingredient> ingredients) {
-        super(group, category, result, ingredients);
+    public WeaponRecoveryRecipe(Identifier id, String group, net.minecraft.recipe.book.CraftingRecipeCategory category,
+                                ItemStack result, DefaultedList<Ingredient> ingredients) {
+        super(id, group, category, result, ingredients);
         this.result = result;
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
-        var assembled = super.assemble(input, registries);
-        for (var stack : input.items()) {
+    public ItemStack craft(RecipeInputInventory input, DynamicRegistryManager registries) {
+        var assembled = super.craft(input, registries);
+        for (var index = 0; index < input.size(); index++) {
+            var stack = input.getStack(index);
             if (!(stack.getItem() instanceof WishWeapon)) continue;
-            assembled.set(PGCDataComponents.WEAPON_RECOVERY.get(), new WeaponRecovery(WeaponState.of(stack), WishWeapon.isFiveStar(stack)));
+            StackComponents.set(assembled, PGCDataComponents.WEAPON_RECOVERY.get(),
+                    new WeaponRecovery(WeaponState.of(stack), WishWeapon.isFiveStar(stack)));
             break;
         }
         return assembled;
@@ -43,47 +59,50 @@ public class WeaponRecoveryRecipe extends ShapelessRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<WeaponRecoveryRecipe> {
-        private static final MapCodec<WeaponRecoveryRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                Codec.STRING.optionalFieldOf("group", "").forGetter(ShapelessRecipe::getGroup),
-                CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(ShapelessRecipe::category),
-                ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
-                Ingredient.CODEC_NONEMPTY.listOf().fieldOf("ingredients").flatXmap(Serializer::toIngredients, DataResult::success).forGetter(ShapelessRecipe::getIngredients)
-        ).apply(instance, WeaponRecoveryRecipe::new));
-
-        public static final StreamCodec<RegistryFriendlyByteBuf, WeaponRecoveryRecipe> STREAM_CODEC = StreamCodec.of(Serializer::encode, Serializer::decode);
 
         @Override
-        public MapCodec<WeaponRecoveryRecipe> codec() {
-            return CODEC;
+        public WeaponRecoveryRecipe read(Identifier id, JsonObject json) {
+            var group = JsonHelper.getString(json, "group", "");
+            var category = net.minecraft.recipe.book.CraftingRecipeCategory.CODEC.byId(
+                    JsonHelper.getString(json, "category", "misc"),
+                    net.minecraft.recipe.book.CraftingRecipeCategory.MISC);
+            var resultJson = JsonHelper.getObject(json, "result");
+            var resultItem = net.minecraft.registry.Registries.ITEM.get(new Identifier(JsonHelper.getString(resultJson, "item")));
+            var result = new ItemStack(resultItem, JsonHelper.getInt(resultJson, "count", 1));
+            var ingredients = ingredientsFromJson(json);
+            return new WeaponRecoveryRecipe(id, group, category, result, ingredients);
+        }
+
+        private static DefaultedList<Ingredient> ingredientsFromJson(JsonObject json) {
+            var array = JsonHelper.getArray(json, "ingredients");
+            var ingredients = DefaultedList.<Ingredient>of();
+            for (var element : array) {
+                var ingredient = Ingredient.fromJson(element);
+                if (!ingredient.isEmpty()) ingredients.add(ingredient);
+            }
+            if (ingredients.isEmpty()) throw new com.google.gson.JsonSyntaxException("No ingredients for weapon recovery recipe");
+            if (ingredients.size() > MAX_INGREDIENTS) throw new com.google.gson.JsonSyntaxException("Too many ingredients for weapon recovery recipe");
+            return ingredients;
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, WeaponRecoveryRecipe> streamCodec() {
-            return STREAM_CODEC;
+        public WeaponRecoveryRecipe read(Identifier id, PacketByteBuf buffer) {
+            var group = buffer.readString();
+            var category = buffer.readEnumConstant(net.minecraft.recipe.book.CraftingRecipeCategory.class);
+            var size = buffer.readVarInt();
+            var ingredients = DefaultedList.ofSize(size, Ingredient.EMPTY);
+            ingredients.replaceAll(ignored -> Ingredient.fromPacket(buffer));
+            var result = buffer.readItemStack();
+            return new WeaponRecoveryRecipe(id, group, category, result, ingredients);
         }
 
-        private static DataResult<NonNullList<Ingredient>> toIngredients(List<Ingredient> ingredients) {
-            var array = ingredients.toArray(Ingredient[]::new);
-            if (array.length == 0) return DataResult.error(() -> "No ingredients for weapon recovery recipe");
-            return array.length > ShapedRecipePattern.getMaxHeight() * ShapedRecipePattern.getMaxWidth()
-                    ? DataResult.error(() -> "Too many ingredients for weapon recovery recipe")
-                    : DataResult.success(NonNullList.of(Ingredient.EMPTY, array));
-        }
-
-        private static WeaponRecoveryRecipe decode(RegistryFriendlyByteBuf buffer) {
-            var group = buffer.readUtf();
-            var category = buffer.readEnum(CraftingBookCategory.class);
-            var ingredients = NonNullList.withSize(buffer.readVarInt(), Ingredient.EMPTY);
-            ingredients.replaceAll(ignored -> Ingredient.CONTENTS_STREAM_CODEC.decode(buffer));
-            return new WeaponRecoveryRecipe(group, category, ItemStack.STREAM_CODEC.decode(buffer), ingredients);
-        }
-
-        private static void encode(RegistryFriendlyByteBuf buffer, WeaponRecoveryRecipe recipe) {
-            buffer.writeUtf(recipe.getGroup());
-            buffer.writeEnum(recipe.category());
+        @Override
+        public void write(PacketByteBuf buffer, WeaponRecoveryRecipe recipe) {
+            buffer.writeString(recipe.getGroup());
+            buffer.writeEnumConstant(recipe.getCategory());
             buffer.writeVarInt(recipe.getIngredients().size());
-            for (var ingredient : recipe.getIngredients()) Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, ingredient);
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
+            for (var ingredient : recipe.getIngredients()) ingredient.write(buffer);
+            buffer.writeItemStack(recipe.result);
         }
     }
 }

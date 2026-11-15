@@ -1,23 +1,24 @@
 package net.per.primogemcraft.item.tool;
 
-import net.minecraft.core.Holder;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.World;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.text.Text;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.ItemStack;
+import net.minecraft.client.item.TooltipContext;
 
 import java.util.List;
 
 public class ColorfulSunglassesItem extends ArmorItem {
-    public ColorfulSunglassesItem(Holder<ArmorMaterial> material, Properties properties) {
+    public ColorfulSunglassesItem(ArmorMaterial material, Settings properties) {
         super(material, ArmorItem.Type.HELMET, properties);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("item.primogemcraft.colorful_sunglasses.tooltip.0"));
-        tooltip.add(Component.translatable("item.primogemcraft.colorful_sunglasses.tooltip.1"));
-        tooltip.add(Component.translatable("item.primogemcraft.colorful_sunglasses.tooltip.2"));
+    public void appendTooltip(ItemStack stack, @org.jetbrains.annotations.Nullable World level, List<Text> tooltip, TooltipContext flag) {
+        tooltip.add(Text.translatable("item.primogemcraft.colorful_sunglasses.tooltip.0"));
+        tooltip.add(Text.translatable("item.primogemcraft.colorful_sunglasses.tooltip.1"));
+        tooltip.add(Text.translatable("item.primogemcraft.colorful_sunglasses.tooltip.2"));
     }
 }

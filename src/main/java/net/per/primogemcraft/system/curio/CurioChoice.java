@@ -1,9 +1,9 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.system.choice.*;
 
 import java.util.ArrayList;
@@ -13,8 +13,8 @@ import java.util.function.Consumer;
 public final class CurioChoice {
     private static final String TITLE_KEY = "gui.primogemcraft.curio_choice.title";
     private static final String HINT_KEY = "gui.primogemcraft.curio_choice.hint";
-    private static final ResourceLocation STAR = ChoiceSupport.texture("textures/gui/curio_star.png");
-    private static final ResourceLocation FUSION_STAR = ChoiceSupport.texture("textures/gui/curio_star_fusion.png");
+    private static final Identifier STAR = ChoiceSupport.texture("textures/gui/curio_star.png");
+    private static final Identifier FUSION_STAR = ChoiceSupport.texture("textures/gui/curio_star_fusion.png");
     private static final int NEGATIVE_COLUMN = 4;
     private static final int BASE_TIER = 0;
     private static final List<ChoiceCardSpin> LADDER = List.of(
@@ -26,26 +26,19 @@ public final class CurioChoice {
     private CurioChoice() {
     }
 
-    public static void open(ServerPlayer player, List<ItemStack> options, Consumer<ItemStack> callback) {
+    public static void open(ServerPlayerEntity player, List<ItemStack> options, Consumer<ItemStack> callback) {
         open(player, TITLE_KEY, HINT_KEY, options, callback);
     }
 
-    public static void open(ServerPlayer player, String titleKey, String hintKey, List<ItemStack> options, Consumer<ItemStack> callback) {
-        open(player, Component.translatable(titleKey), Component.translatable(hintKey), options, callback);
+    public static void open(ServerPlayerEntity player, String titleKey, String hintKey, List<ItemStack> options, Consumer<ItemStack> callback) {
+        open(player, Text.translatable(titleKey), Text.translatable(hintKey), options, callback);
     }
 
-    public static void open(ServerPlayer player, Component title, Component hint, List<ItemStack> options, Consumer<ItemStack> callback) {
-        open(player, title, hint, options, callback, () -> {});
-    }
-
-    /** Uses onCancel when a pending choice is abandoned, including logout and replacement. */
-    public static void open(ServerPlayer player, Component title, Component hint, List<ItemStack> options,
-                            Consumer<ItemStack> callback, Runnable onCancel) {
+    public static void open(ServerPlayerEntity player, Text title, Text hint, List<ItemStack> options, Consumer<ItemStack> callback) {
         var cards = new ArrayList<ChoiceCard>();
         for (var option : options) cards.add(card(option));
         ChoiceRegistry.open(player, title, hint, ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, ChoiceSupport.CURIO_CARDS, ChoiceSupport.spin(LADDER.get(BASE_TIER)), cards, callback == null ? null : index -> {
             if (index >= 0 && index < options.size()) callback.accept(options.get(index));
-            else onCancel.run();
             return true;
         });
     }

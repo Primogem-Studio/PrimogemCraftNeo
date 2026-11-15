@@ -1,8 +1,8 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.entity.LivingEntity;
 import net.per.primogemcraft.system.curio.*;
 
 public class FictionalMechItem extends CurioItem {
@@ -11,7 +11,7 @@ public class FictionalMechItem extends CurioItem {
     private static final float VOLUME = 0.5F;
     private static final float PITCH = 20.0F;
 
-    public FictionalMechItem(Properties properties) {
+    public FictionalMechItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.NORMAL, properties);
     }
 
@@ -22,10 +22,10 @@ public class FictionalMechItem extends CurioItem {
         if (victim.getHealth() < victim.getMaxHealth()) return;
         var player = context.player();
         var item = context.stack().getItem();
-        if (player.getCooldowns().isOnCooldown(item)) return;
+        if (player.getItemCooldownManager().isCoolingDown(item)) return;
         var health = player.getHealth();
-        player.getCooldowns().addCooldown(item, (int) Math.ceil(health / HEALTH_PER_TICK));
+        player.getItemCooldownManager().set(item, (int) Math.ceil(health / HEALTH_PER_TICK));
         player.setHealth((float) (health + player.getMaxHealth() * HEAL_RATIO));
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, VOLUME, PITCH);
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, VOLUME, PITCH);
     }
 }

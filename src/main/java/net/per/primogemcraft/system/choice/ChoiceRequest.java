@@ -1,11 +1,11 @@
 package net.per.primogemcraft.system.choice;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public record ChoiceRequest(int id, Component title, Component subtitle, ChoiceVisual visual, ResourceLocation texture,
+public record ChoiceRequest(int id, Text title, Text subtitle, ChoiceVisual visual, Identifier texture,
                             ChoiceCardTextures textures, ChoiceSpin spin, int settleTicks, List<ChoiceCard> options, long expireTime,
                             ChoiceMode mode, int leaveIndex) {
     public static final int NO_LEAVE = -1;

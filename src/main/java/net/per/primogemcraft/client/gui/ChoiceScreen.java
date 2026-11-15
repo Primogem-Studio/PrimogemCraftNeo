@@ -1,30 +1,30 @@
 package net.per.primogemcraft.client.gui;
 
-import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.util.InputUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.math.Axis;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
-import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.locale.Language;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.Mth;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforge.client.ClientHooks;
-import net.neoforged.neoforge.client.settings.IKeyConflictContext;
-import net.neoforged.neoforge.client.settings.KeyConflictContext;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.TooltipPositioner;
+
+
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.util.Language;
+import net.minecraft.text.Text;
+import net.minecraft.text.StringVisitable;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.OrderedText;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.client.item.TooltipContext;
+import net.fabricmc.loader.api.FabricLoader;
+
+
+
+import net.per.primogemcraft.compat.network.PayloadRegistrar;
 import net.per.primogemcraft.client.ChoiceParticles;
 import net.per.primogemcraft.client.ChoicePreviewRenderer;
 import net.per.primogemcraft.network.ChoiceSelectPayload;
@@ -127,7 +127,7 @@ public class ChoiceScreen extends Screen {
     private static final int TOOLTIP_FLIP_SHIFT = 24;
     private static final int TOOLTIP_SCREEN_MARGIN = 4;
     private static final int TOOLTIP_BOTTOM_MARGIN = 3;
-    private static final int TOOLTIP_FRAME_PAD = TooltipRenderUtil.PADDING_TOP + 1;
+    private static final int TOOLTIP_FRAME_PAD = 3 + 1;
     private static final int TOOLTIP_BOX_SPACING = 2;
     private static final int TOOLTIP_GAP = TOOLTIP_FRAME_PAD * 2 + TOOLTIP_BOX_SPACING;
     private static final int NAME_COLOR = 0xFFFFFFFF;
@@ -163,11 +163,11 @@ public class ChoiceScreen extends Screen {
 
     private final ChoiceRequest request;
     private final List<ChoiceTextScroller> scrollers = new ArrayList<>();
-    private final List<FormattedCharSequence> nameLabels = new ArrayList<>();
+    private final List<OrderedText> nameLabels = new ArrayList<>();
     private final List<float[]> cardPositions = new ArrayList<>();
-    private final Map<KeyMapping, IKeyConflictContext> originalMovementContexts = new HashMap<>();
+    private final Map<KeyBinding, InputUtil.Key> originalMovementContexts = new HashMap<>();
     private final Clock clock = new Clock();
-    private FormattedCharSequence headingLabel = FormattedCharSequence.EMPTY;
+    private OrderedText headingLabel = OrderedText.EMPTY;
     private float[] cardLifts = new float[0];
     private ChoiceCardSpin[] cardSpins = new ChoiceCardSpin[0];
     private boolean[] burstCards = new boolean[0];
@@ -237,7 +237,7 @@ public class ChoiceScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(DrawContext graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
         var frame = frameSeconds();
         clock.advance(frame, chosen < 0 && clock.animationSeconds() < revealSeconds(), revealSeconds());
@@ -252,7 +252,7 @@ public class ChoiceScreen extends Screen {
     }
 
     private float frameSeconds() {
-        return Mth.clamp(Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), 0.0F, FRAME_SECONDS_CAP / SECONDS_PER_TICK) * SECONDS_PER_TICK;
+        return MathHelper.clamp(MinecraftClient.getInstance().getLastFrameDuration(), 0.0F, FRAME_SECONDS_CAP / SECONDS_PER_TICK) * SECONDS_PER_TICK;
     }
 
     private float spinSeconds() {
@@ -264,7 +264,7 @@ public class ChoiceScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderBackground(DrawContext graphics) {
     }
 
     @Override
@@ -305,7 +305,7 @@ public class ChoiceScreen extends Screen {
         if (isRevealing()) {
             if (hoveredCard(mouseX, mouseY) >= 0) return true;
             playClickSound();
-            onClose();
+            close();
             return true;
         }
         if (spinning || chosen >= 0 || awaitingResult > 0) return true;
@@ -320,7 +320,7 @@ public class ChoiceScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollY) {
         if (!canHover() || scrollY == 0.0D) return true;
         if (!scrollCardText(scrollY, mouseX, mouseY)) scrollRow(scrollY);
         return true;
@@ -339,12 +339,12 @@ public class ChoiceScreen extends Screen {
 
     private void scrollRow(double notches) {
         if (rowScrollMax <= 0.0F) return;
-        rowScrollTarget = Mth.clamp((float) (rowScrollTarget - notches * cardPitch()), 0.0F, rowScrollMax);
+        rowScrollTarget = MathHelper.clamp((float) (rowScrollTarget - notches * cardPitch()), 0.0F, rowScrollMax);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == InputConstants.KEY_ESCAPE || isRevealing()) return super.keyPressed(keyCode, scanCode, modifiers);
+        if (keyCode == InputUtil.GLFW_KEY_ESCAPE || isRevealing()) return super.keyPressed(keyCode, scanCode, modifiers);
         if (spinning || chosen >= 0 || awaitingResult > 0) return true;
         if (keyCode >= 49 && keyCode < 49 + request.size()) {
             var index = keyCode - 49;
@@ -358,29 +358,29 @@ public class ChoiceScreen extends Screen {
     }
 
     private void playClickSound() {
-        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
     private void playRevealSound(float pitch) {
-        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.AMETHYST_BLOCK_HIT, pitch, REVEAL_SOUND_VOLUME));
+        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_AMETHYST_BLOCK_HIT, pitch, REVEAL_SOUND_VOLUME));
     }
 
     private void playGrantSound() {
         if (grantPlayed) return;
         grantPlayed = true;
-        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(PGCSounds.CHOICE_GRANT.get(), GRANT_SOUND_PITCH, GRANT_SOUND_VOLUME));
+        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(PGCSounds.CHOICE_GRANT.get(), GRANT_SOUND_PITCH, GRANT_SOUND_VOLUME));
     }
 
     @Override
-    public boolean isPauseScreen() {
+    public boolean shouldPause() {
         return false;
     }
 
     @Override
-    public void onClose() {
+    public void close() {
         if (awaitingResult > 0) return;
         if (answered) {
-            super.onClose();
+            super.close();
             return;
         }
         forceAnswer(dismissalIndex());
@@ -396,8 +396,8 @@ public class ChoiceScreen extends Screen {
         var pool = new ArrayList<Integer>();
         for (var index = 0; index < request.size(); index++) if (isAvailable(index)) pool.add(index);
         if (pool.isEmpty()) return fallbackIndex();
-        var player = minecraft.player;
-        return player == null ? pool.getFirst() : pool.get(player.getRandom().nextInt(pool.size()));
+        var player = client.player;
+        return player == null ? pool.get(0) : pool.get(player.getRandom().nextInt(pool.size()));
     }
 
     private int timeoutIndex() {
@@ -412,35 +412,35 @@ public class ChoiceScreen extends Screen {
     }
 
     private void holdMovementKeys() {
-        var window = minecraft.getWindow().getWindow();
+        var window = client.getWindow().getHandle();
         for (var mapping : movementKeys()) {
-            var key = mapping.getKey();
-            if (key.getType() != InputConstants.Type.KEYSYM || key.equals(InputConstants.UNKNOWN)) continue;
-            if (mapping.isDown()) continue;
-            if (InputConstants.isKeyDown(window, key.getValue())) mapping.setDown(true);
+            var key = mapping.getDefaultKey();
+            if (key.getCategory() != InputUtil.Type.KEYSYM || key.equals(InputUtil.UNKNOWN_KEY.getCode())) continue;
+            if (mapping.isPressed()) continue;
+            if (InputUtil.isKeyPressed(window, key.getCode())) mapping.setPressed(true);
         }
     }
 
     private void claimMovementKeys() {
         for (var mapping : movementKeys()) {
-            originalMovementContexts.putIfAbsent(mapping, mapping.getKeyConflictContext());
-            mapping.setKeyConflictContext(KeyConflictContext.UNIVERSAL);
+            // Forge key conflict removed;
+            // Forge key conflict removed;
         }
         holdMovementKeys();
     }
 
     private void releaseMovementKeys() {
-        for (var entry : originalMovementContexts.entrySet()) entry.getKey().setKeyConflictContext(entry.getValue());
+        for (var entry : originalMovementContexts.entrySet()) entry.getKey().setBoundKey(entry.getValue());
         originalMovementContexts.clear();
     }
 
-    private List<KeyMapping> movementKeys() {
-        var options = minecraft.options;
-        return List.of(options.keyUp, options.keyDown, options.keyLeft, options.keyRight, options.keyJump, options.keyShift, options.keySprint);
+    private List<KeyBinding> movementKeys() {
+        var options = client.options;
+        return List.of(options.forwardKey, options.backKey, options.leftKey, options.rightKey, options.jumpKey, options.sneakKey, options.sprintKey);
     }
 
     public void update(ChoiceRequest replacement) {
-        Minecraft.getInstance().setScreen(new ChoiceScreen(replacement));
+        MinecraftClient.getInstance().setScreen(new ChoiceScreen(replacement));
     }
 
     public void choose(int index) {
@@ -459,9 +459,9 @@ public class ChoiceScreen extends Screen {
     private void forceAnswer(int index) {
         if (answered) return;
         answered = true;
-        PacketDistributor.sendToServer(new ChoiceSelectPayload(request.id(), index));
+        PayloadRegistrar.sendToServer(new ChoiceSelectPayload(request.id(), index));
         if (isConfirming()) awaitingResult = RESULT_TIMEOUT_TICKS;
-        else super.onClose();
+        else super.close();
     }
 
     public void result(int requestId, int index, boolean accepted) {
@@ -480,7 +480,7 @@ public class ChoiceScreen extends Screen {
 
     private void dismiss() {
         awaitingResult = 0;
-        super.onClose();
+        super.close();
     }
 
     private boolean isAvailable(int index) {
@@ -522,8 +522,8 @@ public class ChoiceScreen extends Screen {
 
         rowWidth = cardWidth * (size + (size - 1) * CARD_GAP_FILL);
         rowScrollMax = Math.max(0.0F, rowWidth - width * ROW_FILL);
-        rowScrollTarget = Mth.clamp(rowScrollTarget, 0.0F, rowScrollMax);
-        rowScroll = Mth.clamp(rowScroll, 0.0F, rowScrollMax);
+        rowScrollTarget = MathHelper.clamp(rowScrollTarget, 0.0F, rowScrollMax);
+        rowScroll = MathHelper.clamp(rowScroll, 0.0F, rowScrollMax);
         rowBarY = Math.round(cardCenterY + cardHeight * 0.5F + ROW_SCROLL_BAR_GAP);
         timeBarY = rowBarY + ROW_SCROLL_BAR_HEIGHT * 3;
         updateCardPositions();
@@ -532,21 +532,21 @@ public class ChoiceScreen extends Screen {
         var plateInsetSide = Math.round(NineSlicePlate.INSET_LEFT * pixelUnit);
         var plateInsetTop = Math.round(NineSlicePlate.INSET_TOP * pixelUnit);
         var plateInsetBottom = Math.round(NineSlicePlate.INSET_BOTTOM * pixelUnit);
-        var nameGlyphUnits = font.lineHeight * TITLE_TEXT_SCALE;
+        var nameGlyphUnits = textRenderer.fontHeight * TITLE_TEXT_SCALE;
         namePlateH = plateInsetTop + plateInsetBottom + NAME_PLATE_UNITS_PAD * 2 + nameGlyphUnits;
         nameBoxX = NAME_PLATE_UNITS_X + plateInsetSide + NAME_PLATE_UNITS_PAD + NAME_PLATE_SHIFT_X * pixelUnit;
         nameTextY = NAME_PLATE_UNITS_Y + plateInsetTop + NAME_PLATE_UNITS_PAD + NAME_PLATE_SHIFT_Y * pixelUnit;
-        nameWrapWidth = Math.max(1, Mth.floor((NAME_PLATE_UNITS_W - (plateInsetSide + NAME_PLATE_UNITS_PAD) * 2) / TITLE_TEXT_SCALE));
+        nameWrapWidth = Math.max(1, MathHelper.floor((NAME_PLATE_UNITS_W - (plateInsetSide + NAME_PLATE_UNITS_PAD) * 2) / TITLE_TEXT_SCALE));
 
         scrollers.clear();
         nameLabels.clear();
-        wrapWidth = Math.max(1, Mth.floor(SCROLL_TEXT_UNITS_W / BODY_TEXT_SCALE));
-        var wrapHeight = Math.max(1, Mth.floor(TEXT_UNITS_INNER_H / BODY_TEXT_SCALE));
+        wrapWidth = Math.max(1, MathHelper.floor(SCROLL_TEXT_UNITS_W / BODY_TEXT_SCALE));
+        var wrapHeight = Math.max(1, MathHelper.floor(TEXT_UNITS_INNER_H / BODY_TEXT_SCALE));
         for (var card : request.options()) {
             var scroller = new ChoiceTextScroller();
             scroller.wrap(wrapWidth, wrapHeight, textOf(card));
             scrollers.add(scroller);
-            nameLabels.add(Language.getInstance().getVisualOrder(ellipsized(card.displayTitle(), nameWrapWidth)));
+            nameLabels.add(Language.getInstance().reorder(ellipsized(card.displayTitle(), nameWrapWidth)));
         }
     }
 
@@ -568,7 +568,7 @@ public class ChoiceScreen extends Screen {
     }
 
     private void advanceRowScroll(float frameSeconds) {
-        rowScroll = Mth.lerp(1.0F - (float) Math.exp(-ROW_SCROLL_RESPONSE * frameSeconds), rowScroll, rowScrollTarget);
+        rowScroll = MathHelper.lerp(1.0F - (float) Math.exp(-ROW_SCROLL_RESPONSE * frameSeconds), rowScroll, rowScrollTarget);
         if (Math.abs(rowScrollTarget - rowScroll) < ROW_SCROLL_SETTLE) rowScroll = rowScrollTarget;
     }
 
@@ -578,30 +578,30 @@ public class ChoiceScreen extends Screen {
         var viewWidth = width * ROW_FILL;
         var viewLeft = (width - viewWidth) * 0.5F;
         var left = rowRestLeft() + index * cardPitch();
-        rowScrollTarget = Mth.clamp(rowScrollTarget, left + cardWidth - viewLeft - viewWidth, left - viewLeft);
-        rowScrollTarget = Mth.clamp(rowScrollTarget, 0.0F, rowScrollMax);
+        rowScrollTarget = MathHelper.clamp(rowScrollTarget, left + cardWidth - viewLeft - viewWidth, left - viewLeft);
+        rowScrollTarget = MathHelper.clamp(rowScrollTarget, 0.0F, rowScrollMax);
     }
 
-    private void renderCards(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void renderCards(DrawContext graphics, int mouseX, int mouseY) {
         RenderSystem.disableCull();
         for (var index = 0; index < request.size(); index++) renderCard(graphics, index, mouseX, mouseY);
         RenderSystem.enableCull();
     }
 
-    private void renderRowScrollBar(GuiGraphics graphics) {
+    private void renderRowScrollBar(DrawContext graphics) {
         if (rowScrollMax <= 0.0F) return;
 
         var track = Math.round(width * ROW_FILL);
         var left = (width - track) / 2;
         graphics.fill(left, rowBarY, left + track, rowBarY + ROW_SCROLL_BAR_HEIGHT, SCROLL_TRACK_COLOR);
-        var thumbWidth = Math.clamp(Math.round(track * (track / rowWidth)), ROW_SCROLL_THUMB_MIN_WIDTH, track);
+        var thumbWidth = net.minecraft.util.math.MathHelper.clamp(Math.round(track * (track / rowWidth)), ROW_SCROLL_THUMB_MIN_WIDTH, track);
         var travel = track - thumbWidth;
-        var thumbLeft = left + Math.round(travel * Mth.clamp(rowScroll / rowScrollMax, 0.0F, 1.0F));
+        var thumbLeft = left + Math.round(travel * MathHelper.clamp(rowScroll / rowScrollMax, 0.0F, 1.0F));
         graphics.fill(thumbLeft, rowBarY, thumbLeft + thumbWidth, rowBarY + ROW_SCROLL_BAR_HEIGHT, SCROLL_THUMB_COLOR);
     }
 
-    private void renderCard(GuiGraphics graphics, int index, int mouseX, int mouseY) {
-        var reveal = chosen >= 0 && index == chosen ? 1.0F : Mth.clamp((clock.animationSeconds() - cardSeconds(index)) / REVEAL_SECONDS, 0.0F, 1.0F);
+    private void renderCard(DrawContext graphics, int index, int mouseX, int mouseY) {
+        var reveal = chosen >= 0 && index == chosen ? 1.0F : MathHelper.clamp((clock.animationSeconds() - cardSeconds(index)) / REVEAL_SECONDS, 0.0F, 1.0F);
         var dimmed = chosen >= 0 && index != chosen;
         var available = isAvailable(index);
         var hovered = canHover() && available && inside(index, mouseX, mouseY);
@@ -611,18 +611,18 @@ public class ChoiceScreen extends Screen {
         var column = chosen >= 0 ? (chosen == index ? request.textures().chosen() : request.textures().dimmed())
                 : !available ? request.textures().dimmed() : hovered ? request.textures().hovered() : request.textures().idle();
 
-        var pose = graphics.pose();
-        pose.pushPose();
+        var pose = graphics.getMatrices();
+        pose.push();
         pose.translate(position[0], position[1], 0.0F);
         pose.scale(unitScale, unitScale, 1.0F);
         if (hovered) pose.translate(0.0F, -HOVER_LIFT * cardLifts[index], 0.0F);
 
-        pose.pushPose();
+        pose.push();
         pose.translate(-CARD_UNITS_W * 0.5F, -CARD_UNITS_H * 0.5F, 0.0F);
         renderCardEdge(graphics, turn);
-        pose.popPose();
+        pose.pop();
 
-        pose.mulPose(Axis.YP.rotationDegrees((float) Math.toDegrees(turn)));
+        pose.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float) Math.toDegrees(turn)));
         pose.translate(-CARD_UNITS_W * 0.5F, -CARD_UNITS_H * 0.5F, EDGE_UNITS * 0.5F);
 
         renderCardFace(graphics, column, faceSide < 0.0F);
@@ -630,7 +630,7 @@ public class ChoiceScreen extends Screen {
             pose.translate(0.0F, 0.0F, CONTENT_DEPTH);
             renderCardContent(graphics, index, reveal);
         }
-        pose.popPose();
+        pose.pop();
     }
 
     private float cardTurn(int index) {
@@ -641,7 +641,7 @@ public class ChoiceScreen extends Screen {
     }
 
     private float cardProgress(int index) {
-        return Mth.clamp(clock.animationSeconds() / cardSeconds(index), 0.0F, 1.0F);
+        return MathHelper.clamp(clock.animationSeconds() / cardSeconds(index), 0.0F, 1.0F);
     }
 
     private float cardSeconds(int index) {
@@ -656,7 +656,7 @@ public class ChoiceScreen extends Screen {
         }
         for (var index = 0; index < cardLifts.length; index++) {
             var target = anyHovered && isAvailable(index) && inside(index, mouseX, mouseY) ? 1.0F : 0.0F;
-            cardLifts[index] = Mth.clamp(Mth.lerp(HOVER_EASE, cardLifts[index], target), 0.0F, 1.0F);
+            cardLifts[index] = MathHelper.clamp(MathHelper.lerp(HOVER_EASE, cardLifts[index], target), 0.0F, 1.0F);
         }
     }
 
@@ -664,27 +664,27 @@ public class ChoiceScreen extends Screen {
         return value * value * value * (value * (value * 6.0F - 15.0F) + 10.0F);
     }
 
-    private void renderCardFace(GuiGraphics graphics, int column, boolean reversed) {
+    private void renderCardFace(DrawContext graphics, int column, boolean reversed) {
         var textures = request.textures();
         if (reversed) {
-            graphics.blit(textures.backSheet(), 0, 0, CARD_UNITS_W, CARD_UNITS_H, 0.0F, 0.0F, textures.tileWidth(), textures.tileHeight(), textures.tileWidth(), textures.tileHeight());
+            graphics.drawTexture(textures.backSheet(), 0, 0, CARD_UNITS_W, CARD_UNITS_H, 0.0F, 0.0F, textures.tileWidth(), textures.tileHeight(), textures.tileWidth(), textures.tileHeight());
             return;
         }
-        graphics.blit(textures.sheet(), 0, 0, CARD_UNITS_W, CARD_UNITS_H, (float) textures.u(column), (float) textures.v(0), textures.tileWidth(), textures.tileHeight(), textures.tileWidth() * textures.columns(), textures.tileHeight());
+        graphics.drawTexture(textures.sheet(), 0, 0, CARD_UNITS_W, CARD_UNITS_H, (float) textures.u(column), (float) textures.v(0), textures.tileWidth(), textures.tileHeight(), textures.tileWidth() * textures.columns(), textures.tileHeight());
     }
 
-    private void renderCardOverlay(GuiGraphics graphics, int index, float reveal) {
+    private void renderCardOverlay(DrawContext graphics, int index, float reveal) {
         var overlay = request.option(index).overlay();
         if (overlay == null) return;
         var textures = request.textures();
         RenderSystem.enableBlend();
-        graphics.setColor(1.0F, 1.0F, 1.0F, reveal);
-        graphics.blit(overlay.sheet(), 0, 0, CARD_UNITS_W, CARD_UNITS_H, (float) textures.u(overlay.column()), (float) textures.v(0), textures.tileWidth(), textures.tileHeight(), textures.tileWidth() * overlay.columns(), textures.tileHeight());
-        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        graphics.setShaderColor(1.0F, 1.0F, 1.0F, reveal);
+        graphics.drawTexture(overlay.sheet(), 0, 0, CARD_UNITS_W, CARD_UNITS_H, (float) textures.u(overlay.column()), (float) textures.v(0), textures.tileWidth(), textures.tileHeight(), textures.tileWidth() * overlay.columns(), textures.tileHeight());
+        graphics.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.disableBlend();
     }
 
-    private void renderCardEdge(GuiGraphics graphics, double turn) {
+    private void renderCardEdge(DrawContext graphics, double turn) {
         var offset = (float) (EDGE_UNITS * Math.sin(turn));
         if (Math.abs(offset) < 0.5F) return;
 
@@ -692,58 +692,58 @@ public class ChoiceScreen extends Screen {
         var projected = (float) (half * Math.cos(turn));
         var anchor = offset > 0.0F ? half - projected : half + projected;
         var reach = Math.abs(offset) * 0.5F;
-        var left = Mth.floor(anchor - reach);
-        var right = Mth.ceil(anchor + reach);
+        var left = MathHelper.floor(anchor - reach);
+        var right = MathHelper.ceil(anchor + reach);
         var textures = request.textures();
-        var slice = Mth.clamp(Math.round((right - left) * (float) textures.tileWidth() / CARD_UNITS_W), 1, textures.tileWidth());
-        var alpha = Mth.clamp(Math.abs(offset) / EDGE_FADE_UNITS, 0.0F, 1.0F);
+        var slice = MathHelper.clamp(Math.round((right - left) * (float) textures.tileWidth() / CARD_UNITS_W), 1, textures.tileWidth());
+        var alpha = MathHelper.clamp(Math.abs(offset) / EDGE_FADE_UNITS, 0.0F, 1.0F);
         RenderSystem.enableBlend();
-        graphics.setColor(EDGE_SHADE, EDGE_SHADE, EDGE_SHADE, alpha);
-        graphics.blit(textures.backSheet(), left, 0, right - left, CARD_UNITS_H, 0.0F, 0.0F, slice, textures.tileHeight(), textures.tileWidth(), textures.tileHeight());
-        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        graphics.setShaderColor(EDGE_SHADE, EDGE_SHADE, EDGE_SHADE, alpha);
+        graphics.drawTexture(textures.backSheet(), left, 0, right - left, CARD_UNITS_H, 0.0F, 0.0F, slice, textures.tileHeight(), textures.tileWidth(), textures.tileHeight());
+        graphics.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.disableBlend();
     }
 
-    private void renderNamePlate(GuiGraphics graphics, int index) {
+    private void renderNamePlate(DrawContext graphics, int index) {
         var label = nameLabels.get(index);
-        if (font.width(label) <= 0) return;
+        if (textRenderer.getWidth(label) <= 0) return;
 
-        var pose = graphics.pose();
-        pose.pushPose();
+        var pose = graphics.getMatrices();
+        pose.push();
         pose.scale(1.0F / unitScale, 1.0F / unitScale, 1.0F);
         NineSlicePlate.draw(graphics, Math.round(NAME_PLATE_UNITS_X * unitScale) + NAME_PLATE_SHIFT_X,
                 Math.round(NAME_PLATE_UNITS_Y * unitScale) + NAME_PLATE_SHIFT_Y,
                 Math.round(NAME_PLATE_UNITS_W * unitScale), Math.round(namePlateH * unitScale), 1.0F);
-        pose.popPose();
+        pose.pop();
 
-        pose.pushPose();
+        pose.push();
         pose.translate(nameBoxX, nameTextY, LABEL_DEPTH);
         pose.scale(TITLE_TEXT_SCALE, TITLE_TEXT_SCALE, 1.0F);
-        graphics.drawString(font, label, (nameWrapWidth - font.width(label)) / 2, 0, NAME_COLOR, false);
-        pose.popPose();
+        graphics.drawText(textRenderer, label, (nameWrapWidth - textRenderer.getWidth(label)) / 2, 0, NAME_COLOR, false);
+        pose.pop();
     }
 
-    private void renderCardContent(GuiGraphics graphics, int index, float reveal) {
+    private void renderCardContent(DrawContext graphics, int index, float reveal) {
         var card = request.option(index);
-        var pose = graphics.pose();
+        var pose = graphics.getMatrices();
 
         renderCardOverlay(graphics, index, reveal);
         renderNamePlate(graphics, index);
 
-        pose.pushPose();
+        pose.push();
         pose.translate(CARD_UNITS_W * 0.5F, VISUAL_UNITS_CENTER_Y, 0.0F);
         var grow = REVEAL_GROW + (1.0F - REVEAL_GROW) * reveal;
         pose.scale(grow, grow, 1.0F);
         var brightness = request.visual() == ChoiceVisual.ITEM_MODEL ? ITEM_BRIGHTNESS : 1.0F;
-        graphics.setColor(brightness, brightness, brightness, reveal);
+        graphics.setShaderColor(brightness, brightness, brightness, reveal);
         switch (request.visual()) {
             case ITEM_MODEL -> ChoicePreviewRenderer.renderItem(graphics, card.item(), VISUAL_UNITS_SIZE, VISUAL_DEPTH);
             case SCENARIO_TEXTURE ->
                     ChoicePreviewRenderer.renderTexture(graphics, request.texture(), VISUAL_UNITS_SIZE, VISUAL_UNITS_SIZE);
         }
-        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        graphics.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         renderItemCount(graphics, card.item());
-        pose.popPose();
+        pose.pop();
 
         var icons = card.icons();
         if (icons != null) renderIcons(graphics, icons, reveal);
@@ -757,49 +757,49 @@ public class ChoiceScreen extends Screen {
         renderDescriptionText(graphics, scroller, index);
     }
 
-    private void renderCardBadge(GuiGraphics graphics, ChoiceCard card) {
+    private void renderCardBadge(DrawContext graphics, ChoiceCard card) {
         if (!card.hasBadge()) return;
 
         var badge = card.badge();
-        var pose = graphics.pose();
-        pose.pushPose();
+        var pose = graphics.getMatrices();
+        pose.push();
         pose.translate(CARD_UNITS_W * 0.5F, BADGE_UNITS_Y, LABEL_DEPTH);
         pose.scale(BADGE_TEXT_SCALE, BADGE_TEXT_SCALE, 1.0F);
-        graphics.drawString(font, badge, -font.width(badge) / 2, 0, BADGE_COLOR, false);
-        pose.popPose();
+        graphics.drawText(textRenderer, badge, -textRenderer.getWidth(badge) / 2, 0, BADGE_COLOR, false);
+        pose.pop();
     }
 
-    private void renderIcons(GuiGraphics graphics, ChoiceCardIcons icons, float reveal) {
+    private void renderIcons(DrawContext graphics, ChoiceCardIcons icons, float reveal) {
         var span = icons.count() * ICON_UNITS_SIZE + (icons.count() - 1) * ICON_UNITS_GAP;
         var left = (CARD_UNITS_W - span) / 2;
         RenderSystem.enableBlend();
-        graphics.setColor(1.0F, 1.0F, 1.0F, reveal);
+        graphics.setShaderColor(1.0F, 1.0F, 1.0F, reveal);
         for (var index = 0; index < icons.count(); index++) {
-            graphics.blit(icons.texture(), left + index * (ICON_UNITS_SIZE + ICON_UNITS_GAP), ICON_UNITS_Y, ICON_UNITS_SIZE, ICON_UNITS_SIZE, 0.0F, 0.0F, ICON_TILE, ICON_TILE, ICON_TILE, ICON_TILE);
+            graphics.drawTexture(icons.texture(), left + index * (ICON_UNITS_SIZE + ICON_UNITS_GAP), ICON_UNITS_Y, ICON_UNITS_SIZE, ICON_UNITS_SIZE, 0.0F, 0.0F, ICON_TILE, ICON_TILE, ICON_TILE, ICON_TILE);
         }
-        graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        graphics.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.disableBlend();
     }
 
-    private void renderDescriptionFrame(GuiGraphics graphics) {
+    private void renderDescriptionFrame(DrawContext graphics) {
         for (var inset = 0; inset < TEXT_UNITS_BORDER; inset++) {
-            graphics.renderOutline(TEXT_UNITS_INSET + inset, TEXT_UNITS_TOP + inset, TEXT_UNITS_W - inset * 2, TEXT_UNITS_H - inset * 2, FRAME_COLOR);
+            graphics.drawBorder(TEXT_UNITS_INSET + inset, TEXT_UNITS_TOP + inset, TEXT_UNITS_W - inset * 2, TEXT_UNITS_H - inset * 2, FRAME_COLOR);
         }
     }
 
-    private void renderDescriptionText(GuiGraphics graphics, ChoiceTextScroller scroller, int index) {
+    private void renderDescriptionText(DrawContext graphics, ChoiceTextScroller scroller, int index) {
         var box = descriptionText(index);
         graphics.enableScissor(box.left(), box.top(), box.right(), box.bottom());
-        var pose = graphics.pose();
-        pose.pushPose();
+        var pose = graphics.getMatrices();
+        pose.push();
         pose.translate(TEXT_UNITS_INNER_X, TEXT_UNITS_INNER_Y, LABEL_DEPTH);
         pose.scale(BODY_TEXT_SCALE, BODY_TEXT_SCALE, 1.0F);
         scroller.render(graphics, 0, 0, wrapWidth, TEXT_COLOR);
-        pose.popPose();
+        pose.pop();
         graphics.disableScissor();
     }
 
-    private void renderScrollBar(GuiGraphics graphics, ChoiceTextScroller scroller) {
+    private void renderScrollBar(DrawContext graphics, ChoiceTextScroller scroller) {
         if (scroller.isNotScrollable()) return;
 
         graphics.fill(SCROLL_TRACK_UNITS_X, SCROLL_TRACK_UNITS_Y, SCROLL_TRACK_UNITS_X + SCROLL_TRACK_UNITS_W, SCROLL_TRACK_UNITS_Y + SCROLL_TRACK_UNITS_H, SCROLL_TRACK_COLOR);
@@ -809,21 +809,21 @@ public class ChoiceScreen extends Screen {
         graphics.fill(SCROLL_TRACK_UNITS_X, thumbTop, SCROLL_TRACK_UNITS_X + SCROLL_TRACK_UNITS_W, thumbTop + thumbHeight, SCROLL_THUMB_COLOR);
     }
 
-    private void renderItemCount(GuiGraphics graphics, ItemStack stack) {
+    private void renderItemCount(DrawContext graphics, ItemStack stack) {
         var count = stack.getCount();
         if (count < 2) return;
 
         var text = Integer.toString(count);
         var corner = VISUAL_UNITS_SIZE / 2;
-        var pose = graphics.pose();
-        pose.pushPose();
+        var pose = graphics.getMatrices();
+        pose.push();
         pose.translate(corner, corner, COUNT_DEPTH);
         pose.scale(COUNT_TEXT_SCALE, COUNT_TEXT_SCALE, 1.0F);
-        graphics.drawString(font, text, -font.width(text) - COUNT_UNITS_INSET, -font.lineHeight, COUNT_COLOR, true);
-        pose.popPose();
+        graphics.drawText(textRenderer, text, -textRenderer.getWidth(text) - COUNT_UNITS_INSET, -textRenderer.fontHeight, COUNT_COLOR, true);
+        pose.pop();
     }
 
-    private void renderHoveredTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
+    private void renderHoveredTooltip(DrawContext graphics, int mouseX, int mouseY) {
         if (!canHover()) return;
         var itemVisual = request.visual() == ChoiceVisual.ITEM_MODEL;
         for (var index = request.size() - 1; index >= 0; index--) {
@@ -837,12 +837,12 @@ public class ChoiceScreen extends Screen {
             if (!itemVisual) continue;
             var stack = card.item();
             if (stack.isEmpty()) continue;
-            graphics.renderTooltip(font, stack, mouseX, mouseY);
+            graphics.drawItemTooltip(textRenderer, stack, mouseX, mouseY);
             return;
         }
     }
 
-    private void renderTextTooltip(GuiGraphics graphics, int mouseX, int mouseY, ChoiceCard card, boolean available) {
+    private void renderTextTooltip(DrawContext graphics, int mouseX, int mouseY, ChoiceCard card, boolean available) {
         var lines = tooltipLines(hoverTextOf(card, available));
         if (lines.isEmpty()) return;
 
@@ -852,19 +852,19 @@ public class ChoiceScreen extends Screen {
         if (item == null) {
             var left = tooltipLeft(mouseX, textWidth);
             var top = restingTop(mouseY + TOOLTIP_OFFSET_Y, textHeight);
-            graphics.renderTooltip(font, lines, TooltipAnchor.at(left, top), mouseX, mouseY);
+            graphics.drawTooltip(textRenderer, lines, TooltipAnchor.at(left, top), mouseX, mouseY);
             return;
         }
 
         var boxes = tooltipBoxes(mouseX, mouseY, textWidth, textHeight, item);
-        graphics.renderTooltip(font, lines, TooltipAnchor.at(boxes.textLeft(), boxes.textTop()), mouseX, mouseY);
+        graphics.drawTooltip(textRenderer, lines, TooltipAnchor.at(boxes.textLeft(), boxes.textTop()), mouseX, mouseY);
 
-        var resting = DefaultTooltipPositioner.INSTANCE.positionTooltip(width, height, mouseX, mouseY, item.width(), item.height());
-        var pose = graphics.pose();
-        pose.pushPose();
+        var resting = net.minecraft.client.gui.tooltip.HoveredTooltipPositioner.INSTANCE.getPosition(width, height, mouseX, mouseY, item.width(), item.height());
+        var pose = graphics.getMatrices();
+        pose.push();
         pose.translate(boxes.itemLeft() - resting.x(), boxes.itemTop() - resting.y(), 0.0F);
-        graphics.renderTooltip(font, card.item(), mouseX, mouseY);
-        pose.popPose();
+        graphics.drawItemTooltip(textRenderer, card.item(), mouseX, mouseY);
+        pose.pop();
     }
 
     private TooltipBoxes tooltipBoxes(int mouseX, int mouseY, int textWidth, int textHeight, TooltipBox item) {
@@ -893,21 +893,21 @@ public class ChoiceScreen extends Screen {
     private TooltipBox itemTooltipBox(ChoiceCard card, int mouseX) {
         if (!card.itemTooltip() || card.item().isEmpty()) return null;
         var stack = card.item();
-        var elements = ClientHooks.gatherTooltipComponents(stack, getTooltipFromItem(minecraft, stack), stack.getTooltipImage(), mouseX, width, height, font);
+        var elements = getTooltipFromItem(client, stack);
         if (elements.isEmpty()) return null;
 
         var boxWidth = 0;
         var boxHeight = 0;
         for (var element : elements) {
-            boxWidth = Math.max(boxWidth, element.getWidth(font));
-            boxHeight += element.getHeight();
+            boxWidth = Math.max(boxWidth, textRenderer.getWidth(element));
+            boxHeight += 10;
         }
         return new TooltipBox(boxWidth, boxHeight - (elements.size() == 1 ? TOOLTIP_SINGLE_LINE_TRIM : 0));
     }
 
-    private int tooltipWidth(List<FormattedCharSequence> lines) {
+    private int tooltipWidth(List<OrderedText> lines) {
         var width = 0;
-        for (var line : lines) width = Math.max(width, font.width(line));
+        for (var line : lines) width = Math.max(width, textRenderer.getWidth(line));
         return width;
     }
 
@@ -925,10 +925,10 @@ public class ChoiceScreen extends Screen {
         return Math.min(top, height - boxHeight - TOOLTIP_BOTTOM_MARGIN);
     }
 
-    private List<Component> hoverTextOf(ChoiceCard card, boolean available) {
-        var content = new ArrayList<Component>();
+    private List<Text> hoverTextOf(ChoiceCard card, boolean available) {
+        var content = new ArrayList<Text>();
         if (!available) {
-            content.add(Component.translatable(UNAVAILABLE_KEY));
+            content.add(Text.translatable(UNAVAILABLE_KEY));
             content.addAll(card.unmet());
         }
         content.add(card.displayTitle());
@@ -941,10 +941,10 @@ public class ChoiceScreen extends Screen {
         return content;
     }
 
-    private List<FormattedCharSequence> tooltipLines(List<Component> content) {
-        var lines = new ArrayList<FormattedCharSequence>();
+    private List<OrderedText> tooltipLines(List<Text> content) {
+        var lines = new ArrayList<OrderedText>();
         var wrap = Math.max(width / 2, TOOLTIP_WRAP_MIN);
-        for (var text : content) lines.addAll(font.split(text, wrap));
+        for (var text : content) lines.addAll(textRenderer.wrapLines(text, wrap));
         return lines;
     }
 
@@ -982,77 +982,77 @@ public class ChoiceScreen extends Screen {
         return request.mode() == ChoiceMode.REVEAL;
     }
 
-    private void renderTexts(GuiGraphics graphics) {
-        var pose = graphics.pose();
-        var headingTop = Mth.floor(height * TITLE_TOP);
-        pose.pushPose();
+    private void renderTexts(DrawContext graphics) {
+        var pose = graphics.getMatrices();
+        var headingTop = MathHelper.floor(height * TITLE_TOP);
+        pose.push();
         pose.translate(0.0F, 0.0F, TEXT_DEPTH);
         renderHeading(graphics, headingTop + HEADING_PLATE_SHIFT_Y);
 
         if (chosen < 0) {
-            pose.pushPose();
+            pose.push();
             pose.scale(SUBTITLE_SCALE, SUBTITLE_SCALE, 1.0F);
             var subtitleTop = headingTop + headingPlateH + SUBTITLE_GAP;
-            graphics.drawString(font, request.subtitle(), centered(request.subtitle(), SUBTITLE_SCALE), Mth.floor(subtitleTop / SUBTITLE_SCALE), SUBTITLE_COLOR, true);
-            pose.popPose();
+            graphics.drawText(textRenderer, request.subtitle(), centered(request.subtitle(), SUBTITLE_SCALE), MathHelper.floor(subtitleTop / SUBTITLE_SCALE), SUBTITLE_COLOR, true);
+            pose.pop();
             if (!isRevealing()) renderProgressBar(graphics);
         }
 
         var hint = hintText();
-        pose.pushPose();
+        pose.push();
         pose.scale(HINT_SCALE, HINT_SCALE, 1.0F);
-        graphics.drawString(font, hint, centered(hint, HINT_SCALE), Mth.floor(height * HINT_TOP / HINT_SCALE), HINT_COLOR, true);
-        pose.popPose();
-        pose.popPose();
+        graphics.drawText(textRenderer, hint, centered(hint, HINT_SCALE), MathHelper.floor(height * HINT_TOP / HINT_SCALE), HINT_COLOR, true);
+        pose.pop();
+        pose.pop();
     }
 
-    private void renderProgressBar(GuiGraphics graphics) {
-        var barWidth = Mth.floor(width * 0.5F);
-        var ratio = Mth.clamp((float) remaining / ChoiceRegistry.DEFAULT_DURATION, 0.0F, 1.0F);
+    private void renderProgressBar(DrawContext graphics) {
+        var barWidth = MathHelper.floor(width * 0.5F);
+        var ratio = MathHelper.clamp((float) remaining / ChoiceRegistry.DEFAULT_DURATION, 0.0F, 1.0F);
         var filled = (int) (barWidth * ratio);
         graphics.fill((width - barWidth) / 2, timeBarY, (width + barWidth) / 2, timeBarY + BAR_HEIGHT, BAR_COLOR);
         graphics.fill((width - barWidth) / 2, timeBarY, (width - barWidth) / 2 + filled, timeBarY + BAR_HEIGHT, BAR_FILL_COLOR);
     }
 
-    private Component hintText() {
+    private Text hintText() {
         if (spinning) return rotationLabel();
-        if (isRevealing()) return Component.translatable("gui.primogemcraft.choice.reveal");
-        return Component.translatable("gui.primogemcraft.choice.hint", request.size());
+        if (isRevealing()) return Text.translatable("gui.primogemcraft.choice.reveal");
+        return Text.translatable("gui.primogemcraft.choice.hint", request.size());
     }
 
-    private void renderHeading(GuiGraphics graphics, int top) {
-        if (font.width(headingLabel) <= 0) return;
+    private void renderHeading(DrawContext graphics, int top) {
+        if (textRenderer.getWidth(headingLabel) <= 0) return;
 
         var labelTop = top + NineSlicePlate.INSET_TOP + HEADING_PLATE_PAD_Y + HEADING_LABEL_SHIFT_Y;
         NineSlicePlate.draw(graphics, headingPlateLeft, top, headingPlateWidth, headingPlateH, 1.0F);
-        var pose = graphics.pose();
-        pose.pushPose();
+        var pose = graphics.getMatrices();
+        pose.push();
         pose.scale(TITLE_SCALE, TITLE_SCALE, 1.0F);
-        var labelX = Mth.floor((headingBoxX + HEADING_LABEL_SHIFT_X) / TITLE_SCALE) + (headingWrapWidth - font.width(headingLabel)) / 2;
-        graphics.drawString(font, headingLabel, labelX, Mth.floor(labelTop / TITLE_SCALE), TITLE_COLOR, false);
-        pose.popPose();
+        var labelX = MathHelper.floor((headingBoxX + HEADING_LABEL_SHIFT_X) / TITLE_SCALE) + (headingWrapWidth - textRenderer.getWidth(headingLabel)) / 2;
+        graphics.drawText(textRenderer, headingLabel, labelX, MathHelper.floor(labelTop / TITLE_SCALE), TITLE_COLOR, false);
+        pose.pop();
     }
 
     private void wrapHeading() {
         var heading = headingText();
-        var labelWidth = Mth.ceil(font.width(heading) * TITLE_SCALE);
-        var labelHeight = Mth.ceil(font.lineHeight * TITLE_SCALE);
+        var labelWidth = MathHelper.ceil(textRenderer.getWidth(heading) * TITLE_SCALE);
+        var labelHeight = MathHelper.ceil(textRenderer.fontHeight * TITLE_SCALE);
         var padX = NineSlicePlate.INSET_LEFT + NineSlicePlate.INSET_RIGHT + HEADING_PLATE_PAD_X * 2;
         headingPlateH = NineSlicePlate.INSET_TOP + NineSlicePlate.INSET_BOTTOM + HEADING_PLATE_PAD_Y * 2 + labelHeight;
-        headingPlateWidth = Math.min(Mth.floor(width * HEADING_PLATE_MAX_FILL), labelWidth + padX);
-        headingPlateLeft = Mth.floor((width - headingPlateWidth) * 0.5F) + HEADING_PLATE_SHIFT_X;
+        headingPlateWidth = Math.min(MathHelper.floor(width * HEADING_PLATE_MAX_FILL), labelWidth + padX);
+        headingPlateLeft = MathHelper.floor((width - headingPlateWidth) * 0.5F) + HEADING_PLATE_SHIFT_X;
         headingBoxX = headingPlateLeft + NineSlicePlate.INSET_LEFT + HEADING_PLATE_PAD_X;
-        headingWrapWidth = Math.max(1, Mth.floor(Math.max(1, headingPlateWidth - padX) / TITLE_SCALE));
-        headingLabel = Language.getInstance().getVisualOrder(ellipsized(heading, headingWrapWidth));
+        headingWrapWidth = Math.max(1, MathHelper.floor(Math.max(1, headingPlateWidth - padX) / TITLE_SCALE));
+        headingLabel = Language.getInstance().reorder(ellipsized(heading, headingWrapWidth));
     }
 
-    private Component headingText() {
+    private Text headingText() {
         return chosen >= 0 ? request.option(chosen).displayTitle() : request.title();
     }
 
-    private Component rotationLabel() {
+    private Text rotationLabel() {
         var spin = cardSpins[longestCard()];
-        return Component.translatable("gui.primogemcraft.choice.rotation", spin.turns(), Component.translatable(spin.speed().translationKey()));
+        return Text.translatable("gui.primogemcraft.choice.rotation", spin.turns(), Text.translatable(spin.speed().translationKey()));
     }
 
     private int longestCard() {
@@ -1063,8 +1063,8 @@ public class ChoiceScreen extends Screen {
         return longest;
     }
 
-    private List<FormattedText> textOf(ChoiceCard card) {
-        var content = new ArrayList<FormattedText>();
+    private List<StringVisitable> textOf(ChoiceCard card) {
+        var content = new ArrayList<StringVisitable>();
         if (card.hasDescription()) {
             content.add(card.description());
         } else {
@@ -1074,11 +1074,11 @@ public class ChoiceScreen extends Screen {
         return content;
     }
 
-    private List<Component> tooltipOf(ItemStack stack) {
-        var content = new ArrayList<Component>();
-        var minecraft = Minecraft.getInstance();
-        if (stack.isEmpty() || minecraft.player == null) return content;
-        var lines = stack.getTooltipLines(Item.TooltipContext.EMPTY, minecraft.player, TooltipFlag.NORMAL);
+    private List<Text> tooltipOf(ItemStack stack) {
+        var content = new ArrayList<Text>();
+        var client = MinecraftClient.getInstance();
+        if (stack.isEmpty() || client.player == null) return content;
+        var lines = stack.getTooltip(client.player, net.minecraft.client.item.TooltipContext.Default.BASIC);
         for (var index = 1; index < lines.size(); index++) {
             var line = lines.get(index);
             if (isModSignature(line)) continue;
@@ -1087,7 +1087,7 @@ public class ChoiceScreen extends Screen {
         return content;
     }
 
-    private boolean isModSignature(Component line) {
+    private boolean isModSignature(Text line) {
         var text = line.getString().toLowerCase(Locale.ROOT);
         if (text.isBlank()) return false;
         for (var name : modNames()) {
@@ -1099,9 +1099,9 @@ public class ChoiceScreen extends Screen {
     private static List<String> modNames() {
         if (MOD_NAMES == null) {
             var names = new ArrayList<String>();
-            for (var info : ModList.get().getMods()) {
-                collectModName(names, info.getDisplayName());
-                collectModName(names, info.getModId());
+            for (var info : net.fabricmc.loader.api.FabricLoader.getInstance().getAllMods()) {
+                collectModName(names, info.getMetadata().getName());
+                collectModName(names, info.getMetadata().getId());
             }
             MOD_NAMES = List.copyOf(names);
         }
@@ -1136,23 +1136,23 @@ public class ChoiceScreen extends Screen {
     private Region cardRegion(int index, int unitsX, int unitsY, int unitsW, int unitsH) {
         var position = cardPositions.get(index);
         var lift = cardLifts[index] * HOVER_LIFT * unitScale;
-        var left = Mth.floor(position[0] + (unitsX - CARD_UNITS_W * 0.5F) * unitScale);
-        var top = Mth.floor(position[1] - lift + (unitsY - CARD_UNITS_H * 0.5F) * unitScale);
-        return new Region(left, top, Mth.ceil(left + unitsW * unitScale), Mth.ceil(top + unitsH * unitScale));
+        var left = MathHelper.floor(position[0] + (unitsX - CARD_UNITS_W * 0.5F) * unitScale);
+        var top = MathHelper.floor(position[1] - lift + (unitsY - CARD_UNITS_H * 0.5F) * unitScale);
+        return new Region(left, top, MathHelper.ceil(left + unitsW * unitScale), MathHelper.ceil(top + unitsH * unitScale));
     }
 
-    private FormattedText ellipsized(FormattedText text, int width) {
-        if (font.width(text) <= width) return text;
-        var room = Math.max(0, width - font.width(ELLIPSIS));
-        return FormattedText.composite(font.substrByWidth(text, room), Component.literal(ELLIPSIS));
+    private StringVisitable ellipsized(StringVisitable text, int width) {
+        if (textRenderer.getWidth(text) <= width) return text;
+        var room = Math.max(0, width - textRenderer.getWidth(ELLIPSIS));
+        return StringVisitable.concat(StringVisitable.plain(textRenderer.trimToWidth(text.getString(), room)), StringVisitable.plain(ELLIPSIS));
     }
 
-    private int centered(Component text, float scale) {
-        return Mth.floor(width * 0.5F / scale - font.width(text) * 0.5F);
+    private int centered(Text text, float scale) {
+        return MathHelper.floor(width * 0.5F / scale - textRenderer.getWidth(text) * 0.5F);
     }
 
     private long gameTime() {
-        return minecraft != null && minecraft.level != null ? minecraft.level.getGameTime() : 0L;
+        return client != null && client.world != null ? client.world.getTime() : 0L;
     }
 
     static final class Clock {
@@ -1170,13 +1170,13 @@ public class ChoiceScreen extends Screen {
         }
     }
 
-    private record TooltipAnchor(int left, int top) implements ClientTooltipPositioner {
+    private record TooltipAnchor(int left, int top) implements net.minecraft.client.gui.tooltip.TooltipPositioner {
         static TooltipAnchor at(int left, int top) {
             return new TooltipAnchor(left, top);
         }
 
         @Override
-        public Vector2ic positionTooltip(int screenWidth, int screenHeight, int mouseX, int mouseY, int tooltipWidth, int tooltipHeight) {
+        public Vector2ic getPosition(int screenWidth, int screenHeight, int mouseX, int mouseY, int tooltipWidth, int tooltipHeight) {
             return new Vector2i(left, top);
         }
     }

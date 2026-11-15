@@ -1,72 +1,64 @@
 package net.per.primogemcraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.AttachFace;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.world.BlockView;
+import net.minecraft.block.*;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.state.StateManager;
+import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.util.shape.VoxelShape;
 
 import java.util.function.Function;
 
 public class PGCFaceAttachedBlock extends Block {
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    public static final EnumProperty<AttachFace> FACE = FaceAttachedHorizontalDirectionalBlock.FACE;
-    public static final MapCodec<PGCFaceAttachedBlock> CODEC =
-            simpleCodec(properties -> new PGCFaceAttachedBlock(properties, state -> Shapes.block()));
-
+    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+    public static final EnumProperty<WallMountLocation> FACE = net.minecraft.state.property.Properties.WALL_MOUNT_LOCATION;
     private final Function<BlockState, VoxelShape> shape;
 
-    public PGCFaceAttachedBlock(BlockBehaviour.Properties properties, Function<BlockState, VoxelShape> shape) {
+    public PGCFaceAttachedBlock(AbstractBlock.Settings properties, Function<BlockState, VoxelShape> shape) {
         super(properties);
         this.shape = shape;
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FACE, AttachFace.WALL));
+        setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH).with(FACE, WallMountLocation.WALL));
     }
 
     @Override
-    protected MapCodec<? extends Block> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        var clicked = context.getClickedFace();
+    public BlockState getPlacementState(ItemPlacementContext context) {
+        var clicked = context.getSide();
         if (clicked.getAxis() == Direction.Axis.Y) {
-            return defaultBlockState()
-                    .setValue(FACE, clicked == Direction.DOWN ? AttachFace.CEILING : AttachFace.FLOOR)
-                    .setValue(FACING, context.getHorizontalDirection());
+            return getDefaultState()
+                    .with(FACE, clicked == Direction.DOWN ? WallMountLocation.CEILING : WallMountLocation.FLOOR)
+                    .with(FACING, context.getHorizontalPlayerFacing());
         }
-        return defaultBlockState().setValue(FACE, AttachFace.WALL).setValue(FACING, clicked);
+        return getDefaultState().with(FACE, WallMountLocation.WALL).with(FACING, clicked);
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        var offset = state.getOffset(level, pos);
-        return shape.apply(state).move(offset.x, offset.y, offset.z);
+    public VoxelShape getOutlineShape(BlockState state, BlockView level, BlockPos pos, ShapeContext context) {
+        var offset = state.getModelOffset(level, pos);
+        return shape.apply(state).offset(offset.x, offset.y, offset.z);
     }
 
     @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+    public BlockState rotate(BlockState state, net.minecraft.util.BlockRotation rotation) {
+        return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation(state.getValue(FACING)));
+    public BlockState mirror(BlockState state, net.minecraft.util.BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING, FACE);
     }
 }

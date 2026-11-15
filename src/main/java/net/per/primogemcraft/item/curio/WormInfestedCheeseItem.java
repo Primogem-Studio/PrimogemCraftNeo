@@ -1,12 +1,12 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.UseAction;
+import net.minecraft.world.World;
 import net.per.primogemcraft.system.curio.*;
 
 public class WormInfestedCheeseItem extends CurioItem {
@@ -14,29 +14,29 @@ public class WormInfestedCheeseItem extends CurioItem {
     private static final int PARASITE_LEVEL = 2;
     private static final int PARASITE_TICKS = 1200;
 
-    public WormInfestedCheeseItem(Properties properties) {
+    public WormInfestedCheeseItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.FUSION, properties);
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.EAT;
+    public UseAction getUseAction(ItemStack stack) {
+        return net.minecraft.util.UseAction.EAT;
     }
 
     @Override
-    public SoundEvent getEatingSound() {
-        return SoundEvents.EMPTY;
+    public SoundEvent getEatSound() {
+        return SoundEvents.INTENTIONALLY_EMPTY;
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+    public int getMaxUseTime(ItemStack stack) {
         return USE_DURATION;
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        var result = super.finishUsingItem(stack, level, entity);
-        if (!(entity instanceof ServerPlayer player)) return result;
+    public ItemStack finishUsing(ItemStack stack, World level, LivingEntity entity) {
+        var result = super.finishUsing(stack, level, entity);
+        if (!(entity instanceof ServerPlayerEntity player)) return result;
         Parasitism.clear(player);
         Parasitism.apply(player, PARASITE_LEVEL, PARASITE_TICKS);
         return result;

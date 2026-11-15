@@ -6,10 +6,10 @@ import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.client.WishMaterialValues;
-import net.per.primogemcraft.item.misc.WishCoreItem;
+import net.per.primogemcraft.registry.PGCItems;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +21,8 @@ public class WishMaterialDisplayGenerator implements DynamicDisplayGenerator<Wis
     public Optional<List<WishMaterialDisplay>> getUsageFor(EntryStack<?> entry) {
         if (!entry.getType().equals(VanillaEntryTypes.ITEM)) return Optional.empty();
         var stack = entry.<ItemStack>castValue();
-        if (stack.getItem() instanceof WishCoreItem) return Optional.of(pages());
-        var value = WishMaterialValues.get().get(BuiltInRegistries.ITEM.getKey(stack.getItem()));
+        if (stack.isOf(PGCItems.WISH_CORE.get())) return Optional.of(pages());
+        var value = WishMaterialValues.get().get(Registries.ITEM.getKey(stack.getItem()));
         if (value == null) return Optional.empty();
         return Optional.of(List.of(new WishMaterialDisplay(List.of(EntryIngredients.of(stack.getItem())), List.of(value))));
     }
@@ -40,7 +40,7 @@ public class WishMaterialDisplayGenerator implements DynamicDisplayGenerator<Wis
         var inputs = new ArrayList<EntryIngredient>();
         var values = new ArrayList<Integer>();
         for (var entry : entries) {
-            var item = BuiltInRegistries.ITEM.getOptional(entry.getKey());
+            var item = Registries.ITEM.getOrEmpty(entry.getKey());
             if (item.isEmpty() || entry.getValue() <= 1) continue;
             inputs.add(EntryIngredients.of(item.get()));
             values.add(entry.getValue());

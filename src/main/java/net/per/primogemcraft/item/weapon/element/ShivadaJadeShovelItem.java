@@ -1,14 +1,14 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.ActionResult;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
 import net.per.primogemcraft.system.weapon.WeaponTier;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ShivadaJadeShovelItem extends WishWeaponShovelItem {
-    private static final Tier TIER = new WeaponTier(1561, 8.0F, 12, WeaponTier.DIAMOND_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 8.0F, 12, WeaponTier.DIAMOND_INCORRECT,
             PGCItems.PRIMOGEM, PGCItems.SHIVADA_JADE_SLIVER);
 
     private static final Set<Block> ICE_BLOCKS = Set.of(Blocks.ICE, Blocks.PACKED_ICE, Blocks.FROSTED_ICE);
@@ -32,8 +32,8 @@ public class ShivadaJadeShovelItem extends WishWeaponShovelItem {
     private static final String ICE_TEXT = "ice";
     private static final String NO_REFINEMENT_TEXT = "no_refinement";
 
-    public ShivadaJadeShovelItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public ShivadaJadeShovelItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -44,19 +44,19 @@ public class ShivadaJadeShovelItem extends WishWeaponShovelItem {
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        var result = super.useOn(context);
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        var result = super.useOnBlock(context);
         var player = context.getPlayer();
-        if (!(context.getLevel() instanceof ServerLevel server) || player == null) return result;
-        var pos = context.getClickedPos();
+        if (!(context.getWorld() instanceof ServerWorld server) || player == null) return result;
+        var pos = context.getBlockPos();
         if (!ICE_BLOCKS.contains(server.getBlockState(pos).getBlock())) return result;
-        server.setBlock(pos, Blocks.BLUE_ICE.defaultBlockState(), Block.UPDATE_ALL);
-        server.playSound(null, pos, SoundEvents.TNT_PRIMED, SoundSource.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
-        var stack = context.getItemInHand();
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        server.setBlockState(pos, Blocks.BLUE_ICE.getDefaultState(), Block.NOTIFY_ALL);
+        server.playSound(null, pos, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
+        var stack = context.getStack();
+        stack.damage(DURABILITY_LOSS, player, item -> {
         });
-        player.getCooldowns().addCooldown(stack.getItem(), COOLDOWN);
-        player.swing(context.getHand(), true);
-        return InteractionResult.SUCCESS;
+        player.getItemCooldownManager().set(stack.getItem(), COOLDOWN);
+        player.swingHand(context.getHand());
+        return ActionResult.SUCCESS;
     }
 }

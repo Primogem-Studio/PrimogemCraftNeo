@@ -1,21 +1,21 @@
 package net.per.primogemcraft.system.menu;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerData;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.SimpleContainerData;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.PropertyDelegate;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.screen.ArrayPropertyDelegate;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.block.entity.StellarConverterBlockEntity;
 import net.per.primogemcraft.registry.PGCBlocks;
 import net.per.primogemcraft.registry.PGCMenus;
 
-public class StellarConverterMenu extends AbstractContainerMenu {
+public class StellarConverterMenu extends ScreenHandler {
     public static final int SLOT_COUNT = StellarConverterBlockEntity.SLOT_COUNT;
     public static final int FUEL_SLOT = StellarConverterBlockEntity.FUEL_SLOT;
     public static final int FIRST_INPUT_SLOT = StellarConverterBlockEntity.FIRST_INPUT_SLOT;
@@ -30,15 +30,15 @@ public class StellarConverterMenu extends AbstractContainerMenu {
     private static final int INVENTORY_ROWS = 3;
     private static final int INVENTORY_COLUMNS = 9;
 
-    private final ContainerData data;
-    private final ContainerLevelAccess access;
+    private final PropertyDelegate data;
+    private final ScreenHandlerContext access;
 
-    public StellarConverterMenu(int id, Inventory inventory, FriendlyByteBuf buffer) {
-        this(id, inventory, new SimpleContainer(SLOT_COUNT), new SimpleContainerData(StellarConverterBlockEntity.DATA_COUNT),
-                ContainerLevelAccess.create(inventory.player.level(), buffer.readBlockPos()));
+    public StellarConverterMenu(int id, PlayerInventory inventory, PacketByteBuf buffer) {
+        this(id, inventory, new SimpleInventory(SLOT_COUNT), new ArrayPropertyDelegate(StellarConverterBlockEntity.DATA_COUNT),
+                ScreenHandlerContext.create(inventory.player.getWorld(), buffer.readBlockPos()));
     }
 
-    public StellarConverterMenu(int id, Inventory inventory, Container container, ContainerData data, ContainerLevelAccess access) {
+    public StellarConverterMenu(int id, PlayerInventory inventory, Inventory container, PropertyDelegate data, ScreenHandlerContext access) {
         super(PGCMenus.STELLAR_CONVERTER.get(), id);
         this.data = data;
         this.access = access;
@@ -46,9 +46,9 @@ public class StellarConverterMenu extends AbstractContainerMenu {
             var slotIndex = index;
             addSlot(new Slot(container, slotIndex, SLOT_X[slotIndex], SLOT_Y[slotIndex]) {
                 @Override
-                public boolean mayPlace(ItemStack stack) {
+                public boolean canInsert(ItemStack stack) {
                     return StellarConverterBlockEntity.accepts(slotIndex, stack)
-                            && !isSlotDisabled(slotIndex) && container.canPlaceItem(slotIndex, stack);
+                            && !isSlotDisabled(slotIndex) && container.isValid(slotIndex, stack);
                 }
             });
         }
@@ -57,7 +57,7 @@ public class StellarConverterMenu extends AbstractContainerMenu {
                 addSlot(new Slot(inventory, column + (row + 1) * INVENTORY_COLUMNS, INVENTORY_X + column * SLOT_PITCH, INVENTORY_Y + row * SLOT_PITCH));
         for (var column = 0; column < INVENTORY_COLUMNS; column++)
             addSlot(new Slot(inventory, column, INVENTORY_X + column * SLOT_PITCH, HOTBAR_Y));
-        addDataSlots(data);
+        addProperties(data);
     }
 
     public int charge() {
@@ -78,12 +78,12 @@ public class StellarConverterMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean clickMenuButton(Player player, int id) {
-        if (id < 0 || id > 1 || !stillValid(player)) return false;
+    public boolean onButtonClick(PlayerEntity player, int id) {
+        if (id < 0 || id > 1 || !canUse(player)) return false;
         var index = id == 0 ? StellarConverterBlockEntity.DATA_FIRST_DISABLED
                 : StellarConverterBlockEntity.DATA_SECOND_DISABLED;
         data.set(index, isChannelDisabled(id) ? 0 : 1);
-        broadcastChanges();
+        sendContentUpdates();
         return true;
     }
 
@@ -96,29 +96,29 @@ public class StellarConverterMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int index) {
         var slot = slots.get(index);
-        if (!slot.hasItem()) return ItemStack.EMPTY;
-        var stack = slot.getItem();
+        if (!slot.hasStack()) return ItemStack.EMPTY;
+        var stack = slot.getStack();
         var result = stack.copy();
         if (index < SLOT_COUNT) {
-            if (!moveItemStackTo(stack, SLOT_COUNT, slots.size(), true)) return ItemStack.EMPTY;
+            if (!insertItem(stack, SLOT_COUNT, slots.size(), true)) return ItemStack.EMPTY;
         } else if (StellarConverterBlockEntity.isFuel(stack)) {
-            if (!moveItemStackTo(stack, FUEL_SLOT, FUEL_SLOT + 1, false)) return ItemStack.EMPTY;
+            if (!insertItem(stack, FUEL_SLOT, FUEL_SLOT + 1, false)) return ItemStack.EMPTY;
         } else {
-            var moved = !isChannelDisabled(0) && moveItemStackTo(stack, FIRST_INPUT_SLOT, FIRST_INPUT_SLOT + 1, false);
-            moved |= !isChannelDisabled(1) && moveItemStackTo(stack, SECOND_INPUT_SLOT, SECOND_INPUT_SLOT + 1, false);
+            var moved = !isChannelDisabled(0) && insertItem(stack, FIRST_INPUT_SLOT, FIRST_INPUT_SLOT + 1, false);
+            moved |= !isChannelDisabled(1) && insertItem(stack, SECOND_INPUT_SLOT, SECOND_INPUT_SLOT + 1, false);
             if (!moved) return ItemStack.EMPTY;
         }
-        if (stack.isEmpty()) slot.setByPlayer(ItemStack.EMPTY);
-        else slot.setChanged();
+        if (stack.isEmpty()) slot.setStack(ItemStack.EMPTY);
+        else slot.markDirty();
         if (stack.getCount() == result.getCount()) return ItemStack.EMPTY;
-        slot.onTake(player, stack);
+        slot.onTakeItem(player, stack);
         return result;
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        return stillValid(access, player, PGCBlocks.STELLAR_CONVERTER.get());
+    public boolean canUse(PlayerEntity player) {
+        return canUse(access, player, PGCBlocks.STELLAR_CONVERTER.get());
     }
 }

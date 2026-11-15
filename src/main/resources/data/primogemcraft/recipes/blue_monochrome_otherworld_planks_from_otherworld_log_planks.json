@@ -1,0 +1,8 @@
+{
+    "type":  "minecraft:stonecutting",
+    "ingredient":  {
+                       "item":  "primogemcraft:otherworld_log_planks"
+                   },
+    "count":  1,
+    "result":  "primogemcraft:blue_monochrome_otherworld_planks"
+}

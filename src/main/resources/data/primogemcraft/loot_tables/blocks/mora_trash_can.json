@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "primogemcraft:blocks/mora_trash_can",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:mora_trash_can"
+        }
+      ]
+    }
+  ]
+}

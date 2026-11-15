@@ -1,0 +1,12 @@
+{
+  "type": "primogemcraft:stellar_converter",
+  "first": {
+    "item": "primogemcraft:white_iron_ore",
+    "count": 1
+  },
+  "second": {
+    "item": "primogemcraft:enhancement_ore",
+    "count": 2
+  },
+  "cost": 1
+}

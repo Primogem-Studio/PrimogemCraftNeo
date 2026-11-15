@@ -1,8 +1,8 @@
 package net.per.primogemcraft.system.event;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
+import net.minecraft.text.Text;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.item.Item;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,44 +18,44 @@ public interface EventCondition {
 
     boolean met(EventContext context);
 
-    List<Component> unmet(EventContext context);
+    List<Text> unmet(EventContext context);
 
     static EventCondition all(EventCondition... conditions) {
         return new All(List.of(conditions));
     }
 
     static EventCondition fragments(int amount) {
-        return new Requirement(Component.translatable(FRAGMENTS_KEY, amount), context -> context.hasFragments(amount));
+        return new Requirement(Text.translatable(FRAGMENTS_KEY, amount), context -> context.hasFragments(amount));
     }
 
     static EventCondition afterglow(int amount) {
-        return new Requirement(Component.translatable(AFTERGLOW_KEY, amount), context -> context.hasAfterglow(amount));
+        return new Requirement(Text.translatable(AFTERGLOW_KEY, amount), context -> context.hasAfterglow(amount));
     }
 
     static EventCondition health(double ratio) {
-        return new Requirement(Component.translatable(HEALTH_KEY, Math.round(ratio * 100.0D)), context -> context.hasHealth(ratio));
+        return new Requirement(Text.translatable(HEALTH_KEY, Math.round(ratio * 100.0D)), context -> context.hasHealth(ratio));
     }
 
     static EventCondition enchantTargets() {
-        return new Requirement(Component.translatable(ENCHANT_TARGETS_KEY), EventContext::hasEnchantTargets);
+        return new Requirement(Text.translatable(ENCHANT_TARGETS_KEY), EventContext::hasEnchantTargets);
     }
 
     static EventCondition curios(TagKey<Item> tag) {
-        return new Requirement(Component.translatable(CURIOS_KEY, tag.location().toString()), context -> context.hasCurios(tag));
+        return new Requirement(Text.translatable(CURIOS_KEY, tag.id().toString()), context -> context.hasCurios(tag));
     }
 
     static EventCondition chain() {
-        return new Requirement(Component.translatable(CHAIN_KEY), EventContext::chainReady);
+        return new Requirement(Text.translatable(CHAIN_KEY), EventContext::chainReady);
     }
 
-    record Requirement(Component label, Predicate<EventContext> check) implements EventCondition {
+    record Requirement(Text label, Predicate<EventContext> check) implements EventCondition {
         @Override
         public boolean met(EventContext context) {
             return check.test(context);
         }
 
         @Override
-        public List<Component> unmet(EventContext context) {
+        public List<Text> unmet(EventContext context) {
             return met(context) ? List.of() : List.of(label);
         }
     }
@@ -70,8 +70,8 @@ public interface EventCondition {
         }
 
         @Override
-        public List<Component> unmet(EventContext context) {
-            var lines = new ArrayList<Component>();
+        public List<Text> unmet(EventContext context) {
+            var lines = new ArrayList<Text>();
             for (var condition : conditions) lines.addAll(condition.unmet(context));
             return List.copyOf(lines);
         }

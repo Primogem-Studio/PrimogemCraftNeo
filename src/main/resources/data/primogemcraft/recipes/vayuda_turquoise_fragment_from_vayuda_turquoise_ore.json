@@ -1,0 +1,8 @@
+{
+    "type":  "minecraft:stonecutting",
+    "ingredient":  {
+                       "item":  "primogemcraft:vayuda_turquoise_ore"
+                   },
+    "count":  1,
+    "result":  "primogemcraft:vayuda_turquoise_fragment"
+}

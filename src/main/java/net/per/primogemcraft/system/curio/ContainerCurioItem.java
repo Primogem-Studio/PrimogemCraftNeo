@@ -1,6 +1,6 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.function.BiConsumer;
 
@@ -8,13 +8,13 @@ public class ContainerCurioItem extends CurioItem {
     private final int rolls;
     private final BiConsumer<CurioContext, CurioImpact> bonus;
 
-    public ContainerCurioItem(CurioForm form, int integrity, int rolls, BiConsumer<CurioContext, CurioImpact> bonus, Properties properties) {
+    public ContainerCurioItem(CurioForm form, int integrity, int rolls, BiConsumer<CurioContext, CurioImpact> bonus, Settings properties) {
         super(CurioTrigger.ACTIVE, form, integrity, properties);
         this.rolls = rolls;
         this.bonus = bonus;
     }
 
-    public static int jarProduction(ServerPlayer player) {
+    public static int jarProduction(ServerPlayerEntity player) {
         var production = 1;
         for (var context : Curios.held(player))
             if (context.stack().getItem() instanceof ContainerCurioItem container) production += container.rolls;

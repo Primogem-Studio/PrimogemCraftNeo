@@ -1,6 +1,6 @@
 package net.per.primogemcraft.client.gui;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.per.primogemcraft.network.ChoiceResultPayload;
 import net.per.primogemcraft.system.choice.ChoiceRequest;
 
@@ -9,17 +9,16 @@ public final class ChoiceClientHandler {
     }
 
     public static void open(ChoiceRequest request) {
-        var minecraft = Minecraft.getInstance();
-        if (minecraft.screen instanceof ChoiceScreen screen) {
+        var client = MinecraftClient.getInstance();
+        if (client.currentScreen instanceof ChoiceScreen screen) {
             screen.update(request);
             return;
         }
-        minecraft.setScreen(new ChoiceScreen(request));
+        client.setScreen(new ChoiceScreen(request));
     }
 
     public static void result(ChoiceResultPayload payload) {
-        if (Minecraft.getInstance().screen instanceof ChoiceScreen screen)
+        if (MinecraftClient.getInstance().currentScreen instanceof ChoiceScreen screen)
             screen.result(payload.requestId(), payload.index(), payload.accepted());
     }
-
 }

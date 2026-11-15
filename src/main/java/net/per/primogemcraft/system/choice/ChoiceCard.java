@@ -1,14 +1,14 @@
 package net.per.primogemcraft.system.choice;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.item.ItemStack;
 
 import java.util.List;
 
-public record ChoiceCard(Component title, ItemStack item, Component description, Component footnote,
+public record ChoiceCard(Text title, ItemStack item, Text description, Text footnote,
                          ChoiceCardSpin spin, ChoiceCardIcons icons, ChoiceCardOverlay overlay, boolean textTooltip,
-                         boolean itemTooltip, boolean enabled, int quality, Component badge, List<Component> unmet) {
+                         boolean itemTooltip, boolean enabled, int quality, Text badge, List<Text> unmet) {
     public static final int AUTO_QUALITY = -1;
     public static final int SILENT_QUALITY = 0;
 
@@ -17,7 +17,7 @@ public record ChoiceCard(Component title, ItemStack item, Component description,
     private static final float PITCH_NORMAL = 1.0F;
 
     public static ChoiceCard of(ItemStack item) {
-        return new ChoiceCard(Component.empty(), item, Component.empty(), Component.empty(), null, null, null, false, false, true, AUTO_QUALITY, Component.empty(), List.of());
+        return new ChoiceCard(Text.empty(), item, Text.empty(), Text.empty(), null, null, null, false, false, true, AUTO_QUALITY, Text.empty(), List.of());
     }
 
     public ChoiceCard withSpin(ChoiceCardSpin spin) {
@@ -48,20 +48,20 @@ public record ChoiceCard(Component title, ItemStack item, Component description,
         return new ChoiceCard(title, item, description, footnote, spin, icons, overlay, textTooltip, itemTooltip, enabled, quality, badge, unmet);
     }
 
-    public ChoiceCard withBadge(Component badge) {
+    public ChoiceCard withBadge(Text badge) {
         return new ChoiceCard(title, item, description, footnote, spin, icons, overlay, textTooltip, itemTooltip, enabled, quality, badge, unmet);
     }
 
-    public ChoiceCard withUnmet(List<Component> unmet) {
+    public ChoiceCard withUnmet(List<Text> unmet) {
         return new ChoiceCard(title, item, description, footnote, spin, icons, overlay, textTooltip, itemTooltip, enabled, quality, badge, unmet);
     }
 
-    public Component displayTitle() {
+    public Text displayTitle() {
         return title.getString().isEmpty() ? rarityName() : title;
     }
 
-    private Component rarityName() {
-        return Component.empty().append(item.getHoverName()).withStyle(item.getRarity().getStyleModifier());
+    private Text rarityName() {
+        return Text.empty().append(item.getName()).formatted(item.getRarity().formatting);
     }
 
     public boolean hasDescription() {
@@ -78,7 +78,7 @@ public record ChoiceCard(Component title, ItemStack item, Component description,
 
     public int revealQuality() {
         var level = quality >= 0 ? quality : item.isEmpty() ? 0 : item.getRarity().ordinal();
-        return Mth.clamp(level, 0, MAX_QUALITY);
+        return MathHelper.clamp(level, 0, MAX_QUALITY);
     }
 
     public float revealPitch() {

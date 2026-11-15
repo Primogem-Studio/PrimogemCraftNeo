@@ -1,10 +1,11 @@
 package net.per.primogemcraft.component;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import com.mojang.serialization.Codec;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.item.ItemStack;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
+import net.per.primogemcraft.compat.network.ByteBufCodecs;
+import net.per.primogemcraft.compat.network.StreamCodec;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.registry.PGCDataComponents;
 
 public record WeaponCharge(int value) {
@@ -14,12 +15,12 @@ public record WeaponCharge(int value) {
             ByteBufCodecs.VAR_INT, WeaponCharge::value, WeaponCharge::new);
 
     public static int of(ItemStack stack) {
-        var charge = stack.get(PGCDataComponents.WEAPON_CHARGE.get());
+        var charge = StackComponents.get(stack, PGCDataComponents.WEAPON_CHARGE);
         return charge == null ? 0 : charge.value();
     }
 
     public static void set(ItemStack stack, int value) {
-        if (value <= 0) stack.remove(PGCDataComponents.WEAPON_CHARGE.get());
-        else stack.set(PGCDataComponents.WEAPON_CHARGE.get(), new WeaponCharge(value));
+        if (value <= 0) StackComponents.remove(stack, PGCDataComponents.WEAPON_CHARGE);
+        else StackComponents.set(stack, PGCDataComponents.WEAPON_CHARGE, new WeaponCharge(value));
     }
 }

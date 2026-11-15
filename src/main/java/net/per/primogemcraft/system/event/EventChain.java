@@ -1,7 +1,7 @@
 package net.per.primogemcraft.system.event;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.per.primogemcraft.system.choice.ChoiceRegistry;
 
 import java.util.*;
@@ -12,18 +12,18 @@ public final class EventChain {
     private EventChain() {
     }
 
-    public static void events(ServerPlayer player, List<Integer> numbers) {
+    public static void events(ServerPlayerEntity player, List<Integer> numbers) {
         start(player, numbers, false);
     }
 
-    public static void groups(ServerPlayer player, List<Integer> numbers) {
+    public static void groups(ServerPlayerEntity player, List<Integer> numbers) {
         start(player, numbers, true);
     }
 
     public static void tick(MinecraftServer server) {
         if (CHAINS.isEmpty()) return;
         for (var uuid : List.copyOf(CHAINS.keySet())) {
-            var player = server.getPlayerList().getPlayer(uuid);
+            var player = server.getPlayerManager().getPlayer(uuid);
             if (player == null) {
                 CHAINS.remove(uuid);
                 continue;
@@ -36,15 +36,15 @@ public final class EventChain {
         CHAINS.remove(uuid);
     }
 
-    private static void start(ServerPlayer player, List<Integer> numbers, boolean group) {
+    private static void start(ServerPlayerEntity player, List<Integer> numbers, boolean group) {
         if (numbers.isEmpty()) return;
-        var chain = CHAINS.computeIfAbsent(player.getUUID(), key -> new ArrayDeque<>());
+        var chain = CHAINS.computeIfAbsent(player.getUuid(), key -> new ArrayDeque<>());
         for (var number : numbers) chain.addLast(new Step(group, number));
         advance(player);
     }
 
-    private static void advance(ServerPlayer player) {
-        var uuid = player.getUUID();
+    private static void advance(ServerPlayerEntity player) {
+        var uuid = player.getUuid();
         var chain = CHAINS.get(uuid);
         if (chain == null || ChoiceRegistry.isPending(player)) return;
         var step = chain.pollFirst();
@@ -56,7 +56,7 @@ public final class EventChain {
     }
 
     private record Step(boolean group, int number) {
-        void apply(ServerPlayer player) {
+        void apply(ServerPlayerEntity player) {
             if (group) EventRegistry.trigger(player, number);
             else EventRegistry.run(player, number);
         }

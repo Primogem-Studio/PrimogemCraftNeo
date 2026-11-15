@@ -1,14 +1,14 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolMaterial;
 import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.*;
@@ -17,7 +17,7 @@ import net.per.primogemcraft.system.wish.WishReports;
 import java.util.List;
 
 public class PrimordialJadeCutterItem extends WishWeaponItem {
-    private static final Tier TIER = new WeaponTier(2000, 8.0F, 20, WeaponTier.WOODEN_INCORRECT, PGCItems.PRITHIVA_TOPAZ_FRAGMENT);
+    private static final ToolMaterial TIER = new WeaponTier(2000, 8.0F, 20, WeaponTier.WOODEN_INCORRECT, PGCItems.PRITHIVA_TOPAZ_FRAGMENT);
 
     private static final double HEAL_RATIO = 0.01D;
     private static final int COOLDOWN_BASE = 160;
@@ -39,16 +39,14 @@ public class PrimordialJadeCutterItem extends WishWeaponItem {
     private static final String BASE_HEALTH_TEXT = "base_health";
     private static final String BASE_ATTACK_TEXT = "base_attack";
 
-    public PrimordialJadeCutterItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant(),
-                WeaponModifier.of(Attributes.MAX_HEALTH, BASE_BASE, BASE_STEP, AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
-                WeaponModifier.of(Attributes.ATTACK_DAMAGE, BASE_BASE, BASE_STEP, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+    public PrimordialJadeCutterItem(Settings properties) {
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireproof(), WeaponModifier.of(EntityAttributes.GENERIC_MAX_HEALTH, BASE_BASE, BASE_STEP, EntityAttributeModifier.Operation.MULTIPLY_BASE), WeaponModifier.of(EntityAttributes.GENERIC_ATTACK_DAMAGE, BASE_BASE, BASE_STEP, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
     }
 
     @Override
-    public List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
+    public List<WeaponModifier> conditionalPassives(PlayerEntity player, ItemStack stack, int slot, int refinement) {
         if (isHeld(player, slot, stack)) return List.of();
-        return List.of(WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_VALUE,
+        return List.of(WeaponModifier.conditional(EntityAttributes.GENERIC_ATTACK_DAMAGE, EntityAttributeModifier.Operation.ADDITION,
                 (owner, worn, value) -> {
                     var scale = owner.getHealth() < owner.getMaxHealth() * LOW_HEALTH_RATIO ? LOW_HEALTH_MULTIPLIER : 1;
                     var ratio = (ATTACK_BASE + ATTACK_STEP * (value - 1)) * GenshinCraftIntegration.healthConversionScale();
@@ -62,24 +60,24 @@ public class PrimordialJadeCutterItem extends WishWeaponItem {
         var refinement = state.refinements();
         return List.of(
                 WeaponDescription.of(NORMAL_ATTACK, DRAIN_TEXT,
-                        WishReports.percent(HEAL_RATIO, ChatFormatting.AQUA),
-                        WishReports.number(cooldownSeconds(refinement), ChatFormatting.AQUA)),
+                        WishReports.percent(HEAL_RATIO, Formatting.AQUA),
+                        WishReports.number(cooldownSeconds(refinement), Formatting.AQUA)),
                 WeaponDescription.of(PASSIVE_ACTION, HEALTH_TEXT,
-                        WishReports.percent(ATTACK_BASE + ATTACK_STEP * (refinement - 1), ChatFormatting.AQUA)),
+                        WishReports.percent(ATTACK_BASE + ATTACK_STEP * (refinement - 1), Formatting.AQUA)),
                 WeaponDescription.of(BASE_PASSIVE_ACTION, BASE_HEALTH_TEXT,
-                        WishReports.percent(BASE_BASE + BASE_STEP * (refinement - 1), ChatFormatting.AQUA)),
+                        WishReports.percent(BASE_BASE + BASE_STEP * (refinement - 1), Formatting.AQUA)),
                 WeaponDescription.note(BASE_ATTACK_TEXT,
-                        WishReports.percent(BASE_BASE + BASE_STEP * (refinement - 1), ChatFormatting.AQUA)));
+                        WishReports.percent(BASE_BASE + BASE_STEP * (refinement - 1), Formatting.AQUA)));
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        var result = super.hurtEnemy(stack, target, attacker);
-        if (!(attacker.level() instanceof ServerLevel)) return result;
-        if (attacker instanceof Player player && player.getCooldowns().isOnCooldown(stack.getItem())) return result;
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        var result = super.postHit(stack, target, attacker);
+        if (!(attacker.getWorld() instanceof ServerWorld)) return result;
+        if (attacker instanceof PlayerEntity player && player.getItemCooldownManager().isCoolingDown(stack.getItem())) return result;
         attacker.heal(Math.max(1.0F, (float) (target.getHealth() * HEAL_RATIO)));
-        if (attacker instanceof Player player)
-            player.getCooldowns().addCooldown(stack.getItem(), cooldownTicks(WeaponState.of(stack).refinements()));
+        if (attacker instanceof PlayerEntity player)
+            player.getItemCooldownManager().set(stack.getItem(), cooldownTicks(WeaponState.of(stack).refinements()));
         return result;
     }
 

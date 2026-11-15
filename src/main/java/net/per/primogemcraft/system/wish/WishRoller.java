@@ -1,13 +1,13 @@
 package net.per.primogemcraft.system.wish;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.per.primogemcraft.compat.attachment.Attachments;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.entity.EquipmentSlot;
 import net.per.primogemcraft.item.misc.ViolaneItem;
 import net.per.primogemcraft.config.PGCConfig;
 import net.per.primogemcraft.registry.PGCAttachments;
 import net.per.primogemcraft.registry.PGCItems;
-import net.per.primogemcraft.system.curio.compat.CuriosIntegration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,30 +28,30 @@ public final class WishRoller {
     private WishRoller() {
     }
 
-    public static List<WishResult> roll(ServerPlayer player, WishBanner banner, double wishValue, int count) {
+    public static List<WishResult> roll(ServerPlayerEntity player, WishBanner banner, int wishValue, int count) {
         var results = new ArrayList<WishResult>(count);
         for (var index = 0; index < count; index++) results.add(roll(player, banner, wishValue));
         return results;
     }
 
-    public static WishResult roll(ServerPlayer player, WishBanner banner, double wishValue) {
+    public static WishResult roll(ServerPlayerEntity player, WishBanner banner, int wishValue) {
         return roll(player, banner, wishValue, false);
     }
 
-    public static List<WishResult> rollGuaranteedGold(ServerPlayer player, WishBanner banner, int count) {
+    public static List<WishResult> rollGuaranteedGold(ServerPlayerEntity player, WishBanner banner, int count) {
         var results = new ArrayList<WishResult>(count);
         for (var index = 0; index < count; index++) results.add(roll(player, banner, 0, true));
         return results;
     }
 
-    private static WishResult roll(ServerPlayer player, WishBanner banner, double wishValue, boolean guaranteedGold) {
+    private static WishResult roll(ServerPlayerEntity player, WishBanner banner, int wishValue, boolean guaranteedGold) {
         var random = player.getRandom();
-        var pity = player.getData(PGCAttachments.WISH_PITY.get());
+        var pity = Attachments.get(player, PGCAttachments.WISH_PITY.get());
         var colorful = isWearingColorfulSunglasses(player);
         var violane = ViolaneItem.isActive(player);
         var valueMultiplier = 1.0D + (colorful ? COLORFUL_SUNGLASSES_VALUE_BONUS : 0.0D) + (violane ? VIOLANE_VALUE_BONUS : 0.0D);
         var rarity = guaranteedGold ? WishRarity.GOLD : decide(random, pity, banner, wishValue * valueMultiplier);
-        player.setData(PGCAttachments.WISH_PITY.get(), pity.count(rarity, banner.countsPity()));
+        Attachments.set(player, PGCAttachments.WISH_PITY.get(), pity.count(rarity, banner.countsPity()));
         var capturingRadiance = banner.countsPity() && rarity == WishRarity.GOLD && random.nextDouble() < capturingRadianceChance();
         return new WishResult(banner, rarity, capturingRadiance, violane && rarity == WishRarity.BLUE || colorful && rarity == WishRarity.GOLD, colorful);
     }
@@ -60,7 +60,7 @@ public final class WishRoller {
         return PGCConfig.CAPTURING_RADIANCE_CHANCE.get() / PERCENT;
     }
 
-    private static WishRarity decide(RandomSource random, WishPity pity, WishBanner banner, double wishValue) {
+    private static WishRarity decide(Random random, WishPity pity, WishBanner banner, double wishValue) {
         var goldChance = goldChance(banner, wishValue);
         if ((banner.countsPity() && pity.goldPity() >= GOLD_PITY_LIMIT) || random.nextDouble() < goldChance) {
             return WishRarity.GOLD;
@@ -81,11 +81,11 @@ public final class WishRoller {
         return Math.min(MAX_CHANCE, BASE_PURPLE_CHANCE + PURPLE_CHANCE_PER_VALUE * countedValue(banner, wishValue));
     }
 
-    public static double goldChanceBonus(WishBanner banner, double wishValue) {
+    public static double goldChanceBonus(WishBanner banner, int wishValue) {
         return goldChance(banner, wishValue) - BASE_GOLD_CHANCE;
     }
 
-    public static double purpleChanceBonus(WishBanner banner, double wishValue) {
+    public static double purpleChanceBonus(WishBanner banner, int wishValue) {
         return purpleChance(banner, wishValue) - BASE_PURPLE_CHANCE;
     }
 
@@ -93,10 +93,7 @@ public final class WishRoller {
         return banner.countsPity() ? wishValue : 0;
     }
 
-    public static boolean isWearingColorfulSunglasses(ServerPlayer player) {
-        if (player.getItemBySlot(EquipmentSlot.HEAD).is(PGCItems.COLORFUL_SUNGLASSES.get())) return true;
-        for (var stack : CuriosIntegration.equipped(player))
-            if (stack.is(PGCItems.COLORFUL_SUNGLASSES.get())) return true;
-        return false;
+    public static boolean isWearingColorfulSunglasses(ServerPlayerEntity player) {
+        return player.getEquippedStack(EquipmentSlot.HEAD).isOf(PGCItems.COLORFUL_SUNGLASSES.get());
     }
 }

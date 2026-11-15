@@ -1,18 +1,12 @@
 package net.per.primogemcraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.world.level.block.FallingBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.block.FallingBlock;
+import net.minecraft.block.AbstractBlock;
 
 public class PGCFallingBlock extends FallingBlock {
-    public static final MapCodec<PGCFallingBlock> CODEC = simpleCodec(PGCFallingBlock::new);
-
-    public PGCFallingBlock(BlockBehaviour.Properties properties) {
+    public PGCFallingBlock(AbstractBlock.Settings properties) {
         super(properties);
     }
 
-    @Override
-    protected MapCodec<? extends FallingBlock> codec() {
-        return CODEC;
-    }
 }

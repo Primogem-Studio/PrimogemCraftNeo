@@ -1,0 +1,8 @@
+{
+    "type":  "minecraft:stonecutting",
+    "ingredient":  {
+                       "item":  "primogemcraft:varunada_lazurite_gemstone"
+                   },
+    "count":  64,
+    "result":  "primogemcraft:varunada_lazurite_sliver"
+}

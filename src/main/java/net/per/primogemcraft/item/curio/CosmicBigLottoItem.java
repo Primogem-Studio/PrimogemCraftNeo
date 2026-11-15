@@ -1,6 +1,6 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.text.Text;
 import net.per.primogemcraft.system.choice.ChoiceSupport;
 import net.per.primogemcraft.system.curio.*;
 import net.per.primogemcraft.util.PlayerFlags;
@@ -12,13 +12,13 @@ public class CosmicBigLottoItem extends LotteryCurioItem {
     private static final int QUERY_COOLDOWN_TICKS = 1200;
     private static final float FOOD_RETAINED = 0.02F;
 
-    public CosmicBigLottoItem(Properties properties) {
+    public CosmicBigLottoItem(Settings properties) {
         super(CurioForm.NORMAL, 0.4D, context -> {
             CurioReward.open(context.player(), ChoiceSupport.CURIO_CARDS, List.of(context.reward(Curios.randomCurio(context.random()))));
-            context.announce(Component.translatable("message.primogemcraft.curio.lottery.curio_gained"));
+            context.announce(Text.translatable("message.primogemcraft.curio.lottery.curio_gained"));
         }, context -> {
             context.player().setHealth(1.0F);
-            var data = context.player().getFoodData();
+            var data = context.player().getHungerManager();
             data.setFoodLevel((int) (data.getFoodLevel() * FOOD_RETAINED));
         }, properties);
     }
@@ -27,10 +27,10 @@ public class CosmicBigLottoItem extends LotteryCurioItem {
     public void activated(CurioContext context) {
         var breaks = PlayerFlags.of(context.player()).counter(LotteryCurioItem.BREAKS);
         if (!context.ready(QUERY_COOLDOWN, QUERY_COOLDOWN_TICKS)) {
-            context.announce(Component.translatable("message.primogemcraft.curio.lottery.query", breaks));
+            context.announce(Text.translatable("message.primogemcraft.curio.lottery.query", breaks));
             return;
         }
         var player = context.player();
-        player.server.getPlayerList().broadcastSystemMessage(Component.translatable("message.primogemcraft.curio.lottery.query_broadcast", player.getDisplayName(), breaks), false);
+        player.server.getPlayerManager().broadcast(Text.translatable("message.primogemcraft.curio.lottery.query_broadcast", player.getName(), breaks), false);
     }
 }

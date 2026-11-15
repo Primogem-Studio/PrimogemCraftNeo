@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing_trim",
+  "addition": {
+    "tag": "primogemcraft:element_hardening"
+  },
+  "base": {
+    "tag": "minecraft:trimmable_armor"
+  },
+  "template": {
+    "item": "primogemcraft:elemental_crystal_upgrade_smithing_template"
+  }
+}

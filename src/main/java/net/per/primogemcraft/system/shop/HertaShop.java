@@ -1,15 +1,15 @@
 package net.per.primogemcraft.system.shop;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.text.Text;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootContextParameters;
 import net.per.primogemcraft.enchantment.EnchantChoice;
 import net.per.primogemcraft.enchantment.EnchantCost;
 import net.per.primogemcraft.enchantment.EnchantGrade;
@@ -43,17 +43,17 @@ public final class HertaShop {
     private static final int ENCHANT_STEP = 10;
     private static final int DISCOUNT_DIVISOR = 5;
     private static final int OPTION_COUNT = 3;
-    private static final List<ResourceLocation> POOLS = List.of(
-            ResourceLocation.fromNamespaceAndPath(MOD_ID, "herta_shop/curio_01"),
-            ResourceLocation.fromNamespaceAndPath(MOD_ID, "herta_shop/curio_02"),
-            ResourceLocation.fromNamespaceAndPath(MOD_ID, "herta_shop/curio_03"));
+    private static final List<Identifier> POOLS = List.of(
+            Identifier.of(MOD_ID, "herta_shop/curio_01"),
+            Identifier.of(MOD_ID, "herta_shop/curio_02"),
+            Identifier.of(MOD_ID, "herta_shop/curio_03"));
 
     private static List<List<Item>> codePairs;
 
     private HertaShop() {
     }
 
-    public static void open(ServerPlayer player) {
+    public static void open(ServerPlayerEntity player) {
         var discounted = discount(player);
         HertaShopOptions.open(player, fragmentPrice(fragments(CURIO_PRICE, discounted)), itemPrice(PGCItems.RANDOM_EVENT_ERROR_CODE.get()), fragmentRange(discounted), index -> {
             if (index == HertaShopOptions.CURIO) buyCurio(player);
@@ -62,7 +62,7 @@ public final class HertaShop {
         });
     }
 
-    private static void buyCurio(ServerPlayer player) {
+    private static void buyCurio(ServerPlayerEntity player) {
         var price = fragments(CURIO_PRICE, discount(player));
         if (unaffordableFragments(player, price)) return;
         var options = rollCurios(player);
@@ -72,7 +72,7 @@ public final class HertaShop {
         });
     }
 
-    private static void chooseCode(ServerPlayer player) {
+    private static void chooseCode(ServerPlayerEntity player) {
         var device = PGCItems.RANDOM_EVENT_ERROR_CODE.get();
         if (unaffordable(player, device, CODE_PRICE)) return;
         var options = rollCodes(player);
@@ -82,10 +82,10 @@ public final class HertaShop {
         });
     }
 
-    private static void enchant(ServerPlayer player) {
-        var target = player.getMainHandItem();
+    private static void enchant(ServerPlayerEntity player) {
+        var target = player.getMainHandStack();
         if (!target.isEnchantable()) {
-            player.displayClientMessage(Component.translatable(TARGET_KEY), true);
+            player.sendMessage(Text.translatable(TARGET_KEY), true);
             return;
         }
         var discounted = discount(player);
@@ -100,13 +100,13 @@ public final class HertaShop {
         EnchantChoice.open(player, options, 1);
     }
 
-    private static List<ItemStack> rollCurios(ServerPlayer player) {
-        var level = player.serverLevel();
-        var params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, player.position()).create(LootContextParamSets.CHEST);
+    private static List<ItemStack> rollCurios(ServerPlayerEntity player) {
+        var level = player.getServerWorld();
+        var params = new LootContextParameterSet.Builder(level).add(LootContextParameters.ORIGIN, player.getPos()).build(LootContextTypes.CHEST);
         var options = new ArrayList<ItemStack>();
         for (var pool : POOLS) {
-            var table = level.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, pool));
-            for (var stack : table.getRandomItems(params)) {
+            var table = level.getServer().getLootManager().getLootTable(pool);
+            for (var stack : table.generateLoot(params)) {
                 if (stack.isEmpty()) continue;
                 var option = stack.copy();
                 option.setCount(1);
@@ -117,7 +117,7 @@ public final class HertaShop {
         return options;
     }
 
-    private static List<ItemStack> rollCodes(ServerPlayer player) {
+    private static List<ItemStack> rollCodes(ServerPlayerEntity player) {
         var random = player.getRandom();
         var options = new ArrayList<ItemStack>();
         for (var pair : codePairs()) options.add(new ItemStack(pair.get(random.nextInt(pair.size()))));
@@ -134,38 +134,38 @@ public final class HertaShop {
         return codePairs;
     }
 
-    private static List<EnchantGrade> grades(ServerPlayer player) {
+    private static List<EnchantGrade> grades(ServerPlayerEntity player) {
         var pool = new ArrayList<>(List.of(EnchantGrade.values()));
         var picked = new ArrayList<EnchantGrade>();
         for (var index = 0; index < OPTION_COUNT && !pool.isEmpty(); index++) picked.add(pool.remove(player.getRandom().nextInt(pool.size())));
         return picked;
     }
 
-    private static boolean discount(ServerPlayer player) {
+    private static boolean discount(ServerPlayerEntity player) {
         for (var context : Curios.held(player)) {
             if (context.stack().getItem() instanceof CurioItem curio && curio.discountsHertaShop()) return true;
         }
         return false;
     }
 
-    private static boolean unaffordable(ServerPlayer player, Item item, int amount) {
+    private static boolean unaffordable(ServerPlayerEntity player, Item item, int amount) {
         if (PlayerItems.count(player, item) >= amount) return false;
-        player.displayClientMessage(Component.translatable(SHORT_KEY), true);
+        player.sendMessage(Text.translatable(SHORT_KEY), true);
         return true;
     }
 
-    private static boolean unaffordableFragments(ServerPlayer player, int amount) {
+    private static boolean unaffordableFragments(ServerPlayerEntity player, int amount) {
         if (OtherworldBankbook.canPayFragments(player, amount)) return false;
-        player.displayClientMessage(Component.translatable(SHORT_KEY), true);
+        player.sendMessage(Text.translatable(SHORT_KEY), true);
         return true;
     }
 
-    private static boolean chargeFragments(ServerPlayer player, int amount) {
+    private static boolean chargeFragments(ServerPlayerEntity player, int amount) {
         if (unaffordableFragments(player, amount)) return false;
         return OtherworldBankbook.payFragments(player, amount);
     }
 
-    private static boolean charge(ServerPlayer player, Item item) {
+    private static boolean charge(ServerPlayerEntity player, Item item) {
         if (unaffordable(player, item, HertaShop.CODE_PRICE)) return false;
         PlayerItems.take(player, item, HertaShop.CODE_PRICE);
         return true;
@@ -179,15 +179,15 @@ public final class HertaShop {
         return discounted ? price - price / DISCOUNT_DIVISOR : price;
     }
 
-    private static Component fragmentPrice(int amount) {
-        return Component.translatable(FRAGMENT_PRICE_KEY, amount);
+    private static Text fragmentPrice(int amount) {
+        return Text.translatable(FRAGMENT_PRICE_KEY, amount);
     }
 
-    private static Component fragmentRange(boolean discounted) {
-        return Component.translatable(FRAGMENT_RANGE_KEY, fragments(ENCHANT_STEP, discounted), fragments(ENCHANT_STEP * EnchantGrade.values().length, discounted));
+    private static Text fragmentRange(boolean discounted) {
+        return Text.translatable(FRAGMENT_RANGE_KEY, fragments(ENCHANT_STEP, discounted), fragments(ENCHANT_STEP * EnchantGrade.values().length, discounted));
     }
 
-    private static Component itemPrice(Item item) {
-        return Component.translatable(ITEM_PRICE_KEY, HertaShop.CODE_PRICE, new ItemStack(item).getHoverName());
+    private static Text itemPrice(Item item) {
+        return Text.translatable(ITEM_PRICE_KEY, HertaShop.CODE_PRICE, new ItemStack(item).getName());
     }
 }

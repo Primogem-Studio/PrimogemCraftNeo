@@ -3,7 +3,7 @@ package net.per.primogemcraft.collab.rei;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.display.basic.BasicDisplay;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.per.primogemcraft.system.wish.WishRarity;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class WishDisplay extends BasicDisplay {
                 WishDisplay::write);
     }
 
-    private static void write(WishDisplay display, CompoundTag tag) {
+    private static void write(WishDisplay display, NbtCompound tag) {
         tag.putString(RARITY_TAG, display.rarity.name());
     }
 

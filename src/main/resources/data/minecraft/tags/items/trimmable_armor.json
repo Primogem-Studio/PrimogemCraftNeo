@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "primogemcraft:mora_helmet",
+    "primogemcraft:mora_chestplate",
+    "primogemcraft:mora_leggings",
+    "primogemcraft:mora_boots"
+  ]
+}

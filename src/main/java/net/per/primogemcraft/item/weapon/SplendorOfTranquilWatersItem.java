@@ -1,21 +1,21 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.world.World;
 import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.registry.PGCSounds;
@@ -26,7 +26,7 @@ import net.per.primogemcraft.util.PGCTimer;
 import java.util.List;
 
 public class SplendorOfTranquilWatersItem extends WishWeaponItem {
-    private static final Tier TIER = new WeaponTier(3000, 7.0F, 15, WeaponTier.WOODEN_INCORRECT, PGCItems.JUSTICE_METAL);
+    private static final ToolMaterial TIER = new WeaponTier(3000, 7.0F, 15, WeaponTier.WOODEN_INCORRECT, PGCItems.JUSTICE_METAL);
 
     private static final String DAMAGE_MODE = "tranquil_damage";
     private static final String HEALTH_MODE = "tranquil_health";
@@ -55,9 +55,8 @@ public class SplendorOfTranquilWatersItem extends WishWeaponItem {
     private static final String DAMAGE_TEXT = "damage";
     private static final String HEALTH_TEXT = "health";
 
-    public SplendorOfTranquilWatersItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant(),
-                WeaponModifier.of(Attributes.MAX_HEALTH, HEALTH_BASE, HEALTH_STEP, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+    public SplendorOfTranquilWatersItem(Settings properties) {
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireproof(), WeaponModifier.of(EntityAttributes.GENERIC_MAX_HEALTH, HEALTH_BASE, HEALTH_STEP, EntityAttributeModifier.Operation.MULTIPLY_BASE));
     }
 
     @Override
@@ -66,67 +65,66 @@ public class SplendorOfTranquilWatersItem extends WishWeaponItem {
         var refinement = state.refinements();
         return List.of(
                 WeaponDescription.of(RIGHT_CLICK, REGEN_TEXT,
-                        WishReports.number(regenLevel(refinement), ChatFormatting.AQUA)),
+                        WishReports.number(regenLevel(refinement), Formatting.AQUA)),
                 WeaponDescription.of(SNEAK_LEFT, TRADE_TEXT,
-                        WishReports.percent(tradeRatio(refinement), ChatFormatting.AQUA)),
+                        WishReports.percent(tradeRatio(refinement), Formatting.AQUA)),
                 WeaponDescription.of(SNEAK_RIGHT, DAMAGE_TEXT,
-                        WishReports.percent(tradeRatio(refinement), ChatFormatting.AQUA)),
+                        WishReports.percent(tradeRatio(refinement), Formatting.AQUA)),
                 WeaponDescription.of(PASSIVE_ACTION, HEALTH_TEXT,
-                        WishReports.percent(HEALTH_BASE + HEALTH_STEP * (refinement - 1), ChatFormatting.AQUA)));
+                        WishReports.percent(HEALTH_BASE + HEALTH_STEP * (refinement - 1), Formatting.AQUA)));
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (level.isClientSide() || player.getCooldowns().isOnCooldown(stack.getItem())) return super.use(level, player, hand);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (level.isClient() || player.getItemCooldownManager().isCoolingDown(stack.getItem())) return super.use(level, player, hand);
         var refinement = WeaponState.of(stack).refinements();
-        if (player.isShiftKeyDown()) {
-            level.playSound(null, player.blockPosition(), PGCSounds.VARUNADA_LAZURITE_BUBBLE.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        if (player.isSneaking()) {
+            level.playSound(null, player.getBlockPos(), PGCSounds.VARUNADA_LAZURITE_BUBBLE.get(), SoundCategory.PLAYERS, 1.0F, 1.0F);
             PGCTimer.clear(player, DAMAGE_MODE);
             PGCTimer.set(player, HEALTH_MODE, MODE_TICKS);
-            player.getCooldowns().addCooldown(stack.getItem(), MODE_COOLDOWN);
+            player.getItemCooldownManager().set(stack.getItem(), MODE_COOLDOWN);
             return super.use(level, player, hand);
         }
-        level.playSound(null, player.blockPosition(), PGCSounds.VARUNADA_LAZURITE_BURST.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        level.playSound(null, player.getBlockPos(), PGCSounds.VARUNADA_LAZURITE_BURST.get(), SoundCategory.PLAYERS, 1.0F, 1.0F);
         var amplifier = regenLevel(refinement) - 1;
         if (player.getHealth() < player.getMaxHealth()) {
-            player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, EFFECT_TICKS, amplifier, false, true));
-        } else if (level instanceof ServerLevel server) {
-            for (var candidate : server.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(RADIUS)))
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, EFFECT_TICKS, amplifier, false, true));
+        } else if (level instanceof ServerWorld server) {
+            for (var candidate : server.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(RADIUS), e -> true))
                 if (candidate != player && candidate.isAlive()
-                        && (candidate instanceof Mob mob && mob.getTarget() == player || candidate instanceof Player))
-                    candidate.addEffect(new MobEffectInstance(MobEffects.WITHER, EFFECT_TICKS, Math.min(WITHER_LEVEL_CAP, amplifier), false, true));
+                        && (candidate instanceof MobEntity mob && mob.getTarget() == player || candidate instanceof PlayerEntity))
+                    candidate.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, EFFECT_TICKS, Math.min(WITHER_LEVEL_CAP, amplifier), false, true));
         }
-        player.getCooldowns().addCooldown(stack.getItem(), ABILITY_COOLDOWN);
+        player.getItemCooldownManager().set(stack.getItem(), ABILITY_COOLDOWN);
         return super.use(level, player, hand);
     }
 
-    @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
-        var result = super.onEntitySwing(stack, entity, hand);
-        if (entity.level().isClientSide() || !(entity instanceof Player player)) return result;
-        if (player.getCooldowns().isOnCooldown(stack.getItem())) return result;
-        if (!player.isShiftKeyDown()) return result;
-        player.level().playSound(null, player.blockPosition(), PGCSounds.VARUNADA_LAZURITE_BUBBLE.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
-        player.removeEffect(MobEffects.REGENERATION);
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+        var result = super.onEntitySwing(stack, entity);
+        if (entity.getWorld().isClient() || !(entity instanceof PlayerEntity player)) return result;
+        if (player.getItemCooldownManager().isCoolingDown(stack.getItem())) return result;
+        if (!player.isSneaking()) return result;
+        player.getWorld().playSound(null, player.getBlockPos(), PGCSounds.VARUNADA_LAZURITE_BUBBLE.get(), SoundCategory.PLAYERS, 1.0F, 1.0F);
+        player.removeStatusEffect(StatusEffects.REGENERATION);
         PGCTimer.clear(player, HEALTH_MODE);
         PGCTimer.set(player, DAMAGE_MODE, MODE_TICKS);
-        player.getCooldowns().addCooldown(stack.getItem(), MODE_COOLDOWN);
+        player.getItemCooldownManager().set(stack.getItem(), MODE_COOLDOWN);
         return result;
     }
 
     @Override
-    public List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
+    public List<WeaponModifier> conditionalPassives(PlayerEntity player, ItemStack stack, int slot, int refinement) {
         if (isHeld(player, slot, stack)) return List.of();
         var ratio = tradeRatio(refinement);
         if (!PGCTimer.isDone(player, DAMAGE_MODE))
             return List.of(
-                    WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, (owner, worn, value) -> ratio),
-                    WeaponModifier.conditional(Attributes.MAX_HEALTH, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, (owner, worn, value) -> -HEALTH_LOSS));
+                    WeaponModifier.conditional(EntityAttributes.GENERIC_ATTACK_DAMAGE, EntityAttributeModifier.Operation.MULTIPLY_TOTAL, (owner, worn, value) -> ratio),
+                    WeaponModifier.conditional(EntityAttributes.GENERIC_MAX_HEALTH, EntityAttributeModifier.Operation.MULTIPLY_TOTAL, (owner, worn, value) -> -HEALTH_LOSS));
         if (!PGCTimer.isDone(player, HEALTH_MODE))
             return List.of(
-                    WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, (owner, worn, value) -> -ATTACK_LOSS),
-                    WeaponModifier.conditional(Attributes.MAX_HEALTH, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, (owner, worn, value) -> ratio));
+                    WeaponModifier.conditional(EntityAttributes.GENERIC_ATTACK_DAMAGE, EntityAttributeModifier.Operation.MULTIPLY_TOTAL, (owner, worn, value) -> -ATTACK_LOSS),
+                    WeaponModifier.conditional(EntityAttributes.GENERIC_MAX_HEALTH, EntityAttributeModifier.Operation.MULTIPLY_TOTAL, (owner, worn, value) -> ratio));
         return List.of();
     }
 

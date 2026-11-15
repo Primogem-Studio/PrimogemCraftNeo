@@ -5,7 +5,7 @@ import me.shedaniel.rei.api.client.view.ViewSearchBuilder;
 import me.shedaniel.rei.api.common.entry.EntryStack;
 import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.client.WishLootItems;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.wish.WishRarity;
@@ -33,7 +33,7 @@ public class WishDisplayGenerator implements DynamicDisplayGenerator<WishDisplay
     public Optional<List<WishDisplay>> getUsageFor(EntryStack<?> entry) {
         if (!entry.getType().equals(VanillaEntryTypes.ITEM)) return Optional.empty();
         var stack = entry.<ItemStack>castValue();
-        if (stack.is(PGCItems.ACQUAINT_FATE.get()) || stack.is(PGCItems.INTERTWINED_FATE.get())) {
+        if (stack.isOf(PGCItems.ACQUAINT_FATE.get()) || stack.isOf(PGCItems.INTERTWINED_FATE.get())) {
             return Optional.of(displays());
         }
         return Optional.empty();

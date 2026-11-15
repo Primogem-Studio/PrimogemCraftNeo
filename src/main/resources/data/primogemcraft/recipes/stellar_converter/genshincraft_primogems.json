@@ -1,0 +1,13 @@
+{
+  "fabric:load_conditions": [{"condition":"fabric:all_mods_loaded","values":["genshincraft"]}],
+  "type": "primogemcraft:stellar_converter",
+  "first": {
+    "item": "primogemcraft:primogem",
+    "count": 6
+  },
+  "second": {
+    "item": "genshincraft:primogems",
+    "count": 1
+  },
+  "cost": 2
+}

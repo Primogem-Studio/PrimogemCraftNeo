@@ -1,8 +1,8 @@
 package net.per.primogemcraft.system.wish;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Formatting;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Date;
 import java.util.List;
@@ -14,46 +14,46 @@ public final class WishReports {
     private WishReports() {
     }
 
-    public static Component number(int value, ChatFormatting color) {
-        return Component.literal(Integer.toString(value)).withStyle(color);
+    public static Text number(int value, Formatting color) {
+        return Text.literal(Integer.toString(value)).formatted(color);
     }
 
-    public static Component number(double value, ChatFormatting color) {
-        return Component.literal(formatNumber(value)).withStyle(color);
+    public static Text number(double value, Formatting color) {
+        return Text.literal(formatNumber(value)).formatted(color);
     }
 
-    public static Component percent(double ratio, ChatFormatting color) {
-        return Component.literal(formatPercent(ratio) + PERCENT).withStyle(color);
+    public static Text percent(double ratio, Formatting color) {
+        return Text.literal(formatPercent(ratio) + PERCENT).formatted(color);
     }
 
-    public static Component offhandValue(int value) {
-        return Component.translatable("message.primogemcraft.wish.core_offhand_value", number(value, ChatFormatting.AQUA));
+    public static Text offhandValue(int value) {
+        return Text.translatable("message.primogemcraft.wish.core_offhand_value", number(value, Formatting.AQUA));
     }
 
-    public static Component notOwner() {
-        return Component.translatable("message.primogemcraft.wish.not_owner");
+    public static Text notOwner() {
+        return Text.translatable("message.primogemcraft.wish.not_owner");
     }
 
-    public static List<Component> record(ServerPlayer player, WishPity pity) {
+    public static List<Text> record(ServerPlayerEntity player, WishPity pity) {
         var colorful = WishRoller.isWearingColorfulSunglasses(player);
-        var goldLabel = rarityLabel(colorful ? "colorful" : "gold", ChatFormatting.GRAY);
-        var purpleLabel = rarityLabel(colorful ? "gold" : "purple", ChatFormatting.GRAY);
+        var goldLabel = rarityLabel(colorful ? "colorful" : "gold", Formatting.GRAY);
+        var purpleLabel = rarityLabel(colorful ? "gold" : "purple", Formatting.GRAY);
         var pulls = pity.goldCount() + pity.purpleCount() + pity.blueCount();
         var average = pity.goldCount() > 0 ? Math.round((float) pulls / pity.goldCount()) : 0;
         return List.of(
-                Component.translatable("message.primogemcraft.wish.record_header", player.getDisplayName()),
-                Component.translatable("message.primogemcraft.wish.record_time", new Date().toString()),
-                Component.translatable("message.primogemcraft.wish.record_blue", number(pity.blueCount(), ChatFormatting.AQUA)),
-                Component.translatable("message.primogemcraft.wish.record_rare", purpleLabel,
-                        number(pity.purpleCount(), ChatFormatting.LIGHT_PURPLE)),
-                Component.translatable("message.primogemcraft.wish.record_rare", goldLabel,
-                        number(pity.goldCount(), ChatFormatting.GOLD)),
-                Component.translatable("message.primogemcraft.wish.record_pity", purpleLabel,
-                        number(WishRoller.PURPLE_PITY_LIMIT + 1 - pity.purplePity(), ChatFormatting.GRAY)),
-                Component.translatable("message.primogemcraft.wish.record_pity", goldLabel,
-                        number(WishRoller.GOLD_PITY_LIMIT + 1 - pity.goldPity(), ChatFormatting.GRAY)),
-                Component.translatable("message.primogemcraft.wish.record_average", number(average, ChatFormatting.YELLOW),
-                        rarityLabel(colorful ? "colorful" : "gold", ChatFormatting.YELLOW)));
+                Text.translatable("message.primogemcraft.wish.record_header", player.getName()),
+                Text.translatable("message.primogemcraft.wish.record_time", new Date().toString()),
+                Text.translatable("message.primogemcraft.wish.record_blue", number(pity.blueCount(), Formatting.AQUA)),
+                Text.translatable("message.primogemcraft.wish.record_rare", purpleLabel,
+                        number(pity.purpleCount(), Formatting.LIGHT_PURPLE)),
+                Text.translatable("message.primogemcraft.wish.record_rare", goldLabel,
+                        number(pity.goldCount(), Formatting.GOLD)),
+                Text.translatable("message.primogemcraft.wish.record_pity", purpleLabel,
+                        number(WishRoller.PURPLE_PITY_LIMIT + 1 - pity.purplePity(), Formatting.GRAY)),
+                Text.translatable("message.primogemcraft.wish.record_pity", goldLabel,
+                        number(WishRoller.GOLD_PITY_LIMIT + 1 - pity.goldPity(), Formatting.GRAY)),
+                Text.translatable("message.primogemcraft.wish.record_average", number(average, Formatting.YELLOW),
+                        rarityLabel(colorful ? "colorful" : "gold", Formatting.YELLOW)));
     }
 
     private static String formatPercent(double ratio) {
@@ -70,7 +70,7 @@ public final class WishReports {
         return text.substring(0, end);
     }
 
-    private static Component rarityLabel(String id, ChatFormatting color) {
-        return Component.translatable("wish.primogemcraft.rarity_label." + id).withStyle(color);
+    private static Text rarityLabel(String id, Formatting color) {
+        return Text.translatable("wish.primogemcraft.rarity_label." + id).formatted(color);
     }
 }

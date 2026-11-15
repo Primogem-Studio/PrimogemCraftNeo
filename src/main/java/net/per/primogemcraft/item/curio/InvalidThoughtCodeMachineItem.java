@@ -1,10 +1,11 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.LivingEntity;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.LivingEntity;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCSounds;
@@ -19,7 +20,7 @@ public class InvalidThoughtCodeMachineItem extends CurioItem {
     private static final int TRIGGERED = 1;
     private static final int CLEANSED = 2;
 
-    public InvalidThoughtCodeMachineItem(Properties properties) {
+    public InvalidThoughtCodeMachineItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.NEGATIVE, 1, properties);
     }
 
@@ -27,34 +28,34 @@ public class InvalidThoughtCodeMachineItem extends CurioItem {
     public void presence(CurioContext context) {
         var player = context.player();
         var counter = PGCDataComponents.CURIO_COUNTER.get();
-        int state = context.stack().getOrDefault(counter, 0);
+        int state = StackComponents.getOrDefault(context.stack(), counter, 0);
         if (state == CLEANSED) {
-            CurioEffects.release(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE);
+            CurioEffects.release(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE.get());
             return;
         }
-        CurioEffects.hold(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE, MobEffectInstance.INFINITE_DURATION, 0);
+        CurioEffects.hold(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE.get(), StatusEffectInstance.INFINITE, 0);
         if (state == TRIGGERED) return;
-        context.stack().set(counter, TRIGGERED);
-        context.announce(Component.translatable(TRIGGER_KEY, context.stack().getHoverName()));
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        StackComponents.set(context.stack(), counter, TRIGGERED);
+        context.announce(Text.translatable(TRIGGER_KEY, context.stack().getName()));
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundCategory.PLAYERS, 1.0F, 1.0F);
     }
 
     @Override
     public void impacted(CurioContext context, CurioImpact impact) {
         if (impact.signal() != CurioSignal.ATTACK) return;
         var player = context.player();
-        if (!CurioEffects.active(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE)) return;
+        if (!CurioEffects.active(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE.get())) return;
         if (!(impact.subject() instanceof LivingEntity victim)) return;
         if (victim.getHealth() < victim.getMaxHealth()) return;
         if (!context.ready(COOLDOWN, COOLDOWN_TICKS)) return;
-        var food = player.getFoodData();
+        var food = player.getHungerManager();
         food.setFoodLevel((int) (food.getFoodLevel() * FOOD_RETAINED));
     }
 
-    public static void clear(ServerPlayer player) {
+    public static void clear(ServerPlayerEntity player) {
         var counter = PGCDataComponents.CURIO_COUNTER.get();
         for (var context : Curios.held(player))
-            if (context.stack().getItem() instanceof InvalidThoughtCodeMachineItem) context.stack().set(counter, CLEANSED);
-        CurioEffects.release(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE);
+            if (context.stack().getItem() instanceof InvalidThoughtCodeMachineItem) StackComponents.set(context.stack(), counter, CLEANSED);
+        CurioEffects.release(player, PGCEffects.INVALID_THOUGHT_CODE_MACHINE.get());
     }
 }

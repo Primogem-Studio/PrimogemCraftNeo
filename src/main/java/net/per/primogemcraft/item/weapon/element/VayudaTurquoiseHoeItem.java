@@ -1,15 +1,15 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.Level;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.world.World;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
 import net.per.primogemcraft.system.weapon.WeaponTier;
@@ -18,7 +18,7 @@ import net.per.primogemcraft.system.weapon.WishWeaponHoeItem;
 import java.util.List;
 
 public class VayudaTurquoiseHoeItem extends WishWeaponHoeItem {
-    private static final Tier TIER = new WeaponTier(1561, 8.5F, 15, WeaponTier.DIAMOND_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 8.5F, 15, WeaponTier.DIAMOND_INCORRECT,
             PGCItems.VAYUDA_TURQUOISE_SLIVER, PGCItems.PRIMOGEM);
 
     private static final float ATTACK_DAMAGE = 10.5F;
@@ -30,8 +30,8 @@ public class VayudaTurquoiseHoeItem extends WishWeaponHoeItem {
     private static final String KNOCKBACK_TEXT = "knockback";
     private static final String NO_REFINEMENT_TEXT = "no_refinement";
 
-    public VayudaTurquoiseHoeItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public VayudaTurquoiseHoeItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -42,11 +42,11 @@ public class VayudaTurquoiseHoeItem extends WishWeaponHoeItem {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, World level, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, level, entity, slot, selected);
-        if (!(level instanceof ServerLevel server) || !(entity instanceof ServerPlayer player)) return;
-        var knockback = server.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.KNOCKBACK);
-        if (EnchantmentHelper.getItemEnchantmentLevel(knockback, stack) != 0) return;
-        stack.enchant(knockback, player.isCreative() ? CREATIVE_KNOCKBACK : Mth.nextInt(server.getRandom(), KNOCKBACK_MIN, KNOCKBACK_MAX));
+        if (!(level instanceof ServerWorld server) || !(entity instanceof ServerPlayerEntity player)) return;
+        var knockback = Enchantments.KNOCKBACK;
+        if (EnchantmentHelper.getLevel(knockback, stack) != 0) return;
+        stack.addEnchantment(knockback, player.isCreative() ? CREATIVE_KNOCKBACK : MathHelper.nextInt(server.getRandom(), KNOCKBACK_MIN, KNOCKBACK_MAX));
     }
 }

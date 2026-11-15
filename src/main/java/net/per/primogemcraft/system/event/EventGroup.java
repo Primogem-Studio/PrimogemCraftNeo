@@ -1,42 +1,42 @@
 package net.per.primogemcraft.system.event;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-public record EventGroup(int number, Component title, ResourceLocation texture, int weight, Supplier<List<Integer>> provider) {
+public record EventGroup(int number, Text title, Identifier texture, int weight, Supplier<List<Integer>> provider) {
     public EventGroup {
         weight = Math.max(1, weight);
     }
 
     public static EventGroup of(RandomEvent... events) {
-        return new EventGroup(0, Component.empty(), null, 1, numbers(events));
+        return new EventGroup(0, Text.empty(), null, 1, numbers(events));
     }
 
-    public static EventGroup of(Component title, RandomEvent... events) {
+    public static EventGroup of(Text title, RandomEvent... events) {
         return new EventGroup(0, title, null, 1, numbers(events));
     }
 
-    public static EventGroup of(Component title, int weight, RandomEvent... events) {
+    public static EventGroup of(Text title, int weight, RandomEvent... events) {
         return new EventGroup(0, title, null, weight, numbers(events));
     }
 
-    public static EventGroup of(Component title, ResourceLocation texture, RandomEvent... events) {
+    public static EventGroup of(Text title, Identifier texture, RandomEvent... events) {
         return new EventGroup(0, title, texture, 1, numbers(events));
     }
 
-    public static EventGroup of(Component title, ResourceLocation texture, int weight, RandomEvent... events) {
+    public static EventGroup of(Text title, Identifier texture, int weight, RandomEvent... events) {
         return new EventGroup(0, title, texture, weight, numbers(events));
     }
 
-    public static EventGroup dynamic(Component title, int weight, Supplier<List<Integer>> provider) {
+    public static EventGroup dynamic(Text title, int weight, Supplier<List<Integer>> provider) {
         return new EventGroup(0, title, null, weight, provider);
     }
 
-    public static EventGroup dynamic(Component title, ResourceLocation texture, int weight, Supplier<List<Integer>> provider) {
+    public static EventGroup dynamic(Text title, Identifier texture, int weight, Supplier<List<Integer>> provider) {
         return new EventGroup(0, title, texture, weight, provider);
     }
 
@@ -44,7 +44,7 @@ public record EventGroup(int number, Component title, ResourceLocation texture, 
         return List.copyOf(provider.get());
     }
 
-    public ResourceLocation textureOrDefault() {
+    public Identifier textureOrDefault() {
         return texture == null ? EventRegistry.DEFAULT_TEXTURE : texture;
     }
 

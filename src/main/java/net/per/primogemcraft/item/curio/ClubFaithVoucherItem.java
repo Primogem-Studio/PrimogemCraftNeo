@@ -1,8 +1,8 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.curio.*;
@@ -14,7 +14,7 @@ public class ClubFaithVoucherItem extends CurioItem {
     private static final int EFFECT_TICKS = 200;
     private static final double FRAGMENT_CHANCE = 0.2D;
 
-    public ClubFaithVoucherItem(Properties properties) {
+    public ClubFaithVoucherItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.FUSION, properties);
     }
 
@@ -28,7 +28,7 @@ public class ClubFaithVoucherItem extends CurioItem {
         if (impact.signal() != CurioSignal.ATTACK) return;
         if (!(impact.subject() instanceof LivingEntity victim)) return;
         if (!context.ready(COOLDOWN, COOLDOWN_TICKS)) return;
-        victim.addEffect(new MobEffectInstance(PGCEffects.AT_DEATHS_DOOR, EFFECT_TICKS, AtDeathsDoorEffect.amplifierFor(context.player()), false, false));
-        if (context.chance(FRAGMENT_CHANCE)) CurioLoot.spawn(impact.level(), victim.position(), new ItemStack(PGCItems.COSMIC_FRAGMENT.get()));
+        victim.addStatusEffect(new StatusEffectInstance(PGCEffects.AT_DEATHS_DOOR.get(), EFFECT_TICKS, AtDeathsDoorEffect.amplifierFor(context.player()), false, false));
+        if (context.chance(FRAGMENT_CHANCE)) CurioLoot.spawn(impact.level(), victim.getPos(), new ItemStack(PGCItems.COSMIC_FRAGMENT.get()));
     }
 }

@@ -1,0 +1,8 @@
+{
+    "type":  "minecraft:stonecutting",
+    "ingredient":  {
+                       "item":  "primogemcraft:deepslate_elemental_crystal_ore"
+                   },
+    "count":  4,
+    "result":  "primogemcraft:varunada_lazurite_sliver"
+}

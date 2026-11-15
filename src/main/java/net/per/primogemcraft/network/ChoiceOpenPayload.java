@@ -1,13 +1,13 @@
 package net.per.primogemcraft.network;
 
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
+import net.minecraft.text.Text;
+import net.per.primogemcraft.compat.network.ComponentSerialization;
+import net.per.primogemcraft.compat.network.ByteBufCodecs;
+import net.per.primogemcraft.compat.network.StreamCodec;
+import net.per.primogemcraft.compat.network.CustomPacketPayload;
+import net.minecraft.util.Identifier;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.system.choice.*;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 public record ChoiceOpenPayload(ChoiceRequest request) implements CustomPacketPayload {
     private static final int NO_CARD_SPIN = 0;
 
-    public static final Type<ChoiceOpenPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "choice_open"));
+    public static final Type<ChoiceOpenPayload> TYPE = new Type<>(Identifier.of(MOD_ID, "choice_open"), ChoiceOpenPayload.class);
     public static final StreamCodec<RegistryFriendlyByteBuf, ChoiceOpenPayload> STREAM_CODEC = StreamCodec.of(ChoiceOpenPayload::encode, ChoiceOpenPayload::decode);
 
     private static void encode(RegistryFriendlyByteBuf buffer, ChoiceOpenPayload payload) {
@@ -27,8 +27,8 @@ public record ChoiceOpenPayload(ChoiceRequest request) implements CustomPacketPa
         ComponentSerialization.TRUSTED_STREAM_CODEC.encode(buffer, request.title());
         ComponentSerialization.TRUSTED_STREAM_CODEC.encode(buffer, request.subtitle());
         ByteBufCodecs.VAR_INT.encode(buffer, request.visual().ordinal());
-        ResourceLocation.STREAM_CODEC.encode(buffer, request.texture());
-        ResourceLocation.STREAM_CODEC.encode(buffer, request.textures().sheet());
+        net.per.primogemcraft.compat.network.StreamCodecs.RESOURCE_LOCATION.encode(buffer, request.texture());
+        net.per.primogemcraft.compat.network.StreamCodecs.RESOURCE_LOCATION.encode(buffer, request.textures().sheet());
         ByteBufCodecs.VAR_INT.encode(buffer, request.textures().columns());
         ByteBufCodecs.VAR_INT.encode(buffer, request.textures().tileWidth());
         ByteBufCodecs.VAR_INT.encode(buffer, request.textures().tileHeight());
@@ -36,7 +36,7 @@ public record ChoiceOpenPayload(ChoiceRequest request) implements CustomPacketPa
         ByteBufCodecs.VAR_INT.encode(buffer, request.textures().hovered());
         ByteBufCodecs.VAR_INT.encode(buffer, request.textures().chosen());
         ByteBufCodecs.VAR_INT.encode(buffer, request.textures().dimmed());
-        ResourceLocation.STREAM_CODEC.encode(buffer, request.textures().backSheet());
+        net.per.primogemcraft.compat.network.StreamCodecs.RESOURCE_LOCATION.encode(buffer, request.textures().backSheet());
         ByteBufCodecs.VAR_INT.encode(buffer, request.spin().turns());
         ByteBufCodecs.VAR_INT.encode(buffer, request.spin().speed().ordinal());
         buffer.writeFloat(request.spin().tilt());
@@ -44,7 +44,7 @@ public record ChoiceOpenPayload(ChoiceRequest request) implements CustomPacketPa
         ByteBufCodecs.VAR_INT.encode(buffer, request.options().size());
         for (var card : request.options()) {
             ComponentSerialization.TRUSTED_STREAM_CODEC.encode(buffer, card.title());
-            ItemStack.OPTIONAL_STREAM_CODEC.encode(buffer, card.item());
+            net.per.primogemcraft.compat.network.StreamCodecs.ITEM_STACK.encode(buffer, card.item());
             ComponentSerialization.TRUSTED_STREAM_CODEC.encode(buffer, card.description());
             ComponentSerialization.TRUSTED_STREAM_CODEC.encode(buffer, card.footnote());
             var spin = card.spin();
@@ -53,13 +53,13 @@ public record ChoiceOpenPayload(ChoiceRequest request) implements CustomPacketPa
             var icons = card.icons();
             buffer.writeBoolean(icons != null);
             if (icons != null) {
-                ResourceLocation.STREAM_CODEC.encode(buffer, icons.texture());
+                net.per.primogemcraft.compat.network.StreamCodecs.RESOURCE_LOCATION.encode(buffer, icons.texture());
                 ByteBufCodecs.VAR_INT.encode(buffer, icons.count());
             }
             var overlay = card.overlay();
             buffer.writeBoolean(overlay != null);
             if (overlay != null) {
-                ResourceLocation.STREAM_CODEC.encode(buffer, overlay.sheet());
+                net.per.primogemcraft.compat.network.StreamCodecs.RESOURCE_LOCATION.encode(buffer, overlay.sheet());
                 ByteBufCodecs.VAR_INT.encode(buffer, overlay.columns());
                 ByteBufCodecs.VAR_INT.encode(buffer, overlay.column());
             }
@@ -81,29 +81,29 @@ public record ChoiceOpenPayload(ChoiceRequest request) implements CustomPacketPa
         var title = ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer);
         var subtitle = ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer);
         var visual = ChoiceVisual.values()[ByteBufCodecs.VAR_INT.decode(buffer)];
-        var texture = ResourceLocation.STREAM_CODEC.decode(buffer);
-        var textures = new ChoiceCardTextures(ResourceLocation.STREAM_CODEC.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ResourceLocation.STREAM_CODEC.decode(buffer));
+        var texture = net.per.primogemcraft.compat.network.StreamCodecs.RESOURCE_LOCATION.decode(buffer);
+        var textures = new ChoiceCardTextures(net.per.primogemcraft.compat.network.StreamCodecs.RESOURCE_LOCATION.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), net.per.primogemcraft.compat.network.StreamCodecs.RESOURCE_LOCATION.decode(buffer));
         var spin = ChoiceSpin.of(ByteBufCodecs.VAR_INT.decode(buffer), ChoiceSpinSpeed.values()[ByteBufCodecs.VAR_INT.decode(buffer)], buffer.readFloat());
         var settleTicks = ByteBufCodecs.VAR_INT.decode(buffer);
-        var size = ByteBufCodecs.VAR_INT.decode(buffer);
+        int size = ByteBufCodecs.VAR_INT.decode(buffer);
         var options = new ArrayList<ChoiceCard>(size);
         for (var index = 0; index < size; index++) {
             var cardTitle = ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer);
-            var cardItem = ItemStack.OPTIONAL_STREAM_CODEC.decode(buffer);
+            var cardItem = net.per.primogemcraft.compat.network.StreamCodecs.ITEM_STACK.decode(buffer);
             var cardDescription = ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer);
             var cardFootnote = ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer);
-            var cardTurns = ByteBufCodecs.VAR_INT.decode(buffer);
-            var cardSpeed = ByteBufCodecs.VAR_INT.decode(buffer);
+            int cardTurns = ByteBufCodecs.VAR_INT.decode(buffer);
+            int cardSpeed = ByteBufCodecs.VAR_INT.decode(buffer);
             var cardSpin = cardTurns <= NO_CARD_SPIN ? null : ChoiceCardSpin.of(cardTurns, ChoiceSpinSpeed.values()[cardSpeed]);
-            var icons = buffer.readBoolean() ? ChoiceCardIcons.of(ResourceLocation.STREAM_CODEC.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer)) : null;
-            var overlay = buffer.readBoolean() ? ChoiceCardOverlay.of(ResourceLocation.STREAM_CODEC.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer)) : null;
+            var icons = buffer.readBoolean() ? ChoiceCardIcons.of(net.per.primogemcraft.compat.network.StreamCodecs.RESOURCE_LOCATION.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer)) : null;
+            var overlay = buffer.readBoolean() ? ChoiceCardOverlay.of(net.per.primogemcraft.compat.network.StreamCodecs.RESOURCE_LOCATION.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer), ByteBufCodecs.VAR_INT.decode(buffer)) : null;
             var textTooltip = buffer.readBoolean();
             var itemTooltip = buffer.readBoolean();
             var enabled = buffer.readBoolean();
             var quality = ByteBufCodecs.VAR_INT.decode(buffer);
             var badge = ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer);
-            var unmetSize = ByteBufCodecs.VAR_INT.decode(buffer);
-            var unmet = new ArrayList<Component>(unmetSize);
+            int unmetSize = ByteBufCodecs.VAR_INT.decode(buffer);
+            var unmet = new ArrayList<Text>(unmetSize);
             for (var line = 0; line < unmetSize; line++) unmet.add(ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer));
             options.add(new ChoiceCard(cardTitle, cardItem, cardDescription, cardFootnote, cardSpin, icons, overlay, textTooltip, itemTooltip, enabled, quality, badge, List.copyOf(unmet)));
         }

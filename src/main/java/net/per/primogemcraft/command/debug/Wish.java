@@ -3,9 +3,9 @@ package net.per.primogemcraft.command.debug;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.neoforged.neoforge.server.command.EnumArgument;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.command.CommandManager;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import net.per.primogemcraft.entity.misc.WishEntity;
 import net.per.primogemcraft.system.wish.WishBanner;
 import net.per.primogemcraft.system.wish.WishRarity;
@@ -15,22 +15,22 @@ import net.per.primogemcraft.system.wish.WishRoller;
 import java.util.ArrayList;
 
 public class Wish {
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("primogemcraft").then(
-                Commands.literal("wish").requires(c -> c.hasPermission(2)
-                ).then(Commands.argument("count", IntegerArgumentType.integer(1)
-                ).then(Commands.argument("banner", EnumArgument.enumArgument(WishBanner.class)
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+        dispatcher.register(CommandManager.literal("primogemcraft").then(
+                CommandManager.literal("wish").requires(c -> c.hasPermissionLevel(2)
+                ).then(CommandManager.argument("count", IntegerArgumentType.integer(1)
+                ).then(CommandManager.argument("banner", com.mojang.brigadier.arguments.StringArgumentType.word()
                 ).executes(c -> {
-                    var level = c.getSource().getLevel();
-                    var player = c.getSource().getPlayerOrException();
-                    WishEntity.spawnRing(level, player, WishRoller.roll(player, c.getArgument("banner", WishBanner.class), 0, IntegerArgumentType.getInteger(c, "count")));
+                    var world = c.getSource().getWorld();
+                    var player = c.getSource().getPlayerOrThrow();
+                    WishEntity.spawnRing(world, player, WishRoller.roll(player, c.getArgument("banner", WishBanner.class), 0, IntegerArgumentType.getInteger(c, "count")));
                     return 0;
-                }).then(Commands.argument("rarity", EnumArgument.enumArgument(WishRarity.class)
-                ).then(Commands.argument("radiance", BoolArgumentType.bool()
-                ).then(Commands.argument("colorful", BoolArgumentType.bool()
+                }).then(CommandManager.argument("rarity", com.mojang.brigadier.arguments.StringArgumentType.word()
+                ).then(CommandManager.argument("radiance", BoolArgumentType.bool()
+                ).then(CommandManager.argument("colorful", BoolArgumentType.bool()
                 ).executes(c -> {
-                    var level = c.getSource().getLevel();
-                    var player = c.getSource().getPlayerOrException();
+                    var world = c.getSource().getWorld();
+                    var player = c.getSource().getPlayerOrThrow();
                     var count = IntegerArgumentType.getInteger(c, "count");
                     var banner = c.getArgument("banner", WishBanner.class);
                     var rarity = c.getArgument("rarity", WishRarity.class);
@@ -38,7 +38,7 @@ public class Wish {
                     var colorful = BoolArgumentType.getBool(c, "colorful");
                     var result = new ArrayList<WishResult>();
                     for (var i = 0; i < count; i++) result.add(new WishResult(banner, rarity, radiance, colorful));
-                    WishEntity.spawnRing(level, player, result);
+                    WishEntity.spawnRing(world, player, result);
                     return 0;
                 }))))))
         ));

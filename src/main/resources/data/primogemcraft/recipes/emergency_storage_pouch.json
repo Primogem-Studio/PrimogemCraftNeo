@@ -1,0 +1,30 @@
+{
+  "type": "primogemcraft:crafting_shaped_with_components",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
+  "key": {
+    "a": {
+      "tag": "c:primogemcraft"
+    },
+    "b": {
+      "item": "primogemcraft:intertwined_fate"
+    },
+    "c": {
+      "item": "primogemcraft:foreigners_pouch"
+    },
+    "d": {
+      "item": "primogemcraft:genesis_crystal"
+    }
+  },
+  "source": {
+    "item": "primogemcraft:foreigners_pouch"
+  },
+  "result": {
+    "item": "primogemcraft:emergency_storage_pouch",
+    "count": 1
+  }
+}

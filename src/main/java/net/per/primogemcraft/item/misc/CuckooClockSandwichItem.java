@@ -1,11 +1,11 @@
 package net.per.primogemcraft.item.misc;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.per.primogemcraft.item.curio.BlackForestCuckooClockItem;
 import net.per.primogemcraft.item.curio.InvalidThoughtCodeMachineItem;
 import net.per.primogemcraft.item.curio.PerpetualCuckooClockItem;
@@ -18,21 +18,21 @@ public class CuckooClockSandwichItem extends DescribedItem {
     private static final float VOLUME = 0.4F;
     private static final float PUNISHMENT_DAMAGE = 2.0F;
 
-    public CuckooClockSandwichItem(Properties properties) {
+    public CuckooClockSandwichItem(Settings properties) {
         super(properties);
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        var result = super.finishUsingItem(stack, level, entity);
-        if (!(entity instanceof ServerPlayer player)) return result;
+    public ItemStack finishUsing(ItemStack stack, World level, LivingEntity entity) {
+        var result = super.finishUsing(stack, level, entity);
+        if (!(entity instanceof ServerPlayerEntity player)) return result;
         InvalidThoughtCodeMachineItem.clear(player);
         PerpetualCuckooClockItem.clear(player);
         BlackForestCuckooClockItem.clear(player);
         WhimsicalFanciesMachineryCrewItem.clear(player);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ANVIL_PLACE, SoundSource.PLAYERS, VOLUME, 1.0F);
-        if (player.hasEffect(PGCEffects.LOTTO_PUNISHMENT)) LottoPunishmentEffect.cure(player);
-        else player.hurt(level.damageSources().fallingBlock(null), PUNISHMENT_DAMAGE);
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.PLAYERS, VOLUME, 1.0F);
+        if (player.hasStatusEffect(PGCEffects.LOTTO_PUNISHMENT.get())) LottoPunishmentEffect.cure(player);
+        else player.damage(level.getDamageSources().fallingBlock(null), PUNISHMENT_DAMAGE);
         return result;
     }
 }

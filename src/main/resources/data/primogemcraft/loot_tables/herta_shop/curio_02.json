@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type":"minecraft:item","name":"primogemcraft:entropic_die","weight":30,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:beacon_coloring_paste","weight":30,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:chaos_reishi","weight":30,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:fortune_glue","weight":20,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:gold_coin_of_discord","weight":20,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:obliteration_wick_trimmer","weight":10,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:fools_mask","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:fictional_mech","weight":20,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:enigmata_magnetism","weight":30,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:the_parchment_that_always_eats","weight":30,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:space_time_prism","weight":5,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:wisdom_wax_seal","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:justice_wax_seal","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]}
+      ]
+    }
+  ],
+  "random_sequence": "primogemcraft:herta_shop/curio_02"
+}

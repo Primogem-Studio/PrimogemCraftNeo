@@ -1,11 +1,11 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.entity.LivingEntity;
 import net.per.primogemcraft.system.curio.*;
 
 public class RobeOfHarmonyItem extends CurioItem {
-    public RobeOfHarmonyItem(Properties properties) {
-        super(CurioTrigger.ACTIVE, CurioForm.FUSION, properties.fireResistant());
+    public RobeOfHarmonyItem(Settings properties) {
+        super(CurioTrigger.ACTIVE, CurioForm.FUSION, properties.fireproof());
     }
 
     @Override

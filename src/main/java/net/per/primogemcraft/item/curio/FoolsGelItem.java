@@ -1,8 +1,8 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.enchantment.EnchantCost;
 import net.per.primogemcraft.enchantment.EnchantGrade;
 import net.per.primogemcraft.enchantment.EnchantOption;
@@ -23,12 +23,12 @@ public class FoolsGelItem extends CurioItem {
     private static final int HINT_TICKS = 600;
     private static final int CURSE_LEVEL = 5;
 
-    public FoolsGelItem(Properties properties) {
+    public FoolsGelItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.FUSION, 1, () -> new ItemStack(PGCItems.UNIDENTIFIED_DOLL.get()), properties);
     }
 
     @Override
-    public void pickedUp(ServerPlayer player, ItemStack stack) {
+    public void pickedUp(ServerPlayerEntity player, ItemStack stack) {
         trigger(CurioContext.of(player, stack, form()));
     }
 
@@ -39,14 +39,14 @@ public class FoolsGelItem extends CurioItem {
 
     private void trigger(CurioContext context) {
         var player = context.player();
-        var offhand = player.getOffhandItem();
+        var offhand = player.getOffHandStack();
         if (!offhand.isEnchantable()) {
-            if (context.ready(HINT_TIMER, HINT_TICKS)) context.announce(Component.translatable(INVALID_KEY));
+            if (context.ready(HINT_TIMER, HINT_TICKS)) context.announce(Text.translatable(INVALID_KEY));
             return;
         }
         var enchantment = CurioEnchanting.randomEnchantment(player);
         var preview = CurioEnchanting.withEnchantment(offhand, enchantment);
-        PGCEnchantments.apply(player.level(), preview, PGCEnchantments.FOOLS_WRATH, CURSE_LEVEL);
+        PGCEnchantments.apply(player.getWorld(), preview, PGCEnchantments.FOOLS_WRATH, CURSE_LEVEL);
         context.damage(1);
         EnchantReward.open(player, List.of(EnchantOption.of(offhand, preview, EnchantGrade.of(enchantment.level), enchantment.level, EnchantCost.free())));
     }

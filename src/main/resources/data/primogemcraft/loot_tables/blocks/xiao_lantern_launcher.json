@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "primogemcraft:blocks/xiao_lantern_launcher",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "primogemcraft:xiao_lantern_launcher"
+        }
+      ]
+    }
+  ]
+}

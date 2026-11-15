@@ -1,5 +1,6 @@
 package net.per.primogemcraft.system.curio;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.per.primogemcraft.registry.PGCDataComponents;
 
 import java.util.function.Consumer;
@@ -8,7 +9,7 @@ public class SplittingCurioItem extends CurioItem {
     private final int interval;
     private final Consumer<CurioContext> burst;
 
-    public SplittingCurioItem(CurioForm form, int integrity, int interval, Consumer<CurioContext> burst, Properties properties) {
+    public SplittingCurioItem(CurioForm form, int integrity, int interval, Consumer<CurioContext> burst, Settings properties) {
         super(CurioTrigger.ACTIVE, form, integrity, properties);
         this.interval = interval;
         this.burst = burst;
@@ -39,11 +40,11 @@ public class SplittingCurioItem extends CurioItem {
     private void spend(CurioContext context) {
         if (integrity() <= 0) return;
         var stack = context.stack();
-        var charges = stack.getOrDefault(PGCDataComponents.CURIO_COUNTER.get(), integrity()) - 1;
+        var charges = StackComponents.getOrDefault(stack, PGCDataComponents.CURIO_COUNTER, integrity()) - 1;
         if (charges <= 0) {
             context.destroy();
             return;
         }
-        stack.set(PGCDataComponents.CURIO_COUNTER.get(), charges);
+        StackComponents.set(stack, PGCDataComponents.CURIO_COUNTER, charges);
     }
 }

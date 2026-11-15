@@ -1,5 +1,5 @@
 {
-  "type": "neoforge:add_table",
+  "type": "forge:add_table",
   "conditions": [
     {
       "condition": "primogemcraft:is_chest"

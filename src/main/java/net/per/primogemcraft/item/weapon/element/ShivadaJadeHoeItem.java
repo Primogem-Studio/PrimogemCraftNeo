@@ -1,15 +1,15 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.ActionResult;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShivadaJadeHoeItem extends WishWeaponHoeItem {
-    private static final Tier TIER = new WeaponTier(1561, 7.0F, 10, WeaponTier.DIAMOND_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 7.0F, 10, WeaponTier.DIAMOND_INCORRECT,
             PGCItems.PRIMOGEM, PGCItems.SHIVADA_JADE_SLIVER);
 
     private static final float ATTACK_DAMAGE = 3.0F;
@@ -36,8 +36,8 @@ public class ShivadaJadeHoeItem extends WishWeaponHoeItem {
     private static final String SNOW_TEXT = "snow";
     private static final String NO_REFINEMENT_TEXT = "no_refinement";
 
-    public ShivadaJadeHoeItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public ShivadaJadeHoeItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -47,27 +47,27 @@ public class ShivadaJadeHoeItem extends WishWeaponHoeItem {
         var descriptions = new ArrayList<WeaponDescription>();
         if (sealed) descriptions.add(WeaponDescription.note(NO_REFINEMENT_TEXT));
         descriptions.add(WeaponDescription.of(SNEAK_USE_BLOCK, SNOW_TEXT,
-                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN, false, sealed), ChatFormatting.AQUA)));
+                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN, false, sealed), Formatting.AQUA)));
         return List.copyOf(descriptions);
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        var result = super.useOn(context);
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        var result = super.useOnBlock(context);
         var player = context.getPlayer();
-        if (!(context.getLevel() instanceof ServerLevel server) || player == null || !player.isShiftKeyDown()) return result;
-        var pos = context.getClickedPos();
-        var above = pos.above();
-        if (server.getBlockState(above).is(Blocks.SNOW))
-            server.setBlock(above, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-        else if (server.getBlockState(above).isAir() && !server.getBlockState(pos).is(Blocks.SNOW))
-            server.setBlock(above, Blocks.SNOW.defaultBlockState(), Block.UPDATE_ALL);
-        server.playSound(null, pos, SoundEvents.SNOW_FALL, SoundSource.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
-        var stack = context.getItemInHand();
-        player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.CRYO, COOLDOWN, false));
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        if (!(context.getWorld() instanceof ServerWorld server) || player == null || !player.isSneaking()) return result;
+        var pos = context.getBlockPos();
+        var above = pos.up();
+        if (server.getBlockState(above).isOf(Blocks.SNOW))
+            server.setBlockState(above, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+        else if (server.getBlockState(above).isAir() && !server.getBlockState(pos).isOf(Blocks.SNOW))
+            server.setBlockState(above, Blocks.SNOW.getDefaultState(), Block.NOTIFY_ALL);
+        server.playSound(null, pos, SoundEvents.BLOCK_POWDER_SNOW_FALL, SoundCategory.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
+        var stack = context.getStack();
+        player.getItemCooldownManager().set(stack.getItem(), ElementWeapons.ticks(player, stack, Element.CRYO, COOLDOWN, false));
+        stack.damage(DURABILITY_LOSS, player, item -> {
         });
-        player.swing(context.getHand(), true);
-        return InteractionResult.SUCCESS;
+        player.swingHand(context.getHand());
+        return ActionResult.SUCCESS;
     }
 }

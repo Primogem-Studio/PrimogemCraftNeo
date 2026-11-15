@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "primogemcraft:varunada_lazurite_block",
+    "primogemcraft:prithiva_topaz_block",
+    "primogemcraft:elemental_crystal_block",
+    "primogemcraft:nagadus_emerald_block",
+    "primogemcraft:refined_mora_block",
+    "primogemcraft:vajrada_amethyst_block",
+    "primogemcraft:intertwined_fate_block",
+    "primogemcraft:mora_block",
+    "primogemcraft:agnidus_agate_block",
+    "primogemcraft:vayuda_turquoise_block",
+    "primogemcraft:shivada_jade_block"
+  ]
+}

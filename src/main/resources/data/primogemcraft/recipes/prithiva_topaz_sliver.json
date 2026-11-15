@@ -1,0 +1,8 @@
+{
+    "type":  "minecraft:stonecutting",
+    "ingredient":  {
+                       "item":  "primogemcraft:prithiva_topaz_gemstone"
+                   },
+    "count":  64,
+    "result":  "primogemcraft:prithiva_topaz_sliver"
+}

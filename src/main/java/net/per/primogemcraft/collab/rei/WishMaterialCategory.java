@@ -8,8 +8,8 @@ import me.shedaniel.rei.api.client.gui.widgets.Widgets;
 import me.shedaniel.rei.api.client.registry.display.DisplayCategory;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
+import net.minecraft.util.Formatting;
+import net.minecraft.text.Text;
 import net.per.primogemcraft.client.gui.GuiAtlas;
 import net.per.primogemcraft.registry.PGCItems;
 
@@ -37,8 +37,8 @@ public class WishMaterialCategory implements DisplayCategory<WishMaterialDisplay
                     top + index / WishMaterialDisplay.COLUMNS * SLOT_SIZE + 1);
             var slot = Widgets.createSlot(point).disableBackground().markInput();
             for (var entry : display.getInputEntries().get(index)) {
-                slot.entry(entry.copy().tooltip(Component.translatable("rei.primogemcraft.wish_materials.tooltip.0", display.value(index))
-                        .withStyle(ChatFormatting.AQUA)));
+                slot.entry(entry.copy().tooltip(Text.translatable("rei.primogemcraft.wish_materials.tooltip.0", display.value(index))
+                        .formatted(Formatting.AQUA)));
             }
             widgets.add(slot);
         }
@@ -46,8 +46,8 @@ public class WishMaterialCategory implements DisplayCategory<WishMaterialDisplay
     }
 
     @Override
-    public Component getTitle() {
-        return Component.translatable("rei.category.primogemcraft.wish_materials");
+    public Text getTitle() {
+        return Text.translatable("rei.category.primogemcraft.wish_materials");
     }
 
     @Override

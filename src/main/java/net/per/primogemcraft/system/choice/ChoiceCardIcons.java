@@ -1,15 +1,15 @@
 package net.per.primogemcraft.system.choice;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Identifier;
 
-public record ChoiceCardIcons(ResourceLocation texture, int count) {
+public record ChoiceCardIcons(Identifier texture, int count) {
     private static final int MAX_COUNT = 6;
 
     public ChoiceCardIcons {
-        count = Math.clamp(count, 1, MAX_COUNT);
+        count = net.minecraft.util.math.MathHelper.clamp(count, 1, MAX_COUNT);
     }
 
-    public static ChoiceCardIcons of(ResourceLocation texture, int count) {
+    public static ChoiceCardIcons of(Identifier texture, int count) {
         return new ChoiceCardIcons(texture, count);
     }
 }

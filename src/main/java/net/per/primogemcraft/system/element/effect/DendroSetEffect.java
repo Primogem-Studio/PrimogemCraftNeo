@@ -1,18 +1,18 @@
 package net.per.primogemcraft.system.element.effect;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.util.Identifier;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-public class DendroSetEffect extends MobEffect {
+public class DendroSetEffect extends StatusEffect {
     private static final double MAX_HEALTH = 0.1D;
 
     public DendroSetEffect() {
-        super(MobEffectCategory.NEUTRAL, -1);
-        addAttributeModifier(Attributes.MAX_HEALTH, ResourceLocation.fromNamespaceAndPath(MOD_ID, "effect/dendro_set"), MAX_HEALTH, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+        super(StatusEffectCategory.NEUTRAL, -1);
+        addAttributeModifier(EntityAttributes.GENERIC_MAX_HEALTH, net.per.primogemcraft.compat.attribute.AttributesCompat.uuid(Identifier.of(MOD_ID, "effect/dendro_set")).toString(), MAX_HEALTH, EntityAttributeModifier.Operation.MULTIPLY_BASE);
     }
 }

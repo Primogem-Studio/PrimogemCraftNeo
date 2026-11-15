@@ -1,12 +1,12 @@
 package net.per.primogemcraft.system.event;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextTypes;
 
 import java.util.List;
 
@@ -14,9 +14,9 @@ public final class EventLoot {
     private EventLoot() {
     }
 
-    public static List<ItemStack> roll(ServerLevel level, ResourceLocation table) {
-        var key = ResourceKey.create(Registries.LOOT_TABLE, table);
-        var params = new LootParams.Builder(level).create(LootContextParamSets.EMPTY);
-        return level.getServer().reloadableRegistries().getLootTable(key).getRandomItems(params);
+    public static List<ItemStack> roll(ServerWorld level, Identifier table) {
+        var key = table;
+        var params = new LootContextParameterSet.Builder(level).build(LootContextTypes.EMPTY);
+        return level.getServer().getLootManager().getLootTable(key).generateLoot(params);
     }
 }

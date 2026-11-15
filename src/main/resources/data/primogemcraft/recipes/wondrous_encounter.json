@@ -1,0 +1,11 @@
+{
+    "type":  "minecraft:smelting",
+    "category":  "misc",
+    "experience":  20,
+    "cookingtime":  400,
+    "ingredient":  {
+                       "item":  "primogemcraft:wondrous_encounter_block"
+                   },
+    "count":  1,
+    "result":  "primogemcraft:wondrous_encounter"
+}

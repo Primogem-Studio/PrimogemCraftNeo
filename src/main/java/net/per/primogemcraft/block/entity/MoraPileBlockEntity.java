@@ -1,10 +1,10 @@
 package net.per.primogemcraft.block.entity;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.registry.PGCBlockEntities;
 
 public class MoraPileBlockEntity extends BlockEntity {
@@ -23,7 +23,7 @@ public class MoraPileBlockEntity extends BlockEntity {
 
     public void setStored(int stored) {
         this.stored = Math.max(0, stored);
-        setChanged();
+        markDirty();
     }
 
     public int retainedAmount() {
@@ -35,15 +35,15 @@ public class MoraPileBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void readNbt(NbtCompound tag) {
+        super.readNbt(tag);
         stored = Math.max(0, tag.getInt(STORED_KEY));
         retainedAmount = 0;
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void writeNbt(NbtCompound tag) {
+        super.writeNbt(tag);
         tag.putInt(STORED_KEY, stored);
     }
 }

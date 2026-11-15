@@ -1,9 +1,8 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
-import net.neoforged.neoforge.registries.DeferredItem;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.per.primogemcraft.compat.event.ModifyDefaultComponentsEvent;
+import net.per.primogemcraft.compat.registries.DeferredItem;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.element.Element;
@@ -15,10 +14,9 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 /**
  * The element every element wish weapon carries. The element goes into the item's default components, so
- * {@link Element#of(net.minecraft.world.item.ItemStack)} reads it from any stack of the tool, and the
+ * {@link Element#of(net.minecraft.item.ItemStack)} reads it from any stack of the tool, and the
  * GenshinCraft linkage hands the same table over as a permanent infusion.
  */
-@EventBusSubscriber(modid = MOD_ID)
 public final class ElementTools {
     private static final Map<DeferredItem<?>, Element> ELEMENTS = Map.ofEntries(
             entry(PGCItems.VAYUDA_TURQUOISE_PICKAXE, Element.ANEMO),
@@ -55,10 +53,9 @@ public final class ElementTools {
     private ElementTools() {
     }
 
-    @SubscribeEvent
-    public static void onModifyDefaultComponents(ModifyDefaultComponentsEvent event) {
-        ELEMENTS.forEach((item, element) -> event.modify(item,
-                builder -> builder.set(PGCDataComponents.ELEMENT_TYPE.get(), element.index())));
+    public static void onModifyDefaultComponents() {
+        ELEMENTS.forEach((item, element) -> net.per.primogemcraft.compat.event.ModifyDefaultComponentsEvent.modify(
+                item.get(), PGCDataComponents.ELEMENT_TYPE.get(), element.index()));
     }
 
     public static Map<DeferredItem<?>, Element> elements() {

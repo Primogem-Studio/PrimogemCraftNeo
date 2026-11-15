@@ -1,19 +1,19 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.system.choice.ChoiceSupport;
 import net.per.primogemcraft.system.curio.*;
 
 public class FictionalThreeEightDieItem extends CurioItem {
     private static final double BONUS_RATIO = 0.1D;
 
-    public FictionalThreeEightDieItem(Properties properties) {
+    public FictionalThreeEightDieItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.FUSION, properties);
     }
 
     @Override
-    public void pickedUp(ServerPlayer player, ItemStack stack) {
+    public void pickedUp(ServerPlayerEntity player, ItemStack stack) {
         trigger(player, stack);
     }
 
@@ -22,7 +22,7 @@ public class FictionalThreeEightDieItem extends CurioItem {
         trigger(context.player(), context.stack());
     }
 
-    private void trigger(ServerPlayer player, ItemStack stack) {
+    private void trigger(ServerPlayerEntity player, ItemStack stack) {
         var context = CurioContext.of(player, stack, form());
         var rewards = Curios.convert(context, BONUS_RATIO);
         context.destroy();

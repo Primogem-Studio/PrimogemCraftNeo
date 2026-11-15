@@ -1,13 +1,13 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.ActionResult;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.world.World;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PrithivaTopazShovelItem extends WishWeaponShovelItem {
-    private static final Tier TIER = new WeaponTier(1890, 9.0F, 14, WeaponTier.DIAMOND_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1890, 9.0F, 14, WeaponTier.DIAMOND_INCORRECT,
             PGCItems.PRIMOGEM, PGCItems.PRITHIVA_TOPAZ_CHUNK);
 
     private static final float ATTACK_DAMAGE = 5.0F;
@@ -35,8 +35,8 @@ public class PrithivaTopazShovelItem extends WishWeaponShovelItem {
     private static final String EXPLOSION_TEXT = "explosion";
     private static final String REFINEMENT_TEXT = "refinement";
 
-    public PrithivaTopazShovelItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public PrithivaTopazShovelItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -46,24 +46,24 @@ public class PrithivaTopazShovelItem extends WishWeaponShovelItem {
         var descriptions = new ArrayList<WeaponDescription>();
         if (sealed) descriptions.add(WeaponDescription.note(REFINEMENT_TEXT));
         descriptions.add(WeaponDescription.of(SNEAK_USE_BLOCK, EXPLOSION_TEXT,
-                WishReports.number(ElementWeapons.scaled(refinement, EXPLOSION_POWER, true, sealed), ChatFormatting.AQUA),
-                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN_TICKS, false, sealed), ChatFormatting.AQUA)));
+                WishReports.number(ElementWeapons.scaled(refinement, EXPLOSION_POWER, true, sealed), Formatting.AQUA),
+                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN_TICKS, false, sealed), Formatting.AQUA)));
         return List.copyOf(descriptions);
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        var result = super.useOn(context);
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        var result = super.useOnBlock(context);
         var player = context.getPlayer();
-        if (!(context.getLevel() instanceof ServerLevel server) || player == null || !player.isShiftKeyDown()) return result;
-        var stack = context.getItemInHand();
+        if (!(context.getWorld() instanceof ServerWorld server) || player == null || !player.isSneaking()) return result;
+        var stack = context.getStack();
         var power = ElementWeapons.scaled(player, stack, Element.GEO, EXPLOSION_POWER, true);
-        var pos = context.getClickedPos();
-        server.explode(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
-                Mth.nextInt(server.getRandom(), EXPLOSION_MIN_POWER, (int) (power * 2.0D)), Level.ExplosionInteraction.TNT);
-        stack.hurtAndBreak(Mth.nextInt(server.getRandom(), MIN_DAMAGE, MAX_DAMAGE), server, player, item -> {
+        var pos = context.getBlockPos();
+        server.createExplosion(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
+                MathHelper.nextInt(server.getRandom(), EXPLOSION_MIN_POWER, (int) (power * 2.0D)), net.minecraft.world.World.ExplosionSourceType.TNT);
+        stack.damage(MathHelper.nextInt(server.getRandom(), MIN_DAMAGE, MAX_DAMAGE), player, item -> {
         });
-        player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.GEO, COOLDOWN_TICKS, false));
-        return InteractionResult.SUCCESS;
+        player.getItemCooldownManager().set(stack.getItem(), ElementWeapons.ticks(player, stack, Element.GEO, COOLDOWN_TICKS, false));
+        return ActionResult.SUCCESS;
     }
 }

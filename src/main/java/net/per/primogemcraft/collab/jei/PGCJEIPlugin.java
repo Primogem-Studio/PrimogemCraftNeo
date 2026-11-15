@@ -2,22 +2,19 @@ package net.per.primogemcraft.collab.jei;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IAdvancedRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.Identifier;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.client.WishLootItems;
 import net.per.primogemcraft.recipe.StellarConverterRecipe;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.registry.PGCRecipeTypes;
-import net.per.primogemcraft.system.wish.WishCoreAnvil;
 
 import java.util.List;
 
@@ -30,8 +27,8 @@ public class PGCJEIPlugin implements IModPlugin {
     public static final RecipeType<WishMaterialRecipe> WISH_MATERIALS = RecipeType.create(MOD_ID, "wish_materials", WishMaterialRecipe.class);
 
     @Override
-    public ResourceLocation getPluginUid() {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, "jei");
+    public Identifier getPluginUid() {
+        return Identifier.of(MOD_ID, "jei");
     }
 
     @Override
@@ -43,28 +40,17 @@ public class PGCJEIPlugin implements IModPlugin {
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(new ItemStack(PGCItems.WISH_CORE.get()), WISH_MATERIALS);
-        registration.addRecipeCatalyst(new ItemStack(PGCItems.TEN_PULL_WISH_CORE.get()), WISH_MATERIALS);
         registration.addRecipeCatalyst(new ItemStack(PGCItems.ACQUAINT_FATE.get()), WISH);
         registration.addRecipeCatalyst(new ItemStack(PGCItems.INTERTWINED_FATE.get()), WISH);
         registration.addRecipeCatalyst(new ItemStack(PGCItems.STELLAR_CONVERTER.get()), CONVERSION);
     }
 
     @Override
-    public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
-        registration.addRecipeTransferHandler(new WishCoreTransferHandler(registration.getTransferHelper()), RecipeTypes.ANVIL);
-    }
-
-    @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        var core = WishCoreAnvil.exampleCore();
-        var fates = new ItemStack(PGCItems.INTERTWINED_FATE.get(), WishCoreAnvil.FATE_COUNT);
-        registration.addRecipes(RecipeTypes.ANVIL, List.of(registration.getVanillaRecipeFactory().createAnvilRecipe(
-                fates, List.of(core), List.of(WishCoreAnvil.assemble(fates, core)),
-                ResourceLocation.fromNamespaceAndPath(MOD_ID, "ten_pull_wish_core_anvil"))));
-        var level = Minecraft.getInstance().level;
+        var level = MinecraftClient.getInstance().world;
         if (level != null) {
-            registration.addRecipes(CONVERSION, level.getRecipeManager().getAllRecipesFor(PGCRecipeTypes.STELLAR_CONVERTER.get())
-                    .stream().map(holder -> holder.value()).toList());
+            registration.addRecipes(CONVERSION, level.getRecipeManager().listAllOfType(PGCRecipeTypes.STELLAR_CONVERTER.get())
+                    .stream().map(holder -> holder).toList());
         }
     }
 

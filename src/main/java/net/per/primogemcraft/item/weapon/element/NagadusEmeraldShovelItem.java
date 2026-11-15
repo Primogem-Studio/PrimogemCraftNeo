@@ -1,24 +1,24 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.TickTask;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.ServerTask;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.ActionResult;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.world.World;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.math.Vec3d;
 import net.per.primogemcraft.component.WeaponCharge;
 import net.per.primogemcraft.registry.PGCBlocks;
 import net.per.primogemcraft.registry.PGCItems;
@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NagadusEmeraldShovelItem extends WishWeaponShovelItem {
-    private static final Tier TIER = new WeaponTier(1561, 2.0F, 5, WeaponTier.NETHERITE_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 2.0F, 5, WeaponTier.NETHERITE_INCORRECT,
             PGCItems.PRIMOGEM, PGCItems.NAGADUS_EMERALD_SLIVER);
 
     private static final float ATTACK_DAMAGE = 1.0F;
@@ -56,8 +56,8 @@ public class NagadusEmeraldShovelItem extends WishWeaponShovelItem {
     private static final String LOOT_TEXT = "loot";
     private static final String NO_REFINEMENT_TEXT = "no_refinement";
 
-    public NagadusEmeraldShovelItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public NagadusEmeraldShovelItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -67,17 +67,17 @@ public class NagadusEmeraldShovelItem extends WishWeaponShovelItem {
         var descriptions = new ArrayList<WeaponDescription>();
         if (sealed) descriptions.add(WeaponDescription.note(NO_REFINEMENT_TEXT));
         descriptions.add(WeaponDescription.of(SNEAK_USE_BLOCK, SOIL_STATE_TEXT,
-                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN, false, sealed), ChatFormatting.AQUA)));
+                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN, false, sealed), Formatting.AQUA)));
         descriptions.add(WeaponDescription.of(PASSIVE_ACTION, LOOT_TEXT,
-                WishReports.percent(ElementWeapons.scaled(refinement, LOOT_CHANCE, true, sealed), ChatFormatting.AQUA)));
+                WishReports.percent(ElementWeapons.scaled(refinement, LOOT_CHANCE, true, sealed), Formatting.AQUA)));
         return List.copyOf(descriptions);
     }
 
     @Override
-    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
-        var result = super.mineBlock(stack, level, state, pos, miningEntity);
-        if (!(level instanceof ServerLevel server) || !(miningEntity instanceof Player player)) return result;
-        if (!state.is(BlockTags.DIRT) && !state.is(Blocks.DIRT_PATH)) return result;
+    public boolean postMine(ItemStack stack, World level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
+        var result = super.postMine(stack, level, state, pos, miningEntity);
+        if (!(level instanceof ServerWorld server) || !(miningEntity instanceof PlayerEntity player)) return result;
+        if (!state.isIn(BlockTags.DIRT) && !state.isOf(Blocks.DIRT_PATH)) return result;
         var granted = WeaponCharge.of(stack) > 0;
         WeaponCharge.set(stack, 1);
         if (!granted) {
@@ -90,33 +90,33 @@ public class NagadusEmeraldShovelItem extends WishWeaponShovelItem {
             deferredPlace(server, pos);
             return result;
         }
-        var center = Vec3.atCenterOf(pos);
+        var center = Vec3d.ofCenter(pos);
         var dropped = new ItemEntity(server, center.x, center.y, center.z, new ItemStack(PGCBlocks.DENDRO_BLESSING.get()));
-        dropped.setPickUpDelay(PICKUP_DELAY);
-        server.addFreshEntity(dropped);
+        dropped.setPickupDelay(PICKUP_DELAY);
+        server.spawnEntity(dropped);
         return result;
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        var result = super.useOn(context);
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        var result = super.useOnBlock(context);
         var player = context.getPlayer();
-        if (!(context.getLevel() instanceof ServerLevel server) || player == null || !player.isShiftKeyDown()) return result;
-        var pos = context.getClickedPos();
+        if (!(context.getWorld() instanceof ServerWorld server) || player == null || !player.isSneaking()) return result;
+        var pos = context.getBlockPos();
         var state = server.getBlockState(pos);
-        if (!state.is(BlockTags.DIRT) && !state.is(Blocks.DIRT_PATH)) return result;
-        var stack = context.getItemInHand();
-        player.swing(context.getHand(), true);
-        player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.DENDRO, COOLDOWN, false));
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        if (!state.isIn(BlockTags.DIRT) && !state.isOf(Blocks.DIRT_PATH)) return result;
+        var stack = context.getStack();
+        player.swingHand(context.getHand());
+        player.getItemCooldownManager().set(stack.getItem(), ElementWeapons.ticks(player, stack, Element.DENDRO, COOLDOWN, false));
+        stack.damage(DURABILITY_LOSS, player, item -> {
         });
-        server.playSound(null, pos, PGCSounds.SOIL_SHAPING.get(), SoundSource.NEUTRAL, SOUND_VOLUME, SOUND_PITCH);
+        server.playSound(null, pos, PGCSounds.SOIL_SHAPING.get(), SoundCategory.NEUTRAL, SOUND_VOLUME, SOUND_PITCH);
         var reshaped = reshaped(server.getRandom());
-        if (reshaped != null) server.setBlock(pos, reshaped.defaultBlockState(), Block.UPDATE_ALL);
-        return InteractionResult.SUCCESS;
+        if (reshaped != null) server.setBlockState(pos, reshaped.getDefaultState(), Block.NOTIFY_ALL);
+        return ActionResult.SUCCESS;
     }
 
-    private static Block reshaped(RandomSource random) {
+    private static Block reshaped(Random random) {
         if (random.nextDouble() < GRASS_CHANCE) return Blocks.GRASS_BLOCK;
         if (random.nextDouble() < GRASS_CHANCE) return Blocks.DIRT_PATH;
         if (random.nextDouble() < GRASS_CHANCE) return Blocks.MYCELIUM;
@@ -128,9 +128,9 @@ public class NagadusEmeraldShovelItem extends WishWeaponShovelItem {
         return null;
     }
 
-    private static void deferredPlace(ServerLevel level, BlockPos pos) {
+    private static void deferredPlace(ServerWorld level, BlockPos pos) {
         var server = level.getServer();
-        server.tell(new TickTask(server.getTickCount() + DEFERRED_TICKS,
-                () -> level.setBlock(pos, PGCBlocks.DENDRO_BLESSING.get().defaultBlockState(), Block.UPDATE_ALL)));
+        server.execute(new ServerTask(server.getTicks() + DEFERRED_TICKS,
+                () -> level.setBlockState(pos, PGCBlocks.DENDRO_BLESSING.get().getDefaultState(), Block.NOTIFY_ALL)));
     }
 }

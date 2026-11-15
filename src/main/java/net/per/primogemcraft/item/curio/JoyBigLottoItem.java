@@ -1,19 +1,16 @@
 package net.per.primogemcraft.item.curio;
-
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.projectile.FireworkRocketEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.FireworkExplosion;
-import net.minecraft.world.item.component.Fireworks;
+import net.per.primogemcraft.compat.component.VanillaComponents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.per.primogemcraft.compat.component.FireworkExplosion;
 import net.per.primogemcraft.item.misc.StackOfCosmicBigLottoItem;
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.system.curio.CurioContext;
 import net.per.primogemcraft.system.curio.CurioForm;
 import net.per.primogemcraft.system.curio.LotteryCurioItem;
-
 import java.util.List;
 
 public class JoyBigLottoItem extends LotteryCurioItem {
@@ -30,23 +27,23 @@ public class JoyBigLottoItem extends LotteryCurioItem {
                     shell(FireworkExplosion.Shape.LARGE_BALL, 15095794, 16331918, true),
                     shell(FireworkExplosion.Shape.CREEPER, 2757375, 4784112, false))));
 
-    public JoyBigLottoItem(Properties properties) {
+    public JoyBigLottoItem(Settings properties) {
         super(CurioForm.FUSION, WIN_ODDS, context -> {
         }, JoyBigLottoItem::celebrate, properties);
     }
 
     private static void celebrate(CurioContext context) {
         var player = context.player();
-        var level = context.level();
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.SCAM.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        var level = context.getWorld();
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.SCAM.get(), SoundCategory.PLAYERS, 1.0F, 1.0F);
         for (var shell : SHELLS)
-            level.addFreshEntity(new FireworkRocketEntity(level, player.getX() + shell.x(), player.getY() + shell.y(), player.getZ() + shell.z(), rocket(shell)));
+            level.spawnEntity(new FireworkRocketEntity(level, player.getX() + shell.x(), player.getY() + shell.y(), player.getZ() + shell.z(), rocket(shell)));
         context.give(StackOfCosmicBigLottoItem.rolled(context.random()));
     }
 
     private static ItemStack rocket(Shell shell) {
         var stack = new ItemStack(Items.FIREWORK_ROCKET);
-        stack.set(DataComponents.FIREWORKS, new Fireworks(shell.flight(), shell.explosions()));
+        VanillaComponents.setFireworks(stack, shell.explosions(), shell.flight());
         return stack;
     }
 

@@ -1,108 +1,77 @@
 package net.per.primogemcraft.block;
 
-import com.mojang.serialization.MapCodec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Explosion;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.util.TriState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.ActionResult;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.shape.VoxelShape;
+
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.util.Advancements;
 
 public class March7thStatueBlock extends PGCHorizontalBlock {
-    public static final MapCodec<March7thStatueBlock> CODEC = simpleCodec(properties -> new March7thStatueBlock(properties, Shapes.block()));
-
     private static final float PLACE_VOLUME = 0.4F;
     private static final float BREAK_VOLUME = 0.3F;
     private static final float PITCH = 1.0F;
     private static final float ENCHANT_POWER = 8.0F;
 
-    public March7thStatueBlock(BlockBehaviour.Properties properties, VoxelShape shape) {
-        super(properties, shape);
+    public March7thStatueBlock(AbstractBlock.Settings settings, VoxelShape shape) {
+        super(settings, shape);
     }
 
-    @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, BlockState plant) {
-        return TriState.TRUE;
-    }
-
-    @Override
-    public float getEnchantPowerBonus(BlockState state, LevelReader level, BlockPos pos) {
+    public float getEnchantingPowerBonus(BlockState state, WorldView world, BlockPos pos) {
         return ENCHANT_POWER;
     }
 
-    @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-        super.onPlace(state, level, pos, oldState, movedByPiston);
-        puzzled(level, pos);
+    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        super.onPlaced(world, pos, state, placer, stack);
+        puzzled(world, pos);
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
-        super.neighborChanged(state, level, pos, neighborBlock, fromPos, movedByPiston);
-        puzzled(level, pos);
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+        super.neighborUpdate(state, world, pos, block, fromPos, notify);
+        puzzled(world, pos);
     }
 
     @Override
-    public void attack(BlockState state, Level level, BlockPos pos, Player player) {
-        puzzled(level, pos);
-        if (player instanceof ServerPlayer serverPlayer) Advancements.grant(serverPlayer, "enough_stop_repeating");
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        super.onBreak(world, pos, state, player);
+        startled(world, pos);
     }
 
     @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        var removed = super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
-        startled(level, pos);
-        return removed;
+    public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
+        startled(world, hit.getBlockPos());
     }
 
     @Override
-    public void wasExploded(Level level, BlockPos pos, Explosion explosion) {
-        super.wasExploded(level, pos, explosion);
-        startled(level, pos);
-    }
-
-    @Override
-    protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
-        startled(level, hit.getBlockPos());
-    }
-
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide()) {
-            level.playSound(null, pos, PGCSounds.MARCH_7TH_GIGGLE.get(), SoundSource.BLOCKS, BREAK_VOLUME, PITCH);
-            if (player instanceof ServerPlayer serverPlayer) Advancements.grant(serverPlayer, "repeat_maiden");
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (!world.isClient()) {
+            world.playSound(null, pos, PGCSounds.MARCH_7TH_GIGGLE.get(), SoundCategory.BLOCKS, BREAK_VOLUME, PITCH);
+            if (player instanceof ServerPlayerEntity serverPlayer) Advancements.grant(serverPlayer, "repeat_maiden");
         }
-        return InteractionResult.SUCCESS;
+        return ActionResult.SUCCESS;
     }
 
-    private static void puzzled(Level level, BlockPos pos) {
-        if (level.isClientSide()) return;
-        level.playSound(null, pos, PGCSounds.MARCH_7TH_PUZZLED.get(), SoundSource.BLOCKS, PLACE_VOLUME, PITCH);
+    private static void puzzled(World world, BlockPos pos) {
+        if (world.isClient()) return;
+        world.playSound(null, pos, PGCSounds.MARCH_7TH_PUZZLED.get(), SoundCategory.BLOCKS, PLACE_VOLUME, PITCH);
     }
 
-    private static void startled(Level level, BlockPos pos) {
-        if (level.isClientSide()) return;
-        level.playSound(null, pos, PGCSounds.MARCH_7TH_STARTLED.get(), SoundSource.BLOCKS, BREAK_VOLUME, PITCH);
+    private static void startled(World world, BlockPos pos) {
+        if (world.isClient()) return;
+        world.playSound(null, pos, PGCSounds.MARCH_7TH_STARTLED.get(), SoundCategory.BLOCKS, BREAK_VOLUME, PITCH);
     }
 }

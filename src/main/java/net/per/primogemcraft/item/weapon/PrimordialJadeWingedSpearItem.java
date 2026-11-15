@@ -1,38 +1,35 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.MaceItem;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.*;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.world.World;
+import net.minecraft.util.math.Vec3d;
 import net.per.primogemcraft.component.WeaponCharge;
+import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.system.weapon.*;
 import net.per.primogemcraft.system.wish.WishReports;
-import net.per.primogemcraft.system.wish.WishRoller;
 import net.per.primogemcraft.util.PGCTimer;
 import net.per.primogemcraft.util.TemporaryAttributes;
 
@@ -42,15 +39,16 @@ import java.util.function.Predicate;
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public class PrimordialJadeWingedSpearItem extends WishWeaponItem {
-    private static final Tier TIER = new WeaponTier(2048, 4.0F, 20, WeaponTier.WOODEN_INCORRECT, Ingredient.of(Items.BREEZE_ROD));
+    private static final ToolMaterial TIER = new WeaponTier(2048, 4.0F, 20, WeaponTier.WOODEN_INCORRECT, Ingredient.ofItems(Items.BLAZE_ROD));
 
-    private static final ResourceLocation REACH_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "weapon/reach");
-    private static final ResourceLocation LIGHT_STEP_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "weapon/light_step");
-    private static final ResourceLocation LIGHT_STEP_GRAVITY_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "weapon/light_step_gravity");
+    private static final Identifier REACH_ID = Identifier.of(MOD_ID, "weapon/reach");
+    private static final Identifier LIGHT_STEP_ID = Identifier.of(MOD_ID, "weapon/light_step");
+    private static final Identifier LIGHT_STEP_GRAVITY_ID = Identifier.of(MOD_ID, "weapon/light_step_gravity");
 
     private static final String CHARGE_TIMER = "jade_winged_spear_charge";
     private static final String FLIGHT_TIMER = "jade_winged_spear_flight";
-    private static final int MAX_CHARGES = 5;
+    private static final int BASE_CHARGES = 2;
+    private static final int MAX_CHARGES = 3;
     private static final int CHARGE_TICKS_BASE = 160;
     private static final int CHARGE_TICKS_STEP = 20;
     private static final int CHARGE_RESTORE_THRESHOLD = 1;
@@ -81,7 +79,8 @@ public class PrimordialJadeWingedSpearItem extends WishWeaponItem {
     private static final float SMASH_HEAVY_BASE = 22.0F;
     private static final double SMASH_KNOCKBACK_POWER = 0.7D;
     private static final double SMASH_KNOCKBACK_LIFT = 0.7D;
-    private static final double SMASH_KNOCKBACK_RADIUS_SQUARED = MaceItem.SMASH_ATTACK_KNOCKBACK_RADIUS * MaceItem.SMASH_ATTACK_KNOCKBACK_RADIUS;
+    private static final double SMASH_KNOCKBACK_RADIUS = 3.5D;
+    private static final double SMASH_KNOCKBACK_RADIUS_SQUARED = SMASH_KNOCKBACK_RADIUS * SMASH_KNOCKBACK_RADIUS;
     private static final int SMASH_EFFECT = 2013;
     private static final int SMASH_EFFECT_DATA = 750;
     private static final String BASIC_SKILL = "basic_skill";
@@ -96,25 +95,29 @@ public class PrimordialJadeWingedSpearItem extends WishWeaponItem {
     private static final String POWER_TEXT = "power";
     private static final String REACH_TEXT = "reach";
 
-    public PrimordialJadeWingedSpearItem(Properties properties) {
-        super(TIER, properties.attributes(attributes()).stacksTo(1).fireResistant());
-    }
-
-    private static ItemAttributeModifiers attributes() {
-        return ItemAttributeModifiers.builder()
-                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(MaceItem.BASE_ATTACK_DAMAGE_ID, ATTACK_DAMAGE, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-                .add(Attributes.ATTACK_SPEED, new AttributeModifier(MaceItem.BASE_ATTACK_SPEED_ID, ATTACK_SPEED, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-                .add(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(REACH_ID, REACH_BONUS, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-                .build();
+    public PrimordialJadeWingedSpearItem(Settings properties) {
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.maxCount(1).fireproof());
     }
 
     @Override
-    public List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
+    public com.google.common.collect.Multimap<net.minecraft.entity.attribute.EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+        var modifiers = com.google.common.collect.ImmutableMultimap.<net.minecraft.entity.attribute.EntityAttribute, EntityAttributeModifier>builder();
+        if (slot == EquipmentSlot.MAINHAND) {
+            modifiers.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(net.minecraft.item.Item.ATTACK_DAMAGE_MODIFIER_ID, "Weapon modifier", ATTACK_DAMAGE, EntityAttributeModifier.Operation.ADDITION));
+            modifiers.put(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(net.minecraft.item.Item.ATTACK_SPEED_MODIFIER_ID, "Weapon modifier", ATTACK_SPEED, EntityAttributeModifier.Operation.ADDITION));
+            modifiers.put(net.per.primogemcraft.compat.attribute.AttributesCompat.ENTITY_REACH.get(),
+                    net.per.primogemcraft.compat.attribute.AttributesCompat.modifier(REACH_ID, REACH_BONUS, EntityAttributeModifier.Operation.ADDITION));
+        }
+        return modifiers.build();
+    }
+
+    @Override
+    public List<WeaponModifier> conditionalPassives(PlayerEntity player, ItemStack stack, int slot, int refinement) {
         if (isHeld(player, slot, stack)) return List.of();
         return List.of(
-                WeaponModifier.conditional(Attributes.ATTACK_DAMAGE, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL,
+                WeaponModifier.conditional(EntityAttributes.GENERIC_ATTACK_DAMAGE, EntityAttributeModifier.Operation.MULTIPLY_TOTAL,
                         (owner, worn, value) -> POWER_BASE + POWER_STEP * (value - 1)),
-                WeaponModifier.conditional(Attributes.ENTITY_INTERACTION_RANGE, AttributeModifier.Operation.ADD_MULTIPLIED_BASE,
+                WeaponModifier.conditional(net.per.primogemcraft.compat.attribute.AttributesCompat.ENTITY_REACH.get(), EntityAttributeModifier.Operation.MULTIPLY_BASE,
                         (owner, worn, value) -> (POWER_BASE + POWER_STEP * (value - 1)) * REACH_RATIO));
     }
 
@@ -124,52 +127,49 @@ public class PrimordialJadeWingedSpearItem extends WishWeaponItem {
         return List.of(
                 WeaponDescription.of(BASIC_SKILL, MOVESET_TEXT),
                 WeaponDescription.of(RIGHT_CLICK, THRUST_TEXT,
-                        WishReports.percent(THRUST_BASE + THRUST_STEP * (refinement - 1), ChatFormatting.AQUA),
-                        WishReports.number(chargeSeconds(refinement), ChatFormatting.AQUA),
-                        WishReports.number(maxCharges(refinement), ChatFormatting.AQUA)),
+                        WishReports.percent(THRUST_BASE + THRUST_STEP * (refinement - 1), Formatting.AQUA),
+                        WishReports.number(chargeSeconds(refinement), Formatting.AQUA),
+                        WishReports.number(maxCharges(refinement), Formatting.AQUA)),
                 WeaponDescription.note(STORAGE_TEXT),
-                WeaponDescription.note(CHARGE_TEXT,
-                        WishReports.number(Math.min(WeaponCharge.of(stack), maxCharges(refinement)), ChatFormatting.AQUA),
-                        WishReports.number(maxCharges(refinement), ChatFormatting.AQUA)),
+                WeaponDescription.note(CHARGE_TEXT, WishReports.number(WeaponCharge.of(stack), Formatting.AQUA)),
                 WeaponDescription.of(SNEAK_USE, FLIGHT_TEXT,
-                        WishReports.number(flightLevel(refinement), ChatFormatting.AQUA),
-                        WishReports.number(flightTicks(refinement) / 20, ChatFormatting.AQUA)),
+                        WishReports.number(flightLevel(refinement), Formatting.AQUA),
+                        WishReports.number(flightTicks(refinement) / 20, Formatting.AQUA)),
                 WeaponDescription.of(PASSIVE_ACTION, POWER_TEXT,
-                        WishReports.percent(POWER_BASE + POWER_STEP * (refinement - 1), ChatFormatting.AQUA)),
+                        WishReports.percent(POWER_BASE + POWER_STEP * (refinement - 1), Formatting.AQUA)),
                 WeaponDescription.note(REACH_TEXT,
-                        WishReports.percent((POWER_BASE + POWER_STEP * (refinement - 1)) * REACH_RATIO, ChatFormatting.AQUA)));
+                        WishReports.percent((POWER_BASE + POWER_STEP * (refinement - 1)) * REACH_RATIO, Formatting.AQUA)));
     }
 
     @Override
-    public float getAttackDamageBonus(Entity target, float damage, DamageSource source) {
-        if (!(source.getDirectEntity() instanceof LivingEntity attacker) || !MaceItem.canSmashAttack(attacker)) return 0.0F;
-        var bonus = smashBonus(attacker.fallDistance);
-        return attacker.level() instanceof ServerLevel level
-                ? bonus + EnchantmentHelper.modifyFallBasedDamage(level, attacker.getWeaponItem(), target, source, 0.0F) * attacker.fallDistance
-                : bonus;
-    }
-
-    @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        var result = super.hurtEnemy(stack, target, attacker);
-        if (attacker instanceof ServerPlayer player && MaceItem.canSmashAttack(player)) smash(player, target);
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        var result = super.postHit(stack, target, attacker);
+        if (canSmash(attacker)) {
+            var bonus = smashBonus(attacker.fallDistance);
+            if (bonus > 0.0F) {
+                var source = attacker instanceof PlayerEntity player
+                        ? attacker.getDamageSources().playerAttack(player)
+                        : attacker.getDamageSources().mobAttack(attacker);
+                target.damage(source, bonus);
+            }
+            if (attacker instanceof ServerPlayerEntity player) smash(player, target);
+            attacker.fallDistance = 0;
+        }
         return result;
     }
 
-    @Override
-    public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        super.postHurtEnemy(stack, target, attacker);
-        if (MaceItem.canSmashAttack(attacker)) attacker.resetFallDistance();
+    /** 1.21 的 MaceItem.canSmashAttack：下落中且未着地时可发动重击。 */
+    private static boolean canSmash(LivingEntity attacker) {
+        return attacker.fallDistance > 0.0F && !attacker.isOnGround();
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, World level, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, level, entity, slot, selected);
-        if (level.isClientSide() || !(entity instanceof Player player)) return;
+        if (level.isClient() || !(entity instanceof PlayerEntity player)) return;
         if (!selected) return;
         var refinement = WeaponState.of(stack).refinements();
         var charges = WeaponCharge.of(stack);
-        if (charges > maxCharges(refinement)) WeaponCharge.set(stack, maxCharges(refinement));
         if (charges >= maxCharges(refinement)) return;
         if (!PGCTimer.isDone(player, CHARGE_TIMER)) return;
         WeaponCharge.set(stack, charges + 1);
@@ -177,59 +177,51 @@ public class PrimordialJadeWingedSpearItem extends WishWeaponItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (level.isClientSide()) return super.use(level, player, hand);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (level.isClient()) return super.use(level, player, hand);
         var refinement = WeaponState.of(stack).refinements();
-        if (player.isShiftKeyDown()) {
-            if (player.hasEffect(MobEffects.JUMP) || !PGCTimer.isDone(player, FLIGHT_TIMER)) return super.use(level, player, hand);
+        if (player.isSneaking()) {
+            if (player.hasStatusEffect(StatusEffects.JUMP_BOOST) || !PGCTimer.isDone(player, FLIGHT_TIMER)) return super.use(level, player, hand);
             PGCTimer.set(player, FLIGHT_TIMER, FLIGHT_COOLDOWN);
-            player.addEffect(new MobEffectInstance(MobEffects.JUMP, flightTicks(refinement), flightLevel(refinement) - 1, false, false));
-            level.playSound(null, player.blockPosition(), SoundEvents.WARDEN_EMERGE, SoundSource.PLAYERS, 1.0F, 3.0F);
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, flightTicks(refinement), flightLevel(refinement) - 1, false, false));
+            level.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_WARDEN_EMERGE, SoundCategory.PLAYERS, 1.0F, 3.0F);
             return super.use(level, player, hand);
         }
-        var charges = Math.min(WeaponCharge.of(stack), maxCharges(refinement));
+        var charges = WeaponCharge.of(stack);
         if (charges <= 0) return super.use(level, player, hand);
-        if (level instanceof ServerLevel server && player instanceof ServerPlayer serverPlayer) thrust(server, serverPlayer, refinement);
+        if (level instanceof ServerWorld server && player instanceof ServerPlayerEntity serverPlayer) thrust(server, serverPlayer, refinement);
         WeaponCharge.set(stack, charges - 1);
         if (PGCTimer.isDone(player, CHARGE_TIMER)) PGCTimer.set(player, CHARGE_TIMER, chargeTicks(refinement));
         return super.use(level, player, hand);
     }
 
-    private static void thrust(ServerLevel level, ServerPlayer player, int refinement) {
-        var grounded = player.onGround();
+    private static void thrust(ServerWorld level, ServerPlayerEntity player, int refinement) {
+        var grounded = player.isOnGround();
         var speed = (DASH_BASE + DASH_STEP * (refinement - 1)) * (grounded ? 2.0D : 1.0D);
-        var direction = Vec3.directionFromRotation(0.0F, player.getYRot());
-        player.setDeltaMovement(direction.x * speed, grounded ? 0.0D : AIR_SPEED, direction.z * speed);
-        player.hurtMarked = true;
-        ThrustDash.start(player, (float) (player.getAttributeValue(Attributes.ATTACK_DAMAGE) * (THRUST_BASE + THRUST_STEP * (refinement - 1))));
-        TemporaryAttributes.apply(player, LIGHT_STEP_ID, Attributes.STEP_HEIGHT, LIGHT_STEP_BONUS,
-                AttributeModifier.Operation.ADD_VALUE, lightStepTicks(grounded));
-        TemporaryAttributes.apply(player, LIGHT_STEP_GRAVITY_ID, Attributes.GRAVITY, LIGHT_STEP_GRAVITY,
-                AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL, lightStepTicks(grounded));
-        var flourish = WishRoller.isWearingColorfulSunglasses(player);
-        level.playSound(null, BlockPos.containing(player.position()),
-                flourish ? PGCSounds.THRUST_FLOURISH.get() : SoundEvents.TRIDENT_THROW.value(), SoundSource.PLAYERS, flourish ? 5.0F : 1.0F, 1.0F);
+        var direction = Vec3d.fromPolar(0.0F, player.getYaw());
+        player.setVelocity(direction.x * speed, grounded ? 0.0D : AIR_SPEED, direction.z * speed);
+        player.hurtTime = 10;
+        ThrustDash.start(player, (float) (player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) * (THRUST_BASE + THRUST_STEP * (refinement - 1))));
+        TemporaryAttributes.apply(player, LIGHT_STEP_ID, net.per.primogemcraft.compat.attribute.AttributesCompat.STEP_HEIGHT_ADDITION.get(), LIGHT_STEP_BONUS,
+                EntityAttributeModifier.Operation.ADDITION, lightStepTicks(grounded));
+        TemporaryAttributes.apply(player, LIGHT_STEP_GRAVITY_ID, net.minecraft.entity.attribute.EntityAttributes.GENERIC_MOVEMENT_SPEED, LIGHT_STEP_GRAVITY,
+                EntityAttributeModifier.Operation.MULTIPLY_TOTAL, lightStepTicks(grounded));
+        var flourish = player.getEquippedStack(EquipmentSlot.HEAD).isOf(PGCItems.COLORFUL_SUNGLASSES.get());
+        level.playSound(null, BlockPos.ofFloored(player.getPos()),
+                flourish ? PGCSounds.THRUST_FLOURISH.get() : SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, flourish ? 5.0F : 1.0F, 1.0F);
     }
 
-    private static void smash(ServerPlayer player, LivingEntity target) {
-        var position = player.position();
-        if (player.isIgnoringFallDamageFromCurrentImpulse() && player.currentImpulseImpactPos != null) {
-            if (player.currentImpulseImpactPos.y > position.y) player.currentImpulseImpactPos = position;
-        } else {
-            player.currentImpulseImpactPos = position;
-        }
-        player.setIgnoreFallDamageFromCurrentImpulse(true);
-        player.setDeltaMovement(player.getDeltaMovement().with(Direction.Axis.Y, 0.01D));
-        player.connection.send(new ClientboundSetEntityMotionPacket(player));
-        var level = player.serverLevel();
-        if (target.onGround()) {
-            player.setSpawnExtraParticlesOnFall(true);
-            var sound = player.fallDistance > SMASH_HEAVY_THRESHOLD ? SoundEvents.MACE_SMASH_GROUND_HEAVY : SoundEvents.MACE_SMASH_GROUND;
-            level.playSound(null, position.x, position.y, position.z, sound, player.getSoundSource(), 1.0F, 1.0F);
-        } else {
-            level.playSound(null, position.x, position.y, position.z, SoundEvents.MACE_SMASH_AIR, player.getSoundSource(), 1.0F, 1.0F);
-        }
+    private static void smash(ServerPlayerEntity player, LivingEntity target) {
+        var position = player.getPos();
+        // 1.21 用 currentImpulseImpactPos 免疫本次冲量的摔落伤害；1.20.1 直接清零摔落距离等价实现
+        player.fallDistance = 0;
+        player.setVelocity(player.getVelocity().withAxis(Direction.Axis.Y, 0.01D));
+        player.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket(player));
+        var level = player.getServerWorld();
+        // 1.20.1 没有重锤专属音效，用铁砧落地/爆炸声替代重击反馈
+        var sound = player.fallDistance > SMASH_HEAVY_THRESHOLD ? SoundEvents.BLOCK_ANVIL_LAND : SoundEvents.ENTITY_GENERIC_EXPLODE;
+        level.playSound(null, position.getX(), position.getY(), position.getZ(), sound, net.minecraft.sound.SoundCategory.PLAYERS, 1.0F, 1.0F);
         knockback(level, player, target);
     }
 
@@ -239,46 +231,46 @@ public class PrimordialJadeWingedSpearItem extends WishWeaponItem {
         return SMASH_HEAVY_BASE + fallDistance - SMASH_HEAVY_LIMIT;
     }
 
-    private static void knockback(ServerLevel level, Player player, LivingEntity target) {
-        level.levelEvent(SMASH_EFFECT, target.getOnPos(), SMASH_EFFECT_DATA);
-        level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(MaceItem.SMASH_ATTACK_KNOCKBACK_RADIUS), knockbackTarget(player, target))
+    private static void knockback(net.minecraft.server.world.ServerWorld level, net.minecraft.entity.player.PlayerEntity player, LivingEntity target) {
+        level.syncWorldEvent(SMASH_EFFECT, target.getSteppingPos(), SMASH_EFFECT_DATA);
+        level.getEntitiesByClass(LivingEntity.class, target.getBoundingBox().expand(SMASH_KNOCKBACK_RADIUS), knockbackTarget(player, target))
                 .forEach(victim -> {
-                    var offset = victim.position().subtract(target.position());
+                    var offset = victim.getPos().subtract(target.getPos());
                     var power = knockbackPower(player, victim, offset);
                     if (power <= 0.0D) return;
-                    var push = offset.normalize().scale(power);
-                    victim.push(push.x, SMASH_KNOCKBACK_LIFT, push.z);
-                    if (victim instanceof ServerPlayer pushed) pushed.connection.send(new ClientboundSetEntityMotionPacket(pushed));
+                    var push = offset.normalize().multiply(power);
+                    victim.addVelocity(push.x, SMASH_KNOCKBACK_LIFT, push.z);
+                    if (victim instanceof net.minecraft.server.network.ServerPlayerEntity pushed) pushed.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket(pushed));
                 });
     }
 
-    private static Predicate<LivingEntity> knockbackTarget(Player player, LivingEntity target) {
+    private static Predicate<LivingEntity> knockbackTarget(net.minecraft.entity.player.PlayerEntity player, LivingEntity target) {
         return victim -> !victim.isSpectator()
                 && victim != player
                 && victim != target
-                && !player.isAlliedTo(victim)
+                && !player.isTeammate(victim)
                 && !ownedByPlayer(player, victim)
                 && !isMarker(victim)
-                && target.distanceToSqr(victim) <= SMASH_KNOCKBACK_RADIUS_SQUARED;
+                && target.squaredDistanceTo(victim) <= SMASH_KNOCKBACK_RADIUS_SQUARED;
     }
 
-    private static boolean ownedByPlayer(Player player, LivingEntity entity) {
-        return entity instanceof TamableAnimal animal && animal.isTame() && player.getUUID().equals(animal.getOwnerUUID());
+    private static boolean ownedByPlayer(net.minecraft.entity.player.PlayerEntity player, LivingEntity entity) {
+        return entity instanceof net.minecraft.entity.passive.TameableEntity animal && animal.isTamed() && player.getUuid().equals(animal.getOwnerUuid());
     }
 
     private static boolean isMarker(LivingEntity entity) {
-        return entity instanceof ArmorStand stand && stand.isMarker();
+        return entity instanceof net.minecraft.entity.decoration.ArmorStandEntity stand && stand.isMarker();
     }
 
-    private static double knockbackPower(Player player, LivingEntity victim, Vec3 offset) {
-        return (MaceItem.SMASH_ATTACK_KNOCKBACK_RADIUS - offset.length())
+    private static double knockbackPower(net.minecraft.entity.player.PlayerEntity player, LivingEntity victim, net.minecraft.util.math.Vec3d offset) {
+        return (SMASH_KNOCKBACK_RADIUS - offset.length())
                 * SMASH_KNOCKBACK_POWER
                 * (player.fallDistance > SMASH_HEAVY_THRESHOLD ? 2.0D : 1.0D)
-                * (1.0D - victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                * (1.0D - victim.getAttributeValue(net.minecraft.entity.attribute.EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
     }
 
     private static int maxCharges(int refinement) {
-        return refinement >= 5 ? MAX_CHARGES : 3;
+        return Math.min(MAX_CHARGES, BASE_CHARGES + (refinement > 4 ? refinement - 4 : 0));
     }
 
     private static int chargeTicks(int refinement) {

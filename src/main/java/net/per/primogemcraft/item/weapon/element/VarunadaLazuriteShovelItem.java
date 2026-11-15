@@ -1,14 +1,14 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.ActionResult;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
 import net.per.primogemcraft.system.weapon.WeaponTier;
@@ -17,7 +17,7 @@ import net.per.primogemcraft.system.weapon.WishWeaponShovelItem;
 import java.util.List;
 
 public class VarunadaLazuriteShovelItem extends WishWeaponShovelItem {
-    private static final Tier TIER = new WeaponTier(1561, 8.0F, 15, WeaponTier.DIAMOND_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 8.0F, 15, WeaponTier.DIAMOND_INCORRECT,
             PGCItems.PRIMOGEM, PGCItems.VARUNADA_LAZURITE_SLIVER);
 
     private static final float ATTACK_DAMAGE = 5.0F;
@@ -32,8 +32,8 @@ public class VarunadaLazuriteShovelItem extends WishWeaponShovelItem {
     private static final String FAILURE_TEXT = "failure";
     private static final String NO_REFINEMENT_TEXT = "no_refinement";
 
-    public VarunadaLazuriteShovelItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public VarunadaLazuriteShovelItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -46,21 +46,21 @@ public class VarunadaLazuriteShovelItem extends WishWeaponShovelItem {
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        var result = super.useOn(context);
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        var result = super.useOnBlock(context);
         var player = context.getPlayer();
-        if (!(context.getLevel() instanceof ServerLevel server) || player == null || !player.isShiftKeyDown()) return result;
-        var pos = context.getClickedPos();
+        if (!(context.getWorld() instanceof ServerWorld server) || player == null || !player.isSneaking()) return result;
+        var pos = context.getBlockPos();
         var block = server.getBlockState(pos).getBlock();
         if (block != Blocks.DIRT && block != Blocks.DIRT_PATH && block != Blocks.CLAY) return result;
-        var stack = context.getItemInHand();
-        server.setBlock(pos, (block == Blocks.CLAY ? Blocks.SAND : Blocks.CLAY).defaultBlockState(), Block.UPDATE_ALL);
-        server.playSound(null, pos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        var stack = context.getStack();
+        server.setBlockState(pos, (block == Blocks.CLAY ? Blocks.SAND : Blocks.CLAY).getDefaultState(), Block.NOTIFY_ALL);
+        server.playSound(null, pos, SoundEvents.ITEM_HOE_TILL, SoundCategory.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
+        stack.damage(DURABILITY_LOSS, player, item -> {
         });
         if (server.getRandom().nextDouble() < FAILURE_CHANCE)
-            server.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-        player.swing(context.getHand(), true);
-        return InteractionResult.SUCCESS;
+            server.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+        player.swingHand(context.getHand());
+        return ActionResult.SUCCESS;
     }
 }

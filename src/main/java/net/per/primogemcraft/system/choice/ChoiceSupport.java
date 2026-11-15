@@ -1,8 +1,8 @@
 package net.per.primogemcraft.system.choice;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,16 +10,16 @@ import java.util.List;
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public final class ChoiceSupport {
-    public static final ResourceLocation BACKGROUND = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/choice_background.png");
-    private static final ResourceLocation DEFAULT_SHEET = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/choice_card.png");
-    private static final ResourceLocation DEFAULT_BACK = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/choice_card_back.png");
-    private static final ResourceLocation CURIO_SHEET = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/curio_card.png");
-    private static final ResourceLocation CURIO_BACK = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/curio_card_back.png");
-    private static final ResourceLocation ENCHANT_SHEET = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/enchant_card.png");
-    private static final ResourceLocation ENCHANT_BACK = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/enchant_card_back.png");
-    private static final ResourceLocation EVENT_SHEET = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/event_card.png");
-    private static final ResourceLocation EVENT_BACK = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/event_card_back.png");
-    private static final ResourceLocation LEVEL_SHEET = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/choice_card_level.png");
+    public static final Identifier BACKGROUND = Identifier.of(MOD_ID, "textures/gui/choice_background.png");
+    private static final Identifier DEFAULT_SHEET = Identifier.of(MOD_ID, "textures/gui/choice_card.png");
+    private static final Identifier DEFAULT_BACK = Identifier.of(MOD_ID, "textures/gui/choice_card_back.png");
+    private static final Identifier CURIO_SHEET = Identifier.of(MOD_ID, "textures/gui/curio_card.png");
+    private static final Identifier CURIO_BACK = Identifier.of(MOD_ID, "textures/gui/curio_card_back.png");
+    private static final Identifier ENCHANT_SHEET = Identifier.of(MOD_ID, "textures/gui/enchant_card.png");
+    private static final Identifier ENCHANT_BACK = Identifier.of(MOD_ID, "textures/gui/enchant_card_back.png");
+    private static final Identifier EVENT_SHEET = Identifier.of(MOD_ID, "textures/gui/event_card.png");
+    private static final Identifier EVENT_BACK = Identifier.of(MOD_ID, "textures/gui/event_card_back.png");
+    private static final Identifier LEVEL_SHEET = Identifier.of(MOD_ID, "textures/gui/choice_card_level.png");
     private static final int LEVEL_COLUMNS = 5;
     private static final int DEFAULT_COLUMNS = 4;
     private static final int DEFAULT_TILE_WIDTH = 16;
@@ -36,20 +36,20 @@ public final class ChoiceSupport {
     private ChoiceSupport() {
     }
 
-    public static ResourceLocation texture(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier texture(String path) {
+        return Identifier.of(MOD_ID, path);
     }
 
     public static ChoiceCard card(ItemStack item) {
         return ChoiceCard.of(item);
     }
 
-    public static ChoiceCard card(Component title, ItemStack item, Component description) {
-        return new ChoiceCard(title, item, description, Component.empty(), null, null, null, false, false, true, ChoiceCard.AUTO_QUALITY, Component.empty(), List.of());
+    public static ChoiceCard card(Text title, ItemStack item, Text description) {
+        return new ChoiceCard(title, item, description, Text.empty(), null, null, null, false, false, true, ChoiceCard.AUTO_QUALITY, Text.empty(), List.of());
     }
 
-    public static ChoiceCard card(Component title, ItemStack item, Component description, Component footnote) {
-        return new ChoiceCard(title, item, description, footnote, null, null, null, false, false, true, ChoiceCard.AUTO_QUALITY, Component.empty(), List.of());
+    public static ChoiceCard card(Text title, ItemStack item, Text description, Text footnote) {
+        return new ChoiceCard(title, item, description, footnote, null, null, null, false, false, true, ChoiceCard.AUTO_QUALITY, Text.empty(), List.of());
     }
 
     public static ChoiceSpin spin(ChoiceSpinSpeed speed) {
@@ -94,7 +94,7 @@ public final class ChoiceSupport {
 
     private static boolean contains(List<ItemStack> collected, ItemStack candidate) {
         for (var stack : collected) {
-            if (ItemStack.isSameItemSameComponents(stack, candidate)) return true;
+            if (ItemStack.areItemsEqual(stack, candidate)) return true;
         }
         return false;
     }

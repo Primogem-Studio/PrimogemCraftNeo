@@ -5,7 +5,7 @@ import net.per.primogemcraft.system.curio.CurioItem;
 import net.per.primogemcraft.system.curio.CurioTrigger;
 
 public class FaithBondItem extends CurioItem {
-    public FaithBondItem(Properties properties) {
+    public FaithBondItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.NORMAL, properties);
     }
 

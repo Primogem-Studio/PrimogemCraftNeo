@@ -1,15 +1,15 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.world.World;
 import net.per.primogemcraft.component.PastDelay;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCItems;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VajradaAmethystShovelItem extends WishWeaponShovelItem {
-    private static final Tier TIER = new WeaponTier(1561, 8.0F, 10, WeaponTier.DIAMOND_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 8.0F, 10, WeaponTier.DIAMOND_INCORRECT,
             PGCItems.PRIMOGEM, PGCItems.VAJRADA_AMETHYST_SLIVER);
 
     private static final float ATTACK_DAMAGE = 4.5F;
@@ -39,8 +39,8 @@ public class VajradaAmethystShovelItem extends WishWeaponShovelItem {
     private static final String DELAY_TEXT = "delay";
     private static final String NO_REFINEMENT_TEXT = "no_refinement";
 
-    public VajradaAmethystShovelItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public VajradaAmethystShovelItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -51,28 +51,27 @@ public class VajradaAmethystShovelItem extends WishWeaponShovelItem {
         var descriptions = new ArrayList<WeaponDescription>();
         if (sealed) descriptions.add(WeaponDescription.note(NO_REFINEMENT_TEXT));
         descriptions.add(WeaponDescription.of(SNEAK_USE, RECORD_TEXT,
-                WishReports.number(ElementWeapons.seconds(refinement, cooldownBase, false, sealed), ChatFormatting.AQUA)));
+                WishReports.number(ElementWeapons.seconds(refinement, cooldownBase, false, sealed), Formatting.AQUA)));
         descriptions.add(WeaponDescription.of(SNEAK_SWING, DELAY_TEXT));
         return List.copyOf(descriptions);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (!player.isShiftKeyDown()) return InteractionResultHolder.pass(stack);
-        if (!(level instanceof ServerLevel server)) return InteractionResultHolder.success(stack);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (!player.isSneaking()) return TypedActionResult.pass(stack);
+        if (!(level instanceof ServerWorld server)) return TypedActionResult.success(stack);
         var ticks = PastDelay.secondsOf(stack) * TICKS_PER_SECOND;
-        stack.hurtAndBreak((int) (stack.getMaxDamage() * DURABILITY_RATIO), server, player, item -> {
+        stack.damage((int) (stack.getMaxDamage() * DURABILITY_RATIO), player, item -> {
         });
         var cooldown = ElementWeapons.ticks(player, stack, Element.ELECTRO, ticks * COOLDOWN_FACTOR, false);
-        player.getCooldowns().addCooldown(stack.getItem(), cooldown);
-        player.addEffect(new MobEffectInstance(PGCEffects.THE_PAST, ticks, 0));
-        return InteractionResultHolder.success(stack);
+        player.getItemCooldownManager().set(stack.getItem(), cooldown);
+        player.addStatusEffect(new StatusEffectInstance(PGCEffects.THE_PAST.get(), ticks, 0));
+        return TypedActionResult.success(stack);
     }
 
-    @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
-        if (!entity.level().isClientSide() && entity.isShiftKeyDown()) PastDelay.adjust(entity, stack);
-        return super.onEntitySwing(stack, entity, hand);
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+        if (!entity.getWorld().isClient() && entity.isSneaking()) PastDelay.adjust(entity, stack);
+        return super.onEntitySwing(stack, entity);
     }
 }

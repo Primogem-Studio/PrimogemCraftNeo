@@ -1,83 +1,88 @@
 package net.per.primogemcraft.block.entity;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.block.ContainerWindowBlock;
 import net.per.primogemcraft.block.TrashCanBlock;
 import net.per.primogemcraft.registry.PGCBlockEntities;
 import net.per.primogemcraft.system.menu.ContainerWindowMenu;
 import net.per.primogemcraft.system.menu.ContainerWindowSound;
 
-public class ContainerWindowBlockEntity extends RandomizableContainerBlockEntity {
-    private NonNullList<ItemStack> items;
+public class ContainerWindowBlockEntity extends LootableContainerBlockEntity
+        implements net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory {
+    private DefaultedList<ItemStack> items;
 
     public ContainerWindowBlockEntity(BlockPos pos, BlockState state) {
         super(PGCBlockEntities.CONTAINER_WINDOW.get(), pos, state);
-        items = NonNullList.withSize(containerSize(state), ItemStack.EMPTY);
+        items = DefaultedList.ofSize(containerSize(state), ItemStack.EMPTY);
     }
 
     @Override
-    protected Component getDefaultName() {
-        var block = getBlockState().getBlock();
-        if (block instanceof TrashCanBlock) return Component.translatable(block.getDescriptionId() + ".window");
-        return Component.translatable(block.getDescriptionId());
+    protected Text getContainerName() {
+        var block = getCachedState().getBlock();
+        if (block instanceof TrashCanBlock) return Text.translatable(block.getTranslationKey() + ".window");
+        return Text.translatable(block.getTranslationKey());
     }
 
     @Override
-    public int getContainerSize() {
+    public int size() {
         return items.size();
     }
 
     @Override
-    protected NonNullList<ItemStack> getItems() {
+    protected DefaultedList<ItemStack> getInvStackList() {
         return items;
     }
 
     @Override
-    protected void setItems(NonNullList<ItemStack> items) {
-        this.items = items;
+    protected void setInvStackList(DefaultedList<ItemStack> list) {
+        this.items = list;
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
-        if (tryLoadLootTable(tag)) return;
-        items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(tag, items, registries);
+    public void readNbt(NbtCompound nbt) {
+        super.readNbt(nbt);
+        if (deserializeLootTable(nbt)) return;
+        items = DefaultedList.ofSize(size(), ItemStack.EMPTY);
+        Inventories.readNbt(nbt, items);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        if (trySaveLootTable(tag)) return;
-        ContainerHelper.saveAllItems(tag, items, registries);
+    protected void writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        if (serializeLootTable(nbt)) return;
+        Inventories.writeNbt(nbt, items);
     }
 
     @Override
-    protected AbstractContainerMenu createMenu(int id, Inventory inventory) {
-        return new ContainerWindowMenu(id, inventory, this, null, null,
-                ContainerLevelAccess.create(level, worldPosition), ContainerWindowSound.TRASH_CAN_CLOSE);
+    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
+        return new ContainerWindowMenu(syncId, playerInventory, this, null, null,
+                ScreenHandlerContext.create(world, pos), ContainerWindowSound.TRASH_CAN_CLOSE);
     }
 
     @Override
-    public void writeClientSideData(AbstractContainerMenu menu, RegistryFriendlyByteBuf buffer) {
+    public void writeScreenOpeningData(net.minecraft.server.network.ServerPlayerEntity player, net.minecraft.network.PacketByteBuf buffer) {
         buffer.writeByte(ContainerWindowMenu.SOURCE_BLOCK);
         buffer.writeVarInt(items.size());
-        buffer.writeBlockPos(worldPosition);
+        buffer.writeBlockPos(pos);
     }
 
     private static int containerSize(BlockState state) {
         return state.getBlock() instanceof ContainerWindowBlock window ? window.containerSize() : 0;
+    }
+
+    @Override
+    public boolean canPlayerUse(PlayerEntity player) {
+        return net.minecraft.inventory.Inventory.canPlayerUse(this, player);
     }
 }

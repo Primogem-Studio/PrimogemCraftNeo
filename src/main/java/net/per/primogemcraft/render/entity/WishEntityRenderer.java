@@ -1,23 +1,23 @@
 package net.per.primogemcraft.render.entity;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.per.primogemcraft.entity.misc.WishEntity;
 import net.per.primogemcraft.render.entity.model.WishEntityModel;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public class WishEntityRenderer extends EntityRenderer<WishEntity> {
-    private static final ResourceLocation CAPTURING_RADIANCE_TEXTURE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/wish_entity_capturing_radiance.png");
-    private static final ResourceLocation COLORFUL_TEXTURE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/wish_entity_colorful.png");
+    private static final Identifier CAPTURING_RADIANCE_TEXTURE = Identifier.of(MOD_ID, "textures/entity/wish_entity_capturing_radiance.png");
+    private static final Identifier COLORFUL_TEXTURE = Identifier.of(MOD_ID, "textures/entity/wish_entity_colorful.png");
     private static final float BOB_AMPLITUDE = 0.06F;
     private static final float BOB_SPEED = 0.15F;
     private static final float MODEL_MIRROR = -1.0F;
@@ -26,25 +26,25 @@ public class WishEntityRenderer extends EntityRenderer<WishEntity> {
 
     private final WishEntityModel model;
 
-    public WishEntityRenderer(EntityRendererProvider.Context context) {
+    public WishEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
-        model = new WishEntityModel(context.bakeLayer(WishEntityModel.LAYER_LOCATION));
+        model = new WishEntityModel(context.getPart(WishEntityModel.LAYER_LOCATION));
     }
 
     @Override
-    public void render(WishEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
-        poseStack.pushPose();
-        if (entity.onGround())
-            poseStack.translate(0.0F, Mth.sin((entity.tickCount + partialTicks) * BOB_SPEED) * BOB_AMPLITUDE, 0.0F);
+    public void render(WishEntity entity, float entityYaw, float partialTicks, net.minecraft.client.util.math.MatrixStack poseStack, VertexConsumerProvider buffer, int packedLight) {
+        poseStack.push();
+        if (entity.isOnGround())
+            poseStack.translate(0.0F, MathHelper.sin((entity.getAge() + partialTicks) * BOB_SPEED) * BOB_AMPLITUDE, 0.0F);
         poseStack.scale(MODEL_MIRROR, MODEL_MIRROR, 1.0F);
-        poseStack.mulPose(Axis.YP.rotationDegrees(entityYaw));
+        poseStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entityYaw));
         poseStack.translate(0.0F, MODEL_GROUND_OFFSET, 0.0F);
-        model.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entity))), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, NO_TINT);
-        poseStack.popPose();
+        model.render(poseStack, buffer.getBuffer(RenderLayer.getEntityCutoutNoCull(getTexture(entity))), net.minecraft.client.render.LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+        poseStack.pop();
     }
 
     @Override
-    public ResourceLocation getTextureLocation(WishEntity entity) {
+    public Identifier getTexture(WishEntity entity) {
         if (entity.isRadianceVisible()) return CAPTURING_RADIANCE_TEXTURE;
         if (entity.isColorful()) return COLORFUL_TEXTURE;
         return entity.displayRarity().texture();

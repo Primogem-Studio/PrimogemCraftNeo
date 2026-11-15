@@ -1,11 +1,11 @@
 package net.per.primogemcraft.enchantment;
 
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.util.math.Box;
 
 public final class FoolsWrath {
     private static final double CHANCE_PER_LEVEL = 0.02D;
@@ -15,15 +15,15 @@ public final class FoolsWrath {
     }
 
     public static void punish(LivingEntity attacker, LivingEntity victim) {
-        if (attacker.level().isClientSide() || attacker == victim) return;
-        var level = PGCEnchantments.levelOf(attacker.level(), attacker.getMainHandItem(), PGCEnchantments.FOOLS_WRATH)
-                + PGCEnchantments.levelOf(attacker.level(), attacker.getOffhandItem(), PGCEnchantments.FOOLS_WRATH);
+        if (attacker.getWorld().isClient() || attacker == victim) return;
+        var level = PGCEnchantments.levelOf(attacker.getWorld(), attacker.getMainHandStack(), PGCEnchantments.FOOLS_WRATH)
+                + PGCEnchantments.levelOf(attacker.getWorld(), attacker.getOffHandStack(), PGCEnchantments.FOOLS_WRATH);
         if (level <= 0 || attacker.getRandom().nextDouble() >= level * CHANCE_PER_LEVEL) return;
-        attacker.hurt(new DamageSource(attacker.level().holderOrThrow(DamageTypes.MAGIC)), victim.getHealth() * DAMAGE_RATIO);
+        attacker.damage(attacker.getWorld().getDamageSources().magic(), victim.getHealth() * DAMAGE_RATIO);
     }
 
-    public static void cleanse(ServerLevel level, AABB area) {
-        for (var item : level.getEntitiesOfClass(ItemEntity.class, area))
-            PGCEnchantments.remove(level, item.getItem(), PGCEnchantments.FOOLS_WRATH);
+    public static void cleanse(ServerWorld level, Box area) {
+        for (var item : level.getEntitiesByClass(ItemEntity.class, area, e -> true))
+            PGCEnchantments.remove(level, item.getStack(), PGCEnchantments.FOOLS_WRATH);
     }
 }

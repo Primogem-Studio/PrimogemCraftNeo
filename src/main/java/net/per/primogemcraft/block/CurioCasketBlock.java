@@ -1,14 +1,14 @@
 package net.per.primogemcraft.block;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.system.curio.CurioChoice;
 import net.per.primogemcraft.system.curio.CurioForm;
 import net.per.primogemcraft.system.curio.CurioGrade;
@@ -24,19 +24,19 @@ public class CurioCasketBlock extends Block {
     private static final double S_CHANCE = 0.1D;
     private static final double A_CHANCE = 0.3D;
 
-    public CurioCasketBlock(Properties properties) {
+    public CurioCasketBlock(Settings properties) {
         super(properties);
     }
 
     @Override
-    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
-        super.playerDestroy(level, player, pos, state, blockEntity, tool);
-        if (!(player instanceof ServerPlayer serverPlayer)) return;
+    public void afterBreak(World level, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+        super.afterBreak(level, player, pos, state, blockEntity, tool);
+        if (!(player instanceof ServerPlayerEntity serverPlayer)) return;
         var options = options(serverPlayer);
         if (!options.isEmpty()) CurioChoice.open(serverPlayer, options, curio -> Curios.give(serverPlayer, curio));
     }
 
-    private static List<ItemStack> options(ServerPlayer player) {
+    private static List<ItemStack> options(ServerPlayerEntity player) {
         var random = player.getRandom();
         var grade = grade(random);
         var options = new ArrayList<ItemStack>();
@@ -54,7 +54,7 @@ public class CurioCasketBlock extends Block {
         return false;
     }
 
-    private static CurioGrade grade(RandomSource random) {
+    private static CurioGrade grade(Random random) {
         if (random.nextDouble() < S_CHANCE) return CurioGrade.S;
         if (random.nextDouble() < A_CHANCE) return CurioGrade.A;
         return CurioGrade.B;

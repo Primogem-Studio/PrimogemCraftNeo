@@ -1,0 +1,14 @@
+{
+  "fabric:load_conditions": [{"condition":"fabric:all_mods_loaded","values":["genshincraft"]}],
+  "type": "genshincraft:crafting",
+  "materials": [
+    {
+      "item": "primogemcraft:stellar_jade",
+      "count": 6
+    }
+  ],
+  "result": {
+    "item": "genshincraft:primogems",
+    "count": 1
+  }
+}

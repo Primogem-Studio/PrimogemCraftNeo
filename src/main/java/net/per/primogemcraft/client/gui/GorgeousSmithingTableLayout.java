@@ -1,6 +1,6 @@
 package net.per.primogemcraft.client.gui;
 
-import net.minecraft.util.Mth;
+import net.minecraft.util.math.MathHelper;
 import net.per.primogemcraft.system.menu.GorgeousSmithingTableMenu;
 
 public final class GorgeousSmithingTableLayout {
@@ -80,7 +80,7 @@ public final class GorgeousSmithingTableLayout {
     public GorgeousSmithingTableLayout(int width, int height) {
         var contentY = MARGIN;
         var contentHeight = Math.max(1, height - MARGIN * 2);
-        var middleWidth = Mth.clamp(Math.round((float) (width * PREVIEW_COLUMN_SHARE) / SHARE), MIN_PREVIEW_WIDTH, MAX_PREVIEW_WIDTH);
+        var middleWidth = MathHelper.clamp(Math.round((float) (width * PREVIEW_COLUMN_SHARE) / SHARE), MIN_PREVIEW_WIDTH, MAX_PREVIEW_WIDTH);
         var sideWidth = Math.max(1, (width - MARGIN * 2 - middleWidth - GAP * 2) / 2);
         var middleX = width / 2 - middleWidth / 2;
         var leftX = middleX - GAP - sideWidth;
@@ -106,15 +106,15 @@ public final class GorgeousSmithingTableLayout {
         var previewHeight = Math.max(PREVIEW_MIN_HEIGHT, Math.round(contentHeight * PREVIEW_HEIGHT_SHARE));
         var previewY = contentY + Math.round((contentHeight - previewHeight) * PREVIEW_RISE);
         previewPanel = new Rect(middleX, previewY, middleWidth, previewHeight);
-        previewItemScale = Mth.clamp(middleWidth / PREVIEW_ITEM_UNIT, MIN_ITEM_SCALE, MAX_ITEM_SCALE);
+        previewItemScale = MathHelper.clamp(middleWidth / PREVIEW_ITEM_UNIT, MIN_ITEM_SCALE, MAX_ITEM_SCALE);
         var hintY = previewY + previewHeight + GAP;
         hintArea = new Rect(middleX, hintY, middleWidth, Math.max(0, contentY + contentHeight - hintY));
 
         var gapAboveLevel = GAP - 1;
         var gapBelowLevel = GAP + 1;
-        var buttonHeight = Mth.clamp(Math.round(contentHeight * BUTTON_HEIGHT_SHARE), MIN_BUTTON_HEIGHT, MAX_BUTTON_HEIGHT);
-        var levelHeight = Mth.clamp(Math.round(contentHeight * LEVEL_HEIGHT_SHARE), MIN_LEVEL_HEIGHT, MAX_LEVEL_HEIGHT);
-        var slotHeight = Mth.clamp(Math.round(contentHeight * SLOT_HEIGHT_SHARE), MIN_SLOT_HEIGHT, MAX_SLOT_HEIGHT);
+        var buttonHeight = MathHelper.clamp(Math.round(contentHeight * BUTTON_HEIGHT_SHARE), MIN_BUTTON_HEIGHT, MAX_BUTTON_HEIGHT);
+        var levelHeight = MathHelper.clamp(Math.round(contentHeight * LEVEL_HEIGHT_SHARE), MIN_LEVEL_HEIGHT, MAX_LEVEL_HEIGHT);
+        var slotHeight = MathHelper.clamp(Math.round(contentHeight * SLOT_HEIGHT_SHARE), MIN_SLOT_HEIGHT, MAX_SLOT_HEIGHT);
         var fixed = gapAboveLevel + levelHeight + gapBelowLevel + slotHeight + GAP + buttonHeight + ACTION_FRAME_PAD;
         var materialHeight = Math.max(MIN_PANEL_HEIGHT, contentHeight - fixed);
 

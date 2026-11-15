@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "primogemcraft",
+  "version": "${version}",
+  "name": "PrimogemCraft",
+  "description": "一个原神x星穹铁道二创mod（1.20.1 Fabric 移植版）",
+  "authors": [
+    "PepperMR",
+    "hackermdch"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/primogemcraft",
+    "sources": "https://github.com/Primogem-Studio/PrimogemCraftNeo",
+    "issues": "https://github.com/Primogem-Studio/PrimogemCraftNeo/issues"
+  },
+  "license": "MIT",
+  "icon": "logo.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.per.primogemcraft.PrimogemCraft"
+    ],
+    "client": [
+      "net.per.primogemcraft.client.PGCClient"
+    ]
+  },
+  "mixins": [
+    "primogemcraft.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.20.1",
+    "java": ">=17",
+    "fabric-api": "*"
+  }
+}

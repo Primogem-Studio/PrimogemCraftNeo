@@ -1,15 +1,15 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.recipe.Ingredient;
 import net.per.primogemcraft.system.weapon.*;
 import net.per.primogemcraft.system.wish.WishReports;
 import net.per.primogemcraft.util.PGCTimer;
@@ -17,7 +17,7 @@ import net.per.primogemcraft.util.PGCTimer;
 import java.util.List;
 
 public class DullBladeItem extends WishWeaponItem {
-    private static final Tier TIER = new WeaponTier(18, 4.0F, 15, WeaponTier.WOODEN_INCORRECT, Ingredient.of(net.minecraft.world.item.Items.IRON_INGOT));
+    private static final ToolMaterial TIER = new WeaponTier(18, 4.0F, 15, WeaponTier.WOODEN_INCORRECT, Ingredient.ofItems(net.minecraft.item.Items.IRON_INGOT));
 
     private static final String TIMER = "dull_blade";
     private static final int TIMER_TICKS = 100;
@@ -30,14 +30,14 @@ public class DullBladeItem extends WishWeaponItem {
     private static final String RESTORE_TEXT = "restore";
     private static final String SPEED_TEXT = "speed";
 
-    public DullBladeItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+    public DullBladeItem(Settings properties) {
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireproof());
     }
 
     @Override
-    public List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
+    public List<WeaponModifier> conditionalPassives(PlayerEntity player, ItemStack stack, int slot, int refinement) {
         if (isHeld(player, slot, stack) || PGCTimer.isDone(player, TIMER)) return List.of();
-        return List.of(WeaponModifier.conditional(Attributes.ATTACK_SPEED, AttributeModifier.Operation.ADD_VALUE,
+        return List.of(WeaponModifier.conditional(EntityAttributes.GENERIC_ATTACK_SPEED, EntityAttributeModifier.Operation.ADDITION,
                 (owner, worn, value) -> 1.0D));
     }
 
@@ -45,19 +45,19 @@ public class DullBladeItem extends WishWeaponItem {
     protected List<WeaponDescription> description(ItemStack stack) {
         return List.of(
                 WeaponDescription.of(NORMAL_ATTACK, RESTORE_TEXT,
-                        WishReports.percent(TRIGGER_CHANCE, ChatFormatting.AQUA),
-                        WishReports.number(DURABILITY_RESTORE, ChatFormatting.AQUA)),
+                        WishReports.percent(TRIGGER_CHANCE, Formatting.AQUA),
+                        WishReports.number(DURABILITY_RESTORE, Formatting.AQUA)),
                 WeaponDescription.of(PASSIVE_ACTION, SPEED_TEXT,
-                        WishReports.number(TIMER_TICKS / 20, ChatFormatting.AQUA)));
+                        WishReports.number(TIMER_TICKS / 20, Formatting.AQUA)));
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        var result = super.hurtEnemy(stack, target, attacker);
-        if (!(attacker.level() instanceof ServerLevel level)) return result;
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        var result = super.postHit(stack, target, attacker);
+        if (!(attacker.getWorld() instanceof ServerWorld level)) return result;
         if (level.getRandom().nextDouble() >= TRIGGER_CHANCE) return result;
         WeaponAttributes.restoreDurability(stack, DURABILITY_RESTORE);
-        if (attacker instanceof Player player) PGCTimer.set(player, TIMER, TIMER_TICKS);
+        if (attacker instanceof PlayerEntity player) PGCTimer.set(player, TIMER, TIMER_TICKS);
         return result;
     }
 }

@@ -1,25 +1,25 @@
 package net.per.primogemcraft.entity.misc;
 
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public class LivingItemDrop extends ItemEntity {
     private final UUID ownerUuid;
 
-    public LivingItemDrop(Level level, double x, double y, double z, ItemStack stack, @Nullable UUID owner) {
-        super(level, x, y, z, stack);
+    public LivingItemDrop(World world, double x, double y, double z, ItemStack stack, @Nullable UUID owner) {
+        super(world, x, y, z, stack);
         ownerUuid = owner;
         setInvulnerable(true);
-        setUnlimitedLifetime();
-        setNoPickUpDelay();
+        setNeverDespawn();
+        setPickupDelay(0);
         setNoGravity(false);
-        if (owner != null) setTarget(owner);
+        if (owner != null) setOwner(owner);
     }
 
     public UUID getOwnerUuid() {
@@ -27,7 +27,7 @@ public class LivingItemDrop extends ItemEntity {
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean damage(DamageSource source, float amount) {
         return false;
     }
 
@@ -37,22 +37,24 @@ public class LivingItemDrop extends ItemEntity {
     }
 
     @Override
-    public boolean fireImmune() {
+    public boolean isFireImmune() {
         return true;
     }
 
     @Override
-    public boolean isPickable() {
-        return true;
+    public boolean isAttackable() {
+        return false;
     }
 
     @Override
-    public void playerTouch(Player player) {
-        if (ownerUuid != null && !ownerUuid.equals(player.getUUID())) return;
-        super.playerTouch(player);
+    public void onPlayerCollision(PlayerEntity player) {
+        if (ownerUuid != null && !ownerUuid.equals(player.getUuid())) return;
+        super.onPlayerCollision(player);
     }
 
     @Override
-    public void checkBelowWorld() {
+    public void tick() {
+        // 不检查掉出世界
+        super.tick();
     }
 }

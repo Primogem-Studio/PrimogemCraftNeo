@@ -1,32 +1,33 @@
 package net.per.primogemcraft.system.menu;
 
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemContainerContents;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.per.primogemcraft.compat.component.ItemContainerContents;
 import net.per.primogemcraft.registry.PGCDataComponents;
 
 /**
  * A container whose contents live in the item stack that holds it, so a pouch keeps what was put in it while the item
  * travels through inventories. The stack is the live one held by the opener, so every write is persisted at once.
  */
-public final class PouchContainer implements Container {
+public final class PouchContainer implements Inventory {
     private final ItemStack pouch;
-    private final NonNullList<ItemStack> items;
+    private final DefaultedList<ItemStack> items;
 
     public PouchContainer(ItemStack pouch, int capacity) {
         this.pouch = pouch;
-        items = NonNullList.withSize(capacity, ItemStack.EMPTY);
-        var contents = pouch.get(PGCDataComponents.POUCH_CONTENTS.get());
+        items = DefaultedList.ofSize(capacity, ItemStack.EMPTY);
+        var contents = StackComponents.get(pouch, PGCDataComponents.POUCH_CONTENTS);
         if (contents == null) return;
         var stored = Math.min(capacity, contents.getSlots());
         for (var index = 0; index < stored; index++) items.set(index, contents.getStackInSlot(index));
     }
 
     @Override
-    public int getContainerSize() {
+    public int size() {
         return items.size();
     }
 
@@ -37,46 +38,45 @@ public final class PouchContainer implements Container {
     }
 
     @Override
-    public ItemStack getItem(int index) {
+    public ItemStack getStack(int index) {
         return items.get(index);
     }
 
     @Override
-    public ItemStack removeItem(int index, int amount) {
-        var removed = ContainerHelper.removeItem(items, index, amount);
-        if (!removed.isEmpty()) setChanged();
+    public ItemStack removeStack(int index, int amount) {
+        var removed = Inventories.splitStack(items, index, amount);
+        if (!removed.isEmpty()) markDirty();
         return removed;
     }
 
     @Override
-    public ItemStack removeItemNoUpdate(int index) {
-        return ContainerHelper.takeItem(items, index);
+    public ItemStack removeStack(int index) {
+        return Inventories.removeStack(items, index);
     }
 
     @Override
-    public void setItem(int index, ItemStack stack) {
+    public void setStack(int index, ItemStack stack) {
         items.set(index, stack);
-        setChanged();
+        markDirty();
     }
 
     @Override
-    public void setChanged() {
-        pouch.set(PGCDataComponents.POUCH_CONTENTS.get(), ItemContainerContents.fromItems(items));
+    public void markDirty() {
+        StackComponents.set(pouch, PGCDataComponents.POUCH_CONTENTS, ItemContainerContents.fromItems(items));
     }
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean canPlayerUse(PlayerEntity player) {
         return true;
     }
 
-    @Override
-    public boolean canPlaceItem(int index, ItemStack stack) {
-        return !stack.is(pouch.getItem());
+    public boolean canInsert(int index, ItemStack stack, net.minecraft.util.math.Direction dir) {
+        return !stack.isOf(pouch.getItem());
     }
 
     @Override
-    public void clearContent() {
+    public void clear() {
         items.clear();
-        setChanged();
+        markDirty();
     }
 }

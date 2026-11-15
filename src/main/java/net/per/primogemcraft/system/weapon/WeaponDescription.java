@@ -1,8 +1,8 @@
 package net.per.primogemcraft.system.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.locale.Language;
-import net.minecraft.network.chat.Component;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Language;
+import net.minecraft.text.Text;
 
 import java.util.List;
 
@@ -21,31 +21,31 @@ import java.util.List;
  * colour, such as {@code negative_passive}, overrides it through
  * {@code weapon.primogemcraft.action.&lt;action&gt;.suffix} so the colon matches the label it follows.
  */
-public record WeaponDescription(String action, String text, List<Component> values) {
+public record WeaponDescription(String action, String text, List<Text> values) {
     private static final String ACTION_PREFIX = "weapon.primogemcraft.action.";
     private static final String ACTION_SUFFIX_KEY = ACTION_PREFIX + "suffix";
     private static final String SUFFIX_SUFFIX = ".suffix";
     private static final String DESCRIPTION_PREFIX = ".description.";
 
-    public static WeaponDescription of(String action, String text, Component... values) {
+    public static WeaponDescription of(String action, String text, Text... values) {
         return new WeaponDescription(action, text, List.of(values));
     }
 
-    public static WeaponDescription note(String text, Component... values) {
+    public static WeaponDescription note(String text, Text... values) {
         return new WeaponDescription("", text, List.of(values));
     }
 
-    public List<Component> lines(String itemPrefix) {
+    public List<Text> lines(String itemPrefix) {
         var body = text.isEmpty()
                 ? null
-                : Component.translatable(itemPrefix + DESCRIPTION_PREFIX + this.text, values.toArray(Object[]::new)).withStyle(ChatFormatting.YELLOW);
+                : Text.translatable(itemPrefix + DESCRIPTION_PREFIX + this.text, values.toArray(Object[]::new)).formatted(Formatting.YELLOW);
         if (action.isEmpty()) return body == null ? List.of() : List.of(body);
-        var action = Component.translatable(ACTION_PREFIX + this.action).append(suffix());
+        var action = Text.translatable(ACTION_PREFIX + this.action).append(suffix());
         return body == null ? List.of(action) : List.of(action, body);
     }
 
-    private Component suffix() {
+    private Text suffix() {
         var key = ACTION_PREFIX + action + SUFFIX_SUFFIX;
-        return Component.translatable(Language.getInstance().has(key) ? key : ACTION_SUFFIX_KEY);
+        return Text.translatable(Language.getInstance().hasTranslation(key) ? key : ACTION_SUFFIX_KEY);
     }
 }

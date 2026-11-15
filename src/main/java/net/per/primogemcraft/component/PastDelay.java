@@ -1,16 +1,17 @@
 package net.per.primogemcraft.component;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
+import net.per.primogemcraft.compat.network.ByteBufCodecs;
+import net.per.primogemcraft.compat.network.StreamCodec;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.registry.PGCDataComponents;
 
 public record PastDelay(int seconds, boolean descending) {
@@ -35,18 +36,18 @@ public record PastDelay(int seconds, boolean descending) {
     private static final float SOUND_PITCH = 1.0F;
 
     public static int secondsOf(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.PAST_DELAY.get(), DEFAULT).seconds();
+        return StackComponents.getOrDefault(stack, PGCDataComponents.PAST_DELAY, DEFAULT).seconds();
     }
 
     public static void adjust(LivingEntity entity, ItemStack stack) {
-        var current = stack.getOrDefault(PGCDataComponents.PAST_DELAY.get(), DEFAULT);
+        var current = StackComponents.getOrDefault(stack, PGCDataComponents.PAST_DELAY, DEFAULT);
         var descending = current.descending();
         var seconds = descending ? current.seconds() - STEP_SECONDS : current.seconds() + STEP_SECONDS;
         var nextDescending = seconds >= MAX_SECONDS || (seconds > MIN_SECONDS && descending);
-        stack.set(PGCDataComponents.PAST_DELAY.get(), new PastDelay(seconds, nextDescending));
-        var level = entity.level();
-        level.playSound(null, entity.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, SOUND_VOLUME, SOUND_PITCH);
-        if (entity instanceof ServerPlayer player)
-            player.displayClientMessage(Component.translatable(descending ? DECREASED_KEY : INCREASED_KEY, seconds), true);
+        StackComponents.set(stack, PGCDataComponents.PAST_DELAY, new PastDelay(seconds, nextDescending));
+        var level = entity.getWorld();
+        level.playSound(null, entity.getBlockPos(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.PLAYERS, SOUND_VOLUME, SOUND_PITCH);
+        if (entity instanceof ServerPlayerEntity player)
+            player.sendMessage(Text.translatable(descending ? DECREASED_KEY : INCREASED_KEY, seconds), true);
     }
 }

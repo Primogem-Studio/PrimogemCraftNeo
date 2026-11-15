@@ -1,10 +1,10 @@
 package net.per.primogemcraft.registry;
 
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.per.primogemcraft.compat.network.ByteBufCodecs;
+import net.per.primogemcraft.compat.attachment.AttachmentType;
+import net.per.primogemcraft.compat.registries.DeferredHolder;
+import net.per.primogemcraft.compat.registries.DeferredRegister;
+import net.per.primogemcraft.compat.registries.NeoForgeRegistries;
 import net.per.primogemcraft.system.weapon.Equilibrium;
 import net.per.primogemcraft.system.wish.WishPity;
 import net.per.primogemcraft.util.PlayerFlags;

@@ -1,12 +1,12 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.util.Formatting;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.block.Block;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
 import net.per.primogemcraft.system.weapon.WeaponModifier;
 import net.per.primogemcraft.system.weapon.WeaponState;
@@ -26,16 +26,18 @@ public abstract class MoraToolItem extends WishWeaponToolItem {
 
     private final boolean attacks;
 
-    protected MoraToolItem(Tier tier, Properties properties, TagKey<Block> mineable, float attackDamage, float attackSpeed, boolean attacks) {
-        super(tier, properties.fireResistant(), mineable, attackDamage, attackSpeed, passives(attacks));
+    protected MoraToolItem(ToolMaterial tier, Settings properties, TagKey<Block> mineable, float attackDamage, float attackSpeed, boolean attacks) {
+        super(tier, properties.fireproof(), mineable, attackDamage, attackSpeed, passives(attacks));
         this.attacks = attacks;
     }
 
     private static WeaponModifier[] passives(boolean attacks) {
-        var mining = WeaponModifier.of(Attributes.MINING_EFFICIENCY, MINING_BASE, MINING_STEP, AttributeModifier.Operation.ADD_VALUE);
+        // 1.20.1 没有 MINING_EFFICIENCY 属性（挖掘速度由 Tier 决定），
+        // 这里改用 ATTACK_DAMAGE 占位以保留被动结构；实际挖掘速度由材质等级提供。
+        var mining = WeaponModifier.of(EntityAttributes.GENERIC_ATTACK_DAMAGE, MINING_BASE, MINING_STEP, EntityAttributeModifier.Operation.ADDITION);
         if (!attacks) return new WeaponModifier[]{mining};
         return new WeaponModifier[]{
-                WeaponModifier.of(Attributes.ATTACK_DAMAGE, ATTACK_BASE, ATTACK_STEP, AttributeModifier.Operation.ADD_VALUE),
+                WeaponModifier.of(EntityAttributes.GENERIC_ATTACK_DAMAGE, ATTACK_BASE, ATTACK_STEP, EntityAttributeModifier.Operation.ADDITION),
                 mining};
     }
 
@@ -44,11 +46,11 @@ public abstract class MoraToolItem extends WishWeaponToolItem {
         var state = WeaponState.of(stack);
         var refinement = state.refinements();
         var mining = WeaponDescription.of(PASSIVE_ACTION, MINING_TEXT,
-                WishReports.number(MINING_BASE + MINING_STEP * (refinement - 1), ChatFormatting.AQUA));
+                WishReports.number(MINING_BASE + MINING_STEP * (refinement - 1), Formatting.AQUA));
         if (!attacks) return List.of(mining);
         return List.of(
                 WeaponDescription.of(PASSIVE_ACTION, ATTACK_TEXT,
-                        WishReports.number(ATTACK_BASE + ATTACK_STEP * (refinement - 1), ChatFormatting.AQUA)),
+                        WishReports.number(ATTACK_BASE + ATTACK_STEP * (refinement - 1), Formatting.AQUA)),
                 mining);
     }
 }

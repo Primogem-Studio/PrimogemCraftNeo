@@ -1,6 +1,6 @@
 package net.per.primogemcraft.system.choice;
 
-import net.minecraft.util.Mth;
+import net.minecraft.util.math.MathHelper;
 
 public enum ChoiceSpinSpeed {
     SLOW(1260, 1800, 2520, 3240),
@@ -18,7 +18,7 @@ public enum ChoiceSpinSpeed {
     }
 
     public int durationMillis(int turns) {
-        return tierMillis[Mth.clamp(turns, 1, tierMillis.length) - 1];
+        return tierMillis[MathHelper.clamp(turns, 1, tierMillis.length) - 1];
     }
 
     public int durationTicks(int turns) {

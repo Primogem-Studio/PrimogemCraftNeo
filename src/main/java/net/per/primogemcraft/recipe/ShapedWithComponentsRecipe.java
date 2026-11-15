@@ -1,94 +1,61 @@
 package net.per.primogemcraft.recipe;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipePattern;
-import net.minecraft.world.level.Level;
+import com.google.gson.JsonObject;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
+import net.minecraft.inventory.RecipeInputInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.ShapedRecipe;
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.per.primogemcraft.component.CustomBar;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.registry.PGCRecipeSerializers;
 
-public class ShapedWithComponentsRecipe implements CraftingRecipe {
-    private final String group;
-    private final CraftingBookCategory category;
-    private final ShapedRecipePattern pattern;
-    private final ItemStack result;
+/**
+ * 携带组件的有序合成配方。
+ *
+ * <p>1.21 用 {@code ShapedRecipePattern} 承载图案、{@code CraftingInput} 作输入，
+ * 并以 {@code MapCodec}/{@code StreamCodec} 序列化。1.20.1 没有这些类型：
+ * 这里直接继承 {@link ShapedRecipe}（自带宽高 + 原料列表与原版图案匹配），
+ * 序列化改为 {@code fromJson}/{@code fromNetwork}/{@code toNetwork}。
+ *
+ * <p>组装时把来源物品的自定义进度条按比例迁移到产物，语义与原版一致。
+ * 1.21 的 {@code applyComponents(item.getComponentsPatch())} 用于整体搬运组件；
+ * 1.20.1 的组件数据都在 NBT 中，改为合并来源物品的 NBT。
+ */
+public class ShapedWithComponentsRecipe extends ShapedRecipe {
     private final Ingredient source;
-    private final boolean showNotification;
+    private final ItemStack result;
 
-    public ShapedWithComponentsRecipe(String group, CraftingBookCategory category, ShapedRecipePattern pattern, ItemStack result, Ingredient source, boolean showNotification) {
-        this.group = group;
-        this.category = category;
-        this.pattern = pattern;
-        this.result = result;
+    public ShapedWithComponentsRecipe(Identifier id, String group, net.minecraft.recipe.book.CraftingRecipeCategory category,
+                                      int width, int height, DefaultedList<Ingredient> ingredients,
+                                      ItemStack result, Ingredient source, boolean showNotification) {
+        super(id, group, category, width, height, ingredients, result, showNotification);
         this.source = source;
-        this.showNotification = showNotification;
+        this.result = result;
     }
 
     @Override
-    public boolean matches(CraftingInput input, Level level) {
-        return pattern.matches(input);
-    }
-
-    @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
-        var assembled = getResultItem(registries).copy();
-        var target = assembled.get(PGCDataComponents.CUSTOM_BAR.get());
-        for (var item : input.items()) {
+    public ItemStack craft(RecipeInputInventory input, DynamicRegistryManager registries) {
+        var assembled = super.craft(input, registries);
+        var target = StackComponents.get(assembled, PGCDataComponents.CUSTOM_BAR.get());
+        for (var index = 0; index < input.size(); index++) {
+            var item = input.getStack(index);
             if (!source.test(item)) continue;
-            var carried = carriedBar(item.get(PGCDataComponents.CUSTOM_BAR.get()), target);
-            assembled.applyComponents(item.getComponentsPatch());
-            if (carried != null) assembled.set(PGCDataComponents.CUSTOM_BAR.get(), carried);
+            var carried = carriedBar(StackComponents.get(item, PGCDataComponents.CUSTOM_BAR.get()), target);
+            // 1.20.1：组件数据落在 NBT，合并来源 NBT 等价于 1.21 的 applyComponents
+            var itemTag = item.getNbt();
+            if (itemTag != null) assembled.getOrCreateNbt().copyFrom(itemTag);
+            if (carried != null) StackComponents.set(assembled, PGCDataComponents.CUSTOM_BAR.get(), carried);
             break;
         }
         return assembled;
-    }
-
-    @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return width >= pattern.width() && height >= pattern.height();
-    }
-
-    @Override
-    public String getGroup() {
-        return group;
-    }
-
-    @Override
-    public CraftingBookCategory category() {
-        return category;
-    }
-
-    @Override
-    public boolean showNotification() {
-        return showNotification;
-    }
-
-    @Override
-    public ItemStack getResultItem(HolderLookup.Provider registries) {
-        return result;
-    }
-
-    @Override
-    public NonNullList<Ingredient> getIngredients() {
-        return pattern.ingredients();
-    }
-
-    @Override
-    public boolean isIncomplete() {
-        var ingredients = getIngredients();
-        return ingredients.isEmpty() || ingredients.stream().filter(ingredient -> !ingredient.isEmpty()).anyMatch(Ingredient::hasNoItems);
     }
 
     @Override
@@ -103,44 +70,49 @@ public class ShapedWithComponentsRecipe implements CraftingRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<ShapedWithComponentsRecipe> {
-        private static final MapCodec<ShapedWithComponentsRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                Codec.STRING.optionalFieldOf("group", "").forGetter(recipe -> recipe.group),
-                CraftingBookCategory.CODEC.fieldOf("category").orElse(CraftingBookCategory.MISC).forGetter(recipe -> recipe.category),
-                ShapedRecipePattern.MAP_CODEC.forGetter(recipe -> recipe.pattern),
-                ItemStack.STRICT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
-                Ingredient.CODEC.fieldOf("source").forGetter(recipe -> recipe.source),
-                Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(recipe -> recipe.showNotification)
-        ).apply(instance, ShapedWithComponentsRecipe::new));
-
-        private static final StreamCodec<RegistryFriendlyByteBuf, ShapedWithComponentsRecipe> STREAM_CODEC =
-                StreamCodec.of(Serializer::encode, Serializer::decode);
 
         @Override
-        public MapCodec<ShapedWithComponentsRecipe> codec() {
-            return CODEC;
+        public ShapedWithComponentsRecipe read(Identifier id, JsonObject json) {
+            var group = JsonHelper.getString(json, "group", "");
+            var category = net.minecraft.recipe.book.CraftingRecipeCategory.CODEC.byId(
+                    JsonHelper.getString(json, "category", "misc"),
+                    net.minecraft.recipe.book.CraftingRecipeCategory.MISC);
+            var pattern = new ShapedRecipe.Serializer().read(id, json);
+            var resultJson = JsonHelper.getObject(json, "result");
+            var resultItem = net.minecraft.registry.Registries.ITEM.get(new Identifier(JsonHelper.getString(resultJson, "item")));
+            var count = JsonHelper.getInt(resultJson, "count", 1);
+            var result = new ItemStack(resultItem, count);
+            var source = Ingredient.fromJson(json.get("source"));
+            var showNotification = JsonHelper.getBoolean(json, "show_notification", true);
+            return new ShapedWithComponentsRecipe(id, group, category,
+                    pattern.getWidth(), pattern.getHeight(),
+                    pattern.getIngredients(), result, source, showNotification);
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ShapedWithComponentsRecipe> streamCodec() {
-            return STREAM_CODEC;
+        public ShapedWithComponentsRecipe read(Identifier id, PacketByteBuf buffer) {
+            var width = buffer.readVarInt();
+            var height = buffer.readVarInt();
+            var group = buffer.readString();
+            var category = buffer.readEnumConstant(net.minecraft.recipe.book.CraftingRecipeCategory.class);
+            var ingredients = DefaultedList.ofSize(width * height, Ingredient.EMPTY);
+            ingredients.replaceAll(ignored -> Ingredient.fromPacket(buffer));
+            var result = buffer.readItemStack();
+            var source = Ingredient.fromPacket(buffer);
+            var showNotification = buffer.readBoolean();
+            return new ShapedWithComponentsRecipe(id, group, category, width, height, ingredients, result, source, showNotification);
         }
 
-        private static void encode(RegistryFriendlyByteBuf buffer, ShapedWithComponentsRecipe recipe) {
-            buffer.writeUtf(recipe.group);
-            buffer.writeEnum(recipe.category);
-            ShapedRecipePattern.STREAM_CODEC.encode(buffer, recipe.pattern);
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.result);
-            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.source);
-            buffer.writeBoolean(recipe.showNotification);
-        }
-
-        private static ShapedWithComponentsRecipe decode(RegistryFriendlyByteBuf buffer) {
-            var group = buffer.readUtf();
-            var category = buffer.readEnum(CraftingBookCategory.class);
-            var pattern = ShapedRecipePattern.STREAM_CODEC.decode(buffer);
-            var result = ItemStack.STREAM_CODEC.decode(buffer);
-            var source = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer);
-            return new ShapedWithComponentsRecipe(group, category, pattern, result, source, buffer.readBoolean());
+        @Override
+        public void write(PacketByteBuf buffer, ShapedWithComponentsRecipe recipe) {
+            buffer.writeVarInt(recipe.getWidth());
+            buffer.writeVarInt(recipe.getHeight());
+            buffer.writeString(recipe.getGroup());
+            buffer.writeEnumConstant(recipe.getCategory());
+            for (var ingredient : recipe.getIngredients()) ingredient.write(buffer);
+            buffer.writeItemStack(recipe.result);
+            recipe.source.write(buffer);
+            buffer.writeBoolean(recipe.showNotification());
         }
     }
 }

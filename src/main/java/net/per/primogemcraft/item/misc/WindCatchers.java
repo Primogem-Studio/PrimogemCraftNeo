@@ -1,12 +1,12 @@
 package net.per.primogemcraft.item.misc;
 
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Hand;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.per.primogemcraft.registry.PGCItems;
 
 public final class WindCatchers {
@@ -20,21 +20,21 @@ public final class WindCatchers {
     private WindCatchers() {
     }
 
-    public static void use(Level level, Player player, boolean filled) {
-        var held = player.getMainHandItem().getItem();
+    public static void use(World level, PlayerEntity player, boolean filled) {
+        var held = player.getMainHandStack().getItem();
         if (filled) {
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.TRIDENT_RIPTIDE_2, SoundSource.PLAYERS, VOLUME,
-                    Mth.nextInt(player.getRandom(), MIN_PITCH, MAX_PITCH));
-            player.setDeltaMovement(0.0D, LAUNCH_VELOCITY, 0.0D);
-            player.hasImpulse = true;
-            player.hurtMarked = true;
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_TRIDENT_RIPTIDE_2, SoundCategory.PLAYERS, VOLUME,
+                    MathHelper.nextInt(player.getRandom(), MIN_PITCH, MAX_PITCH));
+            player.setVelocity(0.0D, LAUNCH_VELOCITY, 0.0D);
+            player.velocityModified = true;
+            player.hurtTime = 10;
             if (!player.isCreative())
-                player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(PGCItems.OTHERWORLD_WIND_CATCHER_EMPTY.get()));
-            player.getCooldowns().addCooldown(held, FILLED_COOLDOWN);
+                player.setStackInHand(Hand.MAIN_HAND, new ItemStack(PGCItems.OTHERWORLD_WIND_CATCHER_EMPTY.get()));
+            player.getItemCooldownManager().set(held, FILLED_COOLDOWN);
             return;
         }
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0F, 1.0F);
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(PGCItems.OTHERWORLD_WIND_CATCHER.get()));
-        player.getCooldowns().addCooldown(held, EMPTY_COOLDOWN);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.PLAYERS, 1.0F, 1.0F);
+        player.setStackInHand(Hand.MAIN_HAND, new ItemStack(PGCItems.OTHERWORLD_WIND_CATCHER.get()));
+        player.getItemCooldownManager().set(held, EMPTY_COOLDOWN);
     }
 }

@@ -1,13 +1,13 @@
 package net.per.primogemcraft.item.misc;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraft.text.Text;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.per.primogemcraft.item.tool.DescribedItem;
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.system.weapon.Equilibrium;
@@ -19,29 +19,29 @@ public class EquilibriumTabletItem extends DescribedItem {
 
     private final int tier;
 
-    public EquilibriumTabletItem(int tier, Properties properties) {
+    public EquilibriumTabletItem(int tier, Settings properties) {
         super(properties);
         this.tier = tier;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (!(level instanceof ServerLevel server)) return InteractionResultHolder.sidedSuccess(stack, true);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (!(level instanceof ServerWorld server)) return TypedActionResult.success(stack, true);
         var equilibrium = Equilibrium.of(player);
-        if (player.isCreative() && player.isShiftKeyDown()) {
+        if (player.isCreative() && player.isSneaking()) {
             equilibrium.reset();
             WeaponAttributes.refreshLevels(player);
-            player.displayClientMessage(Component.translatable("message.primogemcraft.equilibrium.reset"), false);
-            return InteractionResultHolder.sidedSuccess(stack, false);
+            player.sendMessage(Text.translatable("message.primogemcraft.equilibrium.reset"), false);
+            return TypedActionResult.success(stack, false);
         }
         if (!equilibrium.advanceTo(tier)) {
-            player.displayClientMessage(Component.translatable("message.primogemcraft.equilibrium.already"), false);
-            return InteractionResultHolder.sidedSuccess(stack, false);
+            player.sendMessage(Text.translatable("message.primogemcraft.equilibrium.already"), false);
+            return TypedActionResult.success(stack, false);
         }
         WeaponAttributes.refreshLevels(player);
-        stack.shrink(1);
-        server.playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.ENHANCEMENT_SUCCESS.get(), SoundSource.PLAYERS, VOLUME, PITCH);
-        return InteractionResultHolder.sidedSuccess(stack, false);
+        stack.decrement(1);
+        server.playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.ENHANCEMENT_SUCCESS.get(), SoundCategory.PLAYERS, VOLUME, PITCH);
+        return TypedActionResult.success(stack, false);
     }
 }

@@ -1,31 +1,27 @@
 package net.per.primogemcraft.system.abundance;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.TickTask;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.ServerTask;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootContextParameters;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.per.primogemcraft.config.PGCConfig;
 import net.per.primogemcraft.entity.mob.AbundanceBlightZombieEntity;
 import net.per.primogemcraft.registry.PGCEffects;
@@ -34,10 +30,8 @@ import net.per.primogemcraft.registry.PGCParticles;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
 public final class AbundanceEvents {
-    private static final ResourceKey<LootTable> WITHER_LOOT = ResourceKey.create(Registries.LOOT_TABLE,
-            ResourceLocation.fromNamespaceAndPath(MOD_ID, "entities/abundance_withering"));
+    private static final Identifier WITHER_LOOT = Identifier.of(MOD_ID, "entities/abundance_withering");
 
     private static final int SOURCE_TICKS = -1;
     private static final float DEATH_HEALTH_RATIO = 0.5F;
@@ -56,54 +50,48 @@ public final class AbundanceEvents {
     private AbundanceEvents() {
     }
 
-    @SubscribeEvent
-    public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
-        if (event.loadedFromDisk() || !(event.getLevel() instanceof ServerLevel level)) return;
-        if (!(event.getEntity() instanceof LivingEntity living)) return;
-        if (!level.getServer().isSpawningMonsters()) return;
-        if (!living.getType().is(EntityTypeTags.UNDEAD)) return;
-        if (living.getMaxHealth() >= PGCConfig.MARA_HEALTH_THRESHOLD.get()) return;
-        if (level.getRandom().nextDouble() >= chance(PGCConfig.ABUNDANCE_CHANCE.get())) return;
-        living.addEffect(new MobEffectInstance(PGCEffects.ABUNDANCE, SOURCE_TICKS, 0));
-        if (living instanceof Zombie zombie && !(living instanceof AbundanceBlightZombieEntity)
-                && level.getRandom().nextDouble() < chance(PGCConfig.BLIGHT_ZOMBIE_CHANCE.get()))
-            convert(level, zombie);
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onLivingDeath(LivingDeathEvent event) {
-        var entity = event.getEntity();
-        if (!entity.hasEffect(PGCEffects.ABUNDANCE)) return;
-        if (entity.getOffhandItem().is(Items.TOTEM_OF_UNDYING)) return;
-        var instance = entity.getEffect(PGCEffects.ABUNDANCE);
-        if (instance == null) return;
-        var level = entity.level();
-        entity.setHealth(entity.getMaxHealth() * DEATH_HEALTH_RATIO);
-        event.setCanceled(true);
-        if (level instanceof ServerLevel server)
-            server.sendParticles(PGCParticles.MARA.get(), entity.getX(), entity.getY() + DEATH_PARTICLE_HEIGHT, entity.getZ(),
-                    DEATH_PARTICLE_COUNT, 0.0D, 0.0D, 0.0D, DEATH_PARTICLE_SPEED);
-        level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.TOTEM_USE, SoundSource.HOSTILE, TOTEM_VOLUME, TOTEM_PITCH);
-        var amplifier = instance.getAmplifier();
-        var duration = instance.getDuration();
-        entity.removeEffect(PGCEffects.ABUNDANCE);
-        grantDeathBoosts(entity);
-        if (amplifier > 0) {
-            entity.addEffect(new MobEffectInstance(PGCEffects.ABUNDANCE, duration, amplifier - 1));
-            return;
-        }
-        if (level instanceof ServerLevel server && !(entity instanceof Player))
-            dropWitherLoot(server, entity, event.getSource());
-    }
-
-    @SubscribeEvent
-    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
-        var entity = event.getEntity();
-        if (entity instanceof Player) return;
-        if (!entity.hasEffect(PGCEffects.ABUNDANCE)) return;
-        if (entity.getRandom().nextDouble() >= DAMAGE_NEGATE_CHANCE) return;
-        event.setCanceled(true);
-        entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SHIELD_BLOCK, SoundSource.HOSTILE, SHIELD_VOLUME, SHIELD_PITCH);
+    public static void register() {
+        ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
+            if (!(entity instanceof LivingEntity living)) return;
+            if (world.getDifficulty() == net.minecraft.world.Difficulty.PEACEFUL) return;
+            if (living.getGroup() != net.minecraft.entity.EntityGroup.UNDEAD) return;
+            if (living.getMaxHealth() >= PGCConfig.MARA_HEALTH_THRESHOLD.get()) return;
+            if (world.getRandom().nextDouble() >= chance(PGCConfig.ABUNDANCE_CHANCE.get())) return;
+            living.addStatusEffect(new StatusEffectInstance(PGCEffects.ABUNDANCE.get(), SOURCE_TICKS, 0));
+            if (living instanceof ZombieEntity zombie && !(living instanceof AbundanceBlightZombieEntity)
+                    && world.getRandom().nextDouble() < chance(PGCConfig.BLIGHT_ZOMBIE_CHANCE.get()))
+                convert(world, zombie);
+        });
+        ServerLivingEntityEvents.ALLOW_DEATH.register((entity, source, amount) -> {
+            if (!entity.hasStatusEffect(PGCEffects.ABUNDANCE.get())) return true;
+            if (entity.getOffHandStack().isOf(Items.TOTEM_OF_UNDYING)) return true;
+            var instance = entity.getStatusEffect(PGCEffects.ABUNDANCE.get());
+            if (instance == null) return true;
+            var level = entity.getWorld();
+            entity.setHealth(entity.getMaxHealth() * DEATH_HEALTH_RATIO);
+            if (level instanceof ServerWorld server)
+                server.spawnParticles(PGCParticles.MARA.get(), entity.getX(), entity.getY() + DEATH_PARTICLE_HEIGHT, entity.getZ(),
+                        DEATH_PARTICLE_COUNT, 0.0D, 0.0D, 0.0D, DEATH_PARTICLE_SPEED);
+            level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, SoundCategory.HOSTILE, TOTEM_VOLUME, TOTEM_PITCH);
+            var amplifier = instance.getAmplifier();
+            var duration = instance.getDuration();
+            entity.removeStatusEffect(PGCEffects.ABUNDANCE.get());
+            grantDeathBoosts(entity);
+            if (amplifier > 0) {
+                entity.addStatusEffect(new StatusEffectInstance(PGCEffects.ABUNDANCE.get(), duration, amplifier - 1));
+                return false;
+            }
+            if (level instanceof ServerWorld server && !(entity instanceof PlayerEntity))
+                dropWitherLoot(server, entity, source);
+            return false;
+        });
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
+            if (entity instanceof PlayerEntity) return true;
+            if (!entity.hasStatusEffect(PGCEffects.ABUNDANCE.get())) return true;
+            if (entity.getRandom().nextDouble() >= DAMAGE_NEGATE_CHANCE) return true;
+            entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_SHIELD_BLOCK, SoundCategory.HOSTILE, SHIELD_VOLUME, SHIELD_PITCH);
+            return false;
+        });
     }
 
     private static double chance(int percent) {
@@ -111,31 +99,31 @@ public final class AbundanceEvents {
     }
 
     private static void grantDeathBoosts(LivingEntity entity) {
-        if (entity instanceof Player) return;
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, DEATH_BOOST_TICKS, DEATH_BOOST_AMPLIFIER, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, DEATH_BOOST_TICKS, DEATH_BOOST_AMPLIFIER, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, DEATH_BOOST_TICKS, DEATH_BOOST_AMPLIFIER, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, DEATH_BOOST_TICKS, 0, false, false));
+        if (entity instanceof PlayerEntity) return;
+        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, DEATH_BOOST_TICKS, DEATH_BOOST_AMPLIFIER, false, false));
+        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, DEATH_BOOST_TICKS, DEATH_BOOST_AMPLIFIER, false, false));
+        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, DEATH_BOOST_TICKS, DEATH_BOOST_AMPLIFIER, false, false));
+        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, DEATH_BOOST_TICKS, 0, false, false));
     }
 
-    private static void convert(ServerLevel level, Zombie zombie) {
+    private static void convert(ServerWorld level, ZombieEntity zombie) {
         var type = PGCEntities.ABUNDANCE_BLIGHT_ZOMBIE.get();
-        level.getServer().tell(new TickTask(SPAWN_DELAY, () -> {
+        level.getServer().execute(new ServerTask(SPAWN_DELAY, () -> {
             if (zombie.isRemoved()) return;
-            var spawned = type.spawn(level, zombie.blockPosition(), MobSpawnType.MOB_SUMMONED);
+            var spawned = type.spawn(level, zombie.getBlockPos(), SpawnReason.MOB_SUMMONED);
             if (spawned == null) return;
-            spawned.setYRot(level.getRandom().nextFloat() * 360.0F);
+            spawned.setYaw(level.getRandom().nextFloat() * 360.0F);
             zombie.discard();
         }));
     }
 
-    private static void dropWitherLoot(ServerLevel level, LivingEntity entity, DamageSource source) {
-        var table = level.getServer().reloadableRegistries().getLootTable(WITHER_LOOT);
-        var params = new LootParams.Builder(level)
-                .withParameter(LootContextParams.THIS_ENTITY, entity)
-                .withParameter(LootContextParams.ORIGIN, entity.position())
-                .withParameter(LootContextParams.DAMAGE_SOURCE, source)
-                .create(LootContextParamSets.ENTITY);
-        for (var stack : table.getRandomItems(params)) entity.spawnAtLocation(stack);
+    private static void dropWitherLoot(ServerWorld level, LivingEntity entity, DamageSource source) {
+        var table = level.getServer().getLootManager().getLootTable(WITHER_LOOT);
+        var params = new LootContextParameterSet.Builder(level)
+                .add(LootContextParameters.THIS_ENTITY, entity)
+                .add(LootContextParameters.ORIGIN, entity.getPos())
+                .add(LootContextParameters.DAMAGE_SOURCE, source)
+                .build(LootContextTypes.ENTITY);
+        for (var stack : table.generateLoot(params)) entity.dropStack(stack);
     }
 }

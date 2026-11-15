@@ -1,26 +1,26 @@
 package net.per.primogemcraft.render.entity.model;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeDeformation;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.Dilation;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.model.ModelData;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.util.Identifier;
 import net.per.primogemcraft.entity.misc.HertaOtherworldBranchTowerEntity;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public class HertaOtherworldBranchTowerModel extends EntityModel<HertaOtherworldBranchTowerEntity> {
-    public static final ModelLayerLocation LAYER =
-            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(MOD_ID, "herta_otherworld_branch_tower"), "main");
+    public static final EntityModelLayer LAYER =
+            new EntityModelLayer(Identifier.of(MOD_ID, "herta_otherworld_branch_tower"), "main");
 
-    private static final CubeDeformation NO_DEFORMATION = new CubeDeformation(0.0F);
+    private static final Dilation NO_DEFORMATION = new Dilation(0.0F);
     private static final int TEXTURE_WIDTH = 64;
     private static final int TEXTURE_HEIGHT = 64;
 
@@ -30,41 +30,41 @@ public class HertaOtherworldBranchTowerModel extends EntityModel<HertaOtherworld
         tower = root.getChild("tower");
     }
 
-    public static LayerDefinition createBodyLayer() {
-        MeshDefinition mesh = new MeshDefinition();
-        PartDefinition root = mesh.getRoot();
-        PartDefinition tower = root.addOrReplaceChild("tower", CubeListBuilder.create()
-                .texOffs(0, 17).addBox(-4.0F, -2.0F, -4.0F, 9.0F, 2.0F, 9.0F, NO_DEFORMATION)
-                .texOffs(0, 0).addBox(-5.0F, -8.0F, -5.0F, 10.0F, 6.0F, 11.0F, NO_DEFORMATION)
-                .texOffs(27, 19).addBox(-4.0F, -11.0F, -4.0F, 8.0F, 3.0F, 9.0F, NO_DEFORMATION)
-                .texOffs(26, 31).addBox(0.0F, -10.0F, -3.0F, 6.0F, 4.0F, 7.0F, NO_DEFORMATION)
-                .texOffs(19, 31).addBox(-1.0F, -12.0F, 0.0F, 3.0F, 1.0F, 3.0F, NO_DEFORMATION)
-                .texOffs(0, 4).addBox(6.0F, -8.0F, -5.0F, 1.0F, 6.0F, 1.0F, NO_DEFORMATION),
-                PartPose.offsetAndRotation(0.0F, 24.0F, 0.0F, 0.0F, -1.5708F, 0.0F));
-        tower.addOrReplaceChild("antenna", CubeListBuilder.create()
-                        .texOffs(0, 0).addBox(-1.0F, -14.0F, 1.0F, 2.0F, 2.0F, 2.0F, NO_DEFORMATION),
-                PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, 0.3054F, -0.0873F));
-        PartDefinition roof = tower.addOrReplaceChild("roof", CubeListBuilder.create(),
-                PartPose.offsetAndRotation(-1.0F, 0.0F, -1.0F, -0.088F, 0.1304F, 0.0322F));
-        roof.addOrReplaceChild("roof_ridge", CubeListBuilder.create()
-                        .texOffs(31, 0).addBox(2.0F, -13.0F, -2.0F, 5.0F, 1.0F, 5.0F, NO_DEFORMATION),
-                PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, -0.3927F, 0.0F, 0.0F));
-        roof.addOrReplaceChild("spire", CubeListBuilder.create()
-                .texOffs(0, 17).addBox(-2.0F, -17.0F, 1.0F, 2.0F, 1.0F, 2.0F, NO_DEFORMATION)
-                .texOffs(27, 17).addBox(1.0F, -17.0F, 1.0F, 2.0F, 1.0F, 2.0F, NO_DEFORMATION)
-                .texOffs(31, 6).addBox(-1.0F, -16.0F, -1.0F, 3.0F, 1.0F, 3.0F, NO_DEFORMATION)
-                .texOffs(0, 23).addBox(1.0F, -17.0F, -2.0F, 2.0F, 1.0F, 2.0F, NO_DEFORMATION)
-                .texOffs(0, 20).addBox(-2.0F, -17.0F, -2.0F, 2.0F, 1.0F, 2.0F, NO_DEFORMATION),
-                PartPose.offsetAndRotation(4.0F, 2.0F, -1.0F, -0.3927F, 0.0F, 0.0F));
-        return LayerDefinition.create(mesh, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    public static TexturedModelData createBodyLayer() {
+        ModelData mesh = new ModelData();
+        ModelPartData root = mesh.getRoot();
+        ModelPartData tower = root.addChild("tower", ModelPartBuilder.create()
+                .uv(0, 17).cuboid(-4.0F, -2.0F, -4.0F, 9.0F, 2.0F, 9.0F, NO_DEFORMATION)
+                .uv(0, 0).cuboid(-5.0F, -8.0F, -5.0F, 10.0F, 6.0F, 11.0F, NO_DEFORMATION)
+                .uv(27, 19).cuboid(-4.0F, -11.0F, -4.0F, 8.0F, 3.0F, 9.0F, NO_DEFORMATION)
+                .uv(26, 31).cuboid(0.0F, -10.0F, -3.0F, 6.0F, 4.0F, 7.0F, NO_DEFORMATION)
+                .uv(19, 31).cuboid(-1.0F, -12.0F, 0.0F, 3.0F, 1.0F, 3.0F, NO_DEFORMATION)
+                .uv(0, 4).cuboid(6.0F, -8.0F, -5.0F, 1.0F, 6.0F, 1.0F, NO_DEFORMATION),
+                ModelTransform.of(0.0F, 24.0F, 0.0F, 0.0F, -1.5708F, 0.0F));
+        tower.addChild("antenna", ModelPartBuilder.create()
+                .uv(0, 0).cuboid(-1.0F, -14.0F, 1.0F, 2.0F, 2.0F, 2.0F, NO_DEFORMATION),
+                ModelTransform.of(0.0F, 0.0F, 0.0F, 0.0F, 0.3054F, -0.0873F));
+        ModelPartData roof = tower.addChild("roof", ModelPartBuilder.create(),
+                ModelTransform.of(-1.0F, 0.0F, -1.0F, -0.088F, 0.1304F, 0.0322F));
+        roof.addChild("roof_ridge", ModelPartBuilder.create()
+                .uv(31, 0).cuboid(2.0F, -13.0F, -2.0F, 5.0F, 1.0F, 5.0F, NO_DEFORMATION),
+                ModelTransform.of(0.0F, 0.0F, 0.0F, -0.3927F, 0.0F, 0.0F));
+        roof.addChild("spire", ModelPartBuilder.create()
+                .uv(0, 17).cuboid(-2.0F, -17.0F, 1.0F, 2.0F, 1.0F, 2.0F, NO_DEFORMATION)
+                .uv(27, 17).cuboid(1.0F, -17.0F, 1.0F, 2.0F, 1.0F, 2.0F, NO_DEFORMATION)
+                .uv(31, 6).cuboid(-1.0F, -16.0F, -1.0F, 3.0F, 1.0F, 3.0F, NO_DEFORMATION)
+                .uv(0, 23).cuboid(1.0F, -17.0F, -2.0F, 2.0F, 1.0F, 2.0F, NO_DEFORMATION)
+                .uv(0, 20).cuboid(-2.0F, -17.0F, -2.0F, 2.0F, 1.0F, 2.0F, NO_DEFORMATION),
+                ModelTransform.of(4.0F, 2.0F, -1.0F, -0.3927F, 0.0F, 0.0F));
+        return TexturedModelData.of(mesh, TEXTURE_WIDTH, TEXTURE_HEIGHT);
     }
 
     @Override
-    public void setupAnim(HertaOtherworldBranchTowerEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setAngles(HertaOtherworldBranchTowerEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-        tower.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+    public void render(net.minecraft.client.util.math.MatrixStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        tower.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }

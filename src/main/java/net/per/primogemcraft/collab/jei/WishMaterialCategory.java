@@ -8,9 +8,9 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
+import net.minecraft.util.Formatting;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.Text;
 import net.per.primogemcraft.client.gui.GuiAtlas;
 import net.per.primogemcraft.registry.PGCItems;
 
@@ -29,8 +29,8 @@ public class WishMaterialCategory implements IRecipeCategory<WishMaterialRecipe>
     }
 
     @Override
-    public Component getTitle() {
-        return Component.translatable("rei.category.primogemcraft.wish_materials");
+    public Text getTitle() {
+        return Text.translatable("rei.category.primogemcraft.wish_materials");
     }
 
     @Override
@@ -55,13 +55,13 @@ public class WishMaterialCategory implements IRecipeCategory<WishMaterialRecipe>
             builder.addSlot(RecipeIngredientRole.INPUT, PADDING + index % WishMaterialRecipe.COLUMNS * SLOT_SIZE + 1,
                             PADDING + index / WishMaterialRecipe.COLUMNS * SLOT_SIZE + 1)
                     .addItemStack(recipe.inputs().get(index))
-                    .addRichTooltipCallback((slot, tooltip) -> tooltip.add(Component.translatable("rei.primogemcraft.wish_materials.tooltip.0", value)
-                            .withStyle(ChatFormatting.AQUA)));
+                    .addRichTooltipCallback((slot, tooltip) -> tooltip.add(Text.translatable("rei.primogemcraft.wish_materials.tooltip.0", value)
+                            .formatted(Formatting.AQUA)));
         }
     }
 
     @Override
-    public void draw(WishMaterialRecipe recipe, IRecipeSlotsView slots, GuiGraphics graphics, double mouseX, double mouseY) {
+    public void draw(WishMaterialRecipe recipe, IRecipeSlotsView slots, DrawContext graphics, double mouseX, double mouseY) {
         GuiAtlas.panel(graphics, 0, 0, getWidth(), getHeight());
         for (var index = 0; index < WishMaterialRecipe.PAGE_SIZE; index++) {
             GuiAtlas.sprite(graphics, GuiAtlas.SLOT, PADDING + index % WishMaterialRecipe.COLUMNS * SLOT_SIZE,

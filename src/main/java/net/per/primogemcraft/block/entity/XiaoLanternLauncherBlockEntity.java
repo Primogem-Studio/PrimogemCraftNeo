@@ -1,10 +1,10 @@
 package net.per.primogemcraft.block.entity;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.registry.PGCBlockEntities;
 
 public class XiaoLanternLauncherBlockEntity extends BlockEntity {
@@ -17,19 +17,19 @@ public class XiaoLanternLauncherBlockEntity extends BlockEntity {
     }
 
     public int increment() {
-        setChanged();
+        markDirty();
         return ++triggers;
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void readNbt(NbtCompound tag) {
+        super.readNbt(tag);
         triggers = tag.getInt(TRIGGERS_KEY);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void writeNbt(NbtCompound tag) {
+        super.writeNbt(tag);
         tag.putInt(TRIGGERS_KEY, triggers);
     }
 }

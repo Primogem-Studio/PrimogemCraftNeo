@@ -1,15 +1,15 @@
 package net.per.primogemcraft.system.abundance;
 
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCParticles;
 
-public class AbundanceEffect extends MobEffect {
+public class AbundanceEffect extends StatusEffect {
     private static final double PARTICLE_CHANCE = 0.2D;
     private static final int PARTICLE_COUNT = 5;
     private static final double PARTICLE_JITTER = 0.1D;
@@ -17,25 +17,26 @@ public class AbundanceEffect extends MobEffect {
     private static final double PARTICLE_SPEED = 0.25D;
 
     public AbundanceEffect() {
-        super(MobEffectCategory.BENEFICIAL, -16038607);
+        super(StatusEffectCategory.BENEFICIAL, -16038607);
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean canApplyUpdateEffect(int duration, int amplifier) {
         return true;
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        if (entity.level() instanceof ServerLevel level && level.getRandom().nextDouble() < PARTICLE_CHANCE)
-            level.sendParticles(PGCParticles.MARA.get(), entity.getX() + jitter(entity), entity.getY(), entity.getZ() + jitter(entity),
+    public void applyUpdateEffect(LivingEntity entity, int amplifier)
+    {
+        if (entity.getWorld() instanceof ServerWorld level && level.getRandom().nextDouble() < PARTICLE_CHANCE)
+            level.spawnParticles(PGCParticles.MARA.get(), entity.getX() + jitter(entity), entity.getY(), entity.getZ() + jitter(entity),
                     PARTICLE_COUNT, 0.0D, PARTICLE_SPREAD, PARTICLE_SPREAD, PARTICLE_SPEED);
-        if (entity instanceof Player) return true;
-        if (entity.hasEffect(PGCEffects.CUCKOO_CLOCK_TRICK)) entity.removeEffect(PGCEffects.ABUNDANCE);
-        return true;
+        if (entity instanceof PlayerEntity) return;
+        if (entity.hasStatusEffect(PGCEffects.CUCKOO_CLOCK_TRICK.get())) entity.removeStatusEffect(PGCEffects.ABUNDANCE.get());
+        return;
     }
 
     private static double jitter(LivingEntity entity) {
-        return Mth.nextDouble(entity.getRandom(), -PARTICLE_JITTER, PARTICLE_JITTER);
+        return MathHelper.nextDouble(entity.getRandom(), -PARTICLE_JITTER, PARTICLE_JITTER);
     }
 }

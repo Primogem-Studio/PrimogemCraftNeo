@@ -1,10 +1,10 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.entity.LivingEntity;
 import net.per.primogemcraft.system.curio.*;
 
 public class FamilyTiesItem extends CurioItem {
-    public FamilyTiesItem(Properties properties) {
+    public FamilyTiesItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.NORMAL, properties);
     }
 

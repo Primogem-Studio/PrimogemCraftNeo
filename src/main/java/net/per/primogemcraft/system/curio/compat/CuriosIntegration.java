@@ -1,57 +1,54 @@
 package net.per.primogemcraft.system.curio.compat;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.system.curio.CurioContext;
 import net.per.primogemcraft.system.curio.CurioItem;
 
 import java.util.List;
 import java.util.Set;
 
-import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
-
-@EventBusSubscriber(modid = MOD_ID)
+/**
+ * 饰品兼容集成（Fabric）。
+ * <p>原模组用 Curios；Fabric 侧改用 Accessories。检测 Accessories 是否加载。
+ */
 public final class CuriosIntegration {
-    private static final String CURIO_MOD_ID = "curios";
+    private static final String ACCESSORIES_MOD_ID = "accessories";
 
     private static Boolean loaded;
 
     private CuriosIntegration() {
     }
 
-    @SubscribeEvent
-    public static void onCommonSetup(FMLCommonSetupEvent event) {
+    public static void onCommonSetup() {
         if (loaded()) CuriosBridge.register();
     }
 
     public static boolean loaded() {
-        if (loaded == null) loaded = ModList.get().isLoaded(CURIO_MOD_ID);
+        if (loaded == null) loaded = FabricLoader.getInstance().isModLoaded(ACCESSORIES_MOD_ID);
         return loaded;
     }
 
-    public static List<ItemStack> equipped(Player player) {
+    public static List<ItemStack> equipped(PlayerEntity player) {
         return loaded() ? CuriosBridge.equipped(player) : List.of();
     }
 
-    public static int consume(ServerPlayer player, Set<Item> pending) {
+    public static int consume(ServerPlayerEntity player, Set<Item> pending) {
         return loaded() ? CuriosBridge.consume(player, pending) : 0;
     }
 
-    public static boolean equip(ServerPlayer player, ItemStack stack) {
+    public static boolean equip(ServerPlayerEntity player, ItemStack stack) {
         return loaded() && CuriosBridge.equip(player, stack);
     }
 
-    public static void tick(ServerPlayer player) {
+    public static void tick(ServerPlayerEntity player) {
         if (loaded()) CuriosBridge.tick(player);
     }
 
-    public static void collect(ServerPlayer player, List<CurioContext> output) {
+    public static void collect(ServerPlayerEntity player, List<CurioContext> output) {
         if (!loaded()) return;
         for (var stack : CuriosBridge.equipped(player))
             if (stack.getItem() instanceof CurioItem curio) output.add(CurioContext.of(player, stack, curio.form()));

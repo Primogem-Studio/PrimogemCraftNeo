@@ -1,7 +1,7 @@
 package net.per.primogemcraft.util;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
@@ -9,11 +9,11 @@ public final class Advancements {
     private Advancements() {
     }
 
-    public static void grant(ServerPlayer player, String path) {
-        var holder = player.server.getAdvancements().get(ResourceLocation.fromNamespaceAndPath(MOD_ID, path));
+    public static void grant(ServerPlayerEntity player, String path) {
+        var holder = player.server.getAdvancementLoader().get(Identifier.of(MOD_ID, path));
         if (holder == null) return;
-        var progress = player.getAdvancements().getOrStartProgress(holder);
+        var progress = player.getAdvancementTracker().getProgress(holder);
         if (progress.isDone()) return;
-        for (var criteria : progress.getRemainingCriteria()) player.getAdvancements().award(holder, criteria);
+        for (var criteria : progress.getUnobtainedCriteria()) player.getAdvancementTracker().grantCriterion(holder, criteria);
     }
 }

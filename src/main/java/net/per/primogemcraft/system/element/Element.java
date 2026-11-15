@@ -1,15 +1,17 @@
 package net.per.primogemcraft.system.element;
 
-import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.armortrim.TrimMaterial;
+import net.per.primogemcraft.compat.attachment.Attachments;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.trim.ArmorTrimMaterial;
 import net.per.primogemcraft.item.curio.WaxSealItem;
 import net.per.primogemcraft.registry.PGCAttachments;
 import net.per.primogemcraft.registry.PGCDataComponents;
@@ -22,79 +24,79 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 public enum Element {
     ANEMO("anemo", 3, 2) {
         @Override
-        public void apply(ServerPlayer player, double points) {
+        public void apply(ServerPlayerEntity player, double points) {
             var mode = AnemoEffectMode.of(player);
-            if (points >= 2.0D && mode.allowsSlowFalling()) show(player, MobEffects.SLOW_FALLING, 100, (int) (points * 0.5D - 1.0D));
-            if (points >= 4.0D && mode.allowsJump()) show(player, MobEffects.JUMP, 100, (int) (points + 2.0D));
-            if (points >= 8.0D) silent(player, PGCEffects.FLIGHT, 60, 1);
+            if (points >= 2.0D && mode.allowsSlowFalling()) show(player, StatusEffects.SLOW_FALLING, 100, (int) (points * 0.5D - 1.0D));
+            if (points >= 4.0D && mode.allowsJump()) show(player, StatusEffects.JUMP_BOOST, 100, (int) (points + 2.0D));
+            if (points >= 8.0D) silent(player, PGCEffects.FLIGHT.get(), 60, 1);
         }
     },
     GEO("geo", 2, 0) {
         @Override
-        public void apply(ServerPlayer player, double points) {
-            if (points >= 2.0D) show(player, MobEffects.DAMAGE_RESISTANCE, 100, amplifier(points - 7.0D));
+        public void apply(ServerPlayerEntity player, double points) {
+            if (points >= 2.0D) show(player, StatusEffects.RESISTANCE, 100, amplifier(points - 7.0D));
             if (points < 4.0D) return;
-            if (player.hasEffect(PGCEffects.DAMAGE_ABSORPTION_COOLDOWN) || player.hasEffect(MobEffects.ABSORPTION)) return;
-            show(player, MobEffects.ABSORPTION, 900, (int) (points * 0.5D - 1.0D));
-            silent(player, PGCEffects.DAMAGE_ABSORPTION_COOLDOWN, 900, 0);
+            if (player.hasStatusEffect(PGCEffects.DAMAGE_ABSORPTION_COOLDOWN.get()) || player.hasStatusEffect(StatusEffects.ABSORPTION)) return;
+            show(player, StatusEffects.ABSORPTION, 900, (int) (points * 0.5D - 1.0D));
+            silent(player, PGCEffects.DAMAGE_ABSORPTION_COOLDOWN.get(), 900, 0);
         }
     },
     ELECTRO("electro", 2, 0) {
         @Override
-        public void apply(ServerPlayer player, double points) {
-            if (points >= 2.0D && player.hasEffect(PGCEffects.MAGATAMA))
-                show(player, MobEffects.DAMAGE_RESISTANCE, 60, amplifier(points - 6.0D));
-            if (points < 4.0D || !player.isInWaterRainOrBubble()) return;
-            show(player, MobEffects.DAMAGE_BOOST, 60, amplifier(points * 0.5D - 2.0D));
-            show(player, MobEffects.MOVEMENT_SPEED, 60, amplifier(points * 0.5D - 3.0D));
+        public void apply(ServerPlayerEntity player, double points) {
+            if (points >= 2.0D && player.hasStatusEffect(PGCEffects.MAGATAMA.get()))
+                show(player, StatusEffects.RESISTANCE, 60, amplifier(points - 6.0D));
+            if (points < 4.0D || !player.isTouchingWaterOrRain()) return;
+            show(player, StatusEffects.STRENGTH, 60, amplifier(points * 0.5D - 2.0D));
+            show(player, StatusEffects.SPEED, 60, amplifier(points * 0.5D - 3.0D));
         }
     },
     DENDRO("dendro", 2, 0) {
         @Override
-        public void apply(ServerPlayer player, double points) {
+        public void apply(ServerPlayerEntity player, double points) {
             if (points >= 2.0D && PGCTimer.isDone(player, SATURATION_TIMER)) {
                 PGCTimer.set(player, SATURATION_TIMER, 400 - (int) points * 2);
-                show(player, MobEffects.SATURATION, 10, 0);
+                show(player, StatusEffects.SATURATION, 10, 0);
             }
             if (points < 4.0D) {
-                player.removeEffect(PGCEffects.DENDRO_SET);
+                player.removeStatusEffect(PGCEffects.DENDRO_SET.get());
                 return;
             }
-            player.forceAddEffect(new MobEffectInstance(PGCEffects.DENDRO_SET, -1, (int) (points - 1.0D), false, false), null);
+            player.addStatusEffect(new StatusEffectInstance(PGCEffects.DENDRO_SET.get(), -1, (int) (points - 1.0D), false, false), null);
         }
     },
     HYDRO("hydro", 2, 0) {
         @Override
-        public void apply(ServerPlayer player, double points) {
-            if (points >= 2.0D) show(player, MobEffects.CONDUIT_POWER, 80, 0);
-            if (points < 4.0D || player.hasEffect(PGCEffects.PURIFIED_ARMOR_EFFECT_LIMIT) || !player.isAlive()) return;
+        public void apply(ServerPlayerEntity player, double points) {
+            if (points >= 2.0D) show(player, StatusEffects.CONDUIT_POWER, 80, 0);
+            if (points < 4.0D || player.hasStatusEffect(PGCEffects.PURIFIED_ARMOR_EFFECT_LIMIT.get()) || !player.isAlive()) return;
             if (points < 6.0D) {
                 player.heal((float) (player.getMaxHealth() * points * 0.5D * 0.02D));
-                silent(player, PGCEffects.PURIFIED_ARMOR_EFFECT_LIMIT, (int) (points * 20.0D), 0);
+                silent(player, PGCEffects.PURIFIED_ARMOR_EFFECT_LIMIT.get(), (int) (points * 20.0D), 0);
                 return;
             }
             player.heal((float) (player.getMaxHealth() * points * 0.5D * 0.03D));
-            silent(player, PGCEffects.PURIFIED_ARMOR_EFFECT_LIMIT, (int) (points * 10.0D), 0);
+            silent(player, PGCEffects.PURIFIED_ARMOR_EFFECT_LIMIT.get(), (int) (points * 10.0D), 0);
         }
     },
     PYRO("pyro", 2, 2) {
         @Override
-        public void apply(ServerPlayer player, double points) {
-            if (points >= 2.0D) show(player, MobEffects.FIRE_RESISTANCE, 80, 0);
+        public void apply(ServerPlayerEntity player, double points) {
+            if (points >= 2.0D) show(player, StatusEffects.FIRE_RESISTANCE, 80, 0);
             if (points < 4.0D) return;
             var amplifier = (int) Math.round(points - 1.0D);
-            var current = player.getEffect(PGCEffects.BURNING_RETALIATION);
-            if (current != null && current.getAmplifier() != amplifier) player.removeEffect(PGCEffects.BURNING_RETALIATION);
-            silent(player, PGCEffects.BURNING_RETALIATION, 60, amplifier);
+            var current = player.getStatusEffect(PGCEffects.BURNING_RETALIATION.get());
+            if (current != null && current.getAmplifier() != amplifier) player.removeStatusEffect(PGCEffects.BURNING_RETALIATION.get());
+            silent(player, PGCEffects.BURNING_RETALIATION.get(), 60, amplifier);
         }
     },
     CRYO("cryo", 2, 4) {
         @Override
-        public void apply(ServerPlayer player, double points) {
-            if (points >= 2.0D) show(player, PGCEffects.WARM_POWDER_SNOW, 60, (int) ((points - 1.0D) * 0.5D));
-            if (points >= 4.0D) show(player, PGCEffects.POWDER_SNOW_BACKLASH, 60, (int) ((points - 1.0D) * 0.5D));
+        public void apply(ServerPlayerEntity player, double points) {
+            if (points >= 2.0D) show(player, PGCEffects.WARM_POWDER_SNOW.get(), 60, (int) ((points - 1.0D) * 0.5D));
+            if (points >= 4.0D) show(player, PGCEffects.POWDER_SNOW_BACKLASH.get(), 60, (int) ((points - 1.0D) * 0.5D));
             var walksOnPowderSnow = points >= 2.0D;
-            if (player.getData(PGCAttachments.POWDER_SNOW_WALK) != walksOnPowderSnow) player.setData(PGCAttachments.POWDER_SNOW_WALK, walksOnPowderSnow);
+            if (Attachments.get(player, PGCAttachments.POWDER_SNOW_WALK) != walksOnPowderSnow) Attachments.set(player, PGCAttachments.POWDER_SNOW_WALK, walksOnPowderSnow);
         }
     };
 
@@ -122,7 +124,7 @@ public enum Element {
         return trimTooltipControlLines;
     }
 
-    public abstract void apply(ServerPlayer player, double points);
+    public abstract void apply(ServerPlayerEntity player, double points);
 
     /**
      * The value this element is stored as in the {@code element_type} component.
@@ -137,20 +139,21 @@ public enum Element {
     }
 
     public static Element of(ItemStack stack) {
-        var index = stack.get(PGCDataComponents.ELEMENT_TYPE.get());
+        var index = StackComponents.get(stack, PGCDataComponents.ELEMENT_TYPE);
         return index == null ? null : byIndex(index);
     }
 
-    public static Element ofTrimMaterial(Holder<TrimMaterial> material) {
-        var location = material.unwrapKey().map(ResourceKey::location).orElse(null);
+    public static Element ofTrimMaterial(RegistryEntry<ArmorTrimMaterial> material) {
+        if (material == null) return null;
+        var location = material.getKey().map(RegistryKey::getValue).orElse(null);
         if (location == null || !MOD_ID.equals(location.getNamespace())) return null;
         for (var element : values()) if (element.id.equals(location.getPath())) return element;
         return null;
     }
 
-    public static boolean holdsWaxSeal(Player player, Element element) {
+    public static boolean holdsWaxSeal(PlayerEntity player, Element element) {
         if (player == null) return false;
-        if (player.getInventory().contains(stack -> isSealOf(stack, element))) return true;
+        if (net.per.primogemcraft.compat.item.Inventories120.any(player.getInventory(), stack -> isSealOf(stack, element))) return true;
         for (var stack : CuriosIntegration.equipped(player)) if (isSealOf(stack, element)) return true;
         return false;
     }
@@ -159,15 +162,15 @@ public enum Element {
         return stack.getItem() instanceof WaxSealItem seal && seal.element() == element;
     }
 
-    private static void show(LivingEntity entity, Holder<MobEffect> effect, int duration, int amplifier) {
-        entity.addEffect(new MobEffectInstance(effect, duration, amplifier, true, false));
+    private static void show(LivingEntity entity, StatusEffect effect, int duration, int amplifier) {
+        entity.addStatusEffect(new StatusEffectInstance(effect, duration, amplifier, true, false));
     }
 
     private static int amplifier(double value) {
         return Math.max(0, (int) value);
     }
 
-    private static void silent(LivingEntity entity, Holder<MobEffect> effect, int duration, int amplifier) {
-        entity.addEffect(new MobEffectInstance(effect, duration, amplifier, false, false));
+    private static void silent(LivingEntity entity, StatusEffect effect, int duration, int amplifier) {
+        entity.addStatusEffect(new StatusEffectInstance(effect, duration, amplifier, false, false));
     }
 }

@@ -1,67 +1,58 @@
 package net.per.primogemcraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.FallingBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.Tags;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FallingBlock;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.entity.misc.FallingMoraPileEntity;
 
 public class PackedMoraPileBlock extends FallingBlock {
-    public static final MapCodec<PackedMoraPileBlock> CODEC = simpleCodec(PackedMoraPileBlock::new);
-
-    public PackedMoraPileBlock(BlockBehaviour.Properties properties) {
+    public PackedMoraPileBlock(AbstractBlock.Settings properties) {
         super(properties);
     }
 
     @Override
-    protected MapCodec<? extends FallingBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected boolean isSignalSource(BlockState state) {
+    public boolean emitsRedstonePower(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+    public int getWeakRedstonePower(BlockState state, BlockView level, BlockPos pos, Direction direction) {
         return 15;
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        if (isFree(level.getBlockState(pos.below())) && pos.getY() >= level.getMinBuildHeight()) {
+    public void scheduledTick(BlockState state, ServerWorld level, BlockPos pos, Random random) {
+        if (canFallThrough(level.getBlockState(pos.down())) && pos.getY() >= level.getBottomY()) {
             FallingMoraPileEntity.fall(level, pos, state);
         }
     }
 
-    @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-        super.onPlace(state, level, pos, oldState, movedByPiston);
+    public void onPlaced(World level, BlockPos pos, BlockState state, net.minecraft.entity.LivingEntity placer, net.minecraft.item.ItemStack stack) {
+        super.onPlaced(level, pos, state, placer, stack);
         crushGlassBelow(level, pos);
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
-        super.neighborChanged(state, level, pos, neighborBlock, fromPos, movedByPiston);
+    public void neighborUpdate(BlockState state, World level, BlockPos pos, Block neighborBlock, BlockPos fromPos, boolean movedByPiston) {
+        super.neighborUpdate(state, level, pos, neighborBlock, fromPos, movedByPiston);
         crushGlassBelow(level, pos);
     }
 
-    private static void crushGlassBelow(Level level, BlockPos pos) {
-        if (level.isClientSide()) return;
-        var below = pos.below();
+    private static void crushGlassBelow(World level, BlockPos pos) {
+        if (level.isClient()) return;
+        var below = pos.down();
         var state = level.getBlockState(below);
-        if (!state.is(Tags.Blocks.GLASS_BLOCKS)) return;
-        level.levelEvent(2001, below, Block.getId(state));
-        level.setBlock(below, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+        if (!state.isIn(net.minecraft.registry.tag.BlockTags.IMPERMEABLE)) return;
+        level.syncWorldEvent(2001, below, Block.getRawIdFromState(state));
+        level.setBlockState(below, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
     }
 }

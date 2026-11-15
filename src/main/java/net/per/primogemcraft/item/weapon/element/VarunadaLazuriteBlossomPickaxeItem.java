@@ -1,17 +1,17 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.world.World;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.registry.PGCEntities;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.registry.PGCSounds;
@@ -22,7 +22,7 @@ import net.per.primogemcraft.system.weapon.WishWeaponToolItem;
 import java.util.List;
 
 public class VarunadaLazuriteBlossomPickaxeItem extends WishWeaponToolItem {
-    private static final Tier TIER = new WeaponTier(2561, 8.0F, 15, WeaponTier.NETHERITE_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(2561, 8.0F, 15, WeaponTier.NETHERITE_INCORRECT,
             PGCItems.NAGADUS_EMERALD_SLIVER, PGCItems.VARUNADA_LAZURITE_SLIVER, PGCItems.PRIMOGEM);
 
     private static final float ATTACK_DAMAGE = 6.0F;
@@ -35,8 +35,8 @@ public class VarunadaLazuriteBlossomPickaxeItem extends WishWeaponToolItem {
     private static final String PASSIVE_ACTION = "passive";
     private static final String DENDRO_CORE_TEXT = "dendro_core";
 
-    public VarunadaLazuriteBlossomPickaxeItem(Properties properties) {
-        super(TIER, properties.fireResistant(), BlockTags.MINEABLE_WITH_PICKAXE, ATTACK_DAMAGE, ATTACK_SPEED);
+    public VarunadaLazuriteBlossomPickaxeItem(Settings properties) {
+        super(TIER, properties.fireproof(), BlockTags.PICKAXE_MINEABLE, ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -45,14 +45,14 @@ public class VarunadaLazuriteBlossomPickaxeItem extends WishWeaponToolItem {
     }
 
     @Override
-    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
-        var result = super.mineBlock(stack, level, state, pos, miningEntity);
-        if (!(level instanceof ServerLevel server) || !(miningEntity instanceof Player player)) return result;
+    public boolean postMine(ItemStack stack, World level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
+        var result = super.postMine(stack, level, state, pos, miningEntity);
+        if (!(level instanceof ServerWorld server) || !(miningEntity instanceof PlayerEntity player)) return result;
         if (server.getRandom().nextDouble() >= SPAWN_CHANCE) return result;
-        var spawned = PGCEntities.DENDRO_CORE.get().spawn(server, player.blockPosition(), MobSpawnType.MOB_SUMMONED);
-        if (spawned != null) spawned.setYRot(server.getRandom().nextFloat() * FULL_TURN);
-        level.playSound(null, player.blockPosition(), PGCSounds.SOIL_SHAPING.get(), SoundSource.NEUTRAL,
-                SOUND_VOLUME, Mth.nextFloat(server.getRandom(), (float) SOUND_PITCH_MIN, (float) SOUND_PITCH_MAX));
+        var spawned = PGCEntities.DENDRO_CORE.get().spawn(server, player.getBlockPos(), SpawnReason.MOB_SUMMONED);
+        if (spawned != null) spawned.setYaw(server.getRandom().nextFloat() * FULL_TURN);
+        level.playSound(null, player.getBlockPos(), PGCSounds.SOIL_SHAPING.get(), SoundCategory.NEUTRAL,
+                SOUND_VOLUME, MathHelper.nextFloat(server.getRandom(), (float) SOUND_PITCH_MIN, (float) SOUND_PITCH_MAX));
         return result;
     }
 }

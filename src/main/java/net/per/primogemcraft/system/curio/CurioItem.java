@@ -1,14 +1,15 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.world.World;
 import net.per.primogemcraft.item.tool.DescribedItem;
 import net.per.primogemcraft.registry.PGCDataComponents;
 
@@ -23,16 +24,16 @@ public class CurioItem extends DescribedItem {
     private final int integrity;
     private final Supplier<ItemStack> byproduct;
 
-    public CurioItem(CurioTrigger trigger, CurioForm form, Properties properties) {
+    public CurioItem(CurioTrigger trigger, CurioForm form, Settings properties) {
         this(trigger, form, 0, () -> ItemStack.EMPTY, properties);
     }
 
-    public CurioItem(CurioTrigger trigger, CurioForm form, int integrity, Properties properties) {
+    public CurioItem(CurioTrigger trigger, CurioForm form, int integrity, Settings properties) {
         this(trigger, form, integrity, () -> ItemStack.EMPTY, properties);
     }
 
-    public CurioItem(CurioTrigger trigger, CurioForm form, int integrity, Supplier<ItemStack> byproduct, Properties properties) {
-        super(properties.stacksTo(1));
+    public CurioItem(CurioTrigger trigger, CurioForm form, int integrity, Supplier<ItemStack> byproduct, Settings properties) {
+        super(properties.maxCount(1));
         this.trigger = trigger;
         this.form = form;
         this.integrity = integrity;
@@ -76,39 +77,39 @@ public class CurioItem extends DescribedItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendTooltip(ItemStack stack, @org.jetbrains.annotations.Nullable World level, List<Text> tooltip, TooltipContext flag) {
         appendTrigger(stack, tooltip);
-        super.appendHoverText(stack, context, tooltip, flag);
+        super.appendTooltip(stack, level, tooltip, flag);
         appendBar(stack, tooltip);
     }
 
-    protected void appendTrigger(ItemStack stack, List<Component> tooltip) {
+    protected void appendTrigger(ItemStack stack, List<Text> tooltip) {
         if (described(stack)) tooltip.add(trigger.label());
     }
 
-    protected void appendBar(ItemStack stack, List<Component> tooltip) {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+    protected void appendBar(ItemStack stack, List<Text> tooltip) {
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         if (bar == null || !bar.visible() || bar.denominator() <= 0) return;
         var fillsUp = barFillsUp();
         var shown = fillsUp ? bar.numerator() : bar.remaining();
-        tooltip.add(Component.translatable(fillsUp ? PROGRESS_KEY : DURABILITY_KEY, shown, bar.denominator()));
+        tooltip.add(Text.translatable(fillsUp ? PROGRESS_KEY : DURABILITY_KEY, shown, bar.denominator()));
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        var food = stack.getFoodProperties(player);
-        if (food != null && player.canEat(food.canAlwaysEat())) {
-            player.startUsingItem(hand);
-            return InteractionResultHolder.consume(stack);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        var food = stack.getItem().getFoodComponent();
+        if (food != null && player.canConsume(food.isAlwaysEdible())) {
+            player.setCurrentHand(hand);
+            return TypedActionResult.consume(stack);
         }
-        if (player instanceof ServerPlayer server) activated(CurioContext.of(server, stack, form));
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+        if (player instanceof ServerPlayerEntity server) activated(CurioContext.of(server, stack, form));
+        return TypedActionResult.success(stack, level.isClient());
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        if (!(entity instanceof ServerPlayer player) || stack.isEmpty()) return;
+    public void inventoryTick(ItemStack stack, World level, Entity entity, int slot, boolean selected) {
+        if (!(entity instanceof ServerPlayerEntity player) || stack.isEmpty()) return;
         var context = CurioContext.of(player, stack, form);
         if (context.ready("curio_inventory_" + slot, presenceInterval())) presence(context);
     }
@@ -116,7 +117,7 @@ public class CurioItem extends DescribedItem {
     public void activated(CurioContext context) {
     }
 
-    public void pickedUp(ServerPlayer player, ItemStack stack) {
+    public void pickedUp(ServerPlayerEntity player, ItemStack stack) {
     }
 
     public void presence(CurioContext context) {

@@ -1,9 +1,9 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.per.primogemcraft.system.curio.CurioContext;
 import net.per.primogemcraft.system.curio.CurioForm;
 import net.per.primogemcraft.system.curio.CurioImpact;
@@ -18,7 +18,7 @@ public class VoidCheeseItem extends CurioItem {
     private static final double HEAL_RATIO = 0.3D;
     private static final int REPAIR_AMOUNT = 1;
 
-    public VoidCheeseItem(Properties properties) {
+    public VoidCheeseItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.FUSION, 1, properties);
     }
 
@@ -38,9 +38,9 @@ public class VoidCheeseItem extends CurioItem {
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        var result = super.finishUsingItem(stack, level, entity);
-        if (!(entity instanceof ServerPlayer player)) return result;
+    public ItemStack finishUsing(ItemStack stack, World level, LivingEntity entity) {
+        var result = super.finishUsing(stack, level, entity);
+        if (!(entity instanceof ServerPlayerEntity player)) return result;
         player.heal(player.getMaxHealth() * (float) HEAL_RATIO);
         Curios.broken(player, stack);
         return result;

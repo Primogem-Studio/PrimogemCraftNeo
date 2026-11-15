@@ -1,7 +1,7 @@
 package net.per.primogemcraft.system.wish;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.text.Text;
+import net.minecraft.text.MutableText;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
@@ -27,7 +27,7 @@ public enum WishBanner {
         return "wish." + MOD_ID + ".banner." + id;
     }
 
-    public MutableComponent title() {
-        return Component.translatable(key());
+    public MutableText title() {
+        return Text.translatable(key());
     }
 }

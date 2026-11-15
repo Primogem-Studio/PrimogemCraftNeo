@@ -1,13 +1,12 @@
 package net.per.primogemcraft.system.weapon;
 
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 import java.util.List;
 import java.util.Locale;
@@ -15,23 +14,22 @@ import java.util.Locale;
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public enum WeaponType {
-    ONE_HANDED_SWORD("weapon/one_handed_sword", 1.0D, Attributes.ATTACK_DAMAGE),
-    POLEARM("weapon/polearm", 1.3D, Attributes.ATTACK_DAMAGE),
-    CLAYMORE("weapon/claymore", 1.6D, Attributes.ATTACK_DAMAGE),
-    BOW("weapon/bow", 1.0D / 3.0D, Attributes.ATTACK_DAMAGE),
-    SHIELD("weapon/shield", 1.0D, Attributes.ARMOR),
-    TOOL("weapon/tool", 0.7D, Attributes.MINING_EFFICIENCY),
-    OTHER("weapon", 1.0D, Attributes.ATTACK_DAMAGE);
+    ONE_HANDED_SWORD("weapon/one_handed_sword", 1.0D, EntityAttributes.GENERIC_ATTACK_DAMAGE),
+    POLEARM("weapon/polearm", 1.3D, EntityAttributes.GENERIC_ATTACK_DAMAGE),
+    CLAYMORE("weapon/claymore", 1.6D, EntityAttributes.GENERIC_ATTACK_DAMAGE),
+    SHIELD("weapon/shield", 1.0D, EntityAttributes.GENERIC_ARMOR),
+    TOOL("weapon/tool", 0.7D, EntityAttributes.GENERIC_ATTACK_DAMAGE),
+    OTHER("weapon", 1.0D, EntityAttributes.GENERIC_ATTACK_DAMAGE);
 
     private static final List<WeaponType> TYPES = List.of(values());
     private static final String LABEL_PREFIX = "weapon.primogemcraft.type.";
 
     private final TagKey<Item> tag;
     private final double coefficient;
-    private final Holder<Attribute> attribute;
+    private final EntityAttribute attribute;
 
-    WeaponType(String path, double coefficient, Holder<Attribute> attribute) {
-        tag = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, path));
+    WeaponType(String path, double coefficient, EntityAttribute attribute) {
+        tag = TagKey.of(RegistryKeys.ITEM, Identifier.of(MOD_ID, path));
         this.coefficient = coefficient;
         this.attribute = attribute;
     }
@@ -40,7 +38,7 @@ public enum WeaponType {
         return coefficient;
     }
 
-    public Holder<Attribute> attribute() {
+    public EntityAttribute attribute() {
         return attribute;
     }
 
@@ -49,8 +47,7 @@ public enum WeaponType {
     }
 
     public static WeaponType of(ItemStack stack) {
-        if (stack.getItem() instanceof WishWeaponBowItem) return BOW;
-        for (var type : TYPES) if (stack.is(type.tag)) return type;
+        for (var type : TYPES) if (stack.isIn(type.tag)) return type;
         return OTHER;
     }
 }

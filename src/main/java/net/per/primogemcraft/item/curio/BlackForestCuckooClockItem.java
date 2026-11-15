@@ -1,11 +1,12 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.item.ItemStack;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCSounds;
@@ -25,12 +26,12 @@ public class BlackForestCuckooClockItem extends CurioItem {
     private static final float SOUND_PITCH = 0.5F;
     private static final float YAW_RANGE = 360.0F;
 
-    public BlackForestCuckooClockItem(Properties properties) {
+    public BlackForestCuckooClockItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.FUSION, properties);
     }
 
     @Override
-    public void pickedUp(ServerPlayer player, ItemStack stack) {
+    public void pickedUp(ServerPlayerEntity player, ItemStack stack) {
         arm(player, stack);
     }
 
@@ -38,38 +39,38 @@ public class BlackForestCuckooClockItem extends CurioItem {
     public void presence(CurioContext context) {
         var player = context.player();
         if (cleansed(context.stack())) return;
-        if (!CurioEffects.active(player, PGCEffects.BLACK_FOREST_CUCKOO_CLOCK)) {
+        if (!CurioEffects.active(player, PGCEffects.BLACK_FOREST_CUCKOO_CLOCK.get())) {
             arm(player, context.stack());
             return;
         }
-        CurioEffects.hold(player, PGCEffects.BLACK_FOREST_CUCKOO_CLOCK, DURATION, 0);
-        for (var mob : player.serverLevel().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(RADIUS))) mob.setTarget(player);
+        CurioEffects.hold(player, PGCEffects.BLACK_FOREST_CUCKOO_CLOCK.get(), DURATION, 0);
+        for (var mob : player.getServerWorld().getEntitiesByClass(MobEntity.class, player.getBoundingBox().expand(RADIUS), e -> true)) mob.setTarget(player);
     }
 
-    private static void arm(ServerPlayer player, ItemStack stack) {
+    private static void arm(ServerPlayerEntity player, ItemStack stack) {
         if (cleansed(stack)) return;
-        if (CurioEffects.active(player, PGCEffects.BLACK_FOREST_CUCKOO_CLOCK)) return;
-        CurioEffects.hold(player, PGCEffects.BLACK_FOREST_CUCKOO_CLOCK, DURATION, 0);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundSource.PLAYERS, SOUND_VOLUME, SOUND_PITCH);
+        if (CurioEffects.active(player, PGCEffects.BLACK_FOREST_CUCKOO_CLOCK.get())) return;
+        CurioEffects.hold(player, PGCEffects.BLACK_FOREST_CUCKOO_CLOCK.get(), DURATION, 0);
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundCategory.PLAYERS, SOUND_VOLUME, SOUND_PITCH);
     }
 
-    public static void clear(ServerPlayer player) {
+    public static void clear(ServerPlayerEntity player) {
         var counter = PGCDataComponents.CURIO_COUNTER.get();
         for (var context : Curios.held(player))
-            if (context.stack().getItem() instanceof BlackForestCuckooClockItem) context.stack().set(counter, CLEANSED);
-        CurioEffects.release(player, PGCEffects.BLACK_FOREST_CUCKOO_CLOCK);
+            if (context.stack().getItem() instanceof BlackForestCuckooClockItem) StackComponents.set(context.stack(), counter, CLEANSED);
+        CurioEffects.release(player, PGCEffects.BLACK_FOREST_CUCKOO_CLOCK.get());
     }
 
     private static boolean cleansed(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.CURIO_COUNTER.get(), 0) == CLEANSED;
+        return StackComponents.getOrDefault(stack, PGCDataComponents.CURIO_COUNTER, 0) == CLEANSED;
     }
 
     @Override
     public void impacted(CurioContext context, CurioImpact impact) {
         if (impact.signal() != CurioSignal.ATTACK) return;
-        if (!(impact.subject() instanceof Mob victim)) return;
+        if (!(impact.subject() instanceof MobEntity victim)) return;
         var player = context.player();
-        if (!CurioEffects.active(player, PGCEffects.BLACK_FOREST_CUCKOO_CLOCK)) return;
+        if (!CurioEffects.active(player, PGCEffects.BLACK_FOREST_CUCKOO_CLOCK.get())) return;
         if (victim.getTarget() != player) return;
         if (victim.getMaxHealth() > player.getMaxHealth()) return;
         if (!context.ready(COOLDOWN, COOLDOWN_TICKS)) return;
@@ -77,11 +78,11 @@ public class BlackForestCuckooClockItem extends CurioItem {
         for (var index = 0; index < SPAWNS; index++) spawn(context, victim);
     }
 
-    private static void spawn(CurioContext context, Mob victim) {
-        var level = context.level();
+    private static void spawn(CurioContext context, MobEntity victim) {
+        var level = context.getWorld();
         var type = context.chance(TYPE_WEIGHT) ? EntityType.ZOMBIE : context.chance(TYPE_WEIGHT) ? EntityType.SKELETON : EntityType.WITHER_SKELETON;
-        var spawned = type.spawn(level, victim.blockPosition(), MobSpawnType.MOB_SUMMONED);
+        var spawned = type.spawn(level, victim.getBlockPos(), SpawnReason.MOB_SUMMONED);
         if (spawned == null) return;
-        spawned.setYRot(level.getRandom().nextFloat() * YAW_RANGE);
+        spawned.setYaw(level.getRandom().nextFloat() * YAW_RANGE);
     }
 }

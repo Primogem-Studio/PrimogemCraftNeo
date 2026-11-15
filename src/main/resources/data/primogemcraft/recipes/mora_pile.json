@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "aa",
+    "aa"
+  ],
+  "key": {
+    "a": {
+      "tag": "c:mora"
+    }
+  },
+  "result": {
+    "item": "primogemcraft:mora_pile",
+    "count": 1
+  }
+}

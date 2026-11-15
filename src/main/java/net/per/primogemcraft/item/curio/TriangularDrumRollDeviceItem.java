@@ -1,8 +1,8 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
+import net.minecraft.text.Text;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.MathHelper;
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.system.curio.CurioContext;
 import net.per.primogemcraft.system.curio.CurioForm;
@@ -19,24 +19,24 @@ public class TriangularDrumRollDeviceItem extends CurioItem {
     private static final int MIN_LEVELS = 1;
     private static final int MAX_LEVELS = 8;
 
-    public TriangularDrumRollDeviceItem(Properties properties) {
-        super(CurioTrigger.RIGHT_CLICK, CurioForm.NORMAL, properties.fireResistant());
+    public TriangularDrumRollDeviceItem(Settings properties) {
+        super(CurioTrigger.RIGHT_CLICK, CurioForm.NORMAL, properties.fireproof());
     }
 
     @Override
     public void activated(CurioContext context) {
         var player = context.player();
-        var weapon = player.getOffhandItem();
+        var weapon = player.getOffHandStack();
         if (!(weapon.getItem() instanceof WishWeapon)) {
-            context.announce(Component.translatable(NOT_WEAPON_KEY));
+            context.announce(Text.translatable(NOT_WEAPON_KEY));
             return;
         }
-        if (!WeaponEnhancement.grantLevels(weapon, Mth.nextInt(context.random(), MIN_LEVELS, MAX_LEVELS), LEVEL_LIMIT)) {
-            context.announce(Component.translatable(CAPPED_KEY));
+        if (!WeaponEnhancement.grantLevels(weapon, MathHelper.nextInt(context.random(), MIN_LEVELS, MAX_LEVELS), LEVEL_LIMIT)) {
+            context.announce(Text.translatable(CAPPED_KEY));
             return;
         }
         WeaponAttributes.refreshLevel(weapon, player);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.ENHANCEMENT_SUCCESS.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
-        context.stack().shrink(1);
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.ENHANCEMENT_SUCCESS.get(), SoundCategory.PLAYERS, 1.0F, 1.0F);
+        context.stack().decrement(1);
     }
 }

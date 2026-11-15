@@ -1,19 +1,16 @@
 package net.per.primogemcraft.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.Identifier;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 /**
- * The shared sprite sheet every container window is drawn from. Elements sit on a fixed 32 pixel cell grid in
- * {@code textures/gui/container_window.png}. A slot sprite is exactly as large as a slot cell, so blitting it one pixel
- * before the slot position lines its interior up with the 16 pixel item that slot renders. The slot is bevelled the way
- * vanilla bevels one, and a hovered cell is highlighted with the vanilla translucent overlay instead of a second sprite.
+ * The shared sprite sheet every container window is drawn from.
  */
 public final class GuiAtlas {
-    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/container_window.png");
+    public static final Identifier TEXTURE = new Identifier(MOD_ID, "textures/gui/container_window.png");
     public static final int WIDTH = 64;
     public static final int HEIGHT = 64;
 
@@ -26,15 +23,15 @@ public final class GuiAtlas {
     private GuiAtlas() {
     }
 
-    public static void sprite(GuiGraphics graphics, Sprite sprite, int x, int y) {
+    public static void sprite(DrawContext graphics, Sprite sprite, int x, int y) {
         region(graphics, x, y, sprite.width(), sprite.height(), sprite.u(), sprite.v(), sprite.width(), sprite.height());
     }
 
-    public static void stretched(GuiGraphics graphics, Sprite sprite, int x, int y, int width, int height) {
+    public static void stretched(DrawContext graphics, Sprite sprite, int x, int y, int width, int height) {
         region(graphics, x, y, width, height, sprite.u(), sprite.v(), sprite.width(), sprite.height());
     }
 
-    public static void panel(GuiGraphics graphics, int x, int y, int width, int height) {
+    public static void panel(DrawContext graphics, int x, int y, int width, int height) {
         var inset = Math.min(PANEL_INSET, Math.min(width, height) / 2);
         if (inset <= 0) {
             stretched(graphics, PANEL, x, y, width, height);
@@ -64,11 +61,11 @@ public final class GuiAtlas {
             region(graphics, x + inset, y + inset, centerWidth, centerHeight, PANEL.u() + inset, PANEL.v() + inset, faceWidth, faceHeight);
     }
 
-    private static void region(GuiGraphics graphics, int x, int y, int width, int height, int u, int v, int sourceWidth, int sourceHeight) {
+    private static void region(DrawContext graphics, int x, int y, int width, int height, int u, int v, int sourceWidth, int sourceHeight) {
         if (width <= 0 || height <= 0) return;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        graphics.blit(TEXTURE, x, y, width, height, u, v, sourceWidth, sourceHeight, WIDTH, HEIGHT);
+        graphics.drawTexture(TEXTURE, x, y, width, height, u, v, sourceWidth, sourceHeight, WIDTH, HEIGHT);
     }
 
     public record Sprite(int u, int v, int width, int height) {

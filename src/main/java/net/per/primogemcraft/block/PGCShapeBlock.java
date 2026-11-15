@@ -1,33 +1,26 @@
 package net.per.primogemcraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
+import net.minecraft.block.Block;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.util.shape.VoxelShape;
 
 public class PGCShapeBlock extends Block {
-    public static final MapCodec<PGCShapeBlock> CODEC = simpleCodec(properties -> new PGCShapeBlock(properties, Shapes.block()));
-
     private final VoxelShape shape;
 
-    public PGCShapeBlock(BlockBehaviour.Properties properties, VoxelShape shape) {
+    public PGCShapeBlock(AbstractBlock.Settings properties, VoxelShape shape) {
         super(properties);
         this.shape = shape;
     }
 
     @Override
-    protected MapCodec<? extends Block> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        var offset = state.getOffset(level, pos);
-        return shape.move(offset.x, offset.y, offset.z);
+    public VoxelShape getOutlineShape(BlockState state, BlockView level, BlockPos pos, ShapeContext context) {
+        var offset = state.getModelOffset(level, pos);
+        return shape.offset(offset.x, offset.y, offset.z);
     }
 }

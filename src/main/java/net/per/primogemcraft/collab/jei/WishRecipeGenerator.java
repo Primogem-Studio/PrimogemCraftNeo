@@ -3,7 +3,7 @@ package net.per.primogemcraft.collab.jei;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.advanced.ISimpleRecipeManagerPlugin;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.client.WishLootItems;
 import net.per.primogemcraft.system.wish.WishRarity;
 

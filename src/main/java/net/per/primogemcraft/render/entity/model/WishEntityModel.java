@@ -1,24 +1,24 @@
 package net.per.primogemcraft.render.entity.model;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeDeformation;
-import net.minecraft.client.model.geom.builders.CubeListBuilder;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.Dilation;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.model.ModelData;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.util.Identifier;
 import net.per.primogemcraft.entity.misc.WishEntity;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public class WishEntityModel extends EntityModel<WishEntity> {
-    public static final ModelLayerLocation LAYER_LOCATION =
-            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(MOD_ID, "wish_entity"), "main");
+    public static final EntityModelLayer LAYER_LOCATION =
+            new EntityModelLayer(Identifier.of(MOD_ID, "wish_entity"), "main");
 
     private static final String CORE = "core";
     private static final int TEXTURE_WIDTH = 32;
@@ -33,22 +33,22 @@ public class WishEntityModel extends EntityModel<WishEntity> {
         core = root.getChild(CORE);
     }
 
-    public static LayerDefinition createBodyLayer() {
-        MeshDefinition mesh = new MeshDefinition();
-        PartDefinition root = mesh.getRoot();
-        root.addOrReplaceChild(CORE, CubeListBuilder.create()
-                        .texOffs(0, 0)
-                        .addBox(-HALF_SIZE, -SIZE, -HALF_SIZE, SIZE, SIZE, SIZE, CubeDeformation.NONE),
-                PartPose.offset(0.0F, GROUND_LEVEL, 0.0F));
-        return LayerDefinition.create(mesh, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    public static TexturedModelData createBodyLayer() {
+        ModelData mesh = new ModelData();
+        ModelPartData root = mesh.getRoot();
+        root.addChild(CORE, ModelPartBuilder.create()
+                .uv(0, 0)
+                        .cuboid(-HALF_SIZE, -SIZE, -HALF_SIZE, SIZE, SIZE, SIZE, Dilation.NONE),
+                ModelTransform.pivot(0.0F, GROUND_LEVEL, 0.0F));
+        return TexturedModelData.of(mesh, TEXTURE_WIDTH, TEXTURE_HEIGHT);
     }
 
     @Override
-    public void setupAnim(WishEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setAngles(WishEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        core.render(poseStack, buffer, packedLight, packedOverlay, color);
+    public void render(net.minecraft.client.util.math.MatrixStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        core.render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }

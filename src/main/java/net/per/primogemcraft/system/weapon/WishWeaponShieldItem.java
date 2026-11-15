@@ -1,17 +1,17 @@
 package net.per.primogemcraft.system.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ShieldItem;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.minecraft.util.Formatting;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ShieldItem;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.world.World;
 import net.per.primogemcraft.system.wish.WishReports;
 import net.per.primogemcraft.util.PGCTimer;
 
@@ -25,7 +25,7 @@ public abstract class WishWeaponShieldItem extends ShieldItem implements WishWea
     private static final double COOLDOWN_REDUCTION_PER_LEVEL = 0.01D;
     private static final String HANDY_TIMER = "weapon/handy_shield";
 
-    protected WishWeaponShieldItem(Properties properties) {
+    protected WishWeaponShieldItem(Settings properties) {
         super(properties);
     }
 
@@ -41,7 +41,7 @@ public abstract class WishWeaponShieldItem extends ShieldItem implements WishWea
 
     protected abstract List<WeaponDescription> description(ItemStack stack);
 
-    protected Holder<MobEffect> heldEffect(ItemStack stack) {
+    protected StatusEffect heldEffect(ItemStack stack) {
         return null;
     }
 
@@ -52,26 +52,26 @@ public abstract class WishWeaponShieldItem extends ShieldItem implements WishWea
     protected void refresh(ItemStack stack) {
     }
 
-    protected void heldTick(ServerPlayer player, ItemStack stack) {
+    protected void heldTick(ServerPlayerEntity player, ItemStack stack) {
     }
 
     protected static int refinementOf(ItemStack stack) {
         return WeaponState.of(stack).refinements();
     }
 
-    protected static Component cooldownReduction() {
-        return WishReports.percent(COOLDOWN_REDUCTION_PER_LEVEL, ChatFormatting.AQUA);
+    protected static Text cooldownReduction() {
+        return WishReports.percent(COOLDOWN_REDUCTION_PER_LEVEL, Formatting.AQUA);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable(WeaponType.of(stack).labelKey()));
-        tooltip.addAll(WishWeaponTooltips.lines(stack.getDescriptionId(), descriptions(stack)));
+    public void appendTooltip(ItemStack stack, @org.jetbrains.annotations.Nullable World level, List<Text> tooltip, TooltipContext flag) {
+        tooltip.add(Text.translatable(WeaponType.of(stack).labelKey()));
+        tooltip.addAll(WishWeaponTooltips.lines(stack.getTranslationKey(), descriptions(stack)));
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
-        if (level.isClientSide() || !(entity instanceof ServerPlayer player)) return;
+    public void inventoryTick(ItemStack stack, World level, Entity entity, int slot, boolean selected) {
+        if (level.isClient() || !(entity instanceof ServerPlayerEntity player)) return;
         refresh(stack);
         if (isHeld(player, slot, stack)) return;
         applyHeldEffect(player, stack);
@@ -79,24 +79,24 @@ public abstract class WishWeaponShieldItem extends ShieldItem implements WishWea
         heldTick(player, stack);
     }
 
-    private void applyHeldEffect(ServerPlayer player, ItemStack stack) {
+    private void applyHeldEffect(ServerPlayerEntity player, ItemStack stack) {
         var effect = heldEffect(stack);
         if (effect == null) return;
         var amplifier = heldAmplifier(stack);
-        var instance = player.getEffect(effect);
+        var instance = player.getStatusEffect(effect);
         if (instance != null && instance.getAmplifier() == amplifier) return;
-        player.addEffect(new MobEffectInstance(effect, HELD_EFFECT_TICKS, amplifier, false, false));
+        player.addStatusEffect(new StatusEffectInstance(effect, HELD_EFFECT_TICKS, amplifier, false, false));
     }
 
-    private static void withstandBlockCooldown(ServerPlayer player, ItemStack stack) {
-        var cooldowns = player.getCooldowns();
-        if (!cooldowns.isOnCooldown(stack.getItem())) return;
+    private static void withstandBlockCooldown(ServerPlayerEntity player, ItemStack stack) {
+        var cooldowns = player.getItemCooldownManager();
+        if (!cooldowns.isCoolingDown(stack.getItem())) return;
         if (!PGCTimer.isDone(player, HANDY_TIMER)) return;
-        cooldowns.removeCooldown(stack.getItem());
+        cooldowns.remove(stack.getItem());
         var remaining = remainingCooldown(WeaponState.of(stack).level());
-        if (remaining > 0) cooldowns.addCooldown(stack.getItem(), remaining);
+        if (remaining > 0) cooldowns.set(stack.getItem(), remaining);
         PGCTimer.set(player, HANDY_TIMER, remaining);
-        stack.hurtAndBreak(Mth.nextInt(player.getRandom(), MIN_BLOCK_COST, MAX_BLOCK_COST), player.serverLevel(), player, item -> {
+        stack.damage(MathHelper.nextInt(player.getRandom(), MIN_BLOCK_COST, MAX_BLOCK_COST), player, item -> {
         });
     }
 

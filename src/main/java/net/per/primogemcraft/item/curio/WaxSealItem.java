@@ -12,8 +12,8 @@ import net.per.primogemcraft.system.element.Element;
 public class WaxSealItem extends CurioItem {
     private final Element element;
 
-    public WaxSealItem(Element element, Properties properties) {
-        super(CurioTrigger.PRESENCE, CurioForm.NORMAL, properties.fireResistant());
+    public WaxSealItem(Element element, Settings properties) {
+        super(CurioTrigger.PRESENCE, CurioForm.NORMAL, properties.fireproof());
         this.element = element;
     }
 

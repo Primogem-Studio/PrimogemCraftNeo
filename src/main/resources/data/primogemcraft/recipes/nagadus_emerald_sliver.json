@@ -1,0 +1,8 @@
+{
+    "type":  "minecraft:stonecutting",
+    "ingredient":  {
+                       "item":  "primogemcraft:nagadus_emerald_gemstone"
+                   },
+    "count":  64,
+    "result":  "primogemcraft:nagadus_emerald_sliver"
+}

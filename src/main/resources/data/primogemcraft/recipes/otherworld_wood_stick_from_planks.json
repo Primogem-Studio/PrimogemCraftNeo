@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "a",
+    "b",
+    "a"
+  ],
+  "key": {
+    "a": {
+      "tag": "minecraft:planks"
+    },
+    "b": {
+      "tag": "c:primogemcraft"
+    }
+  },
+  "result": {
+    "item": "primogemcraft:otherworld_wood_stick",
+    "count": 8
+  }
+}

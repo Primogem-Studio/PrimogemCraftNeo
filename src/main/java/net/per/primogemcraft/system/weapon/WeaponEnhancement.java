@@ -1,9 +1,9 @@
 package net.per.primogemcraft.system.weapon;
 
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.component.WeaponRecovery;
 import net.per.primogemcraft.config.PGCConfig;
 import net.per.primogemcraft.registry.PGCItems;
@@ -68,7 +68,7 @@ public final class WeaponEnhancement {
         if (item == PGCItems.MYSTIC_ENHANCEMENT_ORE.get()) return MYSTIC_ORE_RANK;
         if (item == PGCItems.FINE_ENHANCEMENT_ORE.get()) return FINE_ORE_RANK;
         if (isEnhancementOre(stack)) return ORE_RANK;
-        if (stack.is(PGCItems.CUSTOM_SUPERIMPOSER.get())) return SUPERIMPOSER_RANK;
+        if (stack.isOf(PGCItems.CUSTOM_SUPERIMPOSER.get())) return SUPERIMPOSER_RANK;
         if (item instanceof WishWeapon) return WishWeaponItem.isFiveStar(stack) ? FIVE_STAR_RANK : FOUR_STAR_RANK;
         return UNKNOWN_RANK;
     }
@@ -76,7 +76,7 @@ public final class WeaponEnhancement {
     public static boolean isEnhancementMaterial(ItemStack stack, ItemStack weapon) {
         if (stack.isEmpty()) return false;
         if (isEnhancementOre(stack)) return true;
-        if (stack.is(PGCItems.CUSTOM_SUPERIMPOSER.get())) return true;
+        if (stack.isOf(PGCItems.CUSTOM_SUPERIMPOSER.get())) return true;
         return !weapon.isEmpty() && stack.getItem() == weapon.getItem();
     }
 
@@ -133,7 +133,7 @@ public final class WeaponEnhancement {
             }
             layers += Math.max(0, gainOf(weapon, material));
         }
-        var applied = Math.clamp(MAX_REFINEMENT - refinement, 0, layers);
+        var applied = net.minecraft.util.math.MathHelper.clamp(MAX_REFINEMENT - refinement, 0, layers);
         var cap = maxLevel(state.refinements() + applied);
         var level = state.level();
         var xp = state.xp() + transferred;
@@ -176,13 +176,13 @@ public final class WeaponEnhancement {
         WeaponState.set(weapon, state.leveledTo(level, state.xp()));
     }
 
-    public static boolean canGrantRefinement(ItemStack weapon, Player player) {
+    public static boolean canGrantRefinement(ItemStack weapon, PlayerEntity player) {
         if (!(weapon.getItem() instanceof WishWeapon)) return true;
         var state = WeaponState.of(weapon);
         return state.refinements() >= MAX_REFINEMENT && extraRefinement(player, weapon) >= MAX_TEMPORARY_REFINEMENT;
     }
 
-    public static boolean grantRefinement(ItemStack weapon, Player player) {
+    public static boolean grantRefinement(ItemStack weapon, PlayerEntity player) {
         if (canGrantRefinement(weapon, player)) return false;
         var state = WeaponState.of(weapon);
         var permanent = state.refinements() < MAX_REFINEMENT;
@@ -190,11 +190,11 @@ public final class WeaponEnhancement {
         return true;
     }
 
-    public static int refinementOf(Player player, ItemStack weapon) {
+    public static int refinementOf(PlayerEntity player, ItemStack weapon) {
         return WeaponState.of(weapon).refinements() + extraRefinement(player, weapon);
     }
 
-    public static int extraRefinement(Player player, ItemStack weapon) {
+    public static int extraRefinement(PlayerEntity player, ItemStack weapon) {
         if (!(weapon.getItem() instanceof WishWeapon)) return 0;
         var temporary = WeaponState.of(weapon).temporaryRefinements();
         var bonus = player == null ? 0 : Curios.refinementBonus(player);
@@ -213,7 +213,7 @@ public final class WeaponEnhancement {
         }
         if (consumed <= 0) return 0;
         WeaponState.set(weapon, state);
-        ore.shrink(Mth.clamp(consumed - (int) (consumed * discount), 0, consumed));
+        ore.decrement(MathHelper.clamp(consumed - (int) (consumed * discount), 0, consumed));
         return consumed;
     }
 
@@ -278,7 +278,7 @@ public final class WeaponEnhancement {
     }
 
     private static boolean isSuperimposer(ItemStack material) {
-        return material.is(PGCItems.CUSTOM_SUPERIMPOSER.get());
+        return material.isOf(PGCItems.CUSTOM_SUPERIMPOSER.get());
     }
 
     public record Preview(int level, int xp, int refinement) {

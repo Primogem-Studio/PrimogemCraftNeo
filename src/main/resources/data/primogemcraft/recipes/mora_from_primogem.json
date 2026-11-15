@@ -1,0 +1,8 @@
+{
+    "type":  "minecraft:stonecutting",
+    "ingredient":  {
+                       "tag":  "c:primogemcraft"
+                   },
+    "count":  8,
+    "result":  "primogemcraft:mora"
+}

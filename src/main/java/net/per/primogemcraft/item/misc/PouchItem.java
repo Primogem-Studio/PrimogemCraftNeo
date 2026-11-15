@@ -1,18 +1,18 @@
 package net.per.primogemcraft.item.misc;
 
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.item.tool.DescribedItem;
 import net.per.primogemcraft.system.menu.ContainerWindowMenu;
 import net.per.primogemcraft.system.menu.ContainerWindowSound;
@@ -25,43 +25,42 @@ import net.per.primogemcraft.system.menu.PouchContainer;
 public class PouchItem extends DescribedItem {
     private final int capacity;
 
-    public PouchItem(Properties properties, int capacity) {
+    public PouchItem(Settings properties, int capacity) {
         super(properties);
         this.capacity = capacity;
     }
 
     @Override
-    public float getDestroySpeed(ItemStack stack, BlockState state) {
+    public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
         return 0.0F;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.openMenu(new PouchMenuProvider(stack.getHoverName(), new PouchContainer(stack, capacity), hand, stack, capacity));
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (player instanceof ServerPlayerEntity serverPlayer) {
+            serverPlayer.openHandledScreen(new PouchMenuProvider(stack.getName(), new PouchContainer(stack, capacity), hand, stack, capacity));
             ContainerWindowSound.POUCH_OPEN.play(level, player.getX(), player.getY(), player.getZ(), player.getRandom());
         }
-        player.swing(hand, true);
-        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+        player.swingHand(hand);
+        return TypedActionResult.success(stack, level.isClient());
     }
 
-    private record PouchMenuProvider(Component title, PouchContainer container, InteractionHand hand, ItemStack holding,
-                                     int capacity) implements MenuProvider {
-        @Override
-        public Component getDisplayName() {
+    private record PouchMenuProvider(Text title, PouchContainer container, Hand hand, ItemStack holding,
+                                     int capacity) implements net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory {
+        public Text getDisplayName() {
             return title;
         }
 
         @Override
-        public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
-            return new ContainerWindowMenu(id, inventory, container, hand, holding, ContainerLevelAccess.NULL,
+        public ScreenHandler createMenu(int id, PlayerInventory inventory, PlayerEntity player) {
+            return new ContainerWindowMenu(id, inventory, container, hand, holding, ScreenHandlerContext.EMPTY,
                     ContainerWindowSound.POUCH_CLOSE);
         }
 
         @Override
-        public void writeClientSideData(AbstractContainerMenu menu, RegistryFriendlyByteBuf buffer) {
-            buffer.writeByte(hand == InteractionHand.MAIN_HAND ? ContainerWindowMenu.SOURCE_MAIN_HAND : ContainerWindowMenu.SOURCE_OFF_HAND);
+        public void writeScreenOpeningData(net.minecraft.server.network.ServerPlayerEntity player, net.minecraft.network.PacketByteBuf buffer) {
+            buffer.writeByte(hand == Hand.MAIN_HAND ? ContainerWindowMenu.SOURCE_MAIN_HAND : ContainerWindowMenu.SOURCE_OFF_HAND);
             buffer.writeVarInt(capacity);
         }
     }

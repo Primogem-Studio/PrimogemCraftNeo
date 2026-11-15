@@ -1,12 +1,12 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 
 public class RepairCurioItem extends CurioItem {
     private static final float FULL_REPAIR = 1.0F;
 
-    public RepairCurioItem(CurioTrigger trigger, CurioForm form, int integrity, Properties properties) {
+    public RepairCurioItem(CurioTrigger trigger, CurioForm form, int integrity, Settings properties) {
         super(trigger, form, integrity, properties);
     }
 
@@ -16,7 +16,7 @@ public class RepairCurioItem extends CurioItem {
     }
 
     @Override
-    public void pickedUp(ServerPlayer player, ItemStack stack) {
+    public void pickedUp(ServerPlayerEntity player, ItemStack stack) {
         repair(CurioContext.of(player, stack, form()));
     }
 

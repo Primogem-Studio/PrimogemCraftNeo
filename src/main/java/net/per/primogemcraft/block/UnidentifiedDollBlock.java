@@ -1,37 +1,37 @@
 package net.per.primogemcraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.ActionResult;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.Properties;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.util.shape.VoxelShape;
 import net.per.primogemcraft.block.entity.UnidentifiedDollBlockEntity;
 import net.per.primogemcraft.registry.PGCBlockEntities;
 import net.per.primogemcraft.registry.PGCSounds;
+import net.minecraft.util.Hand;
 
-public class UnidentifiedDollBlock extends BaseEntityBlock {
-    public static final MapCodec<UnidentifiedDollBlock> CODEC = simpleCodec(properties -> new UnidentifiedDollBlock(properties, Shapes.block()));
-    public static final BooleanProperty LIT = BlockStateProperties.LIT;
+public class UnidentifiedDollBlock extends BlockWithEntity {
+    public static final BooleanProperty LIT = Properties.LIT;
     public static final int LIT_LIGHT = 9;
 
     private static final float PLANTED_VOLUME = 0.5F;
@@ -40,75 +40,63 @@ public class UnidentifiedDollBlock extends BaseEntityBlock {
 
     private final VoxelShape shape;
 
-    public UnidentifiedDollBlock(BlockBehaviour.Properties properties, VoxelShape shape) {
+    public UnidentifiedDollBlock(AbstractBlock.Settings properties, VoxelShape shape) {
         super(properties);
         this.shape = shape;
-        registerDefaultState(stateDefinition.any().setValue(LIT, false));
+        setDefaultState(getStateManager().getDefaultState().with(LIT, false));
     }
 
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+    public VoxelShape getOutlineShape(BlockState state, BlockView level, BlockPos pos, ShapeContext context) {
+        var offset = state.getModelOffset(level, pos);
+        return shape.offset(offset.x, offset.y, offset.z);
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        var offset = state.getOffset(level, pos);
-        return shape.move(offset.x, offset.y, offset.z);
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(LIT);
     }
 
-    @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-        if (level.isClientSide() || oldState.is(state.getBlock())) return;
-        level.playSound(null, pos, PGCSounds.BOMB_PLANTED.get(), SoundSource.BLOCKS, PLANTED_VOLUME, 1.0F);
+    public void onPlaced(World level, BlockPos pos, BlockState state, net.minecraft.entity.LivingEntity placer, net.minecraft.item.ItemStack stack) {
+        if (level.isClient()) return;
+        level.playSound(null, pos, PGCSounds.BOMB_PLANTED.get(), SoundCategory.BLOCKS, PLANTED_VOLUME, 1.0F);
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (level.isClientSide()) return InteractionResult.SUCCESS;
-        if (level instanceof ServerLevel server && level.getBlockEntity(pos) instanceof UnidentifiedDollBlockEntity doll && !doll.ticking()) {
+    public ActionResult onUse(BlockState state, World level, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (level.isClient()) return ActionResult.SUCCESS;
+        if (level instanceof ServerWorld server && level.getBlockEntity(pos) instanceof UnidentifiedDollBlockEntity doll && !doll.ticking()) {
             doll.arm(server, pos, state, true);
-            server.playSound(null, pos, PGCSounds.BOMB_TICK.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-            server.playSound(null, pos, SoundEvents.WOODEN_BUTTON_CLICK_OFF, SoundSource.BLOCKS, PRESS_VOLUME, 1.0F);
+            server.playSound(null, pos, PGCSounds.BOMB_TICK.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+            server.playSound(null, pos, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, PRESS_VOLUME, 1.0F);
         }
-        return InteractionResult.SUCCESS;
+        return ActionResult.SUCCESS;
     }
 
     @Override
-    public void attack(BlockState state, Level level, BlockPos pos, Player player) {
-        if (level.isClientSide() || !ticking(level, pos)) return;
-        level.playSound(null, pos, PGCSounds.BOMB_DEFUSING.get(), SoundSource.PLAYERS, DEFUSE_VOLUME, 1.0F);
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        if (!world.isClient() && ticking(world, pos))
+            world.playSound(null, pos, PGCSounds.BOMB_DEFUSED.get(), SoundCategory.PLAYERS, DEFUSE_VOLUME, 1.0F);
+        super.onBreak(world, pos, state, player);
     }
 
     @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
-        if (!level.isClientSide() && ticking(level, pos))
-            level.playSound(null, pos, PGCSounds.BOMB_DEFUSED.get(), SoundSource.PLAYERS, DEFUSE_VOLUME, 1.0F);
-        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
-    }
-
-    @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new UnidentifiedDollBlockEntity(pos, state);
     }
 
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (level.isClientSide()) return null;
-        return createTickerHelper(type, PGCBlockEntities.UNIDENTIFIED_DOLL.get(), UnidentifiedDollBlockEntity::tick);
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World level, BlockState state, BlockEntityType<T> type) {
+        if (level.isClient()) return null;
+        return net.minecraft.block.BlockWithEntity.checkType(type, PGCBlockEntities.UNIDENTIFIED_DOLL.get(), UnidentifiedDollBlockEntity::tick);
     }
 
-    private static boolean ticking(Level level, BlockPos pos) {
+    private static boolean ticking(World level, BlockPos pos) {
         return level.getBlockEntity(pos) instanceof UnidentifiedDollBlockEntity doll && doll.ticking();
     }
 }

@@ -1,17 +1,18 @@
 package net.per.primogemcraft.command.debug;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandBuildContext;
-import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.item.ItemArgument;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.Formatting;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.command.argument.ItemStackArgumentType;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.component.WeaponRecovery;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.registry.PGCItems;
@@ -45,65 +46,65 @@ public class Weapon {
     private static final int ORE_AMOUNT = 64;
     private static final int SUPERIMPOSER_AMOUNT = 5;
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext build) {
-        dispatcher.register(Commands.literal(MOD_ID).then(Commands.literal("weapon").requires(source -> source.hasPermission(PERMISSION))
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess build) {
+        dispatcher.register(CommandManager.literal(MOD_ID).then(CommandManager.literal("weapon").requires(source -> source.hasPermissionLevel(PERMISSION))
                 .executes(context -> info(context.getSource()))
-                .then(Commands.literal("info").executes(context -> info(context.getSource())))
-                .then(Commands.literal("set")
-                        .then(Commands.argument(LEVEL, IntegerArgumentType.integer(MIN_LEVEL)
-                        ).then(Commands.argument(REFINEMENT, IntegerArgumentType.integer(MIN_REFINEMENT)
+                .then(CommandManager.literal("info").executes(context -> info(context.getSource())))
+                .then(CommandManager.literal("set")
+                        .then(CommandManager.argument(LEVEL, IntegerArgumentType.integer(MIN_LEVEL)
+                        ).then(CommandManager.argument(REFINEMENT, IntegerArgumentType.integer(MIN_REFINEMENT)
                         ).executes(context -> set(context.getSource(), level(context), refinement(context), false)
-                        ).then(Commands.literal(SUPERIMPOSER
+                        ).then(CommandManager.literal(SUPERIMPOSER
                         ).executes(context -> set(context.getSource(), level(context), refinement(context), true))))))
-                .then(Commands.literal("max").executes(context -> max(context.getSource())))
-                .then(Commands.literal("temp")
-                        .then(Commands.argument(AMOUNT, IntegerArgumentType.integer(MIN_TEMPORARY, WeaponEnhancement.MAX_TEMPORARY_REFINEMENT)
+                .then(CommandManager.literal("max").executes(context -> max(context.getSource())))
+                .then(CommandManager.literal("temp")
+                        .then(CommandManager.argument(AMOUNT, IntegerArgumentType.integer(MIN_TEMPORARY, WeaponEnhancement.MAX_TEMPORARY_REFINEMENT)
                         ).executes(context -> temporary(context.getSource(), IntegerArgumentType.getInteger(context, AMOUNT)))))
-                .then(Commands.literal("give")
-                        .then(Commands.argument(WEAPON, ItemArgument.item(build)
-                        ).then(Commands.argument(LEVEL, IntegerArgumentType.integer(MIN_LEVEL)
-                        ).then(Commands.argument(REFINEMENT, IntegerArgumentType.integer(MIN_REFINEMENT)
+                .then(CommandManager.literal("give")
+                        .then(CommandManager.argument(WEAPON, ItemStackArgumentType.itemStack(build)
+                        ).then(CommandManager.argument(LEVEL, IntegerArgumentType.integer(MIN_LEVEL)
+                        ).then(CommandManager.argument(REFINEMENT, IntegerArgumentType.integer(MIN_REFINEMENT)
                         ).executes(context -> give(context, level(context), refinement(context)))))))
-                .then(Commands.literal("recovery").executes(context -> recovery(context.getSource())))
-                .then(Commands.literal("materials").executes(context -> giveMaterials(context.getSource())))
+                .then(CommandManager.literal("recovery").executes(context -> recovery(context.getSource())))
+                .then(CommandManager.literal("materials").executes(context -> giveMaterials(context.getSource())))
         ));
     }
 
-    private static int level(CommandContext<CommandSourceStack> context) {
+    private static int level(CommandContext<ServerCommandSource> context) {
         return IntegerArgumentType.getInteger(context, LEVEL);
     }
 
-    private static int refinement(CommandContext<CommandSourceStack> context) {
+    private static int refinement(CommandContext<ServerCommandSource> context) {
         return IntegerArgumentType.getInteger(context, REFINEMENT);
     }
 
-    private static int info(CommandSourceStack source) throws CommandSyntaxException {
-        var player = source.getPlayerOrException();
-        var weapon = player.getMainHandItem();
+    private static int info(ServerCommandSource source) throws CommandSyntaxException {
+        var player = source.getPlayerOrThrow();
+        var weapon = player.getMainHandStack();
         if (!(weapon.getItem() instanceof WishWeapon)) return notWeapon(source);
         var state = WeaponState.of(weapon);
         var cap = WeaponEnhancement.maxLevel(state.refinements());
-        message(source, "command.primogemcraft.weapon.info.header", weapon.getHoverName());
+        message(source, "command.primogemcraft.weapon.info.header", weapon.getName());
         message(source, "command.primogemcraft.weapon.info.level", state.level(), cap, state.xp(), requirement(state.level(), cap));
         message(source, "command.primogemcraft.weapon.info.refinement", state.refinements(),
                 WeaponEnhancement.refinementOf(player, weapon) - state.refinements(),
                 state.duplicateLayers(), state.superimposerLayers());
         message(source, "command.primogemcraft.weapon.info.bonus",
-                WishReports.number(WeaponAttributes.levelAttackBonus(weapon, player, state.level()), ChatFormatting.AQUA));
+                WishReports.number(WeaponAttributes.levelAttackBonus(weapon, player, state.level()), Formatting.AQUA));
         return state.level();
     }
 
-    private static int set(CommandSourceStack source, int level, int refinement, boolean superimposer) throws CommandSyntaxException {
+    private static int set(ServerCommandSource source, int level, int refinement, boolean superimposer) throws CommandSyntaxException {
         return apply(source, level, refinement, superimposer, SET_KEY);
     }
 
-    private static int max(CommandSourceStack source) throws CommandSyntaxException {
+    private static int max(ServerCommandSource source) throws CommandSyntaxException {
         return apply(source, WeaponEnhancement.maxLevel(WeaponEnhancement.MAX_REFINEMENT), WeaponEnhancement.MAX_REFINEMENT, false, MAX_KEY);
     }
 
-    private static int apply(CommandSourceStack source, int level, int refinement, boolean superimposer, String key) throws CommandSyntaxException {
-        var player = source.getPlayerOrException();
-        var weapon = player.getMainHandItem();
+    private static int apply(ServerCommandSource source, int level, int refinement, boolean superimposer, String key) throws CommandSyntaxException {
+        var player = source.getPlayerOrThrow();
+        var weapon = player.getMainHandStack();
         if (!(weapon.getItem() instanceof WishWeapon)) return notWeapon(source);
         var state = state(level, refinement, superimposer);
         WeaponState.set(weapon, state);
@@ -112,9 +113,9 @@ public class Weapon {
         return state.level();
     }
 
-    private static int temporary(CommandSourceStack source, int amount) throws CommandSyntaxException {
-        var player = source.getPlayerOrException();
-        var weapon = player.getMainHandItem();
+    private static int temporary(ServerCommandSource source, int amount) throws CommandSyntaxException {
+        var player = source.getPlayerOrThrow();
+        var weapon = player.getMainHandStack();
         if (!(weapon.getItem() instanceof WishWeapon)) return notWeapon(source);
         var state = WeaponState.of(weapon);
         var applied = state.temporarilyBy(amount - state.temporaryRefinements());
@@ -124,38 +125,38 @@ public class Weapon {
         return applied.temporaryRefinements();
     }
 
-    private static int give(CommandContext<CommandSourceStack> context, int level, int refinement) throws CommandSyntaxException {
+    private static int give(CommandContext<ServerCommandSource> context, int level, int refinement) throws CommandSyntaxException {
         var source = context.getSource();
-        var player = source.getPlayerOrException();
-        var weapon = ItemArgument.getItem(context, WEAPON).createItemStack(1, false);
+        var player = source.getPlayerOrThrow();
+        var weapon = ItemStackArgumentType.getItemStackArgument(context, WEAPON).createStack(1, false);
         if (!(weapon.getItem() instanceof WishWeapon)) {
-            message(source, INVALID_ITEM_KEY, weapon.getHoverName());
+            message(source, INVALID_ITEM_KEY, weapon.getName());
             return 0;
         }
         var state = state(level, refinement, false);
         WeaponState.set(weapon, state);
         WeaponAttributes.refreshLevel(weapon, player);
         PlayerItems.give(player, weapon);
-        message(source, GIVE_KEY, weapon.getHoverName(), state.level(), state.refinements());
+        message(source, GIVE_KEY, weapon.getName(), state.level(), state.refinements());
         return state.level();
     }
 
-    private static int recovery(CommandSourceStack source) throws CommandSyntaxException {
-        var player = source.getPlayerOrException();
-        var weapon = player.getMainHandItem();
+    private static int recovery(ServerCommandSource source) throws CommandSyntaxException {
+        var player = source.getPlayerOrThrow();
+        var weapon = player.getMainHandStack();
         if (!(weapon.getItem() instanceof WishWeapon)) return notWeapon(source);
         var recovery = new WeaponRecovery(WeaponState.of(weapon), WishWeapon.isFiveStar(weapon));
         var ore = new ItemStack(PGCItems.SPECIALLY_TREATED_FINE_ORE.get());
-        ore.set(PGCDataComponents.WEAPON_RECOVERY.get(), recovery);
+        StackComponents.set(ore, PGCDataComponents.WEAPON_RECOVERY, recovery);
         PlayerItems.give(player, ore);
         message(source, "command.primogemcraft.weapon.recovery");
         for (var refund : WeaponEnhancement.refund(recovery))
-            message(source, "command.primogemcraft.weapon.recovery.refund", refund.getCount(), refund.getHoverName());
+            message(source, "command.primogemcraft.weapon.recovery.refund", refund.getCount(), refund.getName());
         return 1;
     }
 
-    private static int giveMaterials(CommandSourceStack source) throws CommandSyntaxException {
-        var player = source.getPlayerOrException();
+    private static int giveMaterials(ServerCommandSource source) throws CommandSyntaxException {
+        var player = source.getPlayerOrThrow();
         var materials = materials();
         for (var material : materials) PlayerItems.give(player, material);
         message(source, "command.primogemcraft.weapon.materials");
@@ -177,23 +178,23 @@ public class Weapon {
         return superimposer ? base.superimposedBy(refinement - 1) : base.duplicatedBy(refinement - 1);
     }
 
-    private static Component requirement(int level, int cap) {
-        return level >= cap ? Component.translatable("weapon.primogemcraft.level.max")
-                : WishReports.number(WeaponEnhancement.requirement(level), ChatFormatting.AQUA);
+    private static Text requirement(int level, int cap) {
+        return level >= cap ? Text.translatable("weapon.primogemcraft.level.max")
+                : WishReports.number(WeaponEnhancement.requirement(level), Formatting.AQUA);
     }
 
-    private static void refresh(ServerPlayer player, ItemStack weapon) {
+    private static void refresh(ServerPlayerEntity player, ItemStack weapon) {
         WeaponAttributes.refreshLevel(weapon, player);
-        WeaponAttributes.refreshPassive(weapon, player, player.getInventory().selected);
-        player.containerMenu.broadcastChanges();
+        WeaponAttributes.refreshPassive(weapon, player, player.getInventory().selectedSlot);
+        player.currentScreenHandler.sendContentUpdates();
     }
 
-    private static int notWeapon(CommandSourceStack source) {
+    private static int notWeapon(ServerCommandSource source) {
         message(source, NOT_WEAPON_KEY);
         return 0;
     }
 
-    private static void message(CommandSourceStack source, String key, Object... arguments) {
-        source.sendSuccess(() -> Component.translatable(key, arguments), false);
+    private static void message(ServerCommandSource source, String key, Object... arguments) {
+        source.sendFeedback(() -> Text.translatable(key, arguments), false);
     }
 }

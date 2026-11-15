@@ -1,17 +1,17 @@
 package net.per.primogemcraft.entity.misc;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MovementType;
+import net.minecraft.world.World;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootContextParameters;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamage;
 
@@ -26,7 +26,7 @@ public class DendroCoreEntity extends Entity {
 
     private int lifetime;
 
-    public DendroCoreEntity(EntityType<? extends DendroCoreEntity> entityType, Level level) {
+    public DendroCoreEntity(EntityType<? extends DendroCoreEntity> entityType, World level) {
         super(entityType, level);
     }
 
@@ -34,14 +34,14 @@ public class DendroCoreEntity extends Entity {
     public void tick() {
         super.tick();
         if (isOnFire()) {
-            if (!level().isClientSide()) {
+            if (!getWorld().isClient()) {
                 detonate(BURNING_EXPLOSION_RADIUS);
                 discard();
             }
             return;
         }
         fall();
-        if (level().isClientSide()) return;
+        if (getWorld().isClient()) return;
         lifetime++;
         if (lifetime < LIFETIME_TICKS) return;
         dropLoot();
@@ -49,9 +49,9 @@ public class DendroCoreEntity extends Entity {
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (level().isClientSide() || isRemoved() || isInvulnerableTo(source)) return false;
-        if (source.getEntity() == this) return false;
+    public boolean damage(DamageSource source, float amount) {
+        if (getWorld().isClient() || isRemoved() || isInvulnerableTo(source)) return false;
+        if (source.getAttacker() == this) return false;
         if (!isBurningDamage(source)) return false;
         detonate(HIT_EXPLOSION_RADIUS);
         discard();
@@ -59,49 +59,49 @@ public class DendroCoreEntity extends Entity {
     }
 
     @Override
-    public boolean isPickable() {
+    public boolean canHit() {
         return true;
     }
 
     private static boolean isBurningDamage(DamageSource source) {
-        if (source.is(DamageTypes.IN_FIRE) || source.is(DamageTypes.LAVA)) return true;
+        if (source.isOf(DamageTypes.IN_FIRE) || source.isOf(DamageTypes.LAVA)) return true;
         return ElementDamage.elementOf(source) == Element.PYRO;
     }
 
     private void detonate(float radius) {
-        level().explode(this, getX(), getY(), getZ(), radius, Level.ExplosionInteraction.TNT);
+        getWorld().createExplosion(this, getX(), getY(), getZ(), radius, net.minecraft.world.World.ExplosionSourceType.TNT);
     }
 
     private void fall() {
-        setDeltaMovement(getDeltaMovement().add(0.0D, -GRAVITY, 0.0D));
-        move(MoverType.SELF, getDeltaMovement());
-        var movement = getDeltaMovement();
-        var vertical = onGround() ? -movement.y * BOUNCE : movement.y * DRAG;
-        setDeltaMovement(movement.x * DRAG, vertical, movement.z * DRAG);
+        setVelocity(getVelocity().add(0.0D, -GRAVITY, 0.0D));
+        move(MovementType.SELF, getVelocity());
+        var movement = getVelocity();
+        var vertical = isOnGround() ? -movement.y * BOUNCE : movement.y * DRAG;
+        setVelocity(movement.x * DRAG, vertical, movement.z * DRAG);
     }
 
     private void dropLoot() {
-        if (!(level() instanceof ServerLevel serverLevel)) return;
-        var params = new LootParams.Builder(serverLevel)
-                .withParameter(LootContextParams.THIS_ENTITY, this)
-                .withParameter(LootContextParams.ORIGIN, position())
-                .withParameter(LootContextParams.DAMAGE_SOURCE, serverLevel.damageSources().generic())
-                .create(LootContextParamSets.ENTITY);
-        var table = serverLevel.getServer().reloadableRegistries().getLootTable(getType().getDefaultLootTable());
-        for (var stack : table.getRandomItems(params)) spawnAtLocation(stack);
+        if (!(getWorld() instanceof ServerWorld serverLevel)) return;
+        var params = new LootContextParameterSet.Builder(serverLevel)
+                .add(LootContextParameters.THIS_ENTITY, this)
+                .add(LootContextParameters.ORIGIN, getPos())
+                .add(LootContextParameters.DAMAGE_SOURCE, serverLevel.getDamageSources().generic())
+                .build(LootContextTypes.ENTITY);
+        var table = serverLevel.getServer().getLootManager().getLootTable(getType().getLootTableId());
+        for (var stack : table.generateLoot(params)) dropStack(stack);
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void initDataTracker() {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    protected void readCustomDataFromNbt(NbtCompound compound) {
         lifetime = compound.getInt(NBT_LIFETIME);
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
+    protected void writeCustomDataToNbt(NbtCompound compound) {
         compound.putInt(NBT_LIFETIME, lifetime);
     }
 }

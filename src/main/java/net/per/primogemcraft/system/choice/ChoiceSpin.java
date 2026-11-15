@@ -1,7 +1,7 @@
 package net.per.primogemcraft.system.choice;
 
-import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.item.ItemStack;
 
 public record ChoiceSpin(int turns, ChoiceSpinSpeed speed, float tilt) {
     private static final int COMMON_TURNS = 1;
@@ -13,8 +13,8 @@ public record ChoiceSpin(int turns, ChoiceSpinSpeed speed, float tilt) {
     private static final float MAX_TILT = 45.0F;
 
     public ChoiceSpin {
-        turns = turns <= 0 ? 0 : Math.clamp(turns, 1, MAX_TURNS);
-        tilt = Mth.clamp(tilt, 0.0F, MAX_TILT);
+        turns = turns <= 0 ? 0 : net.minecraft.util.math.MathHelper.clamp(turns, 1, MAX_TURNS);
+        tilt = MathHelper.clamp(tilt, 0.0F, MAX_TILT);
     }
 
     public static ChoiceSpin of(ChoiceSpinSpeed speed) {

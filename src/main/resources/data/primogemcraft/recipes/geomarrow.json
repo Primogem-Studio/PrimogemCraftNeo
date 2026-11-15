@@ -1,0 +1,8 @@
+{
+    "type":  "minecraft:stonecutting",
+    "ingredient":  {
+                       "item":  "primogemcraft:geomarrow_crystal_cluster"
+                   },
+    "count":  1,
+    "result":  "primogemcraft:geomarrow"
+}

@@ -1,29 +1,26 @@
 package net.per.primogemcraft.block.entity;
-
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.projectile.FireworkRocketEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.FireworkExplosion;
-import net.minecraft.world.item.component.Fireworks;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.registry.RegistryWrapper;
+import net.per.primogemcraft.compat.component.VanillaComponents;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.per.primogemcraft.compat.component.FireworkExplosion;
+import net.minecraft.world.World;
+import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.math.Box;
 import net.per.primogemcraft.block.UnidentifiedDollBlock;
 import net.per.primogemcraft.enchantment.FoolsWrath;
 import net.per.primogemcraft.registry.PGCBlockEntities;
 import net.per.primogemcraft.registry.PGCSounds;
-
 import java.util.List;
 
 public class UnidentifiedDollBlockEntity extends BlockEntity {
@@ -63,35 +60,35 @@ public class UnidentifiedDollBlockEntity extends BlockEntity {
         super(PGCBlockEntities.UNIDENTIFIED_DOLL.get(), pos, state);
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, UnidentifiedDollBlockEntity doll) {
-        if (level instanceof ServerLevel server) doll.tick(server, pos, state);
+    public static void tick(World level, BlockPos pos, BlockState state, UnidentifiedDollBlockEntity doll) {
+        if (level instanceof ServerWorld server) doll.tick(server, pos, state);
     }
 
     public boolean ticking() {
         return ticking;
     }
 
-    public void arm(ServerLevel level, BlockPos pos, BlockState state, boolean armed) {
+    public void arm(ServerWorld level, BlockPos pos, BlockState state, boolean armed) {
         if (ticking) return;
-        var now = level.getGameTime();
+        var now = level.getTime();
         ticking = true;
         this.armed = armed;
         detonation = now + COUNTDOWN_TICKS;
         nextFlip = now + (armed ? LIT_TICKS : stageOf(now).interval());
-        level.setBlock(pos, state.setValue(UnidentifiedDollBlock.LIT, armed), Block.UPDATE_ALL);
-        setChanged();
+        level.setBlockState(pos, state.with(UnidentifiedDollBlock.LIT, armed), Block.NOTIFY_ALL);
+        markDirty();
     }
 
-    private void tick(ServerLevel level, BlockPos pos, BlockState state) {
+    private void tick(ServerWorld level, BlockPos pos, BlockState state) {
         if (!ticking) return;
-        var now = level.getGameTime();
+        var now = level.getTime();
         if (now >= detonation + FUSE_TICKS) {
             detonate(level, pos);
             return;
         }
         if (now >= detonation) {
             if (now == detonation) {
-                level.setBlock(pos, state.setValue(UnidentifiedDollBlock.LIT, true), Block.UPDATE_ALL);
+                level.setBlockState(pos, state.with(UnidentifiedDollBlock.LIT, true), Block.NOTIFY_ALL);
                 playSound(level, pos, PGCSounds.BOMB_FINAL_TICK.get());
             }
             return;
@@ -99,13 +96,13 @@ public class UnidentifiedDollBlockEntity extends BlockEntity {
         if (now >= nextFlip) flip(level, pos, state, now);
     }
 
-    private void flip(ServerLevel level, BlockPos pos, BlockState state, long now) {
-        var lit = !state.getValue(UnidentifiedDollBlock.LIT);
-        level.setBlock(pos, state.setValue(UnidentifiedDollBlock.LIT, lit), Block.UPDATE_ALL);
+    private void flip(ServerWorld level, BlockPos pos, BlockState state, long now) {
+        var lit = !state.get(UnidentifiedDollBlock.LIT);
+        level.setBlockState(pos, state.with(UnidentifiedDollBlock.LIT, lit), Block.NOTIFY_ALL);
         var stage = stageOf(now);
         nextFlip = now + (lit ? stage.interval() : LIT_TICKS);
         if (lit) playSound(level, pos, PGCSounds.BOMB_TICK.get(), 1.0F, stage.pitch());
-        setChanged();
+        markDirty();
     }
 
     private Stage stageOf(long now) {
@@ -114,28 +111,28 @@ public class UnidentifiedDollBlockEntity extends BlockEntity {
         return remaining > FAST_REMAINING ? Stage.FAST : Stage.VERY_FAST;
     }
 
-    private void detonate(ServerLevel level, BlockPos pos) {
+    private void detonate(ServerWorld level, BlockPos pos) {
         if (armed) blast(level, pos);
         else fizzle(level, pos);
         level.removeBlock(pos, false);
     }
 
-    private static void blast(ServerLevel level, BlockPos pos) {
+    private static void blast(ServerWorld level, BlockPos pos) {
         for (var x = -BLAST_REACH; x <= BLAST_REACH; x++)
             for (var y = -BLAST_REACH; y <= BLAST_REACH; y++)
                 for (var z = -BLAST_REACH; z <= BLAST_REACH; z++)
-                    level.explode(null, pos.getX() + x * BLAST_STEP, pos.getY() + y * BLAST_STEP, pos.getZ() + z * BLAST_STEP, BLAST_POWER, Level.ExplosionInteraction.TNT);
+                    level.createExplosion(null, pos.getX() + x * BLAST_STEP, pos.getY() + y * BLAST_STEP, pos.getZ() + z * BLAST_STEP, BLAST_POWER, net.minecraft.world.World.ExplosionSourceType.TNT);
     }
 
-    private static void fizzle(ServerLevel level, BlockPos pos) {
-        playSound(level, pos, SoundEvents.GENERIC_EXPLODE.value());
-        FoolsWrath.cleanse(level, new AABB(pos).inflate(CLEANSE_RADIUS));
-        for (var shell : SHELLS) level.addFreshEntity(rocket(level, pos, shell));
+    private static void fizzle(ServerWorld level, BlockPos pos) {
+        playSound(level, pos, SoundEvents.ENTITY_GENERIC_EXPLODE);
+        FoolsWrath.cleanse(level, new Box(pos).expand(CLEANSE_RADIUS));
+        for (var shell : SHELLS) level.spawnEntity(rocket(level, pos, shell));
     }
 
-    private static FireworkRocketEntity rocket(ServerLevel level, BlockPos pos, Shell shell) {
+    private static FireworkRocketEntity rocket(ServerWorld level, BlockPos pos, Shell shell) {
         var stack = new ItemStack(Items.FIREWORK_ROCKET);
-        stack.set(DataComponents.FIREWORKS, new Fireworks(shell.flight(), shell.explosions()));
+        VanillaComponents.setFireworks(stack, shell.explosions(), shell.flight());
         return new FireworkRocketEntity(level, pos.getX() + shell.x(), pos.getY() + shell.y(), pos.getZ() + shell.z(), stack);
     }
 
@@ -143,17 +140,17 @@ public class UnidentifiedDollBlockEntity extends BlockEntity {
         return new FireworkExplosion(shape, IntList.of(color), IntList.of(fadeColor), trail, true);
     }
 
-    private static void playSound(ServerLevel level, BlockPos pos, SoundEvent sound) {
+    private static void playSound(ServerWorld level, BlockPos pos, SoundEvent sound) {
         playSound(level, pos, sound, (float) 1.0, 1.0F);
     }
 
-    private static void playSound(ServerLevel level, BlockPos pos, SoundEvent sound, float volume, float pitch) {
-        level.playSound(null, pos, sound, SoundSource.BLOCKS, volume, pitch);
+    private static void playSound(ServerWorld level, BlockPos pos, SoundEvent sound, float volume, float pitch) {
+        level.playSound(null, pos, sound, SoundCategory.BLOCKS, volume, pitch);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void writeNbt(NbtCompound tag) {
+        super.writeNbt(tag);
         tag.putBoolean(TICKING_KEY, ticking);
         tag.putBoolean(ARMED_KEY, armed);
         tag.putLong(DETONATION_KEY, detonation);
@@ -161,8 +158,8 @@ public class UnidentifiedDollBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    public void readNbt(NbtCompound tag) {
+        super.readNbt(tag);
         ticking = tag.getBoolean(TICKING_KEY);
         armed = tag.getBoolean(ARMED_KEY);
         detonation = tag.getLong(DETONATION_KEY);

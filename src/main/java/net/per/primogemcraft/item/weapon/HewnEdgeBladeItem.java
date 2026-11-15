@@ -1,19 +1,19 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.world.World;
 import net.per.primogemcraft.component.WeaponCharge;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.registry.PGCSounds;
@@ -23,7 +23,7 @@ import net.per.primogemcraft.system.wish.WishReports;
 import java.util.List;
 
 public class HewnEdgeBladeItem extends WishWeaponItem {
-    private static final Tier TIER = new WeaponTier(3600, 4.0F, 2, WeaponTier.WOODEN_INCORRECT, PGCItems.STURDY_METAL);
+    private static final ToolMaterial TIER = new WeaponTier(3600, 4.0F, 2, WeaponTier.WOODEN_INCORRECT, PGCItems.STURDY_METAL);
 
     private static final int MAX_STACKS = 8;
     private static final int ABSORPTION_TICKS = 600;
@@ -47,8 +47,8 @@ public class HewnEdgeBladeItem extends WishWeaponItem {
     private static final String USE_TEXT = "use";
     private static final String CONSUME_TEXT = "consume";
 
-    public HewnEdgeBladeItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+    public HewnEdgeBladeItem(Settings properties) {
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireproof());
     }
 
     @Override
@@ -56,13 +56,13 @@ public class HewnEdgeBladeItem extends WishWeaponItem {
         var refinement = WeaponState.of(stack).refinements();
         return List.of(
                 WeaponDescription.of(NORMAL_ATTACK, ABSORPTION_TEXT,
-                        WishReports.percent(stackChance(refinement), ChatFormatting.AQUA)),
+                        WishReports.percent(stackChance(refinement), Formatting.AQUA)),
                 WeaponDescription.of(RIGHT_CLICK, USE_TEXT,
-                        WishReports.number(refinement, ChatFormatting.AQUA),
-                        WishReports.number((double) absorptionTicks(refinement) / TICKS_PER_MINUTE, ChatFormatting.AQUA)),
+                        WishReports.number(refinement, Formatting.AQUA),
+                        WishReports.number((double) absorptionTicks(refinement) / TICKS_PER_MINUTE, Formatting.AQUA)),
                 WeaponDescription.of(SNEAK_USE, CONSUME_TEXT,
-                        WishReports.percent(healRatio(refinement), ChatFormatting.AQUA),
-                        WishReports.number(healCooldown(refinement) / 20, ChatFormatting.AQUA)));
+                        WishReports.percent(healRatio(refinement), Formatting.AQUA),
+                        WishReports.number(healCooldown(refinement) / 20, Formatting.AQUA)));
     }
 
     @Override
@@ -71,50 +71,50 @@ public class HewnEdgeBladeItem extends WishWeaponItem {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        var result = super.hurtEnemy(stack, target, attacker);
-        if (!(attacker.level() instanceof ServerLevel level)) return result;
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        var result = super.postHit(stack, target, attacker);
+        if (!(attacker.getWorld() instanceof ServerWorld level)) return result;
         var refinement = WeaponState.of(stack).refinements();
         var stacks = WeaponCharge.of(stack);
         if (stacks >= MAX_STACKS) {
             WeaponCharge.set(stack, 0);
             refreshAbsorption(attacker);
-            level.playSound(null, attacker.blockPosition(), SoundEvents.ANVIL_PLACE, SoundSource.NEUTRAL, 0.5F, 0.5F);
+            level.playSound(null, attacker.getBlockPos(), SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.NEUTRAL, 0.5F, 0.5F);
             return result;
         }
         if (level.getRandom().nextDouble() >= stackChance(refinement)) return result;
         WeaponCharge.set(stack, stacks + 1);
-        level.playSound(null, attacker.blockPosition(), PGCSounds.WEAPON_CHARGE.get(), SoundSource.PLAYERS, 2.0F, 5.0F);
+        level.playSound(null, attacker.getBlockPos(), PGCSounds.WEAPON_CHARGE.get(), SoundCategory.PLAYERS, 2.0F, 5.0F);
         return result;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (level.isClientSide() || player.getCooldowns().isOnCooldown(stack.getItem())) return super.use(level, player, hand);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (level.isClient() || player.getItemCooldownManager().isCoolingDown(stack.getItem())) return super.use(level, player, hand);
         var refinement = WeaponState.of(stack).refinements();
-        if (player.isShiftKeyDown()) {
-            if (player.getEffect(MobEffects.ABSORPTION) == null) return super.use(level, player, hand);
-            player.removeEffect(MobEffects.ABSORPTION);
+        if (player.isSneaking()) {
+            if (player.getStatusEffect(StatusEffects.ABSORPTION) == null) return super.use(level, player, hand);
+            player.removeStatusEffect(StatusEffects.ABSORPTION);
             player.heal((float) (player.getMaxHealth() * healRatio(refinement)));
-            player.getCooldowns().addCooldown(stack.getItem(), healCooldown(refinement));
-            level.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_THUNDER.value(), SoundSource.PLAYERS, 0.5F, 3.0F);
+            player.getItemCooldownManager().set(stack.getItem(), healCooldown(refinement));
+            level.playSound(null, player.getBlockPos(), SoundEvents.ITEM_TRIDENT_THUNDER, SoundCategory.PLAYERS, 0.5F, 3.0F);
             return super.use(level, player, hand);
         }
-        player.removeEffect(MobEffects.ABSORPTION);
-        player.hurt(level.damageSources().genericKill(), (float) (player.getHealth() * HEALTH_COST));
-        player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, absorptionTicks(refinement), refinement - 1, false, true));
-        player.getCooldowns().addCooldown(stack.getItem(), USE_COOLDOWN);
-        level.playSound(null, player.blockPosition(), SoundEvents.ANVIL_PLACE, SoundSource.PLAYERS, 0.5F, 0.6F);
+        player.removeStatusEffect(StatusEffects.ABSORPTION);
+        player.damage(level.getDamageSources().genericKill(), (float) (player.getHealth() * HEALTH_COST));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, absorptionTicks(refinement), refinement - 1, false, true));
+        player.getItemCooldownManager().set(stack.getItem(), USE_COOLDOWN);
+        level.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.PLAYERS, 0.5F, 0.6F);
         return super.use(level, player, hand);
     }
 
     private static void refreshAbsorption(LivingEntity entity) {
-        var absorption = entity.getEffect(MobEffects.ABSORPTION);
+        var absorption = entity.getStatusEffect(StatusEffects.ABSORPTION);
         var amplifier = absorption == null || absorption.getAmplifier() <= 1 ? 0 : absorption.getAmplifier();
         var duration = absorption == null || absorption.getDuration() <= 0 ? ABSORPTION_TICKS : absorption.getDuration();
-        entity.removeEffect(MobEffects.ABSORPTION);
-        entity.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, duration, amplifier));
+        entity.removeStatusEffect(StatusEffects.ABSORPTION);
+        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, duration, amplifier));
     }
 
     private static double stackChance(int refinement) {

@@ -1,15 +1,15 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.world.World;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VayudaTurquoiseShovelItem extends WishWeaponShovelItem {
-    private static final Tier TIER = new WeaponTier(1561, 8.5F, 14, WeaponTier.DIAMOND_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 8.5F, 14, WeaponTier.DIAMOND_INCORRECT,
             PGCItems.VAYUDA_TURQUOISE_SLIVER, PGCItems.PRIMOGEM);
 
     private static final float ATTACK_DAMAGE = 5.0F;
@@ -35,8 +35,8 @@ public class VayudaTurquoiseShovelItem extends WishWeaponShovelItem {
     private static final String MINING_SPEED_TEXT = "mining_speed";
     private static final String REFINEMENT_TEXT = "refinement";
 
-    public VayudaTurquoiseShovelItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public VayudaTurquoiseShovelItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -46,25 +46,25 @@ public class VayudaTurquoiseShovelItem extends WishWeaponShovelItem {
         var descriptions = new ArrayList<WeaponDescription>();
         if (sealed) descriptions.add(WeaponDescription.note(REFINEMENT_TEXT));
         descriptions.add(WeaponDescription.of(PASSIVE_ACTION, MINING_SPEED_TEXT,
-                WishReports.number(ElementWeapons.seconds(refinement, DIG_SPEED_THRESHOLD, true, sealed), ChatFormatting.AQUA)));
+                WishReports.number(ElementWeapons.seconds(refinement, DIG_SPEED_THRESHOLD, true, sealed), Formatting.AQUA)));
         return List.copyOf(descriptions);
     }
 
     @Override
-    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
-        var result = super.mineBlock(stack, level, state, pos, miningEntity);
-        if (!(miningEntity instanceof Player player)) return result;
-        var current = player.getEffect(MobEffects.DIG_SPEED);
+    public boolean postMine(ItemStack stack, World level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
+        var result = super.postMine(stack, level, state, pos, miningEntity);
+        if (!(miningEntity instanceof PlayerEntity player)) return result;
+        var current = player.getStatusEffect(StatusEffects.HASTE);
         if (current == null) {
-            player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, DIG_SPEED_START_DURATION, 0, true, false));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, DIG_SPEED_START_DURATION, 0, true, false));
             return result;
         }
         if (current.getDuration() > ElementWeapons.ticks(player, stack, Element.ANEMO, DIG_SPEED_THRESHOLD, true)) {
-            player.removeEffect(MobEffects.DIG_SPEED);
-            player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, DIG_SPEED_DURATION, 0, true, false));
+            player.removeStatusEffect(StatusEffects.HASTE);
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, DIG_SPEED_DURATION, 0, true, false));
             return result;
         }
-        player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, current.getDuration(), current.getAmplifier() + 1, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, current.getDuration(), current.getAmplifier() + 1, false, false));
         return result;
     }
 }

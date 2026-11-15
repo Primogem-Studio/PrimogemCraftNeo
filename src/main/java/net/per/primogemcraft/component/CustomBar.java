@@ -3,8 +3,8 @@ package net.per.primogemcraft.component;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.per.primogemcraft.compat.network.ByteBufCodecs;
+import net.per.primogemcraft.compat.network.StreamCodec;
 
 public record CustomBar(int numerator, int denominator, boolean visible) {
     public static final Codec<CustomBar> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -13,7 +13,7 @@ public record CustomBar(int numerator, int denominator, boolean visible) {
             Codec.BOOL.fieldOf("visible").forGetter(CustomBar::visible)
     ).apply(instance, CustomBar::new));
 
-    public static final StreamCodec<ByteBuf, CustomBar> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<net.minecraft.network.PacketByteBuf, CustomBar> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, CustomBar::numerator,
             ByteBufCodecs.VAR_INT, CustomBar::denominator,
             ByteBufCodecs.BOOL, CustomBar::visible,

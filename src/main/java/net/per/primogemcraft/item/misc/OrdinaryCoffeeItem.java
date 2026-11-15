@@ -1,15 +1,15 @@
 package net.per.primogemcraft.item.misc;
 
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.level.Level;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.UseAction;
+import net.minecraft.world.World;
 import net.per.primogemcraft.item.tool.DescribedItem;
 
 public class OrdinaryCoffeeItem extends DescribedItem {
@@ -17,39 +17,39 @@ public class OrdinaryCoffeeItem extends DescribedItem {
     private static final float EXPLOSION_RADIUS = 4.0F;
     private static final int EXPLOSION_SCATTER = 10;
 
-    public OrdinaryCoffeeItem(Properties properties) {
+    public OrdinaryCoffeeItem(Settings properties) {
         super(properties);
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.DRINK;
+    public UseAction getUseAction(ItemStack stack) {
+        return net.minecraft.util.UseAction.DRINK;
     }
 
     @Override
-    public SoundEvent getDrinkingSound() {
-        return SoundEvents.EMPTY;
+    public SoundEvent getDrinkSound() {
+        return SoundEvents.INTENTIONALLY_EMPTY;
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+    public int getMaxUseTime(ItemStack stack) {
         return USE_DURATION;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        player.startUsingItem(hand);
-        return InteractionResultHolder.consume(player.getItemInHand(hand));
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        player.setCurrentHand(hand);
+        return TypedActionResult.consume(player.getStackInHand(hand));
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        var result = super.finishUsingItem(stack, level, entity);
-        if (level.isClientSide()) return result;
+    public ItemStack finishUsing(ItemStack stack, World level, LivingEntity entity) {
+        var result = super.finishUsing(stack, level, entity);
+        if (level.isClient()) return result;
         var random = level.getRandom();
-        level.explode(null, entity.getX() + Mth.nextInt(random, -EXPLOSION_SCATTER, EXPLOSION_SCATTER), entity.getY(),
-                entity.getZ() + Mth.nextInt(random, -EXPLOSION_SCATTER, EXPLOSION_SCATTER), EXPLOSION_RADIUS,
-                Level.ExplosionInteraction.MOB);
+        level.createExplosion(null, entity.getX() + MathHelper.nextInt(random, -EXPLOSION_SCATTER, EXPLOSION_SCATTER), entity.getY(),
+                entity.getZ() + MathHelper.nextInt(random, -EXPLOSION_SCATTER, EXPLOSION_SCATTER), EXPLOSION_RADIUS,
+                net.minecraft.world.World.ExplosionSourceType.MOB);
         return result;
     }
 }

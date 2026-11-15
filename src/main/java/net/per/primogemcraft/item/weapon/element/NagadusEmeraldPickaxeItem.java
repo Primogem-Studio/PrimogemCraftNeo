@@ -1,17 +1,17 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.world.World;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.registry.PGCEntities;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.element.Element;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NagadusEmeraldPickaxeItem extends WishWeaponToolItem {
-    private static final Tier TIER = new WeaponTier(1561, 8.0F, 10, WeaponTier.DIAMOND_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 8.0F, 10, WeaponTier.DIAMOND_INCORRECT,
             PGCItems.PRIMOGEM, PGCItems.NAGADUS_EMERALD_SLIVER);
 
     private static final float ATTACK_DAMAGE = 5.0F;
@@ -37,8 +37,8 @@ public class NagadusEmeraldPickaxeItem extends WishWeaponToolItem {
     private static final String GRASS_CORE_TEXT = "grass_core";
     private static final String REFINEMENT_TEXT = "refinement";
 
-    public NagadusEmeraldPickaxeItem(Properties properties) {
-        super(TIER, properties.fireResistant(), BlockTags.MINEABLE_WITH_PICKAXE, ATTACK_DAMAGE, ATTACK_SPEED);
+    public NagadusEmeraldPickaxeItem(Settings properties) {
+        super(TIER, properties.fireproof(), BlockTags.PICKAXE_MINEABLE, ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -48,19 +48,19 @@ public class NagadusEmeraldPickaxeItem extends WishWeaponToolItem {
         var descriptions = new ArrayList<WeaponDescription>();
         if (sealed) descriptions.add(WeaponDescription.note(REFINEMENT_TEXT));
         descriptions.add(WeaponDescription.of(PASSIVE_ACTION, GRASS_CORE_TEXT,
-                WishReports.percent(ElementWeapons.scaled(refinement, DROP_CHANCE, true, sealed), ChatFormatting.AQUA)));
+                WishReports.percent(ElementWeapons.scaled(refinement, DROP_CHANCE, true, sealed), Formatting.AQUA)));
         return List.copyOf(descriptions);
     }
 
     @Override
-    public boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
-        var result = super.mineBlock(stack, level, state, pos, miningEntity);
-        if (!(level instanceof ServerLevel server) || !(miningEntity instanceof Player player)) return result;
-        var feet = server.getBlockState(player.blockPosition());
-        if (!feet.isAir() && !feet.is(Blocks.WATER) && !feet.is(Blocks.BUBBLE_COLUMN)) return result;
+    public boolean postMine(ItemStack stack, World level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
+        var result = super.postMine(stack, level, state, pos, miningEntity);
+        if (!(level instanceof ServerWorld server) || !(miningEntity instanceof PlayerEntity player)) return result;
+        var feet = server.getBlockState(player.getBlockPos());
+        if (!feet.isAir() && !feet.isOf(Blocks.WATER) && !feet.isOf(Blocks.BUBBLE_COLUMN)) return result;
         if (server.getRandom().nextDouble() >= ElementWeapons.scaled(player, stack, Element.DENDRO, DROP_CHANCE, true)) return result;
-        var spawned = PGCEntities.DENDRO_CORE.get().spawn(server, pos, MobSpawnType.MOB_SUMMONED);
-        if (spawned != null) spawned.setYRot(server.getRandom().nextFloat() * FULL_TURN);
+        var spawned = PGCEntities.DENDRO_CORE.get().spawn(server, pos, SpawnReason.MOB_SUMMONED);
+        if (spawned != null) spawned.setYaw(server.getRandom().nextFloat() * FULL_TURN);
         return result;
     }
 }

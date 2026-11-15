@@ -1,14 +1,14 @@
 package net.per.primogemcraft.item.misc;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.per.primogemcraft.item.tool.DescribedItem;
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.system.event.EventLoot;
@@ -16,23 +16,23 @@ import net.per.primogemcraft.system.event.EventLoot;
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public class RandomEventErrorCodeItem extends DescribedItem {
-    private static final ResourceLocation ERROR_CODE_LOOT = ResourceLocation.fromNamespaceAndPath(MOD_ID, "gameplay/error_code");
+    private static final Identifier ERROR_CODE_LOOT = Identifier.of(MOD_ID, "gameplay/error_code");
     private static final float VOLUME = 2.0F;
     private static final float PITCH = 0.5F;
 
-    public RandomEventErrorCodeItem(Properties properties) {
+    public RandomEventErrorCodeItem(Settings properties) {
         super(properties);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (!(level instanceof ServerLevel serverLevel) || !(player instanceof ServerPlayer serverPlayer)) return InteractionResultHolder.success(stack);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (!(level instanceof ServerWorld serverLevel) || !(player instanceof ServerPlayerEntity serverPlayer)) return TypedActionResult.success(stack);
         var rolled = EventLoot.roll(serverLevel, ERROR_CODE_LOOT);
-        if (rolled.isEmpty()) return InteractionResultHolder.fail(stack);
-        serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundSource.PLAYERS, VOLUME, PITCH);
-        OtherworldBankbook.give(serverPlayer, rolled.getFirst());
-        stack.shrink(1);
-        return InteractionResultHolder.success(stack);
+        if (rolled.isEmpty()) return TypedActionResult.fail(stack);
+        serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundCategory.PLAYERS, VOLUME, PITCH);
+        OtherworldBankbook.give(serverPlayer, rolled.get(0));
+        stack.decrement(1);
+        return TypedActionResult.success(stack);
     }
 }

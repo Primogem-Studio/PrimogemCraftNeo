@@ -1,40 +1,39 @@
 package net.per.primogemcraft.entity.mob;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ThrownPotion;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.NeoForgeMod;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageType;
+import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.*;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.LookAroundGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.thrown.PotionEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCItems;
 
 import java.util.Set;
 
-public class AbundanceBlightZombieEntity extends Monster {
+public class AbundanceBlightZombieEntity extends HostileEntity {
     private static final int BLIGHT_AMPLIFIER = 2;
     private static final float BLACK_SWORD_HEALTH_RATIO = 0.2F;
 
-    private static final Set<ResourceKey<DamageType>> IMMUNE_DAMAGE_TYPES = Set.of(
+    private static final Set<RegistryKey<DamageType>> IMMUNE_DAMAGE_TYPES = Set.of(
             DamageTypes.IN_FIRE,
             DamageTypes.CACTUS,
             DamageTypes.DROWN,
@@ -43,76 +42,76 @@ public class AbundanceBlightZombieEntity extends Monster {
             DamageTypes.WITHER,
             DamageTypes.WITHER_SKULL);
 
-    public AbundanceBlightZombieEntity(EntityType<? extends AbundanceBlightZombieEntity> entityType, Level level) {
+    public AbundanceBlightZombieEntity(EntityType<? extends AbundanceBlightZombieEntity> entityType, World level) {
         super(entityType, level);
-        xpReward = 8;
+        experiencePoints = 8;
     }
 
-    public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 40.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.3D)
-                .add(Attributes.ARMOR, 2.0D)
-                .add(Attributes.ATTACK_DAMAGE, 5.0D)
-                .add(Attributes.FOLLOW_RANGE, 16.0D)
-                .add(Attributes.STEP_HEIGHT, 0.8D)
-                .add(Attributes.ATTACK_KNOCKBACK, 1.0D);
-    }
-
-    @Override
-    protected void registerGoals() {
-        goalSelector.addGoal(1, new MeleeAttackGoal(this, 0.9D, true));
-        goalSelector.addGoal(2, new RandomStrollGoal(this, 0.6D));
-        goalSelector.addGoal(3, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(4, new FloatGoal(this));
-        targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, true, false));
+    public static DefaultAttributeContainer.Builder createAttributes() {
+        return HostileEntity.createHostileAttributes()
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0D)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3D)
+                .add(EntityAttributes.GENERIC_ARMOR, 2.0D)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0D)
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 16.0D)
+                // STEP_HEIGHT removed (Forge-only)
+                .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.0D);
     }
 
     @Override
-    public boolean hurt(DamageSource damageSource, float amount) {
+    protected void initGoals() {
+        goalSelector.add(1, new MeleeAttackGoal(this, 0.9D, true));
+        goalSelector.add(2, new WanderAroundGoal(this, 0.6D));
+        goalSelector.add(3, new LookAroundGoal(this));
+        goalSelector.add(4, new SwimGoal(this));
+        targetSelector.add(1, new ActiveTargetGoal<>(this, PlayerEntity.class, true, false));
+    }
+
+    @Override
+    public boolean damage(DamageSource damageSource, float amount) {
         equipBlackSword();
         if (isImmuneTo(damageSource)) return false;
-        return super.hurt(damageSource, amount);
+        return super.damage(damageSource, amount);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, SpawnGroupData spawnGroupData) {
-        setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(PGCItems.FRUIT_OF_THE_ALIEN_TREE.get()));
-        addEffect(new MobEffectInstance(PGCEffects.ABUNDANCE, MobEffectInstance.INFINITE_DURATION, BLIGHT_AMPLIFIER));
-        return super.finalizeSpawn(level, difficulty, reason, spawnGroupData);
+    public net.minecraft.entity.EntityData initialize(net.minecraft.world.ServerWorldAccess world, net.minecraft.world.LocalDifficulty difficulty, net.minecraft.entity.SpawnReason reason, net.minecraft.entity.EntityData entityData, net.minecraft.nbt.NbtCompound tag) {
+        equipStack(EquipmentSlot.OFFHAND, new ItemStack(PGCItems.FRUIT_OF_THE_ALIEN_TREE.get()));
+        addStatusEffect(new StatusEffectInstance(PGCEffects.ABUNDANCE.get(), StatusEffectInstance.INFINITE, BLIGHT_AMPLIFIER));
+        return super.initialize(world, difficulty, reason, entityData, tag);
     }
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.HUSK_AMBIENT;
+        return SoundEvents.ENTITY_HUSK_AMBIENT;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSource) {
-        return SoundEvents.HUSK_HURT;
+        return SoundEvents.ENTITY_HUSK_HURT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.HUSK_DEATH;
+        return SoundEvents.ENTITY_HUSK_DEATH;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        playSound(SoundEvents.HUSK_STEP, 0.15F, 1.0F);
+        playSound(SoundEvents.ENTITY_HUSK_STEP, 0.15F, 1.0F);
     }
 
     private void equipBlackSword() {
-        if (!getMainHandItem().isEmpty()) return;
+        if (!getMainHandStack().isEmpty()) return;
         if (getHealth() > getMaxHealth() * BLACK_SWORD_HEALTH_RATIO) return;
-        setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(PGCItems.THE_BLACK_SWORD.get()));
+        equipStack(EquipmentSlot.MAINHAND, new ItemStack(PGCItems.THE_BLACK_SWORD.get()));
     }
 
     private static boolean isImmuneTo(DamageSource damageSource) {
-        for (var damageType : IMMUNE_DAMAGE_TYPES) if (damageSource.is(damageType)) return true;
-        return damageSource.getDirectEntity() instanceof ThrownPotion
-                || damageSource.getDirectEntity() instanceof AreaEffectCloud
-                || damageSource.typeHolder().is(NeoForgeMod.POISON_DAMAGE);
+        for (var damageType : IMMUNE_DAMAGE_TYPES) if (damageSource.isOf(damageType)) return true;
+        return damageSource.getSource() instanceof PotionEntity
+                || damageSource.getSource() instanceof net.minecraft.entity.AreaEffectCloudEntity
+                || damageSource.isOf(net.minecraft.entity.damage.DamageTypes.MAGIC);
     }
 }

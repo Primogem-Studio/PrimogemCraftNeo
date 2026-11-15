@@ -1,0 +1,12 @@
+{
+  "type": "primogemcraft:stellar_converter",
+  "first": {
+    "item": "minecraft:glass_bottle",
+    "count": 1
+  },
+  "second": {
+    "item": "minecraft:dragon_breath",
+    "count": 1
+  },
+  "cost": 42
+}

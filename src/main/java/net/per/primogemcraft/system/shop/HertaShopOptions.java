@@ -1,9 +1,9 @@
 package net.per.primogemcraft.system.shop;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.choice.*;
 
@@ -31,19 +31,19 @@ public final class HertaShopOptions {
     private HertaShopOptions() {
     }
 
-    public static void open(ServerPlayer player, Component curioPrice, Component codePrice, Component enchantPrice, IntConsumer onOption) {
+    public static void open(ServerPlayerEntity player, Text curioPrice, Text codePrice, Text enchantPrice, IntConsumer onOption) {
         var cards = List.of(
                 card(CURIO_KEY, new ItemStack(PGCItems.FRUIT_OF_THE_ALIEN_TREE.get()), CURIO_DETAIL_KEY, curioPrice),
                 card(CODE_KEY, new ItemStack(PGCItems.RANDOM_EVENT_ERROR_CODE.get()), CODE_DETAIL_KEY, codePrice),
                 card(ENCHANT_KEY, new ItemStack(Items.ENCHANTING_TABLE), ENCHANT_DETAIL_KEY, enchantPrice),
-                card(LEAVE_KEY, new ItemStack(Items.LEATHER_BOOTS), LEAVE_DETAIL_KEY, Component.empty()));
-        ChoiceRegistry.open(player, Component.translatable(TITLE_KEY), Component.translatable(HINT_KEY), ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, ChoiceSupport.ENCHANT_CARDS, ChoiceSupport.spin(FULL_TURN, ChoiceSpinSpeed.FASTEST), ChoiceRegistry.NO_SETTLE_TICKS, cards, index -> {
+                card(LEAVE_KEY, new ItemStack(Items.LEATHER_BOOTS), LEAVE_DETAIL_KEY, Text.empty()));
+        ChoiceRegistry.open(player, Text.translatable(TITLE_KEY), Text.translatable(HINT_KEY), ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, ChoiceSupport.ENCHANT_CARDS, ChoiceSupport.spin(FULL_TURN, ChoiceSpinSpeed.FASTEST), ChoiceRegistry.NO_SETTLE_TICKS, cards, index -> {
             onOption.accept(index);
             return true;
         });
     }
 
-    private static ChoiceCard card(String titleKey, ItemStack icon, String detailKey, Component price) {
-        return ChoiceSupport.card(Component.translatable(titleKey), icon, Component.translatable(detailKey), price).withTextTooltip().withQuality(ChoiceCard.SILENT_QUALITY);
+    private static ChoiceCard card(String titleKey, ItemStack icon, String detailKey, Text price) {
+        return ChoiceSupport.card(Text.translatable(titleKey), icon, Text.translatable(detailKey), price).withTextTooltip().withQuality(ChoiceCard.SILENT_QUALITY);
     }
 }

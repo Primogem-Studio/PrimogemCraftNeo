@@ -1,44 +1,44 @@
 package net.per.primogemcraft.entity.misc;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.level.Level;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MovementType;
+import net.minecraft.world.World;
 
 public class XiaoLanternEntity extends Entity {
     private static final double CULL_HEIGHT = 256.0D;
     private static final double RISE_SPEED = 0.05D;
     private static final float FULL_TURN = 360.0F;
 
-    public XiaoLanternEntity(EntityType<? extends XiaoLanternEntity> entityType, Level level) {
+    public XiaoLanternEntity(EntityType<? extends XiaoLanternEntity> entityType, World level) {
         super(entityType, level);
-        noPhysics = true;
+        noClip = true;
         setNoGravity(true);
-        setDeltaMovement(0.0D, RISE_SPEED, 0.0D);
-        setYRot(random.nextFloat() * FULL_TURN);
-        setXRot(random.nextFloat() * FULL_TURN);
+        setVelocity(0.0D, RISE_SPEED, 0.0D);
+        setYaw(random.nextFloat() * FULL_TURN);
+        setPitch(random.nextFloat() * FULL_TURN);
     }
 
     @Override
     public void tick() {
         super.tick();
-        setDeltaMovement(0.0D, RISE_SPEED, 0.0D);
-        move(MoverType.SELF, getDeltaMovement());
-        if (level().isClientSide()) return;
+        setVelocity(0.0D, RISE_SPEED, 0.0D);
+        move(MovementType.SELF, getVelocity());
+        if (getWorld().isClient()) return;
         if (getY() >= CULL_HEIGHT) discard();
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void initDataTracker() {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    protected void readCustomDataFromNbt(NbtCompound compound) {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
+    protected void writeCustomDataToNbt(NbtCompound compound) {
     }
 }

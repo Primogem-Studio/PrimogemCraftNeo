@@ -1,66 +1,59 @@
 package net.per.primogemcraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.world.BlockView;
+import net.minecraft.block.*;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.util.shape.VoxelShape;
 
 import java.util.function.Function;
 
 public class PGCHorizontalFallingBlock extends FallingBlock {
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    public static final MapCodec<PGCHorizontalFallingBlock> CODEC = simpleCodec(properties -> new PGCHorizontalFallingBlock(properties, Shapes.block()));
-
+    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     private final Function<BlockState, VoxelShape> shape;
 
-    public PGCHorizontalFallingBlock(BlockBehaviour.Properties properties, VoxelShape shape) {
+    public PGCHorizontalFallingBlock(AbstractBlock.Settings properties, VoxelShape shape) {
         this(properties, state -> shape);
     }
 
-    public PGCHorizontalFallingBlock(BlockBehaviour.Properties properties, Function<BlockState, VoxelShape> shape) {
+    public PGCHorizontalFallingBlock(AbstractBlock.Settings properties, Function<BlockState, VoxelShape> shape) {
         super(properties);
         this.shape = shape;
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+        setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
     }
 
     @Override
-    protected MapCodec<? extends FallingBlock> codec() {
-        return CODEC;
+    public BlockState getPlacementState(ItemPlacementContext context) {
+        return getDefaultState().with(FACING, context.getHorizontalPlayerFacing().getOpposite());
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+    public VoxelShape getOutlineShape(BlockState state, BlockView level, BlockPos pos, ShapeContext context) {
+        var offset = state.getModelOffset(level, pos);
+        return shape.apply(state).offset(offset.x, offset.y, offset.z);
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        var offset = state.getOffset(level, pos);
-        return shape.apply(state).move(offset.x, offset.y, offset.z);
-    }
-
-    @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
+    public BlockState rotate(BlockState state, net.minecraft.util.BlockRotation rotation) {
+        return state.with(FACING, rotation.rotate(state.get(FACING)));
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation(state.getValue(FACING)));
+    public BlockState mirror(BlockState state, net.minecraft.util.BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 }

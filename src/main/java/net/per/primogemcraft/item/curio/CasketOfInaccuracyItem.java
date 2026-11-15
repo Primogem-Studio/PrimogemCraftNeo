@@ -1,9 +1,9 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.enchantment.EnchantCost;
 import net.per.primogemcraft.enchantment.EnchantGrade;
 import net.per.primogemcraft.enchantment.EnchantOption;
@@ -20,12 +20,12 @@ public class CasketOfInaccuracyItem extends CurioItem {
     private static final int HINT_TICKS = 600;
     private static final double HIGH_LEVEL_CHANCE = 0.1D;
 
-    public CasketOfInaccuracyItem(Properties properties) {
+    public CasketOfInaccuracyItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.NORMAL, 1, () -> new ItemStack(PGCItems.DAMAGED_CASKET_OF_INACCURACY.get()), properties);
     }
 
     @Override
-    public void pickedUp(ServerPlayer player, ItemStack stack) {
+    public void pickedUp(ServerPlayerEntity player, ItemStack stack) {
         trigger(CurioContext.of(player, stack, form()));
     }
 
@@ -37,11 +37,11 @@ public class CasketOfInaccuracyItem extends CurioItem {
     private void trigger(CurioContext context) {
         var player = context.player();
         if (Curios.randomInventoryItem(player, CasketOfInaccuracyItem::workable).isEmpty()) {
-            if (context.ready(HINT_TIMER, HINT_TICKS)) context.announce(Component.translatable(UNAVAILABLE_KEY));
+            if (context.ready(HINT_TIMER, HINT_TICKS)) context.announce(Text.translatable(UNAVAILABLE_KEY));
             return;
         }
         if (Curios.randomInventoryItem(player, CasketOfInaccuracyItem::enchantable).isEmpty()) {
-            if (context.ready(HINT_TIMER, HINT_TICKS)) context.announce(Component.translatable(INTERFERENCE_KEY));
+            if (context.ready(HINT_TIMER, HINT_TICKS)) context.announce(Text.translatable(INTERFERENCE_KEY));
             return;
         }
         context.damage(1);
@@ -52,7 +52,7 @@ public class CasketOfInaccuracyItem extends CurioItem {
         var player = context.player();
         var target = Curios.randomInventoryItem(player, CasketOfInaccuracyItem::enchantable);
         if (target.isEmpty()) return;
-        var level = context.chance(HIGH_LEVEL_CHANCE) ? Mth.nextInt(context.random(), 10, 30) : Mth.nextInt(context.random(), 1, 13);
+        var level = context.chance(HIGH_LEVEL_CHANCE) ? MathHelper.nextInt(context.random(), 10, 30) : MathHelper.nextInt(context.random(), 1, 13);
         var preview = CurioEnchanting.everyPoolResult(player, target, level);
         EnchantReward.open(player, List.of(EnchantOption.of(target, preview, EnchantGrade.of(level), level, EnchantCost.free())));
     }

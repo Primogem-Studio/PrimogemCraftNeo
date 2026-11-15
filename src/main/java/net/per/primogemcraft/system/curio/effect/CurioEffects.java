@@ -1,59 +1,56 @@
 package net.per.primogemcraft.system.curio.effect;
 
-import net.minecraft.core.Holder;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.per.primogemcraft.compat.event.EffectCallbacks;
 
 import java.util.*;
 import java.util.function.Consumer;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
 public final class CurioEffects {
-    private static final Map<UUID, Map<Holder<MobEffect>, Held>> HELD = new HashMap<>();
-    private static final Map<UUID, Set<Holder<MobEffect>>> PROVIDED = new HashMap<>();
-    private static final Set<ServerPlayer> RESTORING = new LinkedHashSet<>();
+    private static final Map<UUID, Map<StatusEffect, Held>> HELD = new HashMap<>();
+    private static final Map<UUID, Set<StatusEffect>> PROVIDED = new HashMap<>();
+    private static final Set<ServerPlayerEntity> RESTORING = new LinkedHashSet<>();
     private static final Set<UUID> SILENT = new LinkedHashSet<>();
     private static final List<Deferred> DEFERRED = new ArrayList<>();
 
     private CurioEffects() {
     }
 
-    public static void apply(ServerPlayer player, Holder<MobEffect> effect, int ticks, int amplifier) {
-        player.addEffect(new MobEffectInstance(effect, ticks, amplifier, false, true));
+    public static void apply(ServerPlayerEntity player, StatusEffect effect, int ticks, int amplifier) {
+        player.addStatusEffect(new StatusEffectInstance(effect, ticks, amplifier, false, true));
     }
 
-    public static void ensure(ServerPlayer player, Holder<MobEffect> effect, int ticks, int amplifier) {
+    public static void ensure(ServerPlayerEntity player, StatusEffect effect, int ticks, int amplifier) {
         provided(player).add(effect);
-        if (player.hasEffect(effect)) return;
+        if (player.hasStatusEffect(effect)) return;
         apply(player, effect, ticks, amplifier);
     }
 
-    public static void replace(ServerPlayer player, Holder<MobEffect> effect, int ticks, int amplifier) {
-        silent(player, () -> player.removeEffect(effect));
+    public static void replace(ServerPlayerEntity player, StatusEffect effect, int ticks, int amplifier) {
+        silent(player, () -> player.removeStatusEffect(effect));
         apply(player, effect, ticks, amplifier);
     }
 
-    public static void hold(ServerPlayer player, Holder<MobEffect> effect, int ticks, int amplifier) {
+    public static void hold(ServerPlayerEntity player, StatusEffect effect, int ticks, int amplifier) {
         provided(player).add(effect);
-        var held = HELD.computeIfAbsent(player.getUUID(), key -> new LinkedHashMap<>());
+        var held = HELD.computeIfAbsent(player.getUuid(), key -> new LinkedHashMap<>());
         var current = held.get(effect);
         if (current == null || current.ticks() != ticks || current.amplifier() != amplifier)
             held.put(effect, new Held(ticks, amplifier));
-        var instance = player.getEffect(effect);
+        var instance = player.getStatusEffect(effect);
         if (instance == null) {
             apply(player, effect, ticks, amplifier);
             return;
         }
-        if (instance.getDuration() == MobEffectInstance.INFINITE_DURATION) return;
-        if (ticks == MobEffectInstance.INFINITE_DURATION) {
+        if (instance.getDuration() == StatusEffectInstance.INFINITE) return;
+        if (ticks == StatusEffectInstance.INFINITE) {
             apply(player, effect, ticks, amplifier);
             return;
         }
@@ -61,82 +58,62 @@ public final class CurioEffects {
         apply(player, effect, ticks, amplifier);
     }
 
-    public static void release(ServerPlayer player, Holder<MobEffect> effect) {
+    public static void release(ServerPlayerEntity player, StatusEffect effect) {
         forget(player, effect);
-        player.removeEffect(effect);
+        player.removeStatusEffect(effect);
     }
 
-    public static void discard(ServerPlayer player, Holder<MobEffect> effect) {
+    public static void discard(ServerPlayerEntity player, StatusEffect effect) {
         forget(player, effect);
-        silent(player, () -> player.removeEffect(effect));
+        silent(player, () -> player.removeStatusEffect(effect));
     }
 
-    public static void defer(ServerPlayer player, int ticks, Consumer<ServerPlayer> action) {
+    public static void defer(ServerPlayerEntity player, int ticks, Consumer<ServerPlayerEntity> action) {
         DEFERRED.add(new Deferred(player, ticks, action));
     }
 
-    public static boolean active(ServerPlayer player, Holder<MobEffect> effect) {
-        return player.hasEffect(effect);
+    public static boolean active(ServerPlayerEntity player, StatusEffect effect) {
+        return player.hasStatusEffect(effect);
     }
 
-    public static int amplifier(ServerPlayer player, Holder<MobEffect> effect) {
-        var instance = player.getEffect(effect);
+    public static int amplifier(ServerPlayerEntity player, StatusEffect effect) {
+        var instance = player.getStatusEffect(effect);
         return instance == null ? -1 : instance.getAmplifier();
     }
 
-    public static int remaining(ServerPlayer player, Holder<MobEffect> effect) {
-        var instance = player.getEffect(effect);
+    public static int remaining(ServerPlayerEntity player, StatusEffect effect) {
+        var instance = player.getStatusEffect(effect);
         return instance == null ? 0 : instance.getDuration();
     }
 
-    public static void clear(ServerPlayer player) {
-        var provided = PROVIDED.remove(player.getUUID());
+    public static void clear(ServerPlayerEntity player) {
+        var provided = PROVIDED.remove(player.getUuid());
         if (provided == null) return;
         for (var effect : provided) discard(player, effect);
     }
 
-    @SubscribeEvent
-    public static void onEffectRemoved(MobEffectEvent.Remove event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (SILENT.contains(player.getUUID())) return;
-        if (isHeld(player, event.getEffect())) {
-            event.setCanceled(true);
-            return;
-        }
-        var instance = event.getEffectInstance();
-        if (instance == null || !(instance.getEffect().value() instanceof CurioEffect curio)) return;
-        curio.cleared(player, instance.getAmplifier());
-    }
-
-    @SubscribeEvent
-    public static void onEffectExpired(MobEffectEvent.Expired event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        var instance = event.getEffectInstance();
-        assert instance != null;
-        if (isHeld(player, instance.getEffect())) {
-            RESTORING.add(player);
-            return;
-        }
-        if (!(instance.getEffect().value() instanceof CurioEffect curio)) return;
-        curio.finished(player, instance.getAmplifier());
-    }
-
-    @SubscribeEvent
-    public static void onServerTick(ServerTickEvent.Post event) {
-        restore();
-        tickDeferred();
-    }
-
-    @SubscribeEvent
-    public static void onPlayerClone(PlayerEvent.Clone event) {
-        if (!event.isWasDeath() || !(event.getEntity() instanceof ServerPlayer player)) return;
-        clear(player);
-    }
-
-    @SubscribeEvent
-    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        RESTORING.remove((ServerPlayer) event.getEntity());
-        DEFERRED.removeIf(deferred -> deferred.player() == event.getEntity());
+    public static void register() {
+        EffectCallbacks.addRemovedListener((entity, instance) -> {
+            if (!(entity instanceof ServerPlayerEntity player)) return;
+            if (SILENT.contains(player.getUuid())) return;
+            if (isHeld(player, instance.getEffectType())) {
+                RESTORING.add(player);
+                return;
+            }
+            if (!(instance.getEffectType() instanceof CurioEffect curio)) return;
+            curio.cleared(player, instance.getAmplifier());
+        });
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            restore();
+            tickDeferred();
+        });
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            if (!alive) clear(newPlayer);
+        });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            RESTORING.remove(handler.getPlayer());
+            DEFERRED.removeIf(deferred -> deferred.player() == handler.getPlayer());
+        });
     }
 
     private static void restore() {
@@ -144,7 +121,7 @@ public final class CurioEffects {
         var players = Set.copyOf(RESTORING);
         RESTORING.clear();
         for (var player : players) {
-            var held = HELD.get(player.getUUID());
+            var held = HELD.get(player.getUuid());
             if (held == null) continue;
             for (var entry : Map.copyOf(held).entrySet())
                 ensure(player, entry.getKey(), entry.getValue().ticks(), entry.getValue().amplifier());
@@ -165,35 +142,35 @@ public final class CurioEffects {
         }
     }
 
-    private static void forget(ServerPlayer player, Holder<MobEffect> effect) {
-        var held = HELD.get(player.getUUID());
+    private static void forget(ServerPlayerEntity player, StatusEffect effect) {
+        var held = HELD.get(player.getUuid());
         if (held != null) held.remove(effect);
-        var provided = PROVIDED.get(player.getUUID());
+        var provided = PROVIDED.get(player.getUuid());
         if (provided != null) provided.remove(effect);
     }
 
-    private static Set<Holder<MobEffect>> provided(ServerPlayer player) {
-        return PROVIDED.computeIfAbsent(player.getUUID(), key -> new LinkedHashSet<>());
+    private static Set<StatusEffect> provided(ServerPlayerEntity player) {
+        return PROVIDED.computeIfAbsent(player.getUuid(), key -> new LinkedHashSet<>());
     }
 
-    private static void silent(ServerPlayer player, Runnable action) {
-        SILENT.add(player.getUUID());
+    private static void silent(ServerPlayerEntity player, Runnable action) {
+        SILENT.add(player.getUuid());
         try {
             action.run();
         } finally {
-            SILENT.remove(player.getUUID());
+            SILENT.remove(player.getUuid());
         }
     }
 
-    private static boolean isHeld(ServerPlayer player, Holder<MobEffect> effect) {
-        var held = HELD.get(player.getUUID());
+    private static boolean isHeld(ServerPlayerEntity player, StatusEffect effect) {
+        var held = HELD.get(player.getUuid());
         return held != null && held.containsKey(effect);
     }
 
     private record Held(int ticks, int amplifier) {
     }
 
-    private record Deferred(ServerPlayer player, int remaining, Consumer<ServerPlayer> action) {
+    private record Deferred(ServerPlayerEntity player, int remaining, Consumer<ServerPlayerEntity> action) {
         private Deferred next() {
             return new Deferred(player, remaining - 1, action);
         }

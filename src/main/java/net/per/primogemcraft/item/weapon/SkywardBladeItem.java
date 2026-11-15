@@ -1,20 +1,20 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.level.Level;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.world.World;
 import net.per.primogemcraft.component.WeaponCharge;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamage;
@@ -24,7 +24,7 @@ import net.per.primogemcraft.system.wish.WishReports;
 import java.util.List;
 
 public class SkywardBladeItem extends WishWeaponItem {
-    private static final Tier TIER = new WeaponTier(1000, 5.0F, 20, WeaponTier.WOODEN_INCORRECT, Ingredient.EMPTY);
+    private static final ToolMaterial TIER = new WeaponTier(1000, 5.0F, 20, WeaponTier.WOODEN_INCORRECT, Ingredient.EMPTY);
 
     private static final double SPEED_BASE = 1.0D;
     private static final double SPEED_STEP = 0.5D;
@@ -47,18 +47,17 @@ public class SkywardBladeItem extends WishWeaponItem {
     private static final String STRIKE_TEXT = "strike";
     private static final String POWER_TEXT = "power";
 
-    public SkywardBladeItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant(),
-                WeaponModifier.of(Attributes.ATTACK_DAMAGE, POWER_BASE, POWER_STEP, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+    public SkywardBladeItem(Settings properties) {
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireproof(), WeaponModifier.of(EntityAttributes.GENERIC_ATTACK_DAMAGE, POWER_BASE, POWER_STEP, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
     }
 
     @Override
-    public List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
+    public List<WeaponModifier> conditionalPassives(PlayerEntity player, ItemStack stack, int slot, int refinement) {
         if (isHeld(player, slot, stack) || WeaponCharge.of(stack) <= 0) return List.of();
         return List.of(
-                WeaponModifier.conditional(Attributes.ATTACK_SPEED, AttributeModifier.Operation.ADD_VALUE,
+                WeaponModifier.conditional(EntityAttributes.GENERIC_ATTACK_SPEED, EntityAttributeModifier.Operation.ADDITION,
                         (owner, worn, value) -> SPEED_BASE + SPEED_STEP * (value - 1)),
-                WeaponModifier.conditional(Attributes.MOVEMENT_SPEED, AttributeModifier.Operation.ADD_VALUE,
+                WeaponModifier.conditional(EntityAttributes.GENERIC_MOVEMENT_SPEED, EntityAttributeModifier.Operation.ADDITION,
                         (owner, worn, value) -> MOVE_BASE + MOVE_STEP * (value - 1)));
     }
 
@@ -68,22 +67,22 @@ public class SkywardBladeItem extends WishWeaponItem {
         var refinement = state.refinements();
         return List.of(
                 WeaponDescription.of(RIGHT_CLICK, RESONANCE_TEXT,
-                        WishReports.number(speedBonus(refinement), ChatFormatting.AQUA),
-                        WishReports.percent(moveBonus(refinement) * MOVE_DISPLAY, ChatFormatting.AQUA)),
+                        WishReports.number(speedBonus(refinement), Formatting.AQUA),
+                        WishReports.percent(moveBonus(refinement) * MOVE_DISPLAY, Formatting.AQUA)),
                 WeaponDescription.of(NORMAL_ATTACK, STRIKE_TEXT,
-                        WishReports.percent(strikeRatio(refinement), ChatFormatting.AQUA)),
+                        WishReports.percent(strikeRatio(refinement), Formatting.AQUA)),
                 WeaponDescription.of(PASSIVE_ACTION, POWER_TEXT,
-                        WishReports.percent(powerBonus(refinement), ChatFormatting.AQUA)));
+                        WishReports.percent(powerBonus(refinement), Formatting.AQUA)));
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (level.isClientSide() || player.getCooldowns().isOnCooldown(stack.getItem())) return super.use(level, player, hand);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (level.isClient() || player.getItemCooldownManager().isCoolingDown(stack.getItem())) return super.use(level, player, hand);
         if (WeaponCharge.of(stack) >= REFRESH_THRESHOLD) return super.use(level, player, hand);
         WeaponCharge.set(stack, ACTIVE_HITS);
-        player.getCooldowns().addCooldown(stack.getItem(), ABILITY_COOLDOWN);
-        level.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_RIPTIDE_2.value(), SoundSource.PLAYERS, 1.5F, 3.0F);
+        player.getItemCooldownManager().set(stack.getItem(), ABILITY_COOLDOWN);
+        level.playSound(null, player.getBlockPos(), SoundEvents.ITEM_TRIDENT_RIPTIDE_2, SoundCategory.PLAYERS, 1.5F, 3.0F);
         return super.use(level, player, hand);
     }
 
@@ -93,16 +92,16 @@ public class SkywardBladeItem extends WishWeaponItem {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        var result = super.hurtEnemy(stack, target, attacker);
-        if (!(attacker.level() instanceof ServerLevel level)) return result;
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        var result = super.postHit(stack, target, attacker);
+        if (!(attacker.getWorld() instanceof ServerWorld level)) return result;
         var remaining = WeaponCharge.of(stack);
         if (remaining <= 0) return result;
-        var damage = (float) (attacker.getAttributeValue(Attributes.ATTACK_DAMAGE) * strikeRatio(WeaponState.of(stack).refinements()));
-        WeaponDamage.extraHit(target, ElementDamage.of(Element.ANEMO, level.damageSources().indirectMagic(target, attacker)), damage);
+        var damage = (float) (attacker.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) * strikeRatio(WeaponState.of(stack).refinements()));
+        WeaponDamage.extraHit(target, ElementDamage.of(Element.ANEMO, level.getDamageSources().indirectMagic(target, attacker)), damage);
         WeaponCharge.set(stack, remaining - 1);
         if (remaining - 1 == 0)
-            level.playSound(null, target.blockPosition(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.5F, 1.0F);
+            level.playSound(null, target.getBlockPos(), SoundEvents.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, 1.5F, 1.0F);
         return result;
     }
 

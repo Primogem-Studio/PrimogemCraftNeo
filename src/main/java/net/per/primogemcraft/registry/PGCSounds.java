@@ -1,15 +1,15 @@
 package net.per.primogemcraft.registry;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
+import net.minecraft.sound.SoundEvent;
+import net.per.primogemcraft.compat.registries.DeferredHolder;
+import net.per.primogemcraft.compat.registries.DeferredRegister;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public class PGCSounds {
-    public static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(Registries.SOUND_EVENT, MOD_ID);
+    public static final DeferredRegister<SoundEvent> REGISTRY = DeferredRegister.create(RegistryKeys.SOUND_EVENT, MOD_ID);
 
     public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_PLACE = register("zipline_place");
     public static final DeferredHolder<SoundEvent, SoundEvent> ZIPLINE_ATTACH = register("zipline_attach");
@@ -37,7 +37,6 @@ public class PGCSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> VARUNADA_LAZURITE_BUBBLE = register("varunada_lazurite_bubble");
     public static final DeferredHolder<SoundEvent, SoundEvent> VARUNADA_LAZURITE_BURST = register("varunada_lazurite_burst");
     public static final DeferredHolder<SoundEvent, SoundEvent> WEAPON_CHARGE = register("weapon_charge");
-    public static final DeferredHolder<SoundEvent, SoundEvent> THUNDERING_PULSE_FIRE_ARROW = register("thundering_pulse_fire_arrow");
     public static final DeferredHolder<SoundEvent, SoundEvent> THRUST_FLOURISH = register("thrust_flourish");
     public static final DeferredHolder<SoundEvent, SoundEvent> SOIL_SHAPING = register("soil_shaping");
     public static final DeferredHolder<SoundEvent, SoundEvent> SCAM = register("scam");
@@ -57,6 +56,6 @@ public class PGCSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> LOTTERY_DRAW = register("lottery_draw");
 
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
-        return REGISTRY.register(name, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MOD_ID, name)));
+        return REGISTRY.register(name, () -> SoundEvent.of(Identifier.of(MOD_ID, name)));
     }
 }

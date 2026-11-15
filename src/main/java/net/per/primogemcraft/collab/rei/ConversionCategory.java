@@ -9,8 +9,8 @@ import me.shedaniel.rei.api.client.gui.widgets.Widgets;
 import me.shedaniel.rei.api.client.registry.display.DisplayCategory;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.per.primogemcraft.registry.PGCItems;
 import org.joml.Matrix4f;
 
@@ -40,8 +40,8 @@ public class ConversionCategory implements DisplayCategory<ConversionDisplay> {
     private static final int SECOND_LANE_ARROW_Y = 7;
     private static final int DUST_COUNT_COLOR = 0xFF000000;
 
-    private static final ResourceLocation CHARGE = texture();
-    private static final ResourceLocation DUST = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/item/dust_of_azoth.png");
+    private static final Identifier CHARGE = texture();
+    private static final Identifier DUST = Identifier.of(MOD_ID, "textures/item/dust_of_azoth.png");
     private static final String TITLE_KEY = "rei.category.primogemcraft.conversion";
     private static final String COST_KEY = "rei.primogemcraft.tooltip.conversion_cost";
 
@@ -51,9 +51,9 @@ public class ConversionCategory implements DisplayCategory<ConversionDisplay> {
         var widgets = ImmutableList.<Widget>builder();
         widgets.add(Widgets.createRecipeBase(bounds));
         widgets.add(Widgets.createTexturedWidget(CHARGE, new Rectangle(center.x + CHARGE_X, center.y + CHARGE_Y, CHARGE_WIDTH, CHARGE_HEIGHT), 0.0F, 0.0F, CHARGE_WIDTH, CHARGE_HEIGHT));
-        widgets.add(Widgets.createTooltip(new Rectangle(center.x + CHARGE_X, center.y + CHARGE_Y, CHARGE_WIDTH, CHARGE_HEIGHT), Component.translatable(COST_KEY, display.cost())));
+        widgets.add(Widgets.createTooltip(new Rectangle(center.x + CHARGE_X, center.y + CHARGE_Y, CHARGE_WIDTH, CHARGE_HEIGHT), Text.translatable(COST_KEY, display.cost())));
         widgets.add(Widgets.createTexturedWidget(DUST, new Rectangle(center.x + DUST_X, center.y + DUST_Y, DUST_SIZE, DUST_SIZE), 0.0F, 0.0F, DUST_SIZE, DUST_SIZE));
-        widgets.add(Widgets.withTranslate(Widgets.createLabel(new Point(0, 0), Component.literal("x" + display.dustCost())).color(DUST_COUNT_COLOR).noShadow(),
+        widgets.add(Widgets.withTranslate(Widgets.createLabel(new Point(0, 0), Text.literal("x" + display.dustCost())).color(DUST_COUNT_COLOR).noShadow(),
                 new Matrix4f().translate(center.x + DUST_LABEL_X, center.y + DUST_LABEL_Y, 0.0F).scale(DUST_LABEL_SCALE, DUST_LABEL_SCALE, 1.0F)));
         addLane(widgets, center, display, FIRST_LANE_INPUT_Y, FIRST_LANE_ARROW_Y, 1, 0);
         addLane(widgets, center, display, SECOND_LANE_INPUT_Y, SECOND_LANE_ARROW_Y, 2, 1);
@@ -61,8 +61,8 @@ public class ConversionCategory implements DisplayCategory<ConversionDisplay> {
     }
 
     @Override
-    public Component getTitle() {
-        return Component.translatable(TITLE_KEY);
+    public Text getTitle() {
+        return Text.translatable(TITLE_KEY);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class ConversionCategory implements DisplayCategory<ConversionDisplay> {
         widgets.add(Widgets.createSlot(new Point(center.x + LANE_OUTPUT_X, center.y + inputY)).entries(display.getOutputEntries().get(outputIndex)).markOutput());
     }
 
-    private static ResourceLocation texture() {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/" + "stellar_converter_charge" + ".png");
+    private static Identifier texture() {
+        return Identifier.of(MOD_ID, "textures/gui/" + "stellar_converter_charge" + ".png");
     }
 }

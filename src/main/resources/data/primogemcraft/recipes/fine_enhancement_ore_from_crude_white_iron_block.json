@@ -1,0 +1,11 @@
+{
+    "type":  "minecraft:blasting",
+    "category":  "misc",
+    "experience":  9,
+    "cookingtime":  1800,
+    "ingredient":  {
+                       "item":  "primogemcraft:crude_white_iron_block"
+                   },
+    "count":  1,
+    "result":  "primogemcraft:fine_enhancement_ore"
+}

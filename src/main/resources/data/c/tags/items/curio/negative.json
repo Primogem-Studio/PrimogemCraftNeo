@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#c:curio/clock",
+    "primogemcraft:whimsical_fancies_machinery_crew",
+    "#c:curio/negative/cf",
+    "primogemcraft:invalid_thought_code_machine"
+  ]
+}

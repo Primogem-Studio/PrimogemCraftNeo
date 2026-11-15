@@ -1,6 +1,6 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.entity.LivingEntity;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.curio.*;
 import net.per.primogemcraft.util.PlayerItems;
@@ -11,7 +11,7 @@ public class RobeOfTheBeautyItem extends CurioItem {
     private static final int FRAGMENTS_PER_STEP = 64;
     private static final double HEALTH_RATIO = 0.016D;
 
-    public RobeOfTheBeautyItem(Properties properties) {
+    public RobeOfTheBeautyItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.NORMAL, properties);
     }
 
@@ -22,6 +22,6 @@ public class RobeOfTheBeautyItem extends CurioItem {
         var steps = PlayerItems.count(context.player(), PGCItems.COSMIC_FRAGMENT.get()) / FRAGMENTS_PER_STEP;
         if (steps <= 0) return;
         if (!context.ready(COOLDOWN, COOLDOWN_TICKS)) return;
-        victim.hurt(victim.damageSources().magic(), (float) (context.player().getMaxHealth() * HEALTH_RATIO * steps));
+        victim.damage(victim.getDamageSources().magic(), (float) (context.player().getMaxHealth() * HEALTH_RATIO * steps));
     }
 }

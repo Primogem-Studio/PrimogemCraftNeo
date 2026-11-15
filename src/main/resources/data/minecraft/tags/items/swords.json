@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "values": [
+    "primogemcraft:primogem_sword",
+    "primogemcraft:strange_primogem_sword",
+    "primogemcraft:protocol_originium_sword",
+    {
+      "id": "#primogemcraft:weapon/one_handed_sword",
+      "required": false
+    },
+    {
+      "id": "#primogemcraft:weapon/polearm",
+      "required": false
+    },
+    {
+      "id": "#primogemcraft:weapon/claymore",
+      "required": false
+    }
+  ]
+}

@@ -1,14 +1,14 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolMaterial;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.*;
 import net.per.primogemcraft.system.wish.WishReports;
@@ -16,7 +16,7 @@ import net.per.primogemcraft.system.wish.WishReports;
 import java.util.List;
 
 public class FavoniusLanceItem extends WishWeaponItem {
-    private static final Tier TIER = new WeaponTier(960, 4.0F, 10, WeaponTier.WOODEN_INCORRECT, PGCItems.VAYUDA_TURQUOISE_SLIVER);
+    private static final ToolMaterial TIER = new WeaponTier(960, 4.0F, 10, WeaponTier.WOODEN_INCORRECT, PGCItems.VAYUDA_TURQUOISE_SLIVER);
 
     private static final double CHANCE_BASE = 0.6D;
     private static final double CHANCE_STEP = 0.1D;
@@ -38,9 +38,8 @@ public class FavoniusLanceItem extends WishWeaponItem {
     private static final String COOLDOWN_TEXT = "cooldown";
     private static final String HEALTH_TEXT = "health";
 
-    public FavoniusLanceItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant(),
-                WeaponModifier.of(Attributes.MAX_HEALTH, HEALTH_BASE, HEALTH_STEP, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+    public FavoniusLanceItem(Settings properties) {
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireproof(), WeaponModifier.of(EntityAttributes.GENERIC_MAX_HEALTH, HEALTH_BASE, HEALTH_STEP, EntityAttributeModifier.Operation.MULTIPLY_BASE));
     }
 
     @Override
@@ -49,28 +48,28 @@ public class FavoniusLanceItem extends WishWeaponItem {
         var refinement = state.refinements();
         return List.of(
                 WeaponDescription.of(NORMAL_ATTACK, RESTORE_TEXT,
-                        WishReports.percent(chance(refinement), ChatFormatting.AQUA),
-                        WishReports.number(food(refinement), ChatFormatting.AQUA),
-                        WishReports.number(saturation(refinement), ChatFormatting.AQUA),
-                        WishReports.number(food(refinement), ChatFormatting.AQUA)),
+                        WishReports.percent(chance(refinement), Formatting.AQUA),
+                        WishReports.number(food(refinement), Formatting.AQUA),
+                        WishReports.number(saturation(refinement), Formatting.AQUA),
+                        WishReports.number(food(refinement), Formatting.AQUA)),
                 WeaponDescription.note(COOLDOWN_TEXT,
-                        WishReports.number(cooldownSeconds(refinement), ChatFormatting.AQUA)),
+                        WishReports.number(cooldownSeconds(refinement), Formatting.AQUA)),
                 WeaponDescription.of(PASSIVE_ACTION, HEALTH_TEXT,
-                        WishReports.percent(HEALTH_BASE + HEALTH_STEP * (refinement - 1), ChatFormatting.AQUA)));
+                        WishReports.percent(HEALTH_BASE + HEALTH_STEP * (refinement - 1), Formatting.AQUA)));
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        var result = super.hurtEnemy(stack, target, attacker);
-        if (!(attacker.level() instanceof ServerLevel level) || !(attacker instanceof Player player)) return result;
-        if (player.getCooldowns().isOnCooldown(stack.getItem())) return result;
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        var result = super.postHit(stack, target, attacker);
+        if (!(attacker.getWorld() instanceof ServerWorld level) || !(attacker instanceof PlayerEntity player)) return result;
+        if (player.getItemCooldownManager().isCoolingDown(stack.getItem())) return result;
         var refinement = WeaponState.of(stack).refinements();
         if (level.getRandom().nextDouble() >= chance(refinement)) return result;
-        var food = player.getFoodData();
+        var food = player.getHungerManager();
         food.setFoodLevel(food.getFoodLevel() + food(refinement));
-        food.setSaturation((float) Math.min(MAX_SATURATION, food.getSaturationLevel() + saturation(refinement)));
+        food.setSaturationLevel((float) Math.min(MAX_SATURATION, food.getSaturationLevel() + saturation(refinement)));
         player.heal(food(refinement));
-        player.getCooldowns().addCooldown(stack.getItem(), cooldownTicks(refinement));
+        player.getItemCooldownManager().set(stack.getItem(), cooldownTicks(refinement));
         return result;
     }
 

@@ -1,12 +1,13 @@
 package net.per.primogemcraft.system.weapon;
 
+import net.per.primogemcraft.compat.component.StackComponents;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
+import net.per.primogemcraft.compat.network.ByteBufCodecs;
+import net.per.primogemcraft.compat.network.StreamCodec;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.registry.PGCDataComponents;
 
 public record WeaponState(int level, int refinements, int xp, int duplicateRefinements, int superimposerRefinements,
@@ -32,11 +33,11 @@ public record WeaponState(int level, int refinements, int xp, int duplicateRefin
             WeaponState::new);
 
     public static WeaponState of(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.WEAPON_STATE.get(), INITIAL).normalized();
+        return StackComponents.getOrDefault(stack, PGCDataComponents.WEAPON_STATE, INITIAL).normalized();
     }
 
     public static void set(ItemStack stack, WeaponState state) {
-        stack.set(PGCDataComponents.WEAPON_STATE.get(), state);
+        StackComponents.set(stack, PGCDataComponents.WEAPON_STATE, state);
     }
 
     public int spentRefinements() {
@@ -48,7 +49,7 @@ public record WeaponState(int level, int refinements, int xp, int duplicateRefin
     }
 
     public int superimposerLayers() {
-        return Mth.clamp(superimposerRefinements, 0, spentRefinements());
+        return MathHelper.clamp(superimposerRefinements, 0, spentRefinements());
     }
 
     public WeaponState duplicatedBy(int amount) {
@@ -63,7 +64,7 @@ public record WeaponState(int level, int refinements, int xp, int duplicateRefin
 
     public WeaponState temporarilyBy(int amount) {
         return new WeaponState(level, refinements, xp, duplicateRefinements, superimposerRefinements,
-                Mth.clamp(temporaryRefinements + amount, 0, WeaponEnhancement.MAX_TEMPORARY_REFINEMENT));
+                MathHelper.clamp(temporaryRefinements + amount, 0, WeaponEnhancement.MAX_TEMPORARY_REFINEMENT));
     }
 
     public WeaponState leveledTo(int target, int remainingXp) {
@@ -75,6 +76,6 @@ public record WeaponState(int level, int refinements, int xp, int duplicateRefin
         var excess = refinements - WeaponEnhancement.MAX_REFINEMENT;
         if (excess <= 0) return this;
         return new WeaponState(level, WeaponEnhancement.MAX_REFINEMENT, xp, duplicateRefinements, superimposerRefinements,
-                Mth.clamp(temporaryRefinements + excess, 0, WeaponEnhancement.MAX_TEMPORARY_REFINEMENT));
+                MathHelper.clamp(temporaryRefinements + excess, 0, WeaponEnhancement.MAX_TEMPORARY_REFINEMENT));
     }
 }

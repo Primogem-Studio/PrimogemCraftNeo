@@ -2,15 +2,15 @@
   "required": true,
   "minVersion": "0.8",
   "package": "net.per.primogemcraft.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ItemStackMixin",
-    "PowderSnowBlockMixin"
+    "EntityPersistentDataMixin",
+    "LivingEntityEffectMixin",
+    "LivingEntityDamageMixin",
+    "ItemEntityPickupMixin"
   ],
+  "client": [],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixinextras": {
-    "minVersion": "0.5.3"
   }
 }

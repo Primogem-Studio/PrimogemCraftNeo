@@ -1,24 +1,24 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.world.World;
+import net.minecraft.util.math.Vec3d;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamageOptions;
@@ -28,7 +28,7 @@ import net.per.primogemcraft.system.wish.WishReports;
 import java.util.List;
 
 public class MistsplitterReforgedItem extends WishWeaponItem {
-    private static final Tier TIER = new WeaponTier(3000, 4.0F, 20, WeaponTier.WOODEN_INCORRECT, PGCItems.ETERNAL_METAL);
+    private static final ToolMaterial TIER = new WeaponTier(3000, 4.0F, 20, WeaponTier.WOODEN_INCORRECT, PGCItems.ETERNAL_METAL);
 
     private static final double RESTORE_PER_REFINEMENT = 0.5D;
     private static final double THUNDER_PER_REFINEMENT = 0.3D;
@@ -47,8 +47,8 @@ public class MistsplitterReforgedItem extends WishWeaponItem {
     private static final String THUNDER_TEXT = "thunder";
     private static final String SATURATION_TEXT = "saturation";
 
-    public MistsplitterReforgedItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+    public MistsplitterReforgedItem(Settings properties) {
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireproof());
     }
 
     @Override
@@ -57,53 +57,53 @@ public class MistsplitterReforgedItem extends WishWeaponItem {
         var refinement = state.refinements();
         return List.of(
                 WeaponDescription.of(NORMAL_ATTACK, DURABILITY_TEXT,
-                        WishReports.number(RESTORE_PER_REFINEMENT * refinement, ChatFormatting.AQUA)),
+                        WishReports.number(RESTORE_PER_REFINEMENT * refinement, Formatting.AQUA)),
                 WeaponDescription.of(RIGHT_CLICK, THUNDER_TEXT,
-                        WishReports.percent(thunderRatio(refinement), ChatFormatting.AQUA),
-                        WishReports.number(THUNDER_COOLDOWN / 20, ChatFormatting.AQUA)),
+                        WishReports.percent(thunderRatio(refinement), Formatting.AQUA),
+                        WishReports.number(THUNDER_COOLDOWN / 20, Formatting.AQUA)),
                 WeaponDescription.of(SNEAK_USE, SATURATION_TEXT,
-                        WishReports.number(refinement, ChatFormatting.AQUA)));
+                        WishReports.number(refinement, Formatting.AQUA)));
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (attacker.level() instanceof ServerLevel)
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        if (attacker.getWorld() instanceof ServerWorld)
             WeaponAttributes.restoreDurability(stack, restorePoints(WeaponState.of(stack).refinements()));
-        return super.hurtEnemy(stack, target, attacker);
+        return super.postHit(stack, target, attacker);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (level.isClientSide() || player.getCooldowns().isOnCooldown(stack.getItem())) return super.use(level, player, hand);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (level.isClient() || player.getItemCooldownManager().isCoolingDown(stack.getItem())) return super.use(level, player, hand);
         var refinement = WeaponState.of(stack).refinements();
-        if (player.isShiftKeyDown()) {
-            player.hurt(player.damageSources().genericKill(), player.getMaxHealth() * SACRIFICE_RATIO);
-            player.addEffect(new MobEffectInstance(MobEffects.SATURATION, SATURATION_TICKS, refinement - 1, false, false));
-            player.getCooldowns().addCooldown(stack.getItem(), THUNDER_COOLDOWN);
+        if (player.isSneaking()) {
+            player.damage(player.getDamageSources().genericKill(), player.getMaxHealth() * SACRIFICE_RATIO);
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SATURATION, SATURATION_TICKS, refinement - 1, false, false));
+            player.getItemCooldownManager().set(stack.getItem(), THUNDER_COOLDOWN);
             return super.use(level, player, hand);
         }
-        if (player.getFoodData().getFoodLevel() < MIN_FOOD) return super.use(level, player, hand);
-        player.getCooldowns().addCooldown(stack.getItem(), THUNDER_COOLDOWN);
-        var damage = (float) (player.getAttributeValue(Attributes.ATTACK_DAMAGE) * thunderRatio(refinement));
-        if (!(level instanceof ServerLevel server)) return super.use(level, player, hand);
-        for (var candidate : server.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(RADIUS)))
-            if (candidate != player && candidate.isAlive() && candidate instanceof Mob mob && mob.getTarget() == player) {
+        if (player.getHungerManager().getFoodLevel() < MIN_FOOD) return super.use(level, player, hand);
+        player.getItemCooldownManager().set(stack.getItem(), THUNDER_COOLDOWN);
+        var damage = (float) (player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) * thunderRatio(refinement));
+        if (!(level instanceof ServerWorld server)) return super.use(level, player, hand);
+        for (var candidate : server.getEntitiesByClass(LivingEntity.class, player.getBoundingBox().expand(RADIUS), e -> true))
+            if (candidate != player && candidate.isAlive() && candidate instanceof MobEntity mob && mob.getTarget() == player) {
                 WeaponDamage.extraHit(candidate,
                         WeaponDamage.lightning(server, Element.ELECTRO, candidate, player, ElementDamageOptions.DETACHED), damage);
-                strike(server, candidate.blockPosition());
-                player.getFoodData().setFoodLevel(Math.max(0, player.getFoodData().getFoodLevel() - FOOD_COST));
+                strike(server, candidate.getBlockPos());
+                player.getHungerManager().setFoodLevel(Math.max(0, player.getHungerManager().getFoodLevel() - FOOD_COST));
             }
-        server.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_THUNDER.value(), SoundSource.PLAYERS, 2.0F, 0.3F);
+        server.playSound(null, player.getBlockPos(), SoundEvents.ITEM_TRIDENT_THUNDER, SoundCategory.PLAYERS, 2.0F, 0.3F);
         return super.use(level, player, hand);
     }
 
-    private static void strike(ServerLevel level, BlockPos pos) {
+    private static void strike(ServerWorld level, BlockPos pos) {
         var bolt = EntityType.LIGHTNING_BOLT.create(level);
         if (bolt == null) return;
-        bolt.moveTo(Vec3.atBottomCenterOf(pos));
-        bolt.setVisualOnly(true);
-        level.addFreshEntity(bolt);
+        bolt.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(pos));
+        bolt.setCosmetic(true);
+        level.spawnEntity(bolt);
     }
 
     private static int restorePoints(int refinement) {

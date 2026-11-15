@@ -1,15 +1,15 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.level.Level;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.UseAction;
+import net.minecraft.world.World;
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.system.curio.CurioForm;
 import net.per.primogemcraft.system.curio.CurioItem;
@@ -23,7 +23,7 @@ public class EmptyCandleFlameItem extends CurioItem {
     private static final float FULL_REPAIR = 1.0F;
     private static final float BREAK_CHANCE = 0.5F;
 
-    public EmptyCandleFlameItem(Properties properties) {
+    public EmptyCandleFlameItem(Settings properties) {
         super(CurioTrigger.RIGHT_CLICK, CurioForm.FUSION, properties);
     }
 
@@ -33,34 +33,34 @@ public class EmptyCandleFlameItem extends CurioItem {
     }
 
     @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.DRINK;
+    public UseAction getUseAction(ItemStack stack) {
+        return net.minecraft.util.UseAction.DRINK;
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+    public int getMaxUseTime(ItemStack stack) {
         return USE_DURATION;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        player.startUsingItem(hand);
-        return InteractionResultHolder.consume(player.getItemInHand(hand));
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        player.setCurrentHand(hand);
+        return TypedActionResult.consume(player.getStackInHand(hand));
     }
 
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        if (!(entity instanceof ServerPlayer player)) return stack;
+    public ItemStack finishUsing(ItemStack stack, World level, LivingEntity entity) {
+        if (!(entity instanceof ServerPlayerEntity player)) return stack;
         var repaired = Curios.repairRandom(player, FULL_REPAIR);
         if (repaired.isEmpty()) {
-            player.displayClientMessage(Component.translatable(INVALID_KEY), false);
+            player.sendMessage(Text.translatable(INVALID_KEY), false);
             return stack;
         }
         Curios.give(player, repaired.copy());
         if (player.getRandom().nextFloat() >= BREAK_CHANCE) return stack;
-        player.displayClientMessage(Component.translatable(BROKEN_KEY, stack.getHoverName()), false);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
-        stack.shrink(1);
+        player.sendMessage(Text.translatable(BROKEN_KEY, stack.getName()), false);
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundCategory.PLAYERS, 1.0F, 1.0F);
+        stack.decrement(1);
         return stack;
     }
 }

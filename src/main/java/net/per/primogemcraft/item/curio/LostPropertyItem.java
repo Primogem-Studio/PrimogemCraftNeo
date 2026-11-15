@@ -1,15 +1,17 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.World;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.ActionResult;
+import net.minecraft.item.ItemStack;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.world.Heightmap;
 import net.per.primogemcraft.registry.PGCBlocks;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.system.curio.*;
@@ -27,7 +29,7 @@ public abstract class LostPropertyItem extends CurioItem {
     private static final String PENDING_SUFFIX = ".tooltip.pending";
     private static final String POSITION_SUFFIX = ".tooltip.position";
     private static final String REVEALED_SUFFIX = ".tooltip.revealed";
-    private static final ResourceLocation CLAIMED_MARK = ResourceLocation.fromNamespaceAndPath(MOD_ID, "lost_property_claimed");
+    private static final Identifier CLAIMED_MARK = Identifier.of(MOD_ID, "lost_property_claimed");
     private static final int STEP_TICKS = 60;
     private static final int STEPS = 100;
     private static final int RANGE = 300;
@@ -35,7 +37,7 @@ public abstract class LostPropertyItem extends CurioItem {
 
     private final int descriptionLines;
 
-    protected LostPropertyItem(CurioForm form, int descriptionLines, Properties properties) {
+    protected LostPropertyItem(CurioForm form, int descriptionLines, Settings properties) {
         super(CurioTrigger.ACTIVE, form, properties);
         this.descriptionLines = descriptionLines;
     }
@@ -51,73 +53,73 @@ public abstract class LostPropertyItem extends CurioItem {
         if (position(stack) != null) return;
         var progress = progress(stack) + 1;
         if (progress < STEPS) {
-            stack.set(PGCDataComponents.CURIO_COUNTER.get(), progress);
+            StackComponents.set(stack, PGCDataComponents.CURIO_COUNTER, progress);
             return;
         }
         generate(context);
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        if (!(context.getPlayer() instanceof ServerPlayer player)) return InteractionResult.SUCCESS;
-        var stack = context.getItemInHand();
-        if (stack.getItem() != this) return InteractionResult.PASS;
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        if (!(context.getPlayer() instanceof ServerPlayerEntity player)) return ActionResult.SUCCESS;
+        var stack = context.getStack();
+        if (stack.getItem() != this) return ActionResult.PASS;
         if (Curios.marked(stack, CLAIMED_MARK)) {
-            player.displayClientMessage(Component.translatable(USED_KEY), false);
-            return InteractionResult.SUCCESS;
+            player.sendMessage(Text.translatable(USED_KEY), false);
+            return ActionResult.SUCCESS;
         }
         var position = position(stack);
-        if (position == null || !position.equals(context.getClickedPos())) {
-            player.displayClientMessage(Component.translatable(MISMATCH_KEY), false);
-            return InteractionResult.SUCCESS;
+        if (position == null || !position.equals(context.getBlockPos())) {
+            player.sendMessage(Text.translatable(MISMATCH_KEY), false);
+            return ActionResult.SUCCESS;
         }
-        var level = player.serverLevel();
-        if (level.getBlockState(position).is(PGCBlocks.WONDROUS_ENCOUNTER_BLOCK.get())) level.destroyBlock(position, true);
+        var level = player.getServerWorld();
+        if (level.getBlockState(position).isOf(PGCBlocks.WONDROUS_ENCOUNTER_BLOCK.get())) level.breakBlock(position, true);
         var curio = CurioContext.of(player, stack, form());
         grant(curio);
         Curios.mark(stack, CLAIMED_MARK);
         Curios.broken(player, stack);
-        stack.shrink(1);
-        return InteractionResult.SUCCESS;
+        stack.decrement(1);
+        return ActionResult.SUCCESS;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendTooltip(ItemStack stack, @org.jetbrains.annotations.Nullable World level, List<Text> tooltip, TooltipContext flag) {
         appendTrigger(stack, tooltip);
-        var prefix = stack.getDescriptionId() + TOOLTIP_SUFFIX;
-        for (var index = 0; index < descriptionLines; index++) tooltip.add(Component.translatable(prefix + index));
+        var prefix = stack.getTranslationKey() + TOOLTIP_SUFFIX;
+        for (var index = 0; index < descriptionLines; index++) tooltip.add(Text.translatable(prefix + index));
         var position = position(stack);
         if (position == null) {
-            tooltip.add(Component.translatable(stack.getDescriptionId() + PROGRESS_SUFFIX, progress(stack)));
-            tooltip.add(Component.translatable(stack.getDescriptionId() + PENDING_SUFFIX));
+            tooltip.add(Text.translatable(stack.getTranslationKey() + PROGRESS_SUFFIX, progress(stack)));
+            tooltip.add(Text.translatable(stack.getTranslationKey() + PENDING_SUFFIX));
             return;
         }
-        tooltip.add(Component.translatable(stack.getDescriptionId() + POSITION_SUFFIX, position.getX(), position.getY(), position.getZ()));
-        tooltip.add(Component.translatable(stack.getDescriptionId() + REVEALED_SUFFIX));
+        tooltip.add(Text.translatable(stack.getTranslationKey() + POSITION_SUFFIX, position.getX(), position.getY(), position.getZ()));
+        tooltip.add(Text.translatable(stack.getTranslationKey() + REVEALED_SUFFIX));
     }
 
     protected abstract void grant(CurioContext context);
 
     private static BlockPos position(ItemStack stack) {
-        return stack.get(PGCDataComponents.ENCOUNTER_POSITION.get());
+        return StackComponents.get(stack, PGCDataComponents.ENCOUNTER_POSITION);
     }
 
     private static int progress(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.CURIO_COUNTER.get(), 0);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.CURIO_COUNTER, 0);
     }
 
     private static void generate(CurioContext context) {
         var player = context.player();
-        var level = context.level();
-        var x = player.getBlockX() + Mth.nextInt(context.random(), -RANGE, RANGE);
-        var z = player.getBlockZ() + Mth.nextInt(context.random(), -RANGE, RANGE);
-        var limit = level.getMaxBuildHeight() - 1;
-        var surface = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-        var y = Mth.clamp(surface + Mth.nextInt(context.random(), -VERTICAL_RANGE, VERTICAL_RANGE), level.getMinBuildHeight(), limit);
+        var level = context.getWorld();
+        var x = player.getBlockX() + MathHelper.nextInt(context.random(), -RANGE, RANGE);
+        var z = player.getBlockZ() + MathHelper.nextInt(context.random(), -RANGE, RANGE);
+        var limit = level.getTopY() - 1;
+        var surface = level.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(x, 0, z)).getY();
+        var y = MathHelper.clamp(surface + MathHelper.nextInt(context.random(), -VERTICAL_RANGE, VERTICAL_RANGE), level.getBottomY(), limit);
         var position = new BlockPos(x, y, z);
-        while (position.getY() < limit && !level.getBlockState(position).isAir()) position = position.above();
-        level.setBlockAndUpdate(position, PGCBlocks.WONDROUS_ENCOUNTER_BLOCK.get().defaultBlockState());
-        context.stack().set(PGCDataComponents.ENCOUNTER_POSITION.get(), position);
-        context.announce(Component.translatable(GENERATED_KEY));
+        while (position.getY() < limit && !level.getBlockState(position).isAir()) position = position.up();
+        level.setBlockState(position, PGCBlocks.WONDROUS_ENCOUNTER_BLOCK.get().getDefaultState());
+        StackComponents.set(context.stack(), PGCDataComponents.ENCOUNTER_POSITION, position);
+        context.announce(Text.translatable(GENERATED_KEY));
     }
 }

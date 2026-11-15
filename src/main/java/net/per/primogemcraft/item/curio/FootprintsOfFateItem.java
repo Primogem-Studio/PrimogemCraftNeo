@@ -1,17 +1,19 @@
 package net.per.primogemcraft.item.curio;
 
+import net.minecraft.world.World;
+import net.per.primogemcraft.compat.component.StackComponents;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.util.Formatting;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
+import net.minecraft.text.Text;
+import net.per.primogemcraft.compat.network.ByteBufCodecs;
+import net.per.primogemcraft.compat.network.StreamCodec;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Rarity;
+import net.minecraft.client.item.TooltipContext;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.system.curio.CurioContext;
 import net.per.primogemcraft.system.curio.CurioForm;
@@ -32,24 +34,24 @@ public class FootprintsOfFateItem extends CurioItem {
     private static final double MAX_DISCOUNT = 0.25D;
     private static final String TOOLTIP_PREFIX = ".tooltip.";
 
-    public FootprintsOfFateItem(Properties properties) {
+    public FootprintsOfFateItem(Settings properties) {
         super(CurioTrigger.ENHANCE, CurioForm.NORMAL, USES, properties.rarity(Rarity.UNCOMMON));
     }
 
     public static Roll roll(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.FOOTPRINTS_ROLL.get(), Roll.NONE);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.FOOTPRINTS_ROLL, Roll.NONE);
     }
 
-    public static Roll ensure(ItemStack stack, RandomSource random, boolean creative) {
-        var roll = stack.get(PGCDataComponents.FOOTPRINTS_ROLL.get());
+    public static Roll ensure(ItemStack stack, Random random, boolean creative) {
+        var roll = StackComponents.get(stack, PGCDataComponents.FOOTPRINTS_ROLL);
         if (roll != null) return roll;
-        var value = new Roll(creative ? 1.0D : Mth.nextDouble(random, MIN_CHANCE, MAX_CHANCE), Mth.nextDouble(random, MIN_DISCOUNT, MAX_DISCOUNT));
-        stack.set(PGCDataComponents.FOOTPRINTS_ROLL.get(), value);
+        var value = new Roll(creative ? 1.0D : MathHelper.nextDouble(random, MIN_CHANCE, MAX_CHANCE), MathHelper.nextDouble(random, MIN_DISCOUNT, MAX_DISCOUNT));
+        StackComponents.set(stack, PGCDataComponents.FOOTPRINTS_ROLL, value);
         return value;
     }
 
-    public static double discount(Roll roll, RandomSource random) {
-        return Mth.nextDouble(random, MIN_DISCOUNT, roll.discount());
+    public static double discount(Roll roll, Random random) {
+        return MathHelper.nextDouble(random, MIN_DISCOUNT, roll.discount());
     }
 
     @Override
@@ -58,18 +60,18 @@ public class FootprintsOfFateItem extends CurioItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendTooltip(ItemStack stack, @org.jetbrains.annotations.Nullable World level, List<Text> tooltip, TooltipContext flag) {
         appendTrigger(stack, tooltip);
-        var prefix = stack.getDescriptionId() + TOOLTIP_PREFIX;
-        tooltip.add(Component.translatable(prefix + 0));
+        var prefix = stack.getTranslationKey() + TOOLTIP_PREFIX;
+        tooltip.add(Text.translatable(prefix + 0));
         var roll = roll(stack);
         if (WishTooltips.showsDetails()) {
-            tooltip.add(Component.translatable(prefix + 1, WishReports.percent(roll.chance(), ChatFormatting.AQUA)));
-            tooltip.add(Component.translatable(prefix + 2,
-                    WishReports.percent(MIN_DISCOUNT, ChatFormatting.GOLD),
-                    WishReports.percent(roll.discount(), ChatFormatting.GOLD)));
+            tooltip.add(Text.translatable(prefix + 1, WishReports.percent(roll.chance(), Formatting.AQUA)));
+            tooltip.add(Text.translatable(prefix + 2,
+                    WishReports.percent(MIN_DISCOUNT, Formatting.GOLD),
+                    WishReports.percent(roll.discount(), Formatting.GOLD)));
         } else {
-            tooltip.add(Component.translatable(prefix + 3));
+            tooltip.add(Text.translatable(prefix + 3));
         }
         appendBar(stack, tooltip);
     }

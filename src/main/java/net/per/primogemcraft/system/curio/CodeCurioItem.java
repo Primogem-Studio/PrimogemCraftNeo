@@ -1,11 +1,11 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.player.PlayerEntity;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.util.PGCTimer;
 import net.per.primogemcraft.util.PlayerFlags;
@@ -21,10 +21,10 @@ public class CodeCurioItem extends CurioItem {
     private static final double RANGE = 8.0D;
     private static final double RATE = 0.02D;
 
-    private final List<Holder<Attribute>> attributes;
+    private final List<EntityAttribute> attributes;
     private final boolean integrated;
 
-    public CodeCurioItem(List<Holder<Attribute>> attributes, boolean integrated, Properties properties) {
+    public CodeCurioItem(List<EntityAttribute> attributes, boolean integrated, Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.NORMAL, properties);
         this.attributes = attributes;
         this.integrated = integrated;
@@ -55,7 +55,7 @@ public class CodeCurioItem extends CurioItem {
         context.progress(stacks, limit(player));
         if (stacks <= 0) return;
         for (var index = 0; index < attributes.size(); index++)
-            CurioAttributes.push(player, context.stack(), index, attributes.get(index), RATE * stacks, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+            CurioAttributes.push(player, context.stack(), index, attributes.get(index), RATE * stacks, EntityAttributeModifier.Operation.MULTIPLY_BASE);
     }
 
     @Override
@@ -71,23 +71,23 @@ public class CodeCurioItem extends CurioItem {
         context.progress(flags.counter(stamps.counter()), limit);
     }
 
-    private static int limit(ServerPlayer player) {
+    private static int limit(ServerPlayerEntity player) {
         return BASE_STACKS + BASE_STACKS * Math.min(NEARBY_PLAYERS, nearbyPlayers(player));
     }
 
     private Stamps stamps(CurioContext context) {
         var id = Curios.idOf(context.stack().getItem()).getPath();
-        return new Stamps(ResourceLocation.fromNamespaceAndPath(MOD_ID, "code_stacks/" + id), "curio/code/" + id);
+        return new Stamps(Identifier.of(MOD_ID, "code_stacks/" + id), "curio/code/" + id);
     }
 
-    private static int nearbyPlayers(ServerPlayer player) {
-        return player.serverLevel().getEntitiesOfClass(Player.class, player.getBoundingBox().inflate(RANGE)).size();
+    private static int nearbyPlayers(ServerPlayerEntity player) {
+        return player.getServerWorld().getEntitiesByClass(PlayerEntity.class, player.getBoundingBox().expand(RANGE), e -> true).size();
     }
 
-    private static boolean carriesIntegratedCode(ServerPlayer player) {
-        return player.getInventory().contains(stack -> !stack.isEmpty() && stack.is(PGCItems.INTEGRATED_CODE.get()));
+    private static boolean carriesIntegratedCode(ServerPlayerEntity player) {
+        return net.per.primogemcraft.compat.item.Inventories120.any(player.getInventory(), stack -> !stack.isEmpty() && stack.isOf(PGCItems.INTEGRATED_CODE.get()));
     }
 
-    private record Stamps(ResourceLocation counter, String timer) {
+    private record Stamps(Identifier counter, String timer) {
     }
 }

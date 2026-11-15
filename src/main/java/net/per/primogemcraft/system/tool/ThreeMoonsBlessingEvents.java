@@ -1,29 +1,21 @@
 package net.per.primogemcraft.system.tool;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.tag.DamageTypeTags;
+import net.per.primogemcraft.compat.event.EventDispatch;
 import net.per.primogemcraft.registry.PGCItems;
 
-import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
-
-@EventBusSubscriber(modid = MOD_ID)
 public final class ThreeMoonsBlessingEvents {
-    private static final ResourceLocation MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "three_moons_blessing");
-    private static final double FALL_DAMAGE_REDUCTION = -1.0D;
-
     private ThreeMoonsBlessingEvents() {
     }
 
-    @SubscribeEvent
-    private static void onItemAttributes(ItemAttributeModifierEvent event) {
-        if (!event.getItemStack().is(PGCItems.THREE_MOONS_BLESSING.get())) return;
-        event.addModifier(Attributes.FALL_DAMAGE_MULTIPLIER,
-                new AttributeModifier(MODIFIER_ID, FALL_DAMAGE_REDUCTION, AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
-                EquipmentSlotGroup.ANY);
+    public static void register() {
+        EventDispatch.onDamageModify((entity, source, amount) -> {
+            if (!(entity instanceof PlayerEntity player)) return amount;
+            if (!source.isIn(DamageTypeTags.IS_FALL)) return amount;
+            if (!player.getMainHandStack().isOf(PGCItems.THREE_MOONS_BLESSING.get())
+                    && !player.getOffHandStack().isOf(PGCItems.THREE_MOONS_BLESSING.get())) return amount;
+            return 0.0F;
+        });
     }
 }

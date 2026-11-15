@@ -1,11 +1,12 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.minecraft.text.Text;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.item.ItemStack;
+import net.minecraft.enchantment.Enchantment;
 import net.per.primogemcraft.enchantment.EnchantCost;
 import net.per.primogemcraft.enchantment.EnchantGrade;
 import net.per.primogemcraft.enchantment.EnchantOption;
@@ -23,7 +24,7 @@ public class EnchantingCurioItem extends CurioItem {
 
     private final Spec spec;
 
-    public EnchantingCurioItem(CurioForm form, int integrity, Spec spec, Properties properties) {
+    public EnchantingCurioItem(CurioForm form, int integrity, Spec spec, Settings properties) {
         super(CurioTrigger.ACTIVE, form, integrity, properties);
         this.spec = spec;
     }
@@ -34,7 +35,7 @@ public class EnchantingCurioItem extends CurioItem {
     }
 
     @Override
-    public void pickedUp(ServerPlayer player, ItemStack stack) {
+    public void pickedUp(ServerPlayerEntity player, ItemStack stack) {
         trigger(CurioContext.of(player, stack, form()));
     }
 
@@ -53,37 +54,37 @@ public class EnchantingCurioItem extends CurioItem {
                 return;
             }
             if (!context.ready(HINT_TIMER, HINT_TICKS)) return;
-            context.announce(Component.translatable(Curios.randomInventoryItem(player, spec.target()::matches).isEmpty() ? INVALID_KEY : USED_KEY));
+            context.announce(Text.translatable(Curios.randomInventoryItem(player, spec.target()::matches).isEmpty() ? INVALID_KEY : USED_KEY));
             return;
         }
-        int used = target.getOrDefault(PGCDataComponents.CURIO_COUNTER.get(), 0);
+        int used = StackComponents.getOrDefault(target, PGCDataComponents.CURIO_COUNTER, 0);
         var rolled = roll(player, target);
         if (used > 0) CurioEnchanting.raise(rolled.preview(), 1);
-        if (spec.maxUses() > 0) target.set(PGCDataComponents.CURIO_COUNTER.get(), used + 1);
+        if (spec.maxUses() > 0) StackComponents.set(target, PGCDataComponents.CURIO_COUNTER, used + 1);
         offhand(player);
         context.damage(1);
         EnchantReward.open(player, List.of(rolled.option(target)));
     }
 
-    protected Roll roll(ServerPlayer player, ItemStack target) {
+    protected Roll roll(ServerPlayerEntity player, ItemStack target) {
         var level = spec.level();
         return new Roll(CurioEnchanting.tablePoolResult(player, target, level), level);
     }
 
-    private void offhand(ServerPlayer player) {
+    private void offhand(ServerPlayerEntity player) {
         var offhand = spec.offhand();
         if (offhand == null) return;
-        var level = Mth.nextInt(player.getRandom(), offhand.minLevel(), offhand.maxLevel());
-        PGCEnchantments.apply(player.level(), player.getOffhandItem(), offhand.enchantment(), level);
+        var level = MathHelper.nextInt(player.getRandom(), offhand.minLevel(), offhand.maxLevel());
+        PGCEnchantments.apply(player.getWorld(), player.getOffHandStack(), offhand.enchantment(), level);
     }
 
-    private boolean repair(ServerPlayer player) {
+    private boolean repair(ServerPlayerEntity player) {
         if (!Curios.repairRandom(player, spec.repairRatio()).isEmpty()) return true;
         return !Curios.repairRandomDurability(player, spec.repairRatio()).isEmpty();
     }
 
     private boolean enchantable(ItemStack stack) {
-        int used = stack.getOrDefault(PGCDataComponents.CURIO_COUNTER.get(), 0);
+        int used = StackComponents.getOrDefault(stack, PGCDataComponents.CURIO_COUNTER, 0);
         if (spec.maxUses() > 0 && used >= spec.maxUses()) return false;
         return used > 0 || spec.target().matches(stack);
     }
@@ -100,7 +101,7 @@ public class EnchantingCurioItem extends CurioItem {
         }
     }
 
-    public record Offhand(ResourceKey<Enchantment> enchantment, int minLevel, int maxLevel) {
+    public record Offhand(RegistryKey<Enchantment> enchantment, int minLevel, int maxLevel) {
     }
 
     public enum Target {
@@ -110,7 +111,7 @@ public class EnchantingCurioItem extends CurioItem {
         public boolean matches(ItemStack stack) {
             return switch (this) {
                 case ENCHANTABLE -> stack.isEnchantable();
-                case ENCHANTED -> stack.isEnchanted();
+                case ENCHANTED -> stack.hasEnchantments();
             };
         }
     }

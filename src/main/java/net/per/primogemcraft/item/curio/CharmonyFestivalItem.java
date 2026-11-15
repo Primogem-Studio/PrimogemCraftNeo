@@ -1,8 +1,10 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.World;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.minecraft.text.Text;
+import net.minecraft.item.ItemStack;
+import net.minecraft.client.item.TooltipContext;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.system.curio.CurioContext;
 import net.per.primogemcraft.system.curio.CurioForm;
@@ -29,7 +31,7 @@ public class CharmonyFestivalItem extends CurioItem {
     private static final int RESTORED_FOOD = 10;
     private static final float RESTORED_SATURATION = 10.0F;
 
-    public CharmonyFestivalItem(Properties properties) {
+    public CharmonyFestivalItem(Settings properties) {
         super(CurioTrigger.RIGHT_CLICK, CurioForm.FUSION, 1, properties);
     }
 
@@ -38,38 +40,38 @@ public class CharmonyFestivalItem extends CurioItem {
         if (!context.ready(COOLDOWN, COOLDOWN_TICKS)) return;
         var player = context.player();
         player.heal(player.getMaxHealth() * RESTORED_HEALTH);
-        var food = player.getFoodData();
+        var food = player.getHungerManager();
         food.setFoodLevel(food.getFoodLevel() + RESTORED_FOOD);
-        food.setSaturation(food.getSaturationLevel() + RESTORED_SATURATION);
-        context.stack().set(PGCDataComponents.CURIO_COUNTER.get(), points(context.stack()) + 1);
+        food.setSaturationLevel(food.getSaturationLevel() + RESTORED_SATURATION);
+        StackComponents.set(context.stack(), PGCDataComponents.CURIO_COUNTER, points(context.stack()) + 1);
     }
 
     @Override
     public void activated(CurioContext context) {
         var stack = context.stack();
         var points = points(stack);
-        var weapon = context.player().getOffhandItem();
+        var weapon = context.player().getOffHandStack();
         if (points <= 0 || !(weapon.getItem() instanceof WishWeapon) || WeaponEnhancement.levelOf(weapon) >= WeaponState.INITIAL.level()) {
-            context.announce(Component.translatable(UNAVAILABLE_KEY));
+            context.announce(Text.translatable(UNAVAILABLE_KEY));
             return;
         }
         WeaponEnhancement.setLevel(weapon, WeaponState.INITIAL.level());
         WeaponAttributes.refreshLevel(weapon, context.player());
-        stack.set(PGCDataComponents.CURIO_COUNTER.get(), points - 1);
+        StackComponents.set(stack, PGCDataComponents.CURIO_COUNTER, points - 1);
         if (context.chance(BREAK_CHANCE)) context.damage(1);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendTooltip(ItemStack stack, @org.jetbrains.annotations.Nullable World level, List<Text> tooltip, TooltipContext flag) {
         appendTrigger(stack, tooltip);
-        var prefix = stack.getDescriptionId() + TOOLTIP_SUFFIX;
-        for (var index = 0; index < FIXED_LINES; index++) tooltip.add(Component.translatable(prefix + index));
-        tooltip.add(Component.translatable(prefix + BLANK_LINE));
-        tooltip.add(Component.translatable(stack.getDescriptionId() + POINTS_SUFFIX, points(stack)));
-        tooltip.add(Component.translatable(prefix + TAIL_LINE));
+        var prefix = stack.getTranslationKey() + TOOLTIP_SUFFIX;
+        for (var index = 0; index < FIXED_LINES; index++) tooltip.add(Text.translatable(prefix + index));
+        tooltip.add(Text.translatable(prefix + BLANK_LINE));
+        tooltip.add(Text.translatable(stack.getTranslationKey() + POINTS_SUFFIX, points(stack)));
+        tooltip.add(Text.translatable(prefix + TAIL_LINE));
     }
 
     private static int points(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.CURIO_COUNTER.get(), 0);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.CURIO_COUNTER, 0);
     }
 }

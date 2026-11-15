@@ -1,12 +1,12 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Vec3d;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
 import net.per.primogemcraft.system.weapon.WeaponEnhancement;
@@ -28,18 +28,18 @@ final class PhilosophyWeapons {
     static WeaponDescription moraDescription(ItemStack stack) {
         var layers = WeaponState.of(stack).refinements() - 1;
         return WeaponDescription.of(PASSIVE_ACTION, MORA_TEXT,
-                WishReports.percent(CHANCE_BASE + CHANCE_STEP * layers, ChatFormatting.AQUA),
-                WishReports.number(1 + layers, ChatFormatting.AQUA));
+                WishReports.percent(CHANCE_BASE + CHANCE_STEP * layers, Formatting.AQUA),
+                WishReports.number(1 + layers, Formatting.AQUA));
     }
 
-    static void drop(ServerLevel level, Vec3 pos, Player player, ItemStack stack) {
-        if (player.getCooldowns().isOnCooldown(stack.getItem())) return;
+    static void drop(ServerWorld level, Vec3d pos, PlayerEntity player, ItemStack stack) {
+        if (player.getItemCooldownManager().isCoolingDown(stack.getItem())) return;
         var layers = WeaponEnhancement.refinementOf(player, stack) - 1;
         if (level.getRandom().nextDouble() >= CHANCE_BASE + CHANCE_STEP * layers) return;
-        var mora = new ItemStack(PGCItems.MORA.get(), Mth.nextInt(level.getRandom(), 1, 1 + layers));
+        var mora = new ItemStack(PGCItems.MORA.get(), MathHelper.nextInt(level.getRandom(), 1, 1 + layers));
         var dropped = new ItemEntity(level, pos.x, pos.y, pos.z, mora);
-        dropped.setPickUpDelay(PICKUP_DELAY);
-        level.addFreshEntity(dropped);
-        player.getCooldowns().addCooldown(stack.getItem(), COOLDOWN_TICKS);
+        dropped.setPickupDelay(PICKUP_DELAY);
+        level.spawnEntity(dropped);
+        player.getItemCooldownManager().set(stack.getItem(), COOLDOWN_TICKS);
     }
 }

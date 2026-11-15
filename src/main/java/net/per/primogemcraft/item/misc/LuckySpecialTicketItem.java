@@ -1,17 +1,18 @@
 package net.per.primogemcraft.item.misc;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.world.World;
 import net.per.primogemcraft.item.tool.DescribedItem;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.registry.PGCItems;
@@ -41,82 +42,82 @@ public class LuckySpecialTicketItem extends DescribedItem {
     private static final String MESSAGE_PREFIX = "message.primogemcraft.ticket.";
     private static final String STATE_PREFIX = "item.primogemcraft.lucky_special_ticket.state.";
     private static final String TOP_PRIZE_ADVANCEMENT = "galaxy_lucky_star";
-    private static final ResourceLocation FIRST_PRIZE_FLAG = ResourceLocation.fromNamespaceAndPath(MOD_ID, "lucky_special_ticket/first");
+    private static final Identifier FIRST_PRIZE_FLAG = Identifier.of(MOD_ID, "lucky_special_ticket/first");
 
-    public LuckySpecialTicketItem(Properties properties) {
+    public LuckySpecialTicketItem(Settings properties) {
         super(properties);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (!(player instanceof ServerPlayer serverPlayer)) return InteractionResultHolder.consume(stack);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (!(player instanceof ServerPlayerEntity serverPlayer)) return TypedActionResult.consume(stack);
         var waited = waitedTicks(stack);
         if (waited >= WAIT_TICKS) reveal(serverPlayer, stack);
         else if (waited == NOT_JOINED) join(serverPlayer, stack);
-        else serverPlayer.displayClientMessage(Component.translatable(MESSAGE_PREFIX + "waiting"), true);
-        return InteractionResultHolder.consume(stack);
+        else serverPlayer.sendMessage(Text.translatable(MESSAGE_PREFIX + "waiting"), true);
+        return TypedActionResult.consume(stack);
     }
 
-    public static void cashOut(ServerPlayer player) {
-        var stack = player.getMainHandItem();
-        if (!player.isAlive() || player.isSpectator() || !stack.is(PGCItems.LUCKY_SPECIAL_TICKET.get())) return;
+    public static void cashOut(ServerPlayerEntity player) {
+        var stack = player.getMainHandStack();
+        if (!player.isAlive() || player.isSpectator() || !stack.isOf(PGCItems.LUCKY_SPECIAL_TICKET.get())) return;
         if (waitedTicks(stack) != NOT_JOINED) {
-            player.sendSystemMessage(Component.translatable(MESSAGE_PREFIX + "regret"));
+            player.sendMessage(Text.translatable(MESSAGE_PREFIX + "regret"));
             return;
         }
         PlayerItems.give(player, jade(CASH_OUT_JADE));
-        stack.shrink(1);
+        stack.decrement(1);
         draw(player);
-        player.displayClientMessage(Component.translatable(MESSAGE_PREFIX + "cashout"), true);
+        player.sendMessage(Text.translatable(MESSAGE_PREFIX + "cashout"), true);
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, World level, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, level, entity, slot, selected);
-        if (level.isClientSide()) return;
+        if (level.isClient()) return;
         var waited = waitedTicks(stack);
         if (waited == NOT_JOINED || waited >= WAIT_TICKS) return;
-        stack.set(PGCDataComponents.TICKET_PROGRESS.get(), waited + 1);
+        StackComponents.set(stack, PGCDataComponents.TICKET_PROGRESS, waited + 1);
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendTooltip(ItemStack stack, @org.jetbrains.annotations.Nullable World level, List<Text> tooltip, TooltipContext flag) {
         appendDescription(stack, tooltip);
         var waited = waitedTicks(stack);
         if (waited == NOT_JOINED) return;
         if (!WishTooltips.showsDetails()) {
-            tooltip.add(Component.translatable(STATE_PREFIX + "hint"));
+            tooltip.add(Text.translatable(STATE_PREFIX + "hint"));
             return;
         }
         if (waited >= WAIT_TICKS) {
-            tooltip.add(Component.translatable(STATE_PREFIX + "revealed"));
+            tooltip.add(Text.translatable(STATE_PREFIX + "revealed"));
             return;
         }
         appendRemaining(waited, tooltip);
     }
 
-    private static void appendRemaining(int waited, List<Component> tooltip) {
-        tooltip.add(Component.translatable(STATE_PREFIX + "remaining"));
+    private static void appendRemaining(int waited, List<Text> tooltip) {
+        tooltip.add(Text.translatable(STATE_PREFIX + "remaining"));
         var seconds = (WAIT_TICKS - waited) / TICKS_PER_SECOND;
         if (seconds <= SECONDS_PER_MINUTE) {
-            tooltip.add(Component.translatable(STATE_PREFIX + "seconds", seconds));
+            tooltip.add(Text.translatable(STATE_PREFIX + "seconds", seconds));
             return;
         }
-        tooltip.add(Component.translatable(STATE_PREFIX + "minutes", seconds / SECONDS_PER_MINUTE));
+        tooltip.add(Text.translatable(STATE_PREFIX + "minutes", seconds / SECONDS_PER_MINUTE));
     }
 
-    private void join(ServerPlayer player, ItemStack stack) {
-        stack.shrink(1);
+    private void join(ServerPlayerEntity player, ItemStack stack) {
+        stack.decrement(1);
         var joined = new ItemStack(this);
-        joined.set(PGCDataComponents.TICKET_PROGRESS.get(), 0);
-        var dropped = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), joined);
-        dropped.setPickUpDelay(0);
-        player.level().addFreshEntity(dropped);
-        player.sendSystemMessage(Component.translatable(MESSAGE_PREFIX + "joined"));
+        StackComponents.set(joined, PGCDataComponents.TICKET_PROGRESS, 0);
+        var dropped = new ItemEntity(player.getWorld(), player.getX(), player.getY(), player.getZ(), joined);
+        dropped.setPickupDelay(0);
+        player.getWorld().spawnEntity(dropped);
+        player.sendMessage(Text.translatable(MESSAGE_PREFIX + "joined"));
     }
 
-    private void reveal(ServerPlayer player, ItemStack stack) {
+    private void reveal(ServerPlayerEntity player, ItemStack stack) {
         var flags = PlayerFlags.of(player);
         if (flags.flag(FIRST_PRIZE_FLAG)) {
             roll(player, stack);
@@ -126,7 +127,7 @@ public class LuckySpecialTicketItem extends DescribedItem {
         claim(player, stack, FIRST_PRIZE_JADE, "first_prize");
     }
 
-    private void roll(ServerPlayer player, ItemStack stack) {
+    private void roll(ServerPlayerEntity player, ItemStack stack) {
         draw(player);
         var random = player.getRandom();
         if (random.nextDouble() < TOP_PRIZE_CHANCE) {
@@ -142,21 +143,21 @@ public class LuckySpecialTicketItem extends DescribedItem {
         claim(player, stack, SECOND_PRIZE_JADE, "second_prize");
     }
 
-    private static void claim(ServerPlayer player, ItemStack stack, int jade, String message) {
+    private static void claim(ServerPlayerEntity player, ItemStack stack, int jade, String message) {
         PlayerItems.give(player, jade(jade));
-        stack.shrink(1);
-        player.sendSystemMessage(Component.translatable(MESSAGE_PREFIX + message));
+        stack.decrement(1);
+        player.sendMessage(Text.translatable(MESSAGE_PREFIX + message));
     }
 
     private static ItemStack jade(int amount) {
         return new ItemStack(PGCItems.STELLAR_JADE.get(), amount);
     }
 
-    private static void draw(ServerPlayer player) {
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.LOTTERY_DRAW.get(), SoundSource.PLAYERS, VOLUME, PITCH);
+    private static void draw(ServerPlayerEntity player) {
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.LOTTERY_DRAW.get(), SoundCategory.PLAYERS, VOLUME, PITCH);
     }
 
     private static int waitedTicks(ItemStack stack) {
-        return stack.getOrDefault(PGCDataComponents.TICKET_PROGRESS.get(), NOT_JOINED);
+        return StackComponents.getOrDefault(stack, PGCDataComponents.TICKET_PROGRESS, NOT_JOINED);
     }
 }

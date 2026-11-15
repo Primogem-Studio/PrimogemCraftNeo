@@ -1,15 +1,15 @@
 package net.per.primogemcraft.network;
 
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.per.primogemcraft.compat.network.RegistryFriendlyByteBuf;
+import net.per.primogemcraft.compat.network.ByteBufCodecs;
+import net.per.primogemcraft.compat.network.StreamCodec;
+import net.per.primogemcraft.compat.network.CustomPacketPayload;
+import net.minecraft.util.Identifier;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public record ZiplineControlPayload(int targetId) implements CustomPacketPayload {
-    public static final Type<ZiplineControlPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "zipline_control"));
+    public static final Type<ZiplineControlPayload> TYPE = new Type<>(Identifier.of(MOD_ID, "zipline_control"), ZiplineControlPayload.class);
     public static final StreamCodec<RegistryFriendlyByteBuf, ZiplineControlPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, ZiplineControlPayload::targetId, ZiplineControlPayload::new);
 

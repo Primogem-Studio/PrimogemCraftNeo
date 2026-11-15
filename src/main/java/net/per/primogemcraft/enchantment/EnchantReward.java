@@ -1,8 +1,8 @@
 package net.per.primogemcraft.enchantment;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.per.primogemcraft.system.choice.*;
 import net.per.primogemcraft.system.curio.CurioEnchanting;
 
@@ -23,34 +23,34 @@ public final class EnchantReward {
     private EnchantReward() {
     }
 
-    public static void open(ServerPlayer player, List<EnchantOption> options) {
+    public static void open(ServerPlayerEntity player, List<EnchantOption> options) {
         var shown = applicable(options);
         if (shown.isEmpty()) return;
         if (ChoiceRegistry.isPending(player)) {
-            WAITING.computeIfAbsent(player.getUUID(), key -> new ArrayDeque<>()).addLast(shown);
+            WAITING.computeIfAbsent(player.getUuid(), key -> new ArrayDeque<>()).addLast(shown);
             return;
         }
         show(player, shown);
     }
 
-    public static void tick(ServerPlayer player) {
-        var queue = WAITING.get(player.getUUID());
+    public static void tick(ServerPlayerEntity player) {
+        var queue = WAITING.get(player.getUuid());
         if (queue == null || queue.isEmpty() || ChoiceRegistry.isPending(player)) return;
         var shown = queue.pollFirst();
-        if (queue.isEmpty()) WAITING.remove(player.getUUID(), queue);
+        if (queue.isEmpty()) WAITING.remove(player.getUuid(), queue);
         show(player, shown);
     }
 
-    public static void clear(ServerPlayer player) {
-        var queue = WAITING.remove(player.getUUID());
+    public static void clear(ServerPlayerEntity player) {
+        var queue = WAITING.remove(player.getUuid());
         if (queue == null) return;
         for (var shown : queue) grant(shown);
     }
 
-    private static void show(ServerPlayer player, List<EnchantOption> shown) {
+    private static void show(ServerPlayerEntity player, List<EnchantOption> shown) {
         var cards = new ArrayList<ChoiceCard>();
         for (var option : shown) cards.add(EnchantChoice.presentation(option));
-        ChoiceRegistry.open(player, Component.translatable(TITLE_KEY), Component.translatable(HINT_KEY), ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, ChoiceSupport.ENCHANT_CARDS, ChoiceSupport.spin(SPIN), ChoiceRegistry.NO_SETTLE_TICKS, ChoiceMode.REVEAL, cards, index -> {
+        ChoiceRegistry.open(player, Text.translatable(TITLE_KEY), Text.translatable(HINT_KEY), ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, ChoiceSupport.ENCHANT_CARDS, ChoiceSupport.spin(SPIN), ChoiceRegistry.NO_SETTLE_TICKS, ChoiceMode.REVEAL, cards, index -> {
             grant(shown);
             return true;
         });
@@ -64,7 +64,7 @@ public final class EnchantReward {
         var shown = new ArrayList<EnchantOption>();
         for (var option : options) {
             var preview = option.preview();
-            if (preview.isEmpty() || EnchantmentHelper.getEnchantmentsForCrafting(preview).isEmpty()) continue;
+            if (preview.isEmpty() || EnchantmentHelper.get(preview).isEmpty()) continue;
             shown.add(option);
         }
         return shown;

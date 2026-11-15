@@ -1,14 +1,14 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.ActionResult;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.per.primogemcraft.registry.PGCBlocks;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
@@ -18,7 +18,7 @@ import net.per.primogemcraft.system.weapon.WishWeaponHoeItem;
 import java.util.List;
 
 public class AgnidusAgateHoeItem extends WishWeaponHoeItem {
-    private static final Tier TIER = new WeaponTier(1561, 8.0F, 10, WeaponTier.NETHERITE_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 8.0F, 10, WeaponTier.NETHERITE_INCORRECT,
             PGCItems.PRIMOGEM, PGCItems.AGNIDUS_AGATE_SLIVER);
 
     private static final float ATTACK_DAMAGE = 3.0F;
@@ -30,8 +30,8 @@ public class AgnidusAgateHoeItem extends WishWeaponHoeItem {
     private static final String NETHERRACK_TEXT = "netherrack";
     private static final String NO_REFINEMENT_TEXT = "no_refinement";
 
-    public AgnidusAgateHoeItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public AgnidusAgateHoeItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -42,18 +42,18 @@ public class AgnidusAgateHoeItem extends WishWeaponHoeItem {
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        var result = super.useOn(context);
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        var result = super.useOnBlock(context);
         var player = context.getPlayer();
-        if (!(context.getLevel() instanceof ServerLevel server) || player == null) return result;
-        var pos = context.getClickedPos();
-        if (!server.getBlockState(pos).is(Blocks.NETHERRACK)) return result;
-        var stack = context.getItemInHand();
-        server.setBlock(pos, PGCBlocks.NETHERRACK_FARMLAND.get().defaultBlockState(), Block.UPDATE_ALL);
-        server.playSound(null, pos, SoundEvents.NETHERRACK_HIT, SoundSource.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        if (!(context.getWorld() instanceof ServerWorld server) || player == null) return result;
+        var pos = context.getBlockPos();
+        if (!server.getBlockState(pos).isOf(Blocks.NETHERRACK)) return result;
+        var stack = context.getStack();
+        server.setBlockState(pos, PGCBlocks.NETHERRACK_FARMLAND.get().getDefaultState(), Block.NOTIFY_ALL);
+        server.playSound(null, pos, SoundEvents.BLOCK_NETHERRACK_HIT, SoundCategory.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
+        stack.damage(DURABILITY_LOSS, player, item -> {
         });
-        player.swing(context.getHand(), true);
-        return InteractionResult.SUCCESS;
+        player.swingHand(context.getHand());
+        return ActionResult.SUCCESS;
     }
 }

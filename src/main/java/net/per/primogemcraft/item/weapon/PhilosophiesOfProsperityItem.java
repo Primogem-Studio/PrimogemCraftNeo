@@ -1,23 +1,23 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.Formatting;
+import net.minecraft.text.Text;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.world.World;
+import net.minecraft.util.math.Vec3d;
 import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
 import net.per.primogemcraft.item.weapon.element.ElementWeapons;
 import net.per.primogemcraft.registry.PGCEffects;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhilosophiesOfProsperityItem extends WishWeaponItem {
-    private static final Tier TIER = new WeaponTier(801, 4.0F, 5, WeaponTier.STONE_INCORRECT, PGCItems.MORA);
+    private static final ToolMaterial TIER = new WeaponTier(801, 4.0F, 5, WeaponTier.STONE_INCORRECT, PGCItems.MORA);
 
     private static final float ATTACK_DAMAGE = 9.0F;
     private static final float ATTACK_SPEED = -1.0F;
@@ -73,8 +73,8 @@ public class PhilosophiesOfProsperityItem extends WishWeaponItem {
     private static final int MAGATAMA_MIN_COOLDOWN = 100;
     private static final int AMPLIFIER_OFFSET = 1;
 
-    public PhilosophiesOfProsperityItem(Properties properties) {
-        super(TIER, properties.attributes(SwordItem.createAttributes(TIER, ATTACK_DAMAGE, ATTACK_SPEED)).fireResistant());
+    public PhilosophiesOfProsperityItem(Settings properties) {
+        super(TIER, ATTACK_DAMAGE, ATTACK_SPEED, properties.fireproof());
     }
 
     @Override
@@ -87,32 +87,32 @@ public class PhilosophiesOfProsperityItem extends WishWeaponItem {
         if (sealed) descriptions.add(WeaponDescription.note(WAX_SEAL_TEXT));
         descriptions.add(WeaponDescription.of(NORMAL_ATTACK, element.id(), elementValues(element, refinement, sealed)));
         if (element == Element.ELECTRO) descriptions.add(WeaponDescription.of(SNEAK_USE, MAGATAMA_TEXT,
-                WishReports.number(ElementWeapons.ticks(refinement, MAGATAMA_AMPLIFIER, true, sealed) + AMPLIFIER_OFFSET, ChatFormatting.AQUA),
-                WishReports.number(magatamaCooldown(refinement, sealed), ChatFormatting.AQUA)));
+                WishReports.number(ElementWeapons.ticks(refinement, MAGATAMA_AMPLIFIER, true, sealed) + AMPLIFIER_OFFSET, Formatting.AQUA),
+                WishReports.number(magatamaCooldown(refinement, sealed), Formatting.AQUA)));
         if (element == Element.PYRO) descriptions.add(WeaponDescription.note(SCORCHING_TEXT));
         return List.copyOf(descriptions);
     }
 
-    private static Component[] elementValues(Element element, int refinement, boolean sealed) {
+    private static Text[] elementValues(Element element, int refinement, boolean sealed) {
         return switch (element) {
             case ANEMO -> chanceValues(refinement, ANEMO_CHANCE, sealed);
             case GEO -> secondValues(refinement, GEO_DURATION, sealed);
             case ELECTRO -> chanceValues(refinement, ELECTRO_CHANCE, sealed);
             case DENDRO -> secondValues(refinement, DENDRO_DURATION, sealed);
-            case HYDRO -> new Component[]{
-                    WishReports.percent(ElementWeapons.scaled(refinement, HYDRO_CHANCE, true, sealed), ChatFormatting.AQUA),
-                    WishReports.number(ElementWeapons.seconds(refinement, HYDRO_DURATION, true, sealed), ChatFormatting.AQUA)};
+            case HYDRO -> new Text[]{
+                    WishReports.percent(ElementWeapons.scaled(refinement, HYDRO_CHANCE, true, sealed), Formatting.AQUA),
+                    WishReports.number(ElementWeapons.seconds(refinement, HYDRO_DURATION, true, sealed), Formatting.AQUA)};
             case PYRO -> chanceValues(refinement, PYRO_CHANCE, sealed);
             case CRYO -> chanceValues(refinement, CRYO_CHANCE, sealed);
         };
     }
 
-    private static Component[] chanceValues(int refinement, double chance, boolean sealed) {
-        return new Component[]{WishReports.percent(ElementWeapons.scaled(refinement, chance, true, sealed), ChatFormatting.AQUA)};
+    private static Text[] chanceValues(int refinement, double chance, boolean sealed) {
+        return new Text[]{WishReports.percent(ElementWeapons.scaled(refinement, chance, true, sealed), Formatting.AQUA)};
     }
 
-    private static Component[] secondValues(int refinement, double ticks, boolean sealed) {
-        return new Component[]{WishReports.number(ElementWeapons.seconds(refinement, ticks, true, sealed), ChatFormatting.AQUA)};
+    private static Text[] secondValues(int refinement, double ticks, boolean sealed) {
+        return new Text[]{WishReports.number(ElementWeapons.seconds(refinement, ticks, true, sealed), Formatting.AQUA)};
     }
 
     private static double magatamaCooldown(int refinement, boolean sealed) {
@@ -121,12 +121,12 @@ public class PhilosophiesOfProsperityItem extends WishWeaponItem {
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        var result = super.hurtEnemy(stack, target, attacker);
-        if (!(target.level() instanceof ServerLevel level) || !(attacker instanceof Player player)) return result;
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        var result = super.postHit(stack, target, attacker);
+        if (!(target.getWorld() instanceof ServerWorld level) || !(attacker instanceof PlayerEntity player)) return result;
         var element = Element.of(stack);
         if (element == null) {
-            PhilosophyWeapons.drop(level, target.position(), player, stack);
+            PhilosophyWeapons.drop(level, target.getPos(), player, stack);
             return result;
         }
         applyElement(level, target, player, stack, element);
@@ -134,65 +134,65 @@ public class PhilosophiesOfProsperityItem extends WishWeaponItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (Element.of(stack) != Element.ELECTRO || !player.isShiftKeyDown()) return InteractionResultHolder.pass(stack);
-        if (!(level instanceof ServerLevel)) return InteractionResultHolder.success(stack);
-        player.addEffect(new MobEffectInstance(PGCEffects.MAGATAMA, MAGATAMA_DURATION,
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (Element.of(stack) != Element.ELECTRO || !player.isSneaking()) return TypedActionResult.pass(stack);
+        if (!(level instanceof ServerWorld)) return TypedActionResult.success(stack);
+        player.addStatusEffect(new StatusEffectInstance(PGCEffects.MAGATAMA.get(), MAGATAMA_DURATION,
                 ElementWeapons.ticks(player, stack, Element.ELECTRO, MAGATAMA_AMPLIFIER, true)));
-        player.getCooldowns().addCooldown(stack.getItem(),
+        player.getItemCooldownManager().set(stack.getItem(),
                 Math.max(ElementWeapons.ticks(player, stack, Element.ELECTRO, MAGATAMA_COOLDOWN, false), MAGATAMA_MIN_COOLDOWN));
-        return InteractionResultHolder.success(stack);
+        return TypedActionResult.success(stack);
     }
 
-    private static void applyElement(ServerLevel level, LivingEntity target, Player attacker, ItemStack stack, Element element) {
+    private static void applyElement(ServerWorld level, LivingEntity target, PlayerEntity attacker, ItemStack stack, Element element) {
         var random = level.getRandom();
         switch (element) {
             case ANEMO -> {
                 if (random.nextDouble() >= ElementWeapons.scaled(attacker, stack, element, ANEMO_CHANCE, true)) return;
-                target.addEffect(new MobEffectInstance(MobEffects.LEVITATION,
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION,
                         ElementWeapons.ticks(attacker, stack, element, ANEMO_DURATION, true), ANEMO_AMPLIFIER, false, false));
-                target.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, ANEMO_SLOW_FALLING_TICKS, 0, false, false));
-                level.playSound(null, target.blockPosition(), SoundEvents.TRIDENT_RIPTIDE_2.value(), SoundSource.PLAYERS,
-                        ANEMO_SOUND_VOLUME, Mth.nextFloat(random, ANEMO_SOUND_PITCH_MIN, ANEMO_SOUND_PITCH_MAX));
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, ANEMO_SLOW_FALLING_TICKS, 0, false, false));
+                level.playSound(null, target.getBlockPos(), SoundEvents.ITEM_TRIDENT_RIPTIDE_2, SoundCategory.PLAYERS,
+                        ANEMO_SOUND_VOLUME, MathHelper.nextFloat(random, ANEMO_SOUND_PITCH_MIN, ANEMO_SOUND_PITCH_MAX));
             }
-            case GEO -> target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,
+            case GEO -> target.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS,
                     ElementWeapons.ticks(attacker, stack, element, GEO_DURATION, true),
                     ElementWeapons.ticks(attacker, stack, element, GenshinCraftIntegration.geoWeaknessAmplifier(GEO_AMPLIFIER), true), false, false));
             case ELECTRO -> {
-                if (attacker.hasEffect(PGCEffects.MAGATAMA)) return;
+                if (attacker.hasStatusEffect(PGCEffects.MAGATAMA.get())) return;
                 if (random.nextDouble() >= ElementWeapons.scaled(attacker, stack, element, ELECTRO_CHANCE, true)) return;
                 var bolt = EntityType.LIGHTNING_BOLT.create(level);
                 if (bolt == null) return;
-                bolt.moveTo(Vec3.atBottomCenterOf(target.blockPosition()));
-                level.addFreshEntity(bolt);
+                bolt.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(target.getBlockPos()));
+                level.spawnEntity(bolt);
             }
             case DENDRO -> {
-                var duration = (target.hasEffect(MobEffects.POISON) ? target.getEffect(MobEffects.POISON).getDuration() : 0)
+                var duration = (target.hasStatusEffect(StatusEffects.POISON) ? target.getStatusEffect(StatusEffects.POISON).getDuration() : 0)
                         + ElementWeapons.ticks(attacker, stack, element, DENDRO_DURATION, true);
-                var amplifier = (target.hasEffect(MobEffects.CONFUSION) ? target.getEffect(MobEffects.CONFUSION).getAmplifier() : 0)
+                var amplifier = (target.hasStatusEffect(StatusEffects.NAUSEA) ? target.getStatusEffect(StatusEffects.NAUSEA).getAmplifier() : 0)
                         - 1 + ElementWeapons.ticks(attacker, stack, element, DENDRO_AMPLIFIER, true);
-                target.addEffect(new MobEffectInstance(MobEffects.POISON, duration, amplifier));
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, duration, amplifier));
             }
             case HYDRO -> {
                 if (random.nextDouble() >= ElementWeapons.scaled(attacker, stack, element, HYDRO_CHANCE, true)) return;
-                attacker.addEffect(new MobEffectInstance(PGCEffects.CLEANSING_BUBBLE,
+                attacker.addStatusEffect(new StatusEffectInstance(PGCEffects.CLEANSING_BUBBLE.get(),
                         ElementWeapons.ticks(attacker, stack, element, HYDRO_DURATION, true),
                         ElementWeapons.ticks(attacker, stack, element, HYDRO_AMPLIFIER, true)));
             }
             case PYRO -> {
                 if (random.nextDouble() >= ElementWeapons.scaled(attacker, stack, element, PYRO_CHANCE, true)) return;
-                target.addEffect(new MobEffectInstance(PGCEffects.SCORCHING,
+                target.addStatusEffect(new StatusEffectInstance(PGCEffects.SCORCHING.get(),
                         ElementWeapons.ticks(attacker, stack, element, PYRO_DURATION, true),
                         ElementWeapons.ticks(attacker, stack, element, PYRO_AMPLIFIER, true)));
             }
             case CRYO -> {
-                if (target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) return;
+                if (target.hasStatusEffect(StatusEffects.SLOWNESS)) return;
                 if (random.nextDouble() > ElementWeapons.scaled(attacker, stack, element, CRYO_CHANCE, true)) return;
-                target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS,
                         ElementWeapons.ticks(attacker, stack, element, CRYO_DURATION, true),
                         ElementWeapons.ticks(attacker, stack, element, CRYO_AMPLIFIER, true)));
-                level.playSound(null, target.blockPosition(), SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, CRYO_SOUND_VOLUME, CRYO_SOUND_PITCH);
+                level.playSound(null, target.getBlockPos(), SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.PLAYERS, CRYO_SOUND_VOLUME, CRYO_SOUND_PITCH);
             }
         }
     }

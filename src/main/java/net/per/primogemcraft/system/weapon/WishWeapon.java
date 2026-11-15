@@ -1,11 +1,11 @@
 package net.per.primogemcraft.system.weapon;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +13,10 @@ import java.util.List;
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public interface WishWeapon {
-    TagKey<Item> FIVE_STAR = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(MOD_ID, "weapon/five_star"));
+    TagKey<Item> FIVE_STAR = TagKey.of(RegistryKeys.ITEM, Identifier.of(MOD_ID, "weapon/five_star"));
 
     static boolean isFiveStar(ItemStack stack) {
-        return stack.is(FIVE_STAR);
+        return stack.isIn(FIVE_STAR);
     }
 
     List<WeaponModifier> passives();
@@ -27,15 +27,15 @@ public interface WishWeapon {
         return WeaponStacks.NONE;
     }
 
-    default List<WeaponModifier> conditionalPassives(Player player, ItemStack stack, int slot, int refinement) {
+    default List<WeaponModifier> conditionalPassives(PlayerEntity player, ItemStack stack, int slot, int refinement) {
         return List.of();
     }
 
-    default boolean isHeld(Player player, int slot, ItemStack stack) {
-        return slot != player.getInventory().selected && player.getOffhandItem() != stack;
+    default boolean isHeld(PlayerEntity player, int slot, ItemStack stack) {
+        return slot != player.getInventory().selectedSlot && player.getOffHandStack() != stack;
     }
 
-    default List<WeaponModifier> allPassives(Player player, ItemStack stack, int slot, int refinement) {
+    default List<WeaponModifier> allPassives(PlayerEntity player, ItemStack stack, int slot, int refinement) {
         var modifiers = new ArrayList<>(passives());
         modifiers.addAll(conditionalPassives(player, stack, slot, refinement));
         return modifiers;

@@ -1,14 +1,12 @@
 package net.per.primogemcraft.system.weapon;
 
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamage;
 
@@ -25,7 +23,6 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
  * the player ends up, and deals the thrust's contact damage to every creature passed on the way.
  * Each creature is damaged at most once per dash.
  */
-@EventBusSubscriber(modid = MOD_ID)
 public final class ThrustDash {
     private static final Map<UUID, Dash> ACTIVE = new HashMap<>();
     private static final double STEP = 0.35D;
@@ -37,42 +34,44 @@ public final class ThrustDash {
     private ThrustDash() {
     }
 
-    public static void start(ServerPlayer player, float damage) {
-        ACTIVE.put(player.getUUID(), new Dash(player.position(), player.tickCount, damage, new HashSet<>()));
+    public static void start(ServerPlayerEntity player, float damage) {
+        ACTIVE.put(player.getUuid(), new Dash(player.getPos(), player.age, damage, new HashSet<>()));
     }
 
-    @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        var dash = ACTIVE.get(player.getUUID());
-        if (dash == null) return;
-        var level = player.serverLevel();
-        var current = player.position();
-        line(level, dash.from(), current);
-        strike(level, player, dash, dash.from(), current);
-        if (current.distanceToSqr(dash.from()) < STOP_DISTANCE_SQUARED || player.tickCount - dash.startedAt() >= MAX_TICKS) {
-            ACTIVE.remove(player.getUUID());
-            return;
-        }
-        ACTIVE.put(player.getUUID(), new Dash(current, dash.startedAt(), dash.damage(), dash.struck()));
+    public static void register() {
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            for (var player : server.getPlayerManager().getPlayerList()) {
+                var dash = ACTIVE.get(player.getUuid());
+                if (dash == null) continue;
+                var level = player.getServerWorld();
+                var current = player.getPos();
+                line(level, dash.from(), current);
+                strike(level, player, dash, dash.from(), current);
+                if (current.squaredDistanceTo(dash.from()) < STOP_DISTANCE_SQUARED || player.age - dash.startedAt() >= MAX_TICKS) {
+                    ACTIVE.remove(player.getUuid());
+                    continue;
+                }
+                ACTIVE.put(player.getUuid(), new Dash(current, dash.startedAt(), dash.damage(), dash.struck()));
+            }
+        });
     }
 
-    private static void line(ServerLevel level, Vec3 from, Vec3 to) {
+    private static void line(ServerWorld level, Vec3d from, Vec3d to) {
         var steps = Math.max(1, (int) Math.ceil(from.distanceTo(to) / STEP));
         for (var index = 0; index <= steps; index++) point(level, from.lerp(to, (double) index / steps));
     }
 
-    private static void point(ServerLevel level, Vec3 position) {
-        level.sendParticles(ParticleTypes.GLOW, position.x, position.y + HEIGHT, position.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+    private static void point(ServerWorld level, Vec3d position) {
+        level.spawnParticles(ParticleTypes.GLOW, position.x, position.y + HEIGHT, position.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
     }
 
-    private static void strike(ServerLevel level, ServerPlayer player, Dash dash, Vec3 from, Vec3 to) {
-        for (var candidate : level.getEntitiesOfClass(LivingEntity.class, new AABB(from, to).inflate(CONTACT_RADIUS))) {
-            if (candidate == player || !dash.struck().add(candidate.getUUID())) continue;
-            WeaponDamage.extraHit(candidate, ElementDamage.of(Element.ANEMO, level.damageSources().sonicBoom(player)), dash.damage());
+    private static void strike(ServerWorld level, ServerPlayerEntity player, Dash dash, Vec3d from, Vec3d to) {
+        for (var candidate : level.getEntitiesByClass(LivingEntity.class, new Box(from, to).expand(CONTACT_RADIUS), e -> true)) {
+            if (candidate == player || !dash.struck().add(candidate.getUuid())) continue;
+            WeaponDamage.extraHit(candidate, ElementDamage.of(Element.ANEMO, level.getDamageSources().sonicBoom(player)), dash.damage());
         }
     }
 
-    private record Dash(Vec3 from, int startedAt, float damage, Set<UUID> struck) {
+    private record Dash(Vec3d from, int startedAt, float damage, Set<UUID> struck) {
     }
 }

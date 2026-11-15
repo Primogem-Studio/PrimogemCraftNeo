@@ -1,130 +1,88 @@
 plugins {
+    id 'fabric-loom' version '1.7.4'
     id 'java-library'
     id 'idea'
-    id 'net.neoforged.moddev' version '2.0.146'
 }
 
-def mod_id = "primogemcraft"
+version = project.mod_version
+group = 'net.per'
 
-version = mod_version
+base {
+    archivesName = project.mod_id
+}
 
 repositories {
     mavenLocal()
-    maven { url = 'https://maven.theillusivec4.top/' }
-    maven { url = 'https://maven.shedaniel.me/' }
     maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content {
+            includeGroup 'maven.modrinth'
+        }
+    }
+    maven {
+        name = 'Shedaniel'
+        url = 'https://maven.shedaniel.me/'
+    }
+    maven {
+        name = 'JEI'
         url = 'https://maven.blamejared.com/'
         content {
             includeGroup 'mezz.jei'
-            includeGroup 'net.mezzdev.config'
         }
     }
-    exclusiveContent {
-        forRepository {
-            maven { url = 'https://api.modrinth.com/maven' }
-        }
-        filter {
-            includeGroup "maven.modrinth"
-        }
+    maven {
+        name = 'TerraformersMC'
+        url = 'https://maven.terraformersmc.com/'
     }
-    exclusiveContent {
-        forRepository {
-            maven { url = 'https://cursemaven.com' }
-        }
-        filter {
-            includeGroup "curse.maven"
-        }
+    maven {
+        name = 'Ladysnake'
+        url = 'https://maven.ladysnake.org/releases'
     }
-}
-
-base {
-    archivesName = mod_id
-}
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-
-neoForge {
-    version = project.neo_version
-
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
-
-    runs {
-        client {
-            client()
-            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
-        }
-
-        server {
-            server()
-            programArgument '--nogui'
-            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
-        }
-
-        gameTestServer {
-            type = "gameTestServer"
-            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
-        }
-
-        data {
-            data()
-            programArguments.addAll '--mod', mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-        }
-
-        configureEach {
-            systemProperty 'forge.logging.markers', 'REGISTRIES'
-            logLevel = org.slf4j.event.Level.DEBUG
-        }
-    }
-
-    mods {
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
-        }
-    }
-}
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-configurations {
-    localRuntime {
-        canBeConsumed = false
-        canBeResolved = false
-    }
-    runtimeClasspath.extendsFrom(localRuntime)
 }
 
 dependencies {
-    localRuntime "maven.modrinth:create:6.0.10+mc1.21.1"
-    localRuntime "maven.modrinth:create-aeronautics:1.3.2+mc1.21.1"
-    localRuntime "maven.modrinth:sable:2.0.5+mc1.21.1"
-    implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
-    compileOnly "maven.modrinth:genshincraft:3.3.0"
-    implementation "maven.modrinth:elixir_dan:1.3.4"
-    api "me.shedaniel:RoughlyEnoughItems-neoforge:16.0.799"
-    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
-    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
-    api "me.shedaniel.cloth:cloth-config-neoforge:15.0.140"
-    implementation "maven.modrinth:jade:15.10.5+neoforge"
-    implementation "maven.modrinth:timeless-and-classics-zero:1.2.0-neoforge,1.21.1"
-    implementation "maven.modrinth:farmers-delight:1.21.1-1.3.4"
-    implementation "maven.modrinth:teyvats-delight:fAfWpzji"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    // JEI/REI — locally remapped intermediary→Yarn jars (see tools/RemapDeps.java)
+    compileOnly files('tools/remap-output/jei-1.20.1-common-api-intermediary-15.74.0.234-yarn.jar')
+    compileOnly "mezz.jei:jei-${project.minecraft_version}-fabric-api:${project.jei_version}"
+    compileOnly files('tools/remap-output/RoughlyEnoughItems-api-fabric-12.1.785-yarn.jar')
+    compileOnly files('tools/remap-output/RoughlyEnoughItems-fabric-12.1.785-yarn.jar')
+    compileOnly "me.shedaniel.cloth:basic-math:0.6.1"
+    compileOnly "dev.architectury:architectury-fabric:9.0.7"
+
+    // TaCZ: API stubs provided locally (Modrinth jar requires Loom 1.17+, incompatible with 1.7.4)
 }
 
-var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
-    var replaceProperties = [neo_version: neo_version,
-                             mod_version: mod_version,
-                             mod_id     : mod_id]
-    inputs.properties replaceProperties
-    expand replaceProperties
-    from "src/main/templates"
-    into "build/generated/sources/modMetadata"
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+    withSourcesJar()
 }
 
-sourceSets.main.resources.srcDir generateModMetadata
-neoForge.ideSyncTask generateModMetadata
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+    options.compilerArgs << '-Xmaxerrs' << '100000'
+    options.fork = true
+    options.forkOptions.jvmArgs += ['-Duser.language=en', '-Duser.country=US']
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}
+
+jar {
+    from('LICENSE') {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+}
 
 idea {
     module {

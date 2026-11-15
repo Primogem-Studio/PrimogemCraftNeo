@@ -1,48 +1,48 @@
 package net.per.primogemcraft.util;
 
-import net.minecraft.core.NonNullList;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 public final class PlayerItems {
     private PlayerItems() {
     }
 
-    public static int count(ServerPlayer player, Item item) {
-        return count(player.getInventory().items, item) + count(player.getInventory().offhand, item);
+    public static int count(ServerPlayerEntity player, Item item) {
+        return count(player.getInventory().main, item) + count(player.getInventory().offHand, item);
     }
 
-    public static boolean take(ServerPlayer player, Item item, int amount) {
-        var taken = take(player.getInventory().items, item, amount);
-        taken += take(player.getInventory().offhand, item, amount - taken);
+    public static boolean take(ServerPlayerEntity player, Item item, int amount) {
+        var taken = take(player.getInventory().main, item, amount);
+        taken += take(player.getInventory().offHand, item, amount - taken);
         return taken > 0;
     }
 
-    public static void give(ServerPlayer player, ItemStack stack) {
+    public static void give(ServerPlayerEntity player, ItemStack stack) {
         if (stack.isEmpty()) return;
         var giving = stack.copy();
-        player.getInventory().add(giving);
+        player.getInventory().insertStack(giving);
         if (giving.isEmpty()) return;
-        var dropped = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), giving);
-        dropped.setDefaultPickUpDelay();
-        player.level().addFreshEntity(dropped);
+        var dropped = new ItemEntity(player.getWorld(), player.getX(), player.getY(), player.getZ(), giving);
+        dropped.setPickupDelay(0);
+        player.getWorld().spawnEntity(dropped);
     }
 
-    private static int count(NonNullList<ItemStack> stacks, Item item) {
+    private static int count(DefaultedList<ItemStack> stacks, Item item) {
         var total = 0;
-        for (var stack : stacks) if (stack.is(item)) total += stack.getCount();
+        for (var stack : stacks) if (stack.isOf(item)) total += stack.getCount();
         return total;
     }
 
-    private static int take(NonNullList<ItemStack> stacks, Item item, int amount) {
+    private static int take(DefaultedList<ItemStack> stacks, Item item, int amount) {
         var taken = 0;
         for (var stack : stacks) {
             if (taken >= amount) break;
-            if (!stack.is(item)) continue;
+            if (!stack.isOf(item)) continue;
             var takenHere = Math.min(amount - taken, stack.getCount());
-            stack.shrink(takenHere);
+            stack.decrement(takenHere);
             taken += takenHere;
         }
         return taken;

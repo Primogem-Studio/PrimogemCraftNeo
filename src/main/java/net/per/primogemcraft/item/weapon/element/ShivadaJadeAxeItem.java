@@ -1,19 +1,19 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.util.Formatting;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.world.World;
+import net.minecraft.util.math.Box;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamage;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShivadaJadeAxeItem extends WishWeaponAxeItem {
-    private static final Tier TIER = new WeaponTier(1561, 8.0F, 20, WeaponTier.NETHERITE_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 8.0F, 20, WeaponTier.NETHERITE_INCORRECT,
             PGCItems.PRIMOGEM, PGCItems.SHIVADA_JADE_SLIVER);
 
     private static final float ATTACK_DAMAGE = 7.0F;
@@ -45,8 +45,8 @@ public class ShivadaJadeAxeItem extends WishWeaponAxeItem {
     private static final String CONSUME_TEXT = "consume";
     private static final String WAX_SEAL_TEXT = "wax_seal";
 
-    public ShivadaJadeAxeItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public ShivadaJadeAxeItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -56,29 +56,29 @@ public class ShivadaJadeAxeItem extends WishWeaponAxeItem {
         var descriptions = new ArrayList<WeaponDescription>();
         if (sealed) descriptions.add(WeaponDescription.note(WAX_SEAL_TEXT));
         descriptions.add(WeaponDescription.of(RIGHT_CLICK, CONSUME_TEXT,
-                WishReports.percent(ElementWeapons.scaled(refinement, CONSUME_CHANCE, false, sealed), ChatFormatting.AQUA),
-                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN, false, sealed), ChatFormatting.AQUA)));
+                WishReports.percent(ElementWeapons.scaled(refinement, CONSUME_CHANCE, false, sealed), Formatting.AQUA),
+                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN, false, sealed), Formatting.AQUA)));
         return List.copyOf(descriptions);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (!(level instanceof ServerLevel server) || !hasFragment(player)) return InteractionResultHolder.pass(stack);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (!(level instanceof ServerWorld server) || !hasFragment(player)) return TypedActionResult.pass(stack);
         if (server.getRandom().nextDouble() < ElementWeapons.scaled(player, stack, Element.CRYO, CONSUME_CHANCE, false))
-            player.getInventory().clearOrCountMatchingItems(candidate -> candidate.is(PGCItems.VAJRADA_AMETHYST_SLIVER.get()), 1, player.inventoryMenu.getCraftSlots());
-        var center = player.position();
-        for (var target : server.getEntitiesOfClass(LivingEntity.class, new AABB(center, center).inflate(RADIUS), candidate -> candidate != player))
-            target.hurt(ElementDamage.of(Element.CRYO, server.damageSources().generic()), Mth.nextInt(server.getRandom(), MIN_DAMAGE, MAX_DAMAGE));
-        player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.CRYO, COOLDOWN, false));
-        level.playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.NEUTRAL, SOUND_VOLUME, SOUND_PITCH);
-        server.sendParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+            player.getInventory().remove(candidate -> candidate.isOf(PGCItems.VAJRADA_AMETHYST_SLIVER.get()), 1, player.playerScreenHandler.getCraftingInput());
+        var center = player.getPos();
+        for (var target : server.getEntitiesByClass(LivingEntity.class, new Box(center, center).expand(RADIUS), candidate -> candidate != player))
+            target.damage(ElementDamage.of(Element.CRYO, server.getDamageSources().generic()), MathHelper.nextInt(server.getRandom(), MIN_DAMAGE, MAX_DAMAGE));
+        player.getItemCooldownManager().set(stack.getItem(), ElementWeapons.ticks(player, stack, Element.CRYO, COOLDOWN, false));
+        level.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.NEUTRAL, SOUND_VOLUME, SOUND_PITCH);
+        server.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        stack.damage(DURABILITY_LOSS, player, item -> {
         });
-        return InteractionResultHolder.success(stack);
+        return TypedActionResult.success(stack);
     }
 
-    private static boolean hasFragment(Player player) {
-        return player.getInventory().contains(candidate -> candidate.is(PGCItems.VAJRADA_AMETHYST_SLIVER.get()));
+    private static boolean hasFragment(PlayerEntity player) {
+        return net.per.primogemcraft.compat.item.Inventories120.any(player.getInventory(), candidate -> candidate.isOf(PGCItems.VAJRADA_AMETHYST_SLIVER.get()));
     }
 }

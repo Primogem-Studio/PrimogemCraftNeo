@@ -1,22 +1,21 @@
 package net.per.primogemcraft.system.event;
 
-import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.enchantment.Enchantments;
 import net.per.primogemcraft.enchantment.EnchantGrade;
 import net.per.primogemcraft.registry.PGCEntities;
 import net.per.primogemcraft.registry.PGCItems;
@@ -133,28 +132,28 @@ public final class RandomEvents {
     private static final String GROUP_WEAPON_CHOICE = "group/weapon_choice";
     private static final String GROUP_LIVING_CHOICE = "group/living_choice";
 
-    private static final TagKey<Item> LOW_WEAPONS = TagKey.create(Registries.ITEM, EventRegistry.id("weapon/low"));
+    private static final TagKey<Item> LOW_WEAPONS = TagKey.of(RegistryKeys.ITEM, EventRegistry.id("weapon/low"));
 
     private static final int FIVE_STAR_AFTERGLOW = 3;
 
-    private static final ResourceLocation ENCOUNTER_REWARD_LOOT = EventRegistry.id("events/abundance_blight_reward");
+    private static final Identifier ENCOUNTER_REWARD_LOOT = EventRegistry.id("events/abundance_blight_reward");
 
-    private static final ResourceLocation EVENT_3_TEXTURE = EventRegistry.entityTexture("event3");
-    private static final ResourceLocation EVENT_4_TEXTURE = EventRegistry.entityTexture("event4");
-    private static final ResourceLocation EVENT_5_TEXTURE = EventRegistry.entityTexture("event5");
-    private static final ResourceLocation EVENT_6_TEXTURE = EventRegistry.entityTexture("event6");
-    private static final ResourceLocation EVENT_7_TEXTURE = EventRegistry.entityTexture("event7");
+    private static final Identifier EVENT_3_TEXTURE = EventRegistry.entityTexture("event3");
+    private static final Identifier EVENT_4_TEXTURE = EventRegistry.entityTexture("event4");
+    private static final Identifier EVENT_5_TEXTURE = EventRegistry.entityTexture("event5");
+    private static final Identifier EVENT_6_TEXTURE = EventRegistry.entityTexture("event6");
+    private static final Identifier EVENT_7_TEXTURE = EventRegistry.entityTexture("event7");
 
     private static final int HOUR = 72000;
     private static final int FIVE_MINUTES = 6000;
 
     private static final Consumer<LivingEntity> WEAK_BLIGHT = living -> {
-        baseValue(living, Attributes.MAX_HEALTH, 2.0D);
-        baseValue(living, Attributes.ATTACK_DAMAGE, 1.0D);
+        baseValue(living, EntityAttributes.GENERIC_MAX_HEALTH, 2.0D);
+        baseValue(living, EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0D);
     };
     private static final Consumer<LivingEntity> WEAK_RAVAGER = living -> {
-        baseValue(living, Attributes.MAX_HEALTH, 20.0D);
-        baseValue(living, Attributes.ATTACK_DAMAGE, 1.0D);
+        baseValue(living, EntityAttributes.GENERIC_MAX_HEALTH, 20.0D);
+        baseValue(living, EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0D);
     };
 
     private static RandomEvent leave;
@@ -277,12 +276,12 @@ public final class RandomEvents {
 
         supplyRedstone = register(SUPPLY_REDSTONE, context -> {
             var redstone = new ItemStack(Items.REDSTONE, 8);
-            redstone.set(DataComponents.CUSTOM_NAME, text(SUPPLY_REDSTONE, "name"));
+            redstone.setCustomName(text(SUPPLY_REDSTONE, "name"));
             return context.give(redstone);
         });
         supplySilkTouchChest = register(SUPPLY_SILK_TOUCH_CHEST, context -> {
             var chest = new ItemStack(Items.CHEST);
-            chest.enchant(context.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.SILK_TOUCH), 1);
+            chest.addEnchantment(Enchantments.SILK_TOUCH, 1);
             return context.give(chest);
         });
 
@@ -313,7 +312,7 @@ public final class RandomEvents {
                 EventCondition.afterglow(FIVE_STAR_AFTERGLOW));
         weaponIron = register(WEAPON_IRON, context -> context.choose(ironWeapons(), text(WEAPON_IRON, "title")));
 
-        livingDiamond = register(LIVING_DIAMOND, context -> context.livingItems(3, new ItemStack(Items.DIAMOND)));
+        livingDiamond = register(LIVING_DIAMOND, context -> context.livingItems(3, new ItemStack(Items.AMETHYST_SHARD)));
         livingPrimogem = register(LIVING_PRIMOGEM, context -> context.livingItems(1, new ItemStack(PGCItems.PRIMOGEM.get())));
 
         registerGroups();
@@ -353,7 +352,7 @@ public final class RandomEvents {
     }
 
     private static List<ItemStack> weaponOptions(TagKey<Item> tag) {
-        var tagged = BuiltInRegistries.ITEM.getTag(tag);
+        var tagged = Registries.ITEM.getEntryList(tag);
         if (tagged.isEmpty()) return List.of();
         var options = new ArrayList<ItemStack>();
         for (var holder : tagged.get()) {
@@ -387,7 +386,7 @@ public final class RandomEvents {
 
     private static EnchantGrade grade(int value) {
         var grades = EnchantGrade.values();
-        return grades[Mth.clamp(value, 1, grades.length) - 1];
+        return grades[MathHelper.clamp(value, 1, grades.length) - 1];
     }
 
     private static RandomEvent register(String path, EventAction action) {
@@ -407,19 +406,19 @@ public final class RandomEvents {
     }
 
     private static int randomEvent() {
-        return EventRegistry.randomEvent(RandomSource.create());
+        return EventRegistry.randomEvent(Random.create());
     }
 
-    private static void baseValue(LivingEntity living, Holder<Attribute> attribute, double value) {
-        var instance = living.getAttribute(attribute);
+    private static void baseValue(LivingEntity living, EntityAttribute attribute, double value) {
+        var instance = living.getAttributeInstance(attribute);
         if (instance != null) instance.setBaseValue(value);
     }
 
-    private static Component text(String path, String suffix) {
-        return Component.translatable("event.primogemcraft." + path.replace('/', '.') + "." + suffix);
+    private static Text text(String path, String suffix) {
+        return Text.translatable("event.primogemcraft." + path.replace('/', '.') + "." + suffix);
     }
 
     private static TagKey<Item> common(String path) {
-        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", path));
+        return TagKey.of(RegistryKeys.ITEM, Identifier.of("c", path));
     }
 }

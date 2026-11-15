@@ -1,68 +1,32 @@
 package net.per.primogemcraft.system.living;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.level.entity.EntityTypeTest;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.per.primogemcraft.entity.mob.LivingItemEntity;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.minecraft.entity.Entity;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypeFilter;
 import net.per.primogemcraft.entity.misc.LivingItemDrop;
+import net.per.primogemcraft.entity.mob.LivingItemEntity;
 
 import java.util.Set;
 
-import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
-
-@EventBusSubscriber(modid = MOD_ID)
 public final class LivingItemEvents {
-    @SubscribeEvent
-    public static void onProjectileSpawn(EntityJoinLevelEvent event) {
-        if (!event.getLevel().isClientSide && event.getEntity() instanceof Projectile projectile
-                && projectile.getOwner() instanceof LivingItemUsePlayer player) projectile.setOwner(player.owner());
-    }
-
-    @SubscribeEvent
-    public static void onOwnerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer owner)) return;
-        var previousLevel = owner.serverLevel().getServer().getLevel(event.getFrom());
-        if (previousLevel == null) return;
-        var test = EntityTypeTest.<Entity, LivingItemEntity>forClass(LivingItemEntity.class);
-        var items = previousLevel.getEntities(test, entity -> owner.getUUID().equals(entity.getOwnerUuid()) && entity.isAlive());
-        for (var entity : items) {
-            entity.clearCommand();
-            entity.teleportTo(owner.serverLevel(), owner.getX(), owner.getY() + 2.5, owner.getZ(), Set.of(), owner.getYRot(), 0);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPickup(ItemEntityPickupEvent.Post event) {
-        if (event.getItemEntity() instanceof LivingItemDrop drop) drop.setInvulnerable(false);
-    }
-
-    @SubscribeEvent
-    public static void onOwnerAttack(AttackEntityEvent event) {
-        var owner = event.getEntity();
-        if (owner == null || owner.level().isClientSide) return;
-        for (var entity : LivingItemAPI.collectAll(owner)) entity.onOwnerAttack(event.getTarget());
-    }
-
-    @SubscribeEvent
-    public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
-        if (event.getLevel().isClientSide) return;
-        if (event.getHand() != InteractionHand.MAIN_HAND) return;
-        if (!(event.getTarget() instanceof LivingItemEntity entity)) return;
-        var player = event.getEntity();
-        if (!player.isCrouching() || !player.getMainHandItem().isEmpty()) return;
-        if (entity.getOwnerUuid() == null || !entity.getOwnerUuid().equals(player.getUUID())) return;
-        entity.revertByOwner();
-        event.setCanceled(true);
-        event.setCancellationResult(InteractionResult.SUCCESS);
+    public static void register() {
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (world.isClient()) return ActionResult.PASS;
+            for (var item : LivingItemAPI.collectAll(player)) item.onOwnerAttack(entity);
+            return ActionResult.PASS;
+        });
+        UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (world.isClient()) return ActionResult.PASS;
+            if (hand != Hand.MAIN_HAND) return ActionResult.PASS;
+            if (!(entity instanceof LivingItemEntity livingItem)) return ActionResult.PASS;
+            if (!player.isSneaking() || !player.getMainHandStack().isEmpty()) return ActionResult.PASS;
+            if (livingItem.getOwnerUuid() == null || !livingItem.getOwnerUuid().equals(player.getUuid())) return ActionResult.PASS;
+            livingItem.revertByOwner();
+            return ActionResult.SUCCESS;
+        });
     }
 }

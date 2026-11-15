@@ -1,18 +1,18 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.ActionResult;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.registry.PGCBlocks;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.element.Element;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 public class PrithivaTopazPickaxeItem extends WishWeaponToolItem {
-    private static final Tier TIER = new WeaponTier(1861, 12.5F, 15, WeaponTier.DIAMOND_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1861, 12.5F, 15, WeaponTier.DIAMOND_INCORRECT,
             PGCItems.PRITHIVA_TOPAZ_SLIVER, PGCItems.PRIMOGEM);
 
     private static final Set<Block> COBBLESTONES = Set.of(Blocks.COBBLESTONE, Blocks.MOSSY_COBBLESTONE,
@@ -47,8 +47,8 @@ public class PrithivaTopazPickaxeItem extends WishWeaponToolItem {
     private static final String TRANSMUTE_TEXT = "transmute";
     private static final String REFINEMENT_TEXT = "refinement";
 
-    public PrithivaTopazPickaxeItem(Properties properties) {
-        super(TIER, properties.fireResistant(), BlockTags.MINEABLE_WITH_PICKAXE, ATTACK_DAMAGE, ATTACK_SPEED);
+    public PrithivaTopazPickaxeItem(Settings properties) {
+        super(TIER, properties.fireproof(), BlockTags.PICKAXE_MINEABLE, ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -58,42 +58,42 @@ public class PrithivaTopazPickaxeItem extends WishWeaponToolItem {
         var descriptions = new ArrayList<WeaponDescription>();
         if (sealed) descriptions.add(WeaponDescription.note(REFINEMENT_TEXT));
         descriptions.add(WeaponDescription.of(SNEAK_USE, TRANSMUTE_TEXT,
-                WishReports.percent(ElementWeapons.scaled(refinement, SUCCESS_CHANCE, true, sealed), ChatFormatting.AQUA),
-                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN_TICKS, false, sealed), ChatFormatting.AQUA)));
+                WishReports.percent(ElementWeapons.scaled(refinement, SUCCESS_CHANCE, true, sealed), Formatting.AQUA),
+                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN_TICKS, false, sealed), Formatting.AQUA)));
         return List.copyOf(descriptions);
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        var result = super.useOn(context);
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        var result = super.useOnBlock(context);
         var player = context.getPlayer();
-        if (!(context.getLevel() instanceof ServerLevel server) || player == null || !player.isShiftKeyDown()) return result;
-        var pos = context.getClickedPos();
+        if (!(context.getWorld() instanceof ServerWorld server) || player == null || !player.isSneaking()) return result;
+        var pos = context.getBlockPos();
         var state = server.getBlockState(pos);
         if (!transmutable(state)) return result;
-        var stack = context.getItemInHand();
+        var stack = context.getStack();
         var chance = ElementWeapons.scaled(player, stack, Element.GEO, SUCCESS_CHANCE, true);
-        stack.hurtAndBreak((int) Mth.nextDouble(server.getRandom(), 1.0D, DAMAGE_MAX * chance), server, player, item -> {
+        stack.damage((int) MathHelper.nextDouble(server.getRandom(), 1.0D, DAMAGE_MAX * chance), player, item -> {
         });
-        player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.GEO, COOLDOWN_TICKS, false));
+        player.getItemCooldownManager().set(stack.getItem(), ElementWeapons.ticks(player, stack, Element.GEO, COOLDOWN_TICKS, false));
         if (server.getRandom().nextDouble() < chance) {
-            server.playSound(null, pos, SoundEvents.TRIDENT_THUNDER.value(), SoundSource.BLOCKS, THUNDER_VOLUME, THUNDER_PITCH);
+            server.playSound(null, pos, SoundEvents.ITEM_TRIDENT_THUNDER, SoundCategory.BLOCKS, THUNDER_VOLUME, THUNDER_PITCH);
             if (server.getRandom().nextDouble() < chance / ALLOY_DIVISOR)
-                server.setBlock(pos, PGCBlocks.CHEAP_NETHERITE_BLOCK.get().defaultBlockState(), 3);
+                server.setBlockState(pos, PGCBlocks.CHEAP_NETHERITE_BLOCK.get().getDefaultState(), 3);
             else
-                server.setBlock(pos, goldOre(state).defaultBlockState(), 3);
-            return InteractionResult.SUCCESS;
+                server.setBlockState(pos, goldOre(state).getDefaultState(), 3);
+            return ActionResult.SUCCESS;
         }
-        server.playSound(null, pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, BEACON_VOLUME, BEACON_PITCH);
-        return InteractionResult.SUCCESS;
+        server.playSound(null, pos, SoundEvents.BLOCK_BEACON_DEACTIVATE, SoundCategory.BLOCKS, BEACON_VOLUME, BEACON_PITCH);
+        return ActionResult.SUCCESS;
     }
 
     private static boolean transmutable(BlockState state) {
-        return state.is(BlockTags.BASE_STONE_OVERWORLD) || state.is(BlockTags.STONE_BRICKS)
-                || state.is(BlockTags.ANCIENT_CITY_REPLACEABLE) || COBBLESTONES.contains(state.getBlock());
+        return state.isIn(BlockTags.BASE_STONE_OVERWORLD) || state.isIn(BlockTags.STONE_BRICKS)
+                || state.isIn(BlockTags.ANCIENT_CITY_REPLACEABLE) || COBBLESTONES.contains(state.getBlock());
     }
 
     private static Block goldOre(BlockState state) {
-        return state.is(Blocks.POLISHED_DEEPSLATE) || state.is(BlockTags.ANCIENT_CITY_REPLACEABLE) ? Blocks.DEEPSLATE_GOLD_ORE : Blocks.GOLD_ORE;
+        return state.isOf(Blocks.POLISHED_DEEPSLATE) || state.isIn(BlockTags.ANCIENT_CITY_REPLACEABLE) ? Blocks.DEEPSLATE_GOLD_ORE : Blocks.GOLD_ORE;
     }
 }

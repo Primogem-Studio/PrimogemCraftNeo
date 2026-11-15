@@ -1,13 +1,11 @@
 package net.per.primogemcraft.registry;
 
-import net.minecraft.world.item.Item;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.minecraft.item.Item;
+import net.per.primogemcraft.compat.event.ModifyDefaultComponentsEvent;
 import net.per.primogemcraft.component.CustomBar;
 import net.per.primogemcraft.item.misc.BlessingOfTheWelkinMoonItem;
 import net.per.primogemcraft.item.misc.ExperienceBookItem;
-import net.per.primogemcraft.item.misc.WishCoreItem;
 import net.per.primogemcraft.system.curio.Curios;
 import net.per.primogemcraft.system.wish.WishValue;
 
@@ -16,7 +14,6 @@ import java.util.List;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-@EventBusSubscriber(modid = MOD_ID)
 public final class PGCItemBars {
     private static final int EXPERIENCE_BOOK_COLOR = 0x6A75EA;
 
@@ -30,16 +27,14 @@ public final class PGCItemBars {
         return entries;
     }
 
-    @SubscribeEvent
-    private static void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
+    private static void modifyDefaultComponents() {
         for (var entry : entries())
-            event.modify(entry.item(), patch -> patch.set(PGCDataComponents.CUSTOM_BAR.get(), entry.bar()));
+            net.per.primogemcraft.compat.event.ModifyDefaultComponentsEvent.modify(entry.item(), PGCDataComponents.CUSTOM_BAR.get(), entry.bar());
     }
 
     private static List<Entry> build() {
         var built = new ArrayList<Entry>();
         built.add(new Entry(PGCItems.WISH_CORE.get(), new CustomBar(0, WishValue.CAPACITY, true), 0xFECCFF, false));
-        built.add(new Entry(PGCItems.TEN_PULL_WISH_CORE.get(), new CustomBar(0, WishCoreItem.TEN_PULL_CAPACITY, true), 0xFECCFF, false));
         built.add(new Entry(PGCItems.BLESSING_OF_THE_WELKIN_MOON.get(),
                 new CustomBar(0, BlessingOfTheWelkinMoonItem.CAPACITY, true), 0x55FFFF, true));
         for (var holder : PGCItems.REGISTRY.getEntries())

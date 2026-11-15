@@ -1,6 +1,6 @@
 package net.per.primogemcraft.enchantment;
 
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
 
 import java.util.function.Supplier;
 

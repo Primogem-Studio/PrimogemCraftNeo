@@ -1,0 +1,6 @@
+{
+  "type": "forge:add_features",
+  "biomes": "#minecraft:is_forest",
+  "features": "primogemcraft:nagadus_emerald_tree",
+  "step": "vegetal_decoration"
+}

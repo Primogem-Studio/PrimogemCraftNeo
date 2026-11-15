@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "primogemcraft:mora_upgrade_smithing_template"
+  },
+  "base": {
+    "item": "primogemcraft:philosophies_of_prosperity"
+  },
+  "addition": {
+    "item": "primogemcraft:unfettered_metal"
+  },
+  "result": {
+    "item": "primogemcraft:philosophies_of_prosperity",
+    "nbt": "{primogemcraft_components:{element_type:1}}"
+  }
+}

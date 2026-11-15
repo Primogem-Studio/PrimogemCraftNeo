@@ -8,7 +8,7 @@ import net.per.primogemcraft.system.curio.CurioTrigger;
 public class MagneticFlameItem extends CurioItem {
     private static final float BREAK_CHANCE = 0.15F;
 
-    public MagneticFlameItem(Properties properties) {
+    public MagneticFlameItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.FUSION, 1, properties);
     }
 

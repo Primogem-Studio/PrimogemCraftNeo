@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 public class EffectCurioItem extends CurioItem {
     private final Consumer<CurioContext> burst;
 
-    public EffectCurioItem(CurioForm form, int integrity, Consumer<CurioContext> burst, Properties properties) {
+    public EffectCurioItem(CurioForm form, int integrity, Consumer<CurioContext> burst, Settings properties) {
         super(CurioTrigger.RIGHT_CLICK, form, integrity, properties);
         this.burst = burst;
     }

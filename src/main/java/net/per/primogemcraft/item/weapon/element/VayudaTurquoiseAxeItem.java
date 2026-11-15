@@ -1,14 +1,14 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.level.Level;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.world.World;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VayudaTurquoiseAxeItem extends WishWeaponAxeItem {
-    private static final Tier TIER = new WeaponTier(1561, 9.5F, 15, WeaponTier.DIAMOND_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 9.5F, 15, WeaponTier.DIAMOND_INCORRECT,
             PGCItems.VAYUDA_TURQUOISE_SLIVER, PGCItems.PRIMOGEM);
 
     private static final float ATTACK_DAMAGE = 7.5F;
@@ -35,8 +35,8 @@ public class VayudaTurquoiseAxeItem extends WishWeaponAxeItem {
     private static final String SPEED_TEXT = "speed";
     private static final String REFINEMENT_TEXT = "refinement";
 
-    public VayudaTurquoiseAxeItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public VayudaTurquoiseAxeItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -46,21 +46,21 @@ public class VayudaTurquoiseAxeItem extends WishWeaponAxeItem {
         var descriptions = new ArrayList<WeaponDescription>();
         if (sealed) descriptions.add(WeaponDescription.note(REFINEMENT_TEXT));
         descriptions.add(WeaponDescription.of(PASSIVE_ACTION, SPEED_TEXT,
-                WishReports.number(ElementWeapons.ticks(refinement, SPEED_AMPLIFIER, true, sealed) + AMPLIFIER_OFFSET, ChatFormatting.AQUA),
-                WishReports.number(ElementWeapons.ticks(refinement, DURABILITY_LOSS, false, sealed), ChatFormatting.AQUA)));
+                WishReports.number(ElementWeapons.ticks(refinement, SPEED_AMPLIFIER, true, sealed) + AMPLIFIER_OFFSET, Formatting.AQUA),
+                WishReports.number(ElementWeapons.ticks(refinement, DURABILITY_LOSS, false, sealed), Formatting.AQUA)));
         return List.copyOf(descriptions);
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, World level, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, level, entity, slot, selected);
-        if (!(level instanceof ServerLevel server) || !(entity instanceof Player player) || isHeld(player, slot, stack)) return;
-        var effect = player.isInWaterOrBubble() ? MobEffects.DOLPHINS_GRACE : MobEffects.MOVEMENT_SPEED;
-        if (player.hasEffect(effect)) return;
-        player.addEffect(new MobEffectInstance(effect, EFFECT_DURATION,
+        if (!(level instanceof ServerWorld server) || !(entity instanceof PlayerEntity player) || isHeld(player, slot, stack)) return;
+        var effect = player.isTouchingWater() ? StatusEffects.DOLPHINS_GRACE : StatusEffects.SPEED;
+        if (player.hasStatusEffect(effect)) return;
+        player.addStatusEffect(new StatusEffectInstance(effect, EFFECT_DURATION,
                 ElementWeapons.ticks(player, stack, Element.ANEMO, SPEED_AMPLIFIER, true), false, false));
         var damage = ElementWeapons.ticks(player, stack, Element.ANEMO, DURABILITY_LOSS, false);
-        if (damage > 0) stack.hurtAndBreak(damage, server, player, item -> {
+        if (damage > 0) stack.damage(damage, player, item -> {
         });
     }
 }

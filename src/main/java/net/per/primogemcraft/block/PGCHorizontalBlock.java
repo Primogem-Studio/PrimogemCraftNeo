@@ -1,54 +1,45 @@
 package net.per.primogemcraft.block;
 
-import com.mojang.serialization.MapCodec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.world.BlockView;
+import net.minecraft.block.Block;
+import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.state.StateManager;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.util.shape.VoxelShape;
 
 import java.util.function.Function;
 
-public class PGCHorizontalBlock extends HorizontalDirectionalBlock {
-    public static final MapCodec<PGCHorizontalBlock> CODEC = simpleCodec(properties -> new PGCHorizontalBlock(properties, Shapes.block()));
-
+public class PGCHorizontalBlock extends HorizontalFacingBlock {
     private final Function<BlockState, VoxelShape> shape;
 
-    public PGCHorizontalBlock(BlockBehaviour.Properties properties, VoxelShape shape) {
-        this(properties, state -> shape);
+    public PGCHorizontalBlock(AbstractBlock.Settings settings, VoxelShape shape) {
+        this(settings, state -> shape);
     }
 
-    public PGCHorizontalBlock(BlockBehaviour.Properties properties, Function<BlockState, VoxelShape> shape) {
-        super(properties);
+    public PGCHorizontalBlock(AbstractBlock.Settings settings, Function<BlockState, VoxelShape> shape) {
+        super(settings);
         this.shape = shape;
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+        setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
     }
 
     @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        var offset = state.getModelOffset(world, pos);
+        return shape.apply(state).offset(offset.x, offset.y, offset.z);
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        var offset = state.getOffset(level, pos);
-        return shape.apply(state).move(offset.x, offset.y, offset.z);
-    }
-
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 }

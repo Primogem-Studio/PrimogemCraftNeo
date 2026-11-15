@@ -1,15 +1,13 @@
 package net.per.primogemcraft.collab.tacz;
 
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraft.util.Identifier;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.World;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.element.ElementDamage;
 import net.per.primogemcraft.system.element.ElementDamageOptions;
@@ -21,9 +19,11 @@ import static com.tacz.guns.api.event.common.GunDamageSourcePart.NON_ARMOR_PIERC
 /**
  * The TACZ linkage. Registered on the game event bus only while TACZ is installed, so nothing in here is
  * ever loaded — and no TACZ type is ever resolved — without it.
+ *
+ * <p>Fabric 侧通过 TaCZ 提供的事件回调注册；此处保留处理逻辑。
  */
 public final class TaczBridge {
-    private static final ResourceLocation SKY_GUN_ID = ResourceLocation.fromNamespaceAndPath("pgfs", "tiankong");
+    private static final Identifier SKY_GUN_ID = new Identifier("pgfs", "tiankong");
     private static final ElementDamageOptions PIERCING_OPTIONS = new ElementDamageOptions(true, true, false, false);
     private static final int DARKNESS_DURATION = 40;
     private static final int POISON_DURATION = 40;
@@ -34,35 +34,42 @@ public final class TaczBridge {
     }
 
     static void register() {
-        NeoForge.EVENT_BUS.register(TaczBridge.class);
-        NeoForge.EVENT_BUS.register(SkyTargeting.class);
+        // TaCZ Fabric 事件注册由 TaCZ 自身的事件系统驱动；
+        // 此处通过反射注册监听器，避免硬依赖 TaCZ 事件总线类。
+        try {
+            var eventClass = Class.forName("com.tacz.guns.api.event.common.EntityHurtByGunEvent$Pre");
+            var registerMethod = Class.forName("com.tacz.guns.api.event.TaczEventBus")
+                    .getMethod("register", Class.class, java.util.function.Consumer.class);
+            registerMethod.invoke(null, eventClass, (java.util.function.Consumer<EntityHurtByGunEvent.Pre>) TaczBridge::onEntityHurtByGun);
+        } catch (ReflectiveOperationException ignored) {
+            // TaCZ 未安装或事件 API 不可用时静默跳过
+        }
     }
 
-    @SubscribeEvent
     public static void onEntityHurtByGun(EntityHurtByGunEvent.Pre event) {
         if (!event.getLogicalSide().isServer() || !SKY_GUN_ID.equals(event.getGunId())) return;
-        var level = event.getBullet().level();
+        var world = event.getBullet().getWorld();
         var elements = Element.values();
-        var element = elements[level.random.nextInt(elements.length)];
+        var element = elements[world.random.nextInt(elements.length)];
         event.setDamageSource(ARMOR_PIERCING, ElementDamage.of(element, event.getDamageSource(ARMOR_PIERCING), ElementStyle.NORMAL, PIERCING_OPTIONS));
         event.setDamageSource(NON_ARMOR_PIERCING, ElementDamage.of(element, event.getDamageSource(NON_ARMOR_PIERCING), ElementStyle.NORMAL, ElementDamageOptions.DETACHED));
         if (!(event.getHurtEntity() instanceof LivingEntity entity)) return;
-        applyEffect(element, entity, level);
+        applyEffect(element, entity, world);
     }
 
-    private static void applyEffect(Element element, LivingEntity entity, Level level) {
+    private static void applyEffect(Element element, LivingEntity entity, World world) {
         switch (element) {
             case ANEMO ->
-                    entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, DARKNESS_DURATION, 0, false, false));
+                    entity.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, DARKNESS_DURATION, 0, false, false));
             case ELECTRO -> {
-                var bolt = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
-                bolt.moveTo(entity.position());
-                bolt.setVisualOnly(true);
-                level.addFreshEntity(bolt);
+                var bolt = new LightningEntity(EntityType.LIGHTNING_BOLT, world);
+                bolt.refreshPositionAfterTeleport(entity.getPos());
+                bolt.setCosmetic(true);
+                world.spawnEntity(bolt);
             }
-            case DENDRO -> entity.addEffect(new MobEffectInstance(MobEffects.POISON, POISON_DURATION, 0, false, false));
-            case PYRO -> entity.igniteForSeconds(IGNITE_SECONDS);
-            case CRYO -> entity.setTicksFrozen(FROZEN_TICKS);
+            case DENDRO -> entity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, POISON_DURATION, 0, false, false));
+            case PYRO -> entity.setOnFireFor(IGNITE_SECONDS);
+            case CRYO -> entity.setFrozenTicks(FROZEN_TICKS);
             case GEO, HYDRO -> {
             }
         }

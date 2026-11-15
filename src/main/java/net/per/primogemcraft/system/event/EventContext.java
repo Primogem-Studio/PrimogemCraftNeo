@@ -1,15 +1,15 @@
 package net.per.primogemcraft.system.event;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.Formatting;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.enchantment.EnchantChoice;
 import net.per.primogemcraft.enchantment.EnchantGrade;
 import net.per.primogemcraft.item.misc.OtherworldBankbook;
@@ -39,27 +39,27 @@ public final class EventContext {
     private static final String QUOTA_PLENTIFUL_KEY = "message.primogemcraft.event.quota.plentiful";
     private static final String QUOTA_SCARCE_KEY = "message.primogemcraft.event.quota.scarce";
 
-    private final ServerPlayer player;
-    private final ServerLevel level;
+    private final ServerPlayerEntity player;
+    private final ServerWorld level;
     private final RandomEvent event;
-    private final RandomSource random;
+    private final Random random;
 
-    private EventContext(ServerPlayer player, RandomEvent event) {
+    private EventContext(ServerPlayerEntity player, RandomEvent event) {
         this.player = player;
-        this.level = player.serverLevel();
+        this.level = player.getServerWorld();
         this.event = event;
         this.random = player.getRandom();
     }
 
-    public static EventContext of(ServerPlayer player, RandomEvent event) {
+    public static EventContext of(ServerPlayerEntity player, RandomEvent event) {
         return new EventContext(player, event);
     }
 
-    public ServerPlayer player() {
+    public ServerPlayerEntity player() {
         return player;
     }
 
-    public ServerLevel level() {
+    public ServerWorld getWorld() {
         return level;
     }
 
@@ -67,7 +67,7 @@ public final class EventContext {
         return event;
     }
 
-    public RandomSource random() {
+    public Random random() {
         return random;
     }
 
@@ -76,7 +76,7 @@ public final class EventContext {
     }
 
     public int range(int min, int max) {
-        return Mth.nextInt(random, min, max);
+        return MathHelper.nextInt(random, min, max);
     }
 
     public boolean gate(String name, int ticks) {
@@ -93,12 +93,12 @@ public final class EventContext {
         return ready(CHAIN_GATE);
     }
 
-    public boolean prompt(Component message) {
+    public boolean prompt(Text message) {
         return prompt(message, false);
     }
 
-    public boolean prompt(Component message, boolean actionBar) {
-        player.displayClientMessage(message, actionBar);
+    public boolean prompt(Text message, boolean actionBar) {
+        player.sendMessage(message, actionBar);
         return true;
     }
 
@@ -115,7 +115,7 @@ public final class EventContext {
     public boolean deny() {
         if (PGCTimer.isDone(player, DENY_GATE)) {
             PGCTimer.set(player, DENY_GATE, DENY_GATE_TICKS);
-            player.displayClientMessage(Component.translatable(DENY_KEY), false);
+            player.sendMessage(Text.translatable(DENY_KEY), false);
         }
         return false;
     }
@@ -153,7 +153,7 @@ public final class EventContext {
 
     public boolean health(double ratio) {
         if (!hasHealth(ratio)) return deny();
-        player.hurt(level.damageSources().generic(), player.getMaxHealth() * (float) ratio);
+        player.damage(level.getDamageSources().generic(), player.getMaxHealth() * (float) ratio);
         return true;
     }
 
@@ -172,21 +172,21 @@ public final class EventContext {
     public boolean curios(TagKey<Item> tag, int count) {
         var options = rollCurios(tag, count);
         if (options.isEmpty()) return deny();
-        CurioChoice.open(player, event.title(), Component.translatable(EventChoice.HINT_KEY), options, chosen -> Curios.give(player, chosen));
+        CurioChoice.open(player, event.title(), Text.translatable(EventChoice.HINT_KEY), options, chosen -> Curios.give(player, chosen));
         return true;
     }
 
-    public boolean lootTable(ResourceLocation table, int count) {
+    public boolean lootTable(Identifier table, int count) {
         var options = ChoiceSupport.distinct(List.of(), () -> EventLoot.roll(level, table), count, OPTION_ATTEMPTS);
         if (options.isEmpty()) return deny();
-        return choose(options, Component.translatable(LOOT_KEY));
+        return choose(options, Text.translatable(LOOT_KEY));
     }
 
-    public boolean choose(List<ItemStack> options, Component title) {
+    public boolean choose(List<ItemStack> options, Text title) {
         if (options.isEmpty()) return deny();
         var cards = new ArrayList<ChoiceCard>();
         for (var option : options) cards.add(ChoiceSupport.card(option));
-        ChoiceRegistry.open(player, title, Component.translatable(EventChoice.HINT_KEY), ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, ChoiceSupport.DEFAULT_CARDS, ChoiceSupport.spin(ChoiceSpinSpeed.FASTEST), cards, index -> {
+        ChoiceRegistry.open(player, title, Text.translatable(EventChoice.HINT_KEY), ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, ChoiceSupport.DEFAULT_CARDS, ChoiceSupport.spin(ChoiceSpinSpeed.FASTEST), cards, index -> {
             if (index >= 0 && index < options.size()) give(options.get(index));
             return true;
         });
@@ -217,27 +217,27 @@ public final class EventContext {
     public boolean worldQuota(int amount) {
         if (amount > 0 && EventQuota.available(level) >= EventQuota.limit(level)) {
             EventQuota.addPlayerStored(player, amount);
-            player.displayClientMessage(Component.translatable(QUOTA_OVERFLOW_KEY), false);
+            player.sendMessage(Text.translatable(QUOTA_OVERFLOW_KEY), false);
         } else {
             EventQuota.addAvailable(level, amount);
         }
-        return prompt(Component.translatable(QUOTA_WORLD_KEY, quota(EventQuota.available(level))));
+        return prompt(Text.translatable(QUOTA_WORLD_KEY, quota(EventQuota.available(level))));
     }
 
     public boolean playerQuota(int amount) {
         EventQuota.addPlayerStored(player, amount);
-        return prompt(Component.translatable(QUOTA_PLAYER_KEY, quota(EventQuota.playerStored(player))));
+        return prompt(Text.translatable(QUOTA_PLAYER_KEY, quota(EventQuota.playerStored(player))));
     }
 
     public boolean worldLimit(int amount) {
         EventQuota.addLimit(level, amount);
-        player.displayClientMessage(Component.translatable(QUOTA_LIMIT_KEY, quota(EventQuota.limit(level))), false);
-        level.getServer().getPlayerList().broadcastSystemMessage(Component.translatable(amount > 0 ? QUOTA_PLENTIFUL_KEY : QUOTA_SCARCE_KEY, player.getDisplayName()), false);
+        player.sendMessage(Text.translatable(QUOTA_LIMIT_KEY, quota(EventQuota.limit(level))), false);
+        level.getServer().getPlayerManager().broadcast(Text.translatable(amount > 0 ? QUOTA_PLENTIFUL_KEY : QUOTA_SCARCE_KEY, player.getName()), false);
         return true;
     }
 
-    private static Component quota(int value) {
-        return Component.literal(Integer.toString(value)).withStyle(ChatFormatting.GREEN);
+    private static Text quota(int value) {
+        return Text.literal(Integer.toString(value)).formatted(Formatting.GREEN);
     }
 
     private List<ItemStack> rollCurios(TagKey<Item> tag, int count) {
@@ -252,7 +252,7 @@ public final class EventContext {
     }
 
     private static boolean contains(List<ItemStack> options, ItemStack candidate) {
-        for (var option : options) if (option.is(candidate.getItem())) return true;
+        for (var option : options) if (option.isOf(candidate.getItem())) return true;
         return false;
     }
 }

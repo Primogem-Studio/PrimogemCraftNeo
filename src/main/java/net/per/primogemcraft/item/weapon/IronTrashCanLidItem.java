@@ -1,10 +1,10 @@
 package net.per.primogemcraft.item.weapon;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.util.Formatting;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.TrashCanTenacityEffect;
@@ -26,18 +26,18 @@ public class IronTrashCanLidItem extends WishWeaponShieldItem {
     private static final String HANDY_BLOCK = "handy_block";
     private static final String HANDY_COOLDOWN = "handy_cooldown";
 
-    public IronTrashCanLidItem(Properties properties) {
-        super(properties.durability(DURABILITY));
+    public IronTrashCanLidItem(Settings properties) {
+        super(properties.maxDamage(DURABILITY));
     }
 
     @Override
-    public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
-        return repairCandidate.is(PGCItems.ENHANCEMENT_ORE.get()) || repairCandidate.is(Items.IRON_INGOT);
+    public boolean canRepair(ItemStack stack, ItemStack repairCandidate) {
+        return repairCandidate.isOf(PGCItems.ENHANCEMENT_ORE.get()) || repairCandidate.isOf(Items.IRON_INGOT);
     }
 
     @Override
-    protected Holder<MobEffect> heldEffect(ItemStack stack) {
-        return PGCEffects.TRASH_CAN_TENACITY;
+    protected StatusEffect heldEffect(ItemStack stack) {
+        return PGCEffects.TRASH_CAN_TENACITY.get();
     }
 
     @Override
@@ -52,10 +52,10 @@ public class IronTrashCanLidItem extends WishWeaponShieldItem {
                 WeaponDescription.note(SEPARATOR),
                 WeaponDescription.note(TENACITY),
                 WeaponDescription.note(TENACITY_CHANCE,
-                        WishReports.percent(TrashCanTenacityEffect.NEGATE_BASE_CHANCE, ChatFormatting.AQUA)),
+                        WishReports.percent(TrashCanTenacityEffect.NEGATE_BASE_CHANCE, Formatting.AQUA)),
                 WeaponDescription.note(TENACITY_HIT,
-                        WishReports.percent(TrashCanTenacityEffect.NEGATE_CHANCE_PER_LEVEL, ChatFormatting.AQUA),
-                        WishReports.percent(TrashCanTenacityEffect.negateChance(MAX_NEGATE_AMPLIFIER), ChatFormatting.AQUA)),
+                        WishReports.percent(TrashCanTenacityEffect.NEGATE_CHANCE_PER_LEVEL, Formatting.AQUA),
+                        WishReports.percent(TrashCanTenacityEffect.negateChance(MAX_NEGATE_AMPLIFIER), Formatting.AQUA)),
                 WeaponDescription.note(HANDY),
                 WeaponDescription.note(HANDY_BLOCK),
                 WeaponDescription.note(HANDY_COOLDOWN, cooldownReduction()));

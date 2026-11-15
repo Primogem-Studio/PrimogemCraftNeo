@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " a ",
+    "aab",
+    " c "
+  ],
+  "key": {
+    "a": {
+      "tag": "c:primogemcraft"
+    },
+    "b": {
+      "item": "primogemcraft:genesis_crystal"
+    },
+    "c": {
+      "item": "minecraft:rabbit_stew"
+    }
+  },
+  "result": {
+    "item": "primogemcraft:adeptus_temptation",
+    "count": 1
+  }
+}

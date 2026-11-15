@@ -1,6 +1,6 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.curio.CurioContext;
 import net.per.primogemcraft.system.curio.CurioForm;
@@ -12,7 +12,7 @@ public class WickTrimmerSystemModelItem extends ObliterationWickTrimmerItem {
     private static final int GATE_TICKS = 5;
     private static final double FRAGMENT_CHANCE_PER_HARDNESS = 0.01D;
 
-    public WickTrimmerSystemModelItem(Properties properties) {
+    public WickTrimmerSystemModelItem(Settings properties) {
         super(CurioForm.FUSION, properties);
     }
 

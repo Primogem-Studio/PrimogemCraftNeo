@@ -1,25 +1,42 @@
 package net.per.primogemcraft.system.weapon;
 
-import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.registry.Registries;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.util.Identifier;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.per.primogemcraft.compat.attribute.AttributesCompat;
 import net.per.primogemcraft.config.PGCConfig;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
+/**
+ * 武器等级/精炼属性加成。
+ *
+ * <p>1.21 版本把加成写进 {@code DataComponents.ATTRIBUTE_MODIFIERS} 组件；
+ * 1.20.1 没有数据组件系统，改为直接读写原版物品 NBT 的 {@code AttributeModifiers}
+ * 列表（与 {@code ItemStack.addAttributeModifier} 使用的格式完全一致：
+ * {@code Name/Amount/Operation/UUID/AttributeName/Slot}）。
+ *
+ * <p>为保留「按 Identifier 标识增删改」的语义，每个由本模组写入的条目
+ * 额外携带 {@code PGCId} 标签记录原始 id；读取时据此识别，避免误删原版或其他模组条目。
+ */
 public final class WeaponAttributes {
-    public static final EquipmentSlotGroup SLOT = EquipmentSlotGroup.MAINHAND;
+    public static final EquipmentSlot SLOT = EquipmentSlot.MAINHAND;
 
-    private static final ResourceLocation LEVEL_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "weapon/level");
+    private static final String TAG_MODIFIERS = "AttributeModifiers";
+    private static final String TAG_PGC_ID = "PGCId";
+
+    private static final Identifier LEVEL_ID = Identifier.of(MOD_ID, "weapon/level");
     private static final String PASSIVE_ROOT = "weapon/passive";
     private static final String PASSIVE_PREFIX = PASSIVE_ROOT + "/";
 
@@ -35,73 +52,116 @@ public final class WeaponAttributes {
     private WeaponAttributes() {
     }
 
-    public static void refreshLevel(ItemStack stack, Player player) {
+    public static void refreshLevel(ItemStack stack, PlayerEntity player) {
         var type = WeaponType.of(stack);
         write(stack, type.attribute(), levelAttackBonus(stack, player, WeaponState.of(stack).level()));
     }
 
-    public static void refreshLevels(Player player) {
+    public static void refreshLevels(PlayerEntity player) {
         var inventory = player.getInventory();
-        for (var index = 0; index < inventory.getContainerSize(); index++) {
-            var stack = inventory.getItem(index);
+        for (var index = 0; index < inventory.size(); index++) {
+            var stack = inventory.getStack(index);
             if (stack.getItem() instanceof WishWeapon) refreshLevel(stack, player);
         }
     }
 
-    public static double levelAttackBonus(ItemStack stack, Player player, int level) {
+    public static double levelAttackBonus(ItemStack stack, PlayerEntity player, int level) {
         var bonus = levelBonus(level, Equilibrium.of(player).bonus(), PGCConfig.WEAPON_DAMAGE_MULTIPLIER.get());
         return bonus * WeaponType.of(stack).coefficient();
     }
 
-    public static void refreshPassive(ItemStack stack, Player player, int slot) {
+    public static void refreshPassive(ItemStack stack, PlayerEntity player, int slot) {
         if (!(stack.getItem() instanceof WishWeapon weapon)) return;
         var refinement = WeaponEnhancement.refinementOf(player, stack);
         var modifiers = weapon.allPassives(player, stack, slot, refinement);
-        var target = new LinkedHashMap<ResourceLocation, Applied>(modifiers.size());
+        var target = new LinkedHashMap<Identifier, Applied>(modifiers.size());
         for (var index = 0; index < modifiers.size(); index++) {
             var modifier = modifiers.get(index);
-            var id = ResourceLocation.fromNamespaceAndPath(MOD_ID, PASSIVE_PREFIX + index);
+            var id = Identifier.of(MOD_ID, PASSIVE_PREFIX + index);
             target.put(id, new Applied(modifier.attribute(), modifier.amount(player, stack, refinement), modifier.operation()));
         }
-        var current = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-        if (matches(current, target)) return;
-        var builder = ItemAttributeModifiers.builder();
-        for (var entry : current.modifiers())
-            if (isPassive(entry)) builder.add(entry.attribute(), entry.modifier(), entry.slot());
-        for (var change : target.entrySet())
-            builder.add(change.getValue().attribute(),
-                    new AttributeModifier(change.getKey(), change.getValue().amount(), change.getValue().operation()), SLOT);
-        stack.set(DataComponents.ATTRIBUTE_MODIFIERS, builder.build());
+        if (matches(stack, target)) return;
+
+        var list = copyNonPassive(stack);
+        for (var change : target.entrySet()) {
+            list.add(entry(change.getValue().attribute(),
+                    AttributesCompat.modifier(change.getKey(), change.getValue().amount(), change.getValue().operation()),
+                    change.getKey()));
+        }
+        putList(stack, list);
     }
 
     public static boolean restoreDurability(ItemStack stack, int amount) {
-        if (amount <= 0 || !stack.isDamageableItem()) return false;
-        var damage = stack.getDamageValue();
+        if (amount <= 0 || !stack.isDamageable()) return false;
+        var damage = stack.getDamage();
         if (damage <= 0) return false;
-        stack.setDamageValue(Math.max(0, damage - amount));
+        stack.setDamage(Math.max(0, damage - amount));
         return true;
     }
 
-    private static boolean matches(ItemAttributeModifiers modifiers, Map<ResourceLocation, Applied> target) {
+    // ------------------------------------------------------------ NBT 读写
+
+    private static NbtList modifierList(ItemStack stack) {
+        var tag = stack.getNbt();
+        if (tag == null || !tag.contains(TAG_MODIFIERS, NbtElement.LIST_TYPE)) return new NbtList();
+        return tag.getList(TAG_MODIFIERS, NbtElement.COMPOUND_TYPE);
+    }
+
+    private static void putList(ItemStack stack, NbtList list) {
+        stack.getOrCreateNbt().put(TAG_MODIFIERS, list);
+    }
+
+    private static NbtList copyNonPassive(ItemStack stack) {
+        var result = new NbtList();
+        var list = modifierList(stack);
+        for (var index = 0; index < list.size(); index++) {
+            var entry = list.getCompound(index);
+            if (!isPassive(entry)) result.add(entry);
+        }
+        return result;
+    }
+
+    private static NbtCompound entry(EntityAttribute attribute, EntityAttributeModifier modifier, Identifier id) {
+        var tag = modifier.toNbt();
+        tag.putString("AttributeName", Registries.ATTRIBUTE.getId(attribute).toString());
+        tag.putString("Slot", SLOT.getName());
+        tag.putString(TAG_PGC_ID, id.toString());
+        return tag;
+    }
+
+    private static Identifier pgcId(NbtCompound entry) {
+        if (!entry.contains(TAG_PGC_ID, NbtElement.STRING_TYPE)) return null;
+        return Identifier.tryParse(entry.getString(TAG_PGC_ID));
+    }
+
+    private static boolean isPassive(NbtCompound entry) {
+        var id = pgcId(entry);
+        if (id == null || !id.getNamespace().equals(MOD_ID)) return false;
+        var path = id.getPath();
+        return path.equals(PASSIVE_ROOT) || path.startsWith(PASSIVE_PREFIX);
+    }
+
+    private static boolean matches(ItemStack stack, Map<Identifier, Applied> target) {
         var found = 0;
-        for (var entry : modifiers.modifiers()) {
-            if (isPassive(entry)) continue;
-            var change = target.get(entry.modifier().id());
+        var list = modifierList(stack);
+        for (var index = 0; index < list.size(); index++) {
+            var entry = list.getCompound(index);
+            if (!isPassive(entry)) continue;
+            var change = target.get(pgcId(entry));
             if (change == null || !same(entry, change)) return false;
             found++;
         }
         return found == target.size();
     }
 
-    private static boolean isPassive(ItemAttributeModifiers.Entry entry) {
-        return !entry.modifier().id().getNamespace().equals(MOD_ID)
-                || (!entry.modifier().id().getPath().equals(PASSIVE_ROOT)
-                && !entry.modifier().id().getPath().startsWith(PASSIVE_PREFIX));
-    }
-
-    private static boolean same(ItemAttributeModifiers.Entry entry, Applied change) {
-        return entry.attribute().equals(change.attribute()) && entry.modifier().amount() == change.amount()
-                && entry.modifier().operation() == change.operation() && entry.slot().equals(SLOT);
+    private static boolean same(NbtCompound entry, Applied change) {
+        var attribute = Registries.ATTRIBUTE.getOrEmpty(
+                Identifier.tryParse(entry.getString("AttributeName")));
+        if (attribute.isEmpty() || !attribute.get().equals(change.attribute())) return false;
+        if (!entry.getString("Slot").equals(SLOT.getName())) return false;
+        var modifier = EntityAttributeModifier.fromNbt(entry);
+        return modifier != null && modifier.getValue() == change.amount()
+                && modifier.getOperation() == change.operation();
     }
 
     private static double levelBonus(int level, double equilibrium, double multiplier) {
@@ -115,20 +175,37 @@ public final class WeaponAttributes {
         return level * multiplier * (FIRST_STEP + equilibrium);
     }
 
-    private static void write(ItemStack stack, Holder<Attribute> attribute, double amount) {
-        var modifiers = stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-        var entry = find(modifiers, WeaponAttributes.LEVEL_ID);
-        if (entry != null && entry.modifier().amount() == amount && entry.modifier().operation() == AttributeModifier.Operation.ADD_VALUE
-                && entry.slot().equals(SLOT) && entry.attribute().equals(attribute)) return;
-        stack.set(DataComponents.ATTRIBUTE_MODIFIERS,
-                modifiers.withModifierAdded(attribute, new AttributeModifier(WeaponAttributes.LEVEL_ID, amount, AttributeModifier.Operation.ADD_VALUE), SLOT));
+    private static void write(ItemStack stack, EntityAttribute attribute, double amount) {
+        var list = modifierList(stack);
+        var existing = find(list, LEVEL_ID);
+        if (existing != null) {
+            var modifier = EntityAttributeModifier.fromNbt(existing);
+            if (modifier != null && modifier.getValue() == amount
+                    && modifier.getOperation() == EntityAttributeModifier.Operation.ADDITION
+                    && existing.getString("Slot").equals(SLOT.getName())
+                    && Registries.ATTRIBUTE.getId(attribute).toString()
+                            .equals(existing.getString("AttributeName"))) {
+                return;
+            }
+        }
+        var result = new NbtList();
+        for (var index = 0; index < list.size(); index++) {
+            var entry = list.getCompound(index);
+            if (LEVEL_ID.equals(pgcId(entry))) continue;
+            result.add(entry);
+        }
+        result.add(entry(attribute, AttributesCompat.modifier(LEVEL_ID, amount, EntityAttributeModifier.Operation.ADDITION), LEVEL_ID));
+        putList(stack, result);
     }
 
-    private static ItemAttributeModifiers.Entry find(ItemAttributeModifiers modifiers, ResourceLocation id) {
-        for (var entry : modifiers.modifiers()) if (entry.modifier().is(id)) return entry;
+    private static NbtCompound find(NbtList list, Identifier id) {
+        for (var index = 0; index < list.size(); index++) {
+            var entry = list.getCompound(index);
+            if (id.equals(pgcId(entry))) return entry;
+        }
         return null;
     }
 
-    private record Applied(Holder<Attribute> attribute, double amount, AttributeModifier.Operation operation) {
+    private record Applied(EntityAttribute attribute, double amount, EntityAttributeModifier.Operation operation) {
     }
 }

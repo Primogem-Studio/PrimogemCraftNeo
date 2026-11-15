@@ -1,8 +1,8 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.item.misc.OtherworldBankbook;
 import net.per.primogemcraft.system.choice.*;
 
@@ -23,48 +23,48 @@ public final class CurioReward {
     private CurioReward() {
     }
 
-    public static void open(ServerPlayer player, ChoiceCardTextures textures, List<ItemStack> rewards) {
+    public static void open(ServerPlayerEntity player, ChoiceCardTextures textures, List<ItemStack> rewards) {
         var shown = new ArrayList<ItemStack>();
         for (var reward : rewards) if (!reward.isEmpty()) shown.add(reward);
         if (shown.isEmpty()) return;
         var reveal = new Reveal(textures, List.copyOf(shown));
         if (ChoiceRegistry.isPending(player)) {
-            WAITING.computeIfAbsent(player.getUUID(), key -> new ArrayDeque<>()).addLast(reveal);
+            WAITING.computeIfAbsent(player.getUuid(), key -> new ArrayDeque<>()).addLast(reveal);
             return;
         }
         show(player, reveal);
     }
 
-    public static void tick(ServerPlayer player) {
-        var queue = WAITING.get(player.getUUID());
+    public static void tick(ServerPlayerEntity player) {
+        var queue = WAITING.get(player.getUuid());
         if (queue == null || queue.isEmpty() || ChoiceRegistry.isPending(player)) return;
         var reveal = queue.pollFirst();
-        if (queue.isEmpty()) WAITING.remove(player.getUUID(), queue);
+        if (queue.isEmpty()) WAITING.remove(player.getUuid(), queue);
         show(player, reveal);
     }
 
-    public static void clear(ServerPlayer player) {
-        var queue = WAITING.remove(player.getUUID());
+    public static void clear(ServerPlayerEntity player) {
+        var queue = WAITING.remove(player.getUuid());
         if (queue == null) return;
         for (var reveal : queue) grant(player, reveal.rewards());
     }
 
-    private static void show(ServerPlayer player, Reveal reveal) {
+    private static void show(ServerPlayerEntity player, Reveal reveal) {
         var cards = new ArrayList<ChoiceCard>();
         for (var reward : reveal.rewards()) cards.add(CurioChoice.presentation(reward));
-        ChoiceRegistry.open(player, Component.translatable(TITLE_KEY), Component.translatable(HINT_KEY), ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, reveal.textures(), ChoiceSupport.spin(SPIN), ChoiceRegistry.NO_SETTLE_TICKS, ChoiceMode.REVEAL, cards, index -> {
+        ChoiceRegistry.open(player, Text.translatable(TITLE_KEY), Text.translatable(HINT_KEY), ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, reveal.textures(), ChoiceSupport.spin(SPIN), ChoiceRegistry.NO_SETTLE_TICKS, ChoiceMode.REVEAL, cards, index -> {
             grant(player, reveal.rewards());
             return true;
         });
     }
 
-    private static void grant(ServerPlayer player, List<ItemStack> rewards) {
+    private static void grant(ServerPlayerEntity player, List<ItemStack> rewards) {
         for (var reward : rewards) {
             if (OtherworldBankbook.isFragment(reward)) {
                 OtherworldBankbook.give(player, reward);
                 continue;
             }
-            player.getInventory().add(reward);
+            player.getInventory().insertStack(reward);
             if (reward.isEmpty()) continue;
             if (Curios.equip(player, reward)) continue;
             Curios.give(player, reward);

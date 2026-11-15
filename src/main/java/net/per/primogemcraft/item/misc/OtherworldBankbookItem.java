@@ -1,19 +1,19 @@
 package net.per.primogemcraft.item.misc;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
+import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.world.World;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.curio.Curios;
 
@@ -29,69 +29,69 @@ public class OtherworldBankbookItem extends Item {
     private static final int INSTRUCTION_LINES = 5;
     private static final float VOLUME = 0.8F;
 
-    public OtherworldBankbookItem(Properties properties) {
+    public OtherworldBankbookItem(Settings properties) {
         super(properties);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
-        var stack = player.getItemInHand(hand);
-        if (player instanceof ServerPlayer serverPlayer) interact(serverPlayer, stack);
-        return InteractionResultHolder.consume(stack);
+    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
+        var stack = player.getStackInHand(hand);
+        if (player instanceof ServerPlayerEntity serverPlayer) interact(serverPlayer, stack);
+        return TypedActionResult.consume(stack);
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        if (context.getPlayer() instanceof ServerPlayer player) interact(player, context.getItemInHand());
-        return InteractionResult.SUCCESS;
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        if (context.getPlayer() instanceof ServerPlayerEntity player) interact(player, context.getStack());
+        return ActionResult.SUCCESS;
     }
 
-    @Override
-    public boolean onEntitySwing(ItemStack stack, LivingEntity entity, InteractionHand hand) {
-        if (hand == InteractionHand.MAIN_HAND && entity instanceof ServerPlayer player && player.isShiftKeyDown()) deposit(player, stack);
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
+        if (entity instanceof ServerPlayerEntity player && player.isSneaking()
+                && player.getActiveHand() == Hand.MAIN_HAND) deposit(player, stack);
         return false;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        var prefix = stack.getDescriptionId() + TOOLTIP_SUFFIX;
-        for (var index = 0; index < INSTRUCTION_LINES; index++) tooltip.add(Component.translatable(prefix + index));
-        tooltip.add(Component.translatable(prefix + INSTRUCTION_LINES, Component.translatable(modeKey(stack))));
-        tooltip.add(Component.translatable(prefix + (INSTRUCTION_LINES + 1), OtherworldBankbook.stored(stack), OtherworldBankbook.CAPACITY));
+    public void appendTooltip(ItemStack stack, @org.jetbrains.annotations.Nullable World level, List<Text> tooltip, TooltipContext flag) {
+        var prefix = stack.getTranslationKey() + TOOLTIP_SUFFIX;
+        for (var index = 0; index < INSTRUCTION_LINES; index++) tooltip.add(Text.translatable(prefix + index));
+        tooltip.add(Text.translatable(prefix + INSTRUCTION_LINES, Text.translatable(modeKey(stack))));
+        tooltip.add(Text.translatable(prefix + (INSTRUCTION_LINES + 1), OtherworldBankbook.stored(stack), OtherworldBankbook.CAPACITY));
     }
 
-    private void interact(ServerPlayer player, ItemStack stack) {
-        if (player.isShiftKeyDown()) withdraw(player, stack);
+    private void interact(ServerPlayerEntity player, ItemStack stack) {
+        if (player.isSneaking()) withdraw(player, stack);
         else switchMode(player, stack);
     }
 
-    private void switchMode(ServerPlayer player, ItemStack stack) {
+    private void switchMode(ServerPlayerEntity player, ItemStack stack) {
         var mode = OtherworldBankbook.cycle(stack);
-        player.displayClientMessage(Component.translatable(MODE_KEY, Component.translatable(modeKey(stack))), true);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, VOLUME, 1.0F + mode * 0.1F);
+        player.sendMessage(Text.translatable(MODE_KEY, Text.translatable(modeKey(stack))), true);
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, VOLUME, 1.0F + mode * 0.1F);
     }
 
-    private void deposit(ServerPlayer player, ItemStack stack) {
+    private void deposit(ServerPlayerEntity player, ItemStack stack) {
         var before = OtherworldBankbook.stored(stack);
         OtherworldBankbook.deposit(player, stack);
         var stored = OtherworldBankbook.stored(stack) - before;
         if (stored <= 0) return;
-        player.displayClientMessage(Component.translatable(DEPOSITED_KEY, stored, OtherworldBankbook.totalStored(player)), true);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, VOLUME, 1.0F);
+        player.sendMessage(Text.translatable(DEPOSITED_KEY, stored, OtherworldBankbook.totalStored(player)), true);
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BUNDLE_INSERT, SoundCategory.PLAYERS, VOLUME, 1.0F);
     }
 
-    private void withdraw(ServerPlayer player, ItemStack stack) {
+    private void withdraw(ServerPlayerEntity player, ItemStack stack) {
         var taken = OtherworldBankbook.withdraw(stack, OtherworldBankbook.WITHDRAWAL);
         if (taken <= 0) {
-            player.displayClientMessage(Component.translatable(EMPTY_KEY), true);
+            player.sendMessage(Text.translatable(EMPTY_KEY), true);
             return;
         }
         Curios.give(player, new ItemStack(PGCItems.COSMIC_FRAGMENT.get(), taken));
-        player.displayClientMessage(Component.translatable(WITHDRAWN_KEY, taken), true);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BUNDLE_REMOVE_ONE, SoundSource.PLAYERS, VOLUME, 1.0F);
+        player.sendMessage(Text.translatable(WITHDRAWN_KEY, taken), true);
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BUNDLE_REMOVE_ONE, SoundCategory.PLAYERS, VOLUME, 1.0F);
     }
 
     private String modeKey(ItemStack stack) {
-        return stack.getDescriptionId() + MODE_PREFIX + OtherworldBankbook.mode(stack);
+        return stack.getTranslationKey() + MODE_PREFIX + OtherworldBankbook.mode(stack);
     }
 }

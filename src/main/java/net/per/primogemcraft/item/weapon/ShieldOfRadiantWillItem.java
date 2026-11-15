@@ -1,13 +1,11 @@
 package net.per.primogemcraft.item.weapon;
-
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.Formatting;
+import net.per.primogemcraft.compat.component.VanillaComponents;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
 import net.per.primogemcraft.system.weapon.WishWeaponShieldItem;
 import net.per.primogemcraft.system.wish.WishReports;
-
 import java.util.List;
 
 public class ShieldOfRadiantWillItem extends WishWeaponShieldItem {
@@ -22,20 +20,20 @@ public class ShieldOfRadiantWillItem extends WishWeaponShieldItem {
     private static final String HANDY_BLOCK = "handy_block";
     private static final String HANDY_COOLDOWN = "handy_cooldown";
 
-    public ShieldOfRadiantWillItem(Properties properties) {
-        super(properties.durability(DURABILITY));
+    public ShieldOfRadiantWillItem(Settings properties) {
+        super(properties.maxDamage(DURABILITY));
     }
 
     @Override
-    public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
-        return repairCandidate.is(PGCItems.TRASH_CAN_FRAGMENT.get()) || repairCandidate.is(PGCItems.ENHANCEMENT_ORE.get());
+    public boolean canRepair(ItemStack stack, ItemStack repairCandidate) {
+        return repairCandidate.isOf(PGCItems.TRASH_CAN_FRAGMENT.get()) || repairCandidate.isOf(PGCItems.ENHANCEMENT_ORE.get());
     }
 
     @Override
     protected void refresh(ItemStack stack) {
         var maximum = DURABILITY + DURABILITY_PER_REFINEMENT * (refinementOf(stack) - 1);
-        if (stack.getOrDefault(DataComponents.MAX_DAMAGE, 0) == maximum) return;
-        stack.set(DataComponents.MAX_DAMAGE, maximum);
+        if (VanillaComponents.maxDamage(stack) == maximum) return;
+        VanillaComponents.setMaxDamage(stack, maximum);
     }
 
     @Override
@@ -45,7 +43,7 @@ public class ShieldOfRadiantWillItem extends WishWeaponShieldItem {
                 WeaponDescription.note(FLAVOR1),
                 WeaponDescription.note(SEPARATOR),
                 WeaponDescription.note(DURABILITY_TEXT),
-                WeaponDescription.note(DURABILITY_EFFECT, WishReports.number(DURABILITY_PER_REFINEMENT, ChatFormatting.AQUA)),
+                WeaponDescription.note(DURABILITY_EFFECT, WishReports.number(DURABILITY_PER_REFINEMENT, Formatting.AQUA)),
                 WeaponDescription.note(HANDY),
                 WeaponDescription.note(HANDY_BLOCK),
                 WeaponDescription.note(HANDY_COOLDOWN, cooldownReduction()));

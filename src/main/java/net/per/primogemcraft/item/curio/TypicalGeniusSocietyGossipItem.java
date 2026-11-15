@@ -1,7 +1,7 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.text.Text;
+import net.minecraft.entity.ExperienceOrbEntity;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.curio.*;
 import net.per.primogemcraft.util.PlayerItems;
@@ -12,7 +12,7 @@ public class TypicalGeniusSocietyGossipItem extends CurioItem {
     private static final int XP_PER_FRAGMENT = 8;
     private static final float LOSS = 0.5F;
 
-    public TypicalGeniusSocietyGossipItem(Properties properties) {
+    public TypicalGeniusSocietyGossipItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.NORMAL, CONVERSION_LIMIT, properties);
     }
 
@@ -24,21 +24,21 @@ public class TypicalGeniusSocietyGossipItem extends CurioItem {
         var converted = Math.min(fragments, context.remaining());
         if (converted <= 0) return;
         PlayerItems.take(player, PGCItems.COSMIC_FRAGMENT.get(), converted);
-        player.giveExperiencePoints(converted * XP_PER_FRAGMENT);
-        context.announce(Component.translatable(CONVERTED_KEY, context.stack().getHoverName()));
+        player.addExperience(converted * XP_PER_FRAGMENT);
+        context.announce(Text.translatable(CONVERTED_KEY, context.stack().getName()));
         context.damage(converted);
     }
 
     @Override
     public void impacted(CurioContext context, CurioImpact impact) {
         if (impact.signal() != CurioSignal.XP_PICKED) return;
-        if (!(impact.subject() instanceof ExperienceOrb orb)) return;
-        context.player().giveExperiencePoints(orb.getValue());
+        if (!(impact.subject() instanceof ExperienceOrbEntity orb)) return;
+        context.player().addExperience(orb.getExperienceAmount());
     }
 
     @Override
     public void broken(CurioContext context) {
         var player = context.player();
-        player.giveExperiencePoints(-(int) (player.totalExperience * LOSS));
+        player.addExperience(-(int) (player.totalExperience * LOSS));
     }
 }

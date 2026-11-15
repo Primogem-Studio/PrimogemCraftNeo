@@ -1,15 +1,15 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.core.Holder;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 
 import java.util.List;
 
 public class AttributeCurioItem extends CurioItem {
     private final List<Modifier> modifiers;
 
-    public AttributeCurioItem(CurioForm form, List<Modifier> modifiers, Properties properties) {
+    public AttributeCurioItem(CurioForm form, List<Modifier> modifiers, Settings properties) {
         super(CurioTrigger.ACTIVE, form, properties);
         this.modifiers = modifiers;
     }
@@ -22,6 +22,6 @@ public class AttributeCurioItem extends CurioItem {
         }
     }
 
-    public record Modifier(Holder<Attribute> attribute, double amount, AttributeModifier.Operation operation) {
+    public record Modifier(EntityAttribute attribute, double amount, EntityAttributeModifier.Operation operation) {
     }
 }

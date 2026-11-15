@@ -1,12 +1,19 @@
 package net.per.primogemcraft.config;
 
-import net.neoforged.neoforge.common.ModConfigSpec;
-import net.per.primogemcraft.system.element.Element;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.fabricmc.loader.api.FabricLoader;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public final class PGCConfig {
-    public static final double DEFAULT_ELEMENT_DAMAGE_MULTIPLIER = 1.0D;
     public static final double DEFAULT_ZIPLINE_SPEED = 16.0D;
     public static final int DEFAULT_CAPTURING_RADIANCE_CHANCE = 25;
     public static final int DEFAULT_WEAPON_MAX_LEVEL = 90;
@@ -32,74 +39,135 @@ public final class PGCConfig {
     public static final int DEFAULT_GENSHINCRAFT_FREEZE_DAMAGE_SCALE = 25;
     public static final double DEFAULT_GENSHINCRAFT_GEO_WEAKNESS_AMPLIFIER = 5.0D;
 
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("primogemcraft.json");
+    private static final JsonObject DATA = load();
 
-    public static final ModConfigSpec.DoubleValue ZIPLINE_SPEED = BUILDER.defineInRange("zipline_speed_blocks_per_second", DEFAULT_ZIPLINE_SPEED, 0.1D, 100.0D);
+    public static final DoubleValue ZIPLINE_SPEED = new DoubleValue("zipline_speed_blocks_per_second", DEFAULT_ZIPLINE_SPEED, 0.1D, 100.0D);
+    public static final IntValue CAPTURING_RADIANCE_CHANCE = new IntValue("capturing_radiance_chance", DEFAULT_CAPTURING_RADIANCE_CHANCE, 0, 100);
+    public static final IntValue WEAPON_MAX_LEVEL = new IntValue("weapon_max_level", DEFAULT_WEAPON_MAX_LEVEL, 1, 1000);
+    public static final IntValue WEAPON_MAX_LEVEL_BONUS = new IntValue("weapon_max_level_bonus", DEFAULT_WEAPON_MAX_LEVEL_BONUS, 0, 1000);
+    public static final IntValue WEAPON_LEVEL_XP_BASE = new IntValue("weapon_level_xp_base", DEFAULT_WEAPON_LEVEL_XP_BASE, 1, 100000);
+    public static final IntValue WEAPON_LEVEL_XP_GROWTH = new IntValue("weapon_level_xp_growth", DEFAULT_WEAPON_LEVEL_XP_GROWTH, 0, 100);
+    public static final IntValue WEAPON_DAMAGE_MULTIPLIER = new IntValue("weapon_damage_multiplier", DEFAULT_WEAPON_DAMAGE_MULTIPLIER, 0, 1000);
+    public static final IntValue ENHANCEMENT_ORE_XP = new IntValue("enhancement_ore_xp", DEFAULT_ENHANCEMENT_ORE_XP, 1, 100000);
+    public static final IntValue FINE_ENHANCEMENT_ORE_XP = new IntValue("fine_enhancement_ore_xp", DEFAULT_FINE_ENHANCEMENT_ORE_XP, 1, 100000);
+    public static final IntValue MYSTIC_ENHANCEMENT_ORE_XP = new IntValue("mystic_enhancement_ore_xp", DEFAULT_MYSTIC_ENHANCEMENT_ORE_XP, 1, 100000);
+    public static final IntValue EVENT_DROP_CHANCE = new IntValue("event_drop_chance", DEFAULT_EVENT_DROP_CHANCE, 0, 100);
+    public static final IntValue EVENT_WORLD_LIMIT = new IntValue("event_world_limit", DEFAULT_EVENT_WORLD_LIMIT, 0, 1000);
+    public static final IntValue EVENT_RECOVERY_TICKS = new IntValue("event_recovery_ticks", DEFAULT_EVENT_RECOVERY_TICKS, 20, 240000);
+    public static final IntValue EVENT_ENTITY_LIFETIME = new IntValue("event_entity_lifetime", DEFAULT_EVENT_ENTITY_LIFETIME, 100, 240000);
+    public static final IntValue EVENT_DROP_COOLDOWN = new IntValue("event_drop_cooldown", DEFAULT_EVENT_DROP_COOLDOWN, 0, 1200);
+    public static final IntValue EVENT_CHALLENGE_TICKS = new IntValue("event_challenge_ticks", DEFAULT_EVENT_CHALLENGE_TICKS, 100, 240000);
+    public static final IntValue ABUNDANCE_CHANCE = new IntValue("abundance_chance", DEFAULT_ABUNDANCE_CHANCE, 0, 100);
+    public static final IntValue BLIGHT_ZOMBIE_CHANCE = new IntValue("blight_zombie_chance", DEFAULT_BLIGHT_ZOMBIE_CHANCE, 0, 100);
+    public static final IntValue MARA_HEALTH_THRESHOLD = new IntValue("mara_health_threshold", DEFAULT_MARA_HEALTH_THRESHOLD, 0, 100000);
+    public static final IntListValue WEAPON_LEVEL_XP_REQUIREMENTS = new IntListValue("weapon_level_xp_requirements");
+    public static final DoubleValue GENSHINCRAFT_HEALTH_CONVERSION_SCALE = new DoubleValue("genshincraft_health_conversion_scale", DEFAULT_GENSHINCRAFT_HEALTH_CONVERSION_SCALE, 0.0D, 1000.0D);
+    public static final IntValue GENSHINCRAFT_REGENERATION_SCALE = new IntValue("genshincraft_regeneration_scale", DEFAULT_GENSHINCRAFT_REGENERATION_SCALE, 0, 1000);
+    public static final IntValue GENSHINCRAFT_BUBBLE_HEAL = new IntValue("genshincraft_bubble_heal", DEFAULT_GENSHINCRAFT_BUBBLE_HEAL, 0, 100000);
+    public static final IntValue GENSHINCRAFT_FREEZE_DAMAGE_SCALE = new IntValue("genshincraft_freeze_damage_scale", DEFAULT_GENSHINCRAFT_FREEZE_DAMAGE_SCALE, 0, 1000);
+    public static final DoubleValue GENSHINCRAFT_GEO_WEAKNESS_AMPLIFIER = new DoubleValue("genshincraft_geo_weakness_amplifier", DEFAULT_GENSHINCRAFT_GEO_WEAKNESS_AMPLIFIER, 0.0D, 1000.0D);
 
-    public static final ModConfigSpec.IntValue CAPTURING_RADIANCE_CHANCE = BUILDER.defineInRange("capturing_radiance_chance", DEFAULT_CAPTURING_RADIANCE_CHANCE, 0, 100);
-    public static final ModConfigSpec.IntValue WEAPON_MAX_LEVEL = BUILDER.defineInRange("weapon_max_level", DEFAULT_WEAPON_MAX_LEVEL, 1, 1000);
-    public static final ModConfigSpec.IntValue WEAPON_MAX_LEVEL_BONUS = BUILDER.defineInRange("weapon_max_level_bonus", DEFAULT_WEAPON_MAX_LEVEL_BONUS, 0, 1000);
-    public static final ModConfigSpec.IntValue WEAPON_LEVEL_XP_BASE = BUILDER.defineInRange("weapon_level_xp_base", DEFAULT_WEAPON_LEVEL_XP_BASE, 1, 100000);
-    public static final ModConfigSpec.IntValue WEAPON_LEVEL_XP_GROWTH = BUILDER.defineInRange("weapon_level_xp_growth", DEFAULT_WEAPON_LEVEL_XP_GROWTH, 0, 100);
-    public static final ModConfigSpec.IntValue WEAPON_DAMAGE_MULTIPLIER = BUILDER.defineInRange("weapon_damage_multiplier", DEFAULT_WEAPON_DAMAGE_MULTIPLIER, 0, 1000);
-    public static final ModConfigSpec.IntValue ENHANCEMENT_ORE_XP = BUILDER.defineInRange("enhancement_ore_xp", DEFAULT_ENHANCEMENT_ORE_XP, 1, 100000);
-    public static final ModConfigSpec.IntValue FINE_ENHANCEMENT_ORE_XP = BUILDER.defineInRange("fine_enhancement_ore_xp", DEFAULT_FINE_ENHANCEMENT_ORE_XP, 1, 100000);
-    public static final ModConfigSpec.IntValue MYSTIC_ENHANCEMENT_ORE_XP = BUILDER.defineInRange("mystic_enhancement_ore_xp", DEFAULT_MYSTIC_ENHANCEMENT_ORE_XP, 1, 100000);
-    public static final ModConfigSpec.IntValue EVENT_DROP_CHANCE = BUILDER.defineInRange("event_drop_chance", DEFAULT_EVENT_DROP_CHANCE, 0, 100);
-    public static final ModConfigSpec.IntValue EVENT_WORLD_LIMIT = BUILDER.defineInRange("event_world_limit", DEFAULT_EVENT_WORLD_LIMIT, 0, 1000);
-    public static final ModConfigSpec.IntValue EVENT_RECOVERY_TICKS = BUILDER.defineInRange("event_recovery_ticks", DEFAULT_EVENT_RECOVERY_TICKS, 20, 240000);
-    public static final ModConfigSpec.IntValue EVENT_ENTITY_LIFETIME = BUILDER.defineInRange("event_entity_lifetime", DEFAULT_EVENT_ENTITY_LIFETIME, 100, 240000);
-    public static final ModConfigSpec.IntValue EVENT_DROP_COOLDOWN = BUILDER.defineInRange("event_drop_cooldown", DEFAULT_EVENT_DROP_COOLDOWN, 0, 1200);
-    public static final ModConfigSpec.IntValue EVENT_CHALLENGE_TICKS = BUILDER.defineInRange("event_challenge_ticks", DEFAULT_EVENT_CHALLENGE_TICKS, 100, 240000);
-    public static final ModConfigSpec.IntValue ABUNDANCE_CHANCE = BUILDER.defineInRange("abundance_chance", DEFAULT_ABUNDANCE_CHANCE, 0, 100);
-    public static final ModConfigSpec.IntValue BLIGHT_ZOMBIE_CHANCE = BUILDER.defineInRange("blight_zombie_chance", DEFAULT_BLIGHT_ZOMBIE_CHANCE, 0, 100);
-    public static final ModConfigSpec.IntValue MARA_HEALTH_THRESHOLD = BUILDER.defineInRange("mara_health_threshold", DEFAULT_MARA_HEALTH_THRESHOLD, 0, 100000);
-
-    public static final ModConfigSpec.ConfigValue<List<? extends Integer>> WEAPON_LEVEL_XP_REQUIREMENTS = BUILDER
-            .comment("Per-level weapon experience requirement, entry N is the experience needed to go from level N to level N + 1.",
-                    "Leave it empty to derive every entry from weapon_level_xp_base and weapon_level_xp_growth.")
-            .defineListAllowEmpty("weapon_level_xp_requirements", List.of(), () -> DEFAULT_WEAPON_LEVEL_XP_BASE, value -> value instanceof Integer amount && amount > 0);
-
-    public static final ModConfigSpec.DoubleValue GENSHINCRAFT_HEALTH_CONVERSION_SCALE = BUILDER
-            .comment("GenshinCraft only. Ratio the max-health-to-attack conversion of Staff of Homa and Primordial Jade Cutter is multiplied with;",
-                    "without GenshinCraft the weapons use the ratio their description shows.")
-            .defineInRange("genshincraft_health_conversion_scale", DEFAULT_GENSHINCRAFT_HEALTH_CONVERSION_SCALE, 0.0D, 1000.0D);
-    public static final ModConfigSpec.IntValue GENSHINCRAFT_REGENERATION_SCALE = BUILDER
-            .comment("GenshinCraft only. Regeneration and wither level Splendor of Tranquil Waters applies per refinement layer.")
-            .defineInRange("genshincraft_regeneration_scale", DEFAULT_GENSHINCRAFT_REGENERATION_SCALE, 0, 1000);
-    public static final ModConfigSpec.IntValue GENSHINCRAFT_BUBBLE_HEAL = BUILDER
-            .comment("GenshinCraft only. Health Cleansing Bubble restores per tick.")
-            .defineInRange("genshincraft_bubble_heal", DEFAULT_GENSHINCRAFT_BUBBLE_HEAL, 0, 100000);
-    public static final ModConfigSpec.IntValue GENSHINCRAFT_FREEZE_DAMAGE_SCALE = BUILDER
-            .comment("GenshinCraft only. Damage Persistent Freeze deals every 10 ticks per amplifier.")
-            .defineInRange("genshincraft_freeze_damage_scale", DEFAULT_GENSHINCRAFT_FREEZE_DAMAGE_SCALE, 0, 1000);
-    public static final ModConfigSpec.DoubleValue GENSHINCRAFT_GEO_WEAKNESS_AMPLIFIER = BUILDER
-            .comment("GenshinCraft only. Weakness level the geo form of Philosophies of Prosperity applies;",
-                    "without GenshinCraft the weapon applies the level its description shows.")
-            .defineInRange("genshincraft_geo_weakness_amplifier", DEFAULT_GENSHINCRAFT_GEO_WEAKNESS_AMPLIFIER, 0.0D, 1000.0D);
-
-    public static final ModConfigSpec.DoubleValue ANEMO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("anemo_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
-    public static final ModConfigSpec.DoubleValue GEO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("geo_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
-    public static final ModConfigSpec.DoubleValue ELECTRO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("electro_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
-    public static final ModConfigSpec.DoubleValue DENDRO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("dendro_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
-    public static final ModConfigSpec.DoubleValue HYDRO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("hydro_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
-    public static final ModConfigSpec.DoubleValue PYRO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("pyro_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
-    public static final ModConfigSpec.DoubleValue CRYO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("cryo_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
-
-    public static final ModConfigSpec SPEC = BUILDER.build();
-
-    public static ModConfigSpec.DoubleValue elementDamageMultiplier(Element element) {
-        return switch (element) {
-            case ANEMO -> ANEMO_DAMAGE_MULTIPLIER;
-            case GEO -> GEO_DAMAGE_MULTIPLIER;
-            case ELECTRO -> ELECTRO_DAMAGE_MULTIPLIER;
-            case DENDRO -> DENDRO_DAMAGE_MULTIPLIER;
-            case HYDRO -> HYDRO_DAMAGE_MULTIPLIER;
-            case PYRO -> PYRO_DAMAGE_MULTIPLIER;
-            case CRYO -> CRYO_DAMAGE_MULTIPLIER;
-        };
-    }
+    public static final Spec SPEC = new Spec();
 
     private PGCConfig() {
+    }
+
+    private static JsonObject load() {
+        if (Files.exists(FILE)) {
+            try (var reader = Files.newBufferedReader(FILE)) {
+                var element = JsonParser.parseReader(reader);
+                if (element.isJsonObject()) return element.getAsJsonObject();
+            } catch (IOException ignored) {
+            }
+        }
+        return new JsonObject();
+    }
+
+    public static final class Spec {
+        public void save() {
+            try {
+                Files.createDirectories(FILE.getParent());
+                Files.writeString(FILE, GSON.toJson(DATA));
+            } catch (IOException ignored) {
+            }
+        }
+    }
+
+    public static final class IntValue implements Supplier<Integer> {
+        private final String key;
+        private final int defaultValue;
+        private final int min;
+        private final int max;
+
+        IntValue(String key, int defaultValue, int min, int max) {
+            this.key = key;
+            this.defaultValue = defaultValue;
+            this.min = min;
+            this.max = max;
+        }
+
+        @Override
+        public Integer get() {
+            if (DATA.has(key)) return DATA.get(key).getAsInt();
+            return defaultValue;
+        }
+
+        public void set(int value) {
+            DATA.addProperty(key, Math.max(min, Math.min(max, value)));
+        }
+    }
+
+    public static final class DoubleValue implements Supplier<Double> {
+        private final String key;
+        private final double defaultValue;
+        private final double min;
+        private final double max;
+
+        DoubleValue(String key, double defaultValue, double min, double max) {
+            this.key = key;
+            this.defaultValue = defaultValue;
+            this.min = min;
+            this.max = max;
+        }
+
+        @Override
+        public Double get() {
+            if (DATA.has(key)) return DATA.get(key).getAsDouble();
+            return defaultValue;
+        }
+
+        public void set(double value) {
+            DATA.addProperty(key, Math.max(min, Math.min(max, value)));
+        }
+    }
+
+    public static final class IntListValue implements Supplier<List<? extends Integer>> {
+        private final String key;
+
+        IntListValue(String key) {
+            this.key = key;
+        }
+
+        @Override
+        public List<? extends Integer> get() {
+            var result = new ArrayList<Integer>();
+            if (DATA.has(key) && DATA.get(key).isJsonArray()) {
+                for (var element : DATA.getAsJsonArray(key)) {
+                    if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isNumber()) {
+                        var value = element.getAsInt();
+                        if (value > 0) result.add(value);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public void set(List<Integer> values) {
+            var array = new com.google.gson.JsonArray();
+            for (var value : values) array.add(value);
+            DATA.add(key, array);
+        }
     }
 }

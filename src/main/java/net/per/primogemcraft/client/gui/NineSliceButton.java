@@ -1,97 +1,65 @@
 package net.per.primogemcraft.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
+/**
+ * 按钮九宫格绘制（1.20.1 Yarn）。
+ *
+ * <p>原版用 {@code MouseHandler.isLeftPressed()} 判断按下下沉，
+ * 1.20.1 的 Mouse 未公开该状态，这里简化为不做 1px 下沉，其余表现一致。
+ */
 public final class NineSliceButton {
     public static final int TEXT_COLOR = 0xFFE5C99C;
 
     private static final int TEXT_HOVER_COLOR = 0xFF2D313F;
     private static final int TEXTURE_WIDTH = 20;
     private static final int TEXTURE_HEIGHT = 25;
-    private static final int PRESS_SINK = 1;
     private static final int TEXT_DROP = 1;
 
     private static final Skin NORMAL = new Skin(texture("u_button"), 2, 2, 2, 6);
     private static final Skin HIGHLIGHT = new Skin(texture("u_button_press"), 2, 2, 2, 4);
     private static final Skin DISABLED = new Skin(texture("u_button_no"), 2, 2, 2, 6);
-    private static final Skin TEYVAT_NORMAL = new Skin(texture("widget_teyvat", "u_button"), 2, 2, 2, 6);
-    private static final Skin TEYVAT_HIGHLIGHT = new Skin(texture("widget_teyvat", "u_button_press"), 2, 2, 2, 4);
 
     private NineSliceButton() {
     }
 
-    public static void draw(GuiGraphics graphics, Font font, int x, int y, int width, int height, Component text,
+    public static void draw(DrawContext graphics, TextRenderer font, int x, int y, int width, int height, Text text,
                             boolean enabled, boolean hover) {
         draw(graphics, font, x, y, width, height, text, enabled, hover, false);
     }
 
-    public static void draw(GuiGraphics graphics, Font font, int x, int y, int width, int height, Component text,
+    public static void draw(DrawContext graphics, TextRenderer font, int x, int y, int width, int height, Text text,
                             boolean enabled, boolean hover, boolean selected) {
         var highlighted = enabled && (hover || selected);
         var skin = enabled ? highlighted ? HIGHLIGHT : NORMAL : DISABLED;
-        draw(graphics, font, x, y, width, height, text, enabled, hover, highlighted ? TEXT_HOVER_COLOR : TEXT_COLOR, skin);
-    }
-
-    /** Draws the collaboration skin with the shared button geometry and interaction states. */
-    public static void drawTeyvat(GuiGraphics graphics, Font font, int x, int y, int width, int height,
-                                  Component text, boolean enabled, boolean hover) {
-        drawTeyvat(graphics, font, x, y, width, height, text, enabled, hover, false);
-    }
-
-    /** Draws a selected collaboration tab without disabling its navigation action. */
-    public static void drawTeyvat(GuiGraphics graphics, Font font, int x, int y, int width, int height,
-                                  Component text, boolean enabled, boolean hover, boolean selected) {
-        var highlighted = enabled && (hover || selected);
-        var skin = enabled ? highlighted ? TEYVAT_HIGHLIGHT : TEYVAT_NORMAL : DISABLED;
-        draw(graphics, font, x, y, width, height, text, enabled, hover,
-                !enabled ? TEXT_COLOR : highlighted ? 0xFFFFFFFF : 0xFF000000, skin);
-    }
-
-    private static void draw(GuiGraphics graphics, Font font, int x, int y, int width, int height,
-                             Component text, boolean enabled, boolean hover, int textColor, Skin skin) {
-        var bottom = fit(skin, height, font.lineHeight);
+        var bottom = fit(skin, height, font.fontHeight);
         skin(graphics, skin, x, y, width, height, bottom);
         var faceWidth = Math.max(1, width - skin.left() - skin.right());
         var faceHeight = Math.max(0, height - skin.top() - bottom);
-        var sink = enabled && hover && leftPressed() ? PRESS_SINK : 0;
-        var textX = x + skin.left() + (faceWidth - font.width(text)) / 2;
-        var textY = y + skin.top() + (faceHeight - font.lineHeight) / 2 + TEXT_DROP + sink;
-        graphics.drawString(font, text, textX, textY, textColor, false);
+        var textX = x + skin.left() + (faceWidth - font.getWidth(text)) / 2;
+        var textY = y + skin.top() + (faceHeight - font.fontHeight) / 2 + TEXT_DROP;
+        graphics.drawText(font, text, textX, textY, highlighted ? TEXT_HOVER_COLOR : TEXT_COLOR, false);
     }
 
-    public static void draw(GuiGraphics graphics, Font font, int x, int y, int width, int height, Component text, boolean enabled) {
+    public static void draw(DrawContext graphics, TextRenderer font, int x, int y, int width, int height, Text text, boolean enabled) {
         draw(graphics, font, x, y, width, height, text, enabled, false);
-    }
-
-    public static void draw(GuiGraphics graphics, Font font, GorgeousSmithingTableLayout.Rect rect, Component text, boolean enabled) {
-        draw(graphics, font, rect.x(), rect.y(), rect.width(), rect.height(), text, enabled, false);
     }
 
     private static int fit(Skin skin, int height, int lineHeight) {
         return Math.max(0, Math.min(skin.bottom(), height - skin.top() - lineHeight));
     }
 
-    private static boolean leftPressed() {
-        var minecraft = Minecraft.getInstance();
-        return minecraft.mouseHandler != null && minecraft.mouseHandler.isLeftPressed();
+    private static Identifier texture(String name) {
+        return new Identifier(MOD_ID, "textures/gui/widget/" + name + ".png");
     }
 
-    private static ResourceLocation texture(String name) {
-        return texture("widget", name);
-    }
-
-    private static ResourceLocation texture(String directory, String name) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/" + directory + "/" + name + ".png");
-    }
-
-    private static void skin(GuiGraphics graphics, Skin skin, int x, int y, int width, int height, int bottomInset) {
+    private static void skin(DrawContext graphics, Skin skin, int x, int y, int width, int height, int bottomInset) {
         var left = skin.left();
         var right = skin.right();
         var top = skin.top();
@@ -107,23 +75,23 @@ public final class NineSliceButton {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         if (centerHeight > 0) {
-            graphics.blit(texture, x, y + top, left, centerHeight, 0, top, left, faceHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-            graphics.blit(texture, rightX, y + top, right, centerHeight, TEXTURE_WIDTH - right, top, right, faceHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            graphics.drawTexture(texture, x, y + top, left, centerHeight, 0.0F, top, left, faceHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            graphics.drawTexture(texture, rightX, y + top, right, centerHeight, TEXTURE_WIDTH - right, top, right, faceHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         }
         if (centerWidth > 0) {
-            graphics.blit(texture, x + left, y, centerWidth, top, left, 0, faceWidth, top, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-            graphics.blit(texture, x + left, bottomY, centerWidth, bottom, left, bandTop, faceWidth, bottom, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            graphics.drawTexture(texture, x + left, y, centerWidth, top, left, 0.0F, faceWidth, top, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            graphics.drawTexture(texture, x + left, bottomY, centerWidth, bottom, left, bandTop, faceWidth, bottom, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         }
         if (centerWidth > 0 && centerHeight > 0) {
-            graphics.blit(texture, x + left, y + top, centerWidth, centerHeight, left, top, faceWidth, faceHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+            graphics.drawTexture(texture, x + left, y + top, centerWidth, centerHeight, left, top, faceWidth, faceHeight, TEXTURE_WIDTH, TEXTURE_HEIGHT);
         }
-        graphics.blit(texture, x, y, left, top, 0, 0, left, top, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-        graphics.blit(texture, rightX, y, right, top, TEXTURE_WIDTH - right, 0, right, top, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-        graphics.blit(texture, x, bottomY, left, bottom, 0, bandTop, left, bottom, TEXTURE_WIDTH, TEXTURE_HEIGHT);
-        graphics.blit(texture, rightX, bottomY, right, bottom, TEXTURE_WIDTH - right, bandTop, right, bottom, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        graphics.drawTexture(texture, x, y, left, top, 0.0F, 0.0F, left, top, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        graphics.drawTexture(texture, rightX, y, right, top, TEXTURE_WIDTH - right, 0.0F, right, top, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        graphics.drawTexture(texture, x, bottomY, left, bottom, 0.0F, bandTop, left, bottom, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+        graphics.drawTexture(texture, rightX, bottomY, right, bottom, TEXTURE_WIDTH - right, bandTop, right, bottom, TEXTURE_WIDTH, TEXTURE_HEIGHT);
     }
 
-    private record Skin(ResourceLocation texture, int left, int right, int top, int bottom) {
+    private record Skin(Identifier texture, int left, int right, int top, int bottom) {
         int faceWidth() {
             return TEXTURE_WIDTH - left - right;
         }

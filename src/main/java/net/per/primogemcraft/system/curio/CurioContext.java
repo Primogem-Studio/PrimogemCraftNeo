@@ -1,22 +1,23 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.ItemStack;
+import net.per.primogemcraft.compat.component.StackComponents;
+import net.minecraft.text.Text;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.component.CustomBar;
 import net.per.primogemcraft.item.misc.OtherworldBankbook;
 import net.per.primogemcraft.registry.PGCDataComponents;
 import net.per.primogemcraft.util.PGCTimer;
 
-public record CurioContext(ServerPlayer player, ItemStack stack, CurioForm form, RandomSource random, int production) {
+public record CurioContext(ServerPlayerEntity player, ItemStack stack, CurioForm form, Random random, int production) {
     public CurioContext {
         production = Math.max(1, production);
     }
 
-    public static CurioContext of(ServerPlayer player, ItemStack stack, CurioForm form) {
+    public static CurioContext of(ServerPlayerEntity player, ItemStack stack, CurioForm form) {
         var tagged = Curios.formOf(stack);
         return new CurioContext(player, stack, tagged == null ? form : tagged, player.getRandom(), 1);
     }
@@ -25,8 +26,8 @@ public record CurioContext(ServerPlayer player, ItemStack stack, CurioForm form,
         return new CurioContext(player, stack, form, random, production);
     }
 
-    public ServerLevel level() {
-        return player.serverLevel();
+    public ServerWorld getWorld() {
+        return player.getServerWorld();
     }
 
     public void heal(float ratio) {
@@ -34,27 +35,27 @@ public record CurioContext(ServerPlayer player, ItemStack stack, CurioForm form,
     }
 
     public void damage(int amount) {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         if (bar == null || bar.denominator() <= 0) return;
         var advanced = bar.advancedBy(amount);
-        stack.set(PGCDataComponents.CUSTOM_BAR.get(), advanced);
+        StackComponents.set(stack, PGCDataComponents.CUSTOM_BAR, advanced);
         if (advanced.remaining() > 0) return;
         destroy();
     }
 
     public int remaining() {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         return bar == null ? 0 : bar.remaining();
     }
 
     public int progress() {
-        var bar = stack.get(PGCDataComponents.CUSTOM_BAR.get());
+        var bar = StackComponents.get(stack, PGCDataComponents.CUSTOM_BAR);
         return bar == null ? 0 : bar.numerator();
     }
 
     public void progress(int numerator, int denominator) {
         if (denominator <= 0) return;
-        stack.set(PGCDataComponents.CUSTOM_BAR.get(), new CustomBar(Mth.clamp(numerator, 0, denominator), denominator, true));
+        StackComponents.set(stack, PGCDataComponents.CUSTOM_BAR, new CustomBar(MathHelper.clamp(numerator, 0, denominator), denominator, true));
     }
 
     public void destroy() {
@@ -62,11 +63,11 @@ public record CurioContext(ServerPlayer player, ItemStack stack, CurioForm form,
         var broken = stack.getItem() instanceof CurioItem curio ? curio.byproduct() : ItemStack.EMPTY;
         if (!broken.isEmpty()) give(broken);
         if (stack.getItem() instanceof CurioItem curio) curio.broken(this);
-        stack.shrink(1);
+        stack.decrement(1);
     }
 
-    public void announce(Component message) {
-        player.displayClientMessage(message, false);
+    public void announce(Text message) {
+        player.sendMessage(message, false);
     }
 
     public boolean chance(double probability) {

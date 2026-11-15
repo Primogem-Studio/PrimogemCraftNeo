@@ -1,9 +1,9 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.item.Item;
 
 public enum CurioForm {
     NEGATIVE("negative", 0xFF5555),
@@ -29,6 +29,6 @@ public enum CurioForm {
     }
 
     private static TagKey<Item> common(String path) {
-        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", path));
+        return TagKey.of(RegistryKeys.ITEM, Identifier.of("c", path));
     }
 }

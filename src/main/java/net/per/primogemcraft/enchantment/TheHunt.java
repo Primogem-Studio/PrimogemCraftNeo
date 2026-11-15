@@ -1,13 +1,13 @@
 package net.per.primogemcraft.enchantment;
 
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.per.primogemcraft.item.weapon.BlackTasselItem;
 import net.per.primogemcraft.registry.PGCEffects;
 import net.per.primogemcraft.registry.PGCParticles;
@@ -34,25 +34,25 @@ public final class TheHunt {
     }
 
     public static void harvest(LivingEntity attacker, LivingEntity victim) {
-        if (attacker.level().isClientSide() || attacker == victim) return;
-        if (!victim.hasEffect(PGCEffects.ABUNDANCE)) return;
+        if (attacker.getWorld().isClient() || attacker == victim) return;
+        if (!victim.hasStatusEffect(PGCEffects.ABUNDANCE.get())) return;
         if (!PGCTimer.isDone(attacker, COOLDOWN_TIMER)) return;
         var level = levelOf(attacker);
         if (level <= 0) return;
         PGCTimer.set(attacker, COOLDOWN_TIMER, cooldownTicks(level));
-        var instance = victim.getEffect(PGCEffects.ABUNDANCE);
-        if (instance != null && level >= TRANSFER_LEVEL && attacker instanceof ServerPlayer player && PGCTimer.isDone(attacker, TRANSFER_TIMER)) {
+        var instance = victim.getStatusEffect(PGCEffects.ABUNDANCE.get());
+        if (instance != null && level >= TRANSFER_LEVEL && attacker instanceof ServerPlayerEntity player && PGCTimer.isDone(attacker, TRANSFER_TIMER)) {
             PGCTimer.set(attacker, TRANSFER_TIMER, TRANSFER_COOLDOWN);
-            CurioEffects.apply(player, PGCEffects.ABUNDANCE, Math.min(instance.getDuration(), MAX_TRANSFER_TICKS), Math.max(0, instance.getAmplifier() - 1));
+            CurioEffects.apply(player, PGCEffects.ABUNDANCE.get(), Math.min(instance.getDuration(), MAX_TRANSFER_TICKS), Math.max(0, instance.getAmplifier() - 1));
             burst(player);
         }
-        victim.removeEffect(PGCEffects.ABUNDANCE);
+        victim.removeStatusEffect(PGCEffects.ABUNDANCE.get());
     }
 
     public static int levelOf(LivingEntity attacker) {
-        var stack = attacker.getMainHandItem();
+        var stack = attacker.getMainHandStack();
         if (!(stack.getItem() instanceof BlackTasselItem)) return enchantLevel(stack);
-        var refinement = attacker instanceof Player player
+        var refinement = attacker instanceof PlayerEntity player
                 ? WeaponEnhancement.refinementOf(player, stack)
                 : WeaponState.of(stack).refinements();
         return enchantLevel(stack) + refinement;
@@ -69,14 +69,14 @@ public final class TheHunt {
     }
 
     private static int enchantLevel(ItemStack stack) {
-        for (var entry : EnchantmentHelper.getEnchantmentsForCrafting(stack).entrySet())
-            if (entry.getKey().is(PGCEnchantments.THE_HUNT)) return entry.getIntValue();
+        for (var entry : EnchantmentHelper.get(stack).entrySet())
+            if (entry.getKey() == net.minecraft.registry.Registries.ENCHANTMENT.get(PGCEnchantments.THE_HUNT.getValue())) return entry.getValue();
         return 0;
     }
 
-    private static void burst(ServerPlayer player) {
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.TOTEM_USE, SoundSource.HOSTILE, SOUND_VOLUME, SOUND_PITCH);
-        if (!(player.level() instanceof ServerLevel level)) return;
-        level.sendParticles(PGCParticles.MARA.get(), player.getX(), player.getY() + PARTICLE_HEIGHT, player.getZ(), PARTICLE_COUNT, 0.0D, 0.0D, 0.0D, PARTICLE_SPEED);
+    private static void burst(ServerPlayerEntity player) {
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_TOTEM_USE, SoundCategory.HOSTILE, SOUND_VOLUME, SOUND_PITCH);
+        if (!(player.getWorld() instanceof ServerWorld level)) return;
+        level.spawnParticles(PGCParticles.MARA.get(), player.getX(), player.getY() + PARTICLE_HEIGHT, player.getZ(), PARTICLE_COUNT, 0.0D, 0.0D, 0.0D, PARTICLE_SPEED);
     }
 }

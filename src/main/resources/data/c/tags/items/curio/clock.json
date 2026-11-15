@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#c:curio/clock/division",
+    "primogemcraft:corporate_cuckoo_clock",
+    "primogemcraft:perpetual_cuckoo_clock",
+    "primogemcraft:black_forest_cuckoo_clock"
+  ]
+}

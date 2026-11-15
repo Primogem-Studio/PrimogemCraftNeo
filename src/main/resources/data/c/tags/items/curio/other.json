@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#c:curio/code",
+    "#c:curio/bad",
+    "#c:curio/other/ealing_wax",
+    "primogemcraft:footprints_of_fate"
+  ]
+}

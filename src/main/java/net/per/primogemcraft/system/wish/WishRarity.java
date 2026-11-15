@@ -1,7 +1,7 @@
 package net.per.primogemcraft.system.wish;
 
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.Identifier;
+import net.minecraft.sound.SoundEvent;
 import net.per.primogemcraft.registry.PGCSounds;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
@@ -29,12 +29,12 @@ public enum WishRarity {
         return "wish/" + id;
     }
 
-    public ResourceLocation lootTable() {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, lootTablePath());
+    public Identifier lootTable() {
+        return Identifier.of(MOD_ID, lootTablePath());
     }
 
-    public ResourceLocation texture() {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/wish_entity_" + id + ".png");
+    public Identifier texture() {
+        return Identifier.of(MOD_ID, "textures/entity/wish_entity_" + id + ".png");
     }
 
     public SoundEvent sound() {

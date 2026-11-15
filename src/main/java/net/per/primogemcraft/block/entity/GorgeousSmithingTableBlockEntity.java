@@ -1,60 +1,62 @@
 package net.per.primogemcraft.block.entity;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.text.Text;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.block.BlockState;
 import net.per.primogemcraft.registry.PGCBlockEntities;
 import net.per.primogemcraft.system.menu.GorgeousSmithingTableMenu;
 import net.per.primogemcraft.system.menu.LinkedContainers;
 
-import java.util.List;
-
-public class GorgeousSmithingTableBlockEntity extends BaseContainerBlockEntity {
+public class GorgeousSmithingTableBlockEntity extends net.minecraft.block.entity.LootableContainerBlockEntity
+        implements net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory {
     public static final int SLOT_COUNT = GorgeousSmithingTableMenu.MATERIAL_SLOT_COUNT;
 
-    private NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
+    private DefaultedList<ItemStack> items = DefaultedList.ofSize(SLOT_COUNT, ItemStack.EMPTY);
 
     public GorgeousSmithingTableBlockEntity(BlockPos pos, BlockState state) {
         super(PGCBlockEntities.GORGEOUS_SMITHING_TABLE.get(), pos, state);
     }
 
     @Override
-    protected Component getDefaultName() {
-        return Component.translatable("block.primogemcraft.gorgeous_smithing_table");
+    protected Text getContainerName() {
+        return Text.translatable("block.primogemcraft.gorgeous_smithing_table");
     }
 
     @Override
-    public int getContainerSize() {
+    public int size() {
         return SLOT_COUNT;
     }
 
     @Override
-    protected NonNullList<ItemStack> getItems() {
+    protected DefaultedList<ItemStack> getInvStackList() {
         return items;
     }
 
     @Override
-    protected void setItems(NonNullList<ItemStack> items) {
+    protected void setInvStackList(DefaultedList<ItemStack> items) {
         this.items = items;
     }
 
     @Override
-    protected AbstractContainerMenu createMenu(int id, Inventory inventory) {
-        var access = ContainerLevelAccess.create(level, worldPosition);
-        return new GorgeousSmithingTableMenu(id, inventory, this, access, LinkedContainers.scan(level, worldPosition));
+    protected ScreenHandler createScreenHandler(int id, PlayerInventory inventory) {
+        var access = ScreenHandlerContext.create(world, pos);
+        return new GorgeousSmithingTableMenu(id, inventory, this, access, LinkedContainers.scan(world, pos));
     }
 
     @Override
-    public void writeClientSideData(AbstractContainerMenu menu, RegistryFriendlyByteBuf buffer) {
-        buffer.writeBlockPos(worldPosition);
-        if (menu instanceof GorgeousSmithingTableMenu table) table.writeLinks(buffer);
-        else LinkedContainers.write(buffer, List.of());
+    public void writeScreenOpeningData(net.minecraft.server.network.ServerPlayerEntity player, net.minecraft.network.PacketByteBuf buffer) {
+        buffer.writeBlockPos(pos);
+        // 与 createScreenHandler 使用同一份扫描结果，保证客户端联动槽与服务端一致
+        LinkedContainers.write(buffer, LinkedContainers.scan(world, pos));
+    }
+
+    @Override
+    public boolean canPlayerUse(net.minecraft.entity.player.PlayerEntity player) {
+        return net.minecraft.inventory.Inventory.canPlayerUse(this, player);
     }
 }

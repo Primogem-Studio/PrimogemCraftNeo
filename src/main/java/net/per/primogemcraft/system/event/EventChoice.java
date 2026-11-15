@@ -1,9 +1,9 @@
 package net.per.primogemcraft.system.event;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.system.choice.*;
 
 import java.util.ArrayList;
@@ -12,12 +12,12 @@ public final class EventChoice {
     public static final String HINT_KEY = "gui.primogemcraft.event.hint";
     public static final String GROUP_ID_KEY = "gui.primogemcraft.event.group_id";
     public static final String CARD_ID_KEY = "gui.primogemcraft.event.card_id";
-    public static final ResourceLocation ICON = ChoiceSupport.texture("textures/gui/event_question.png");
+    public static final Identifier ICON = ChoiceSupport.texture("textures/gui/event_question.png");
 
     private EventChoice() {
     }
 
-    public static void open(ServerPlayer player, EventGroup group) {
+    public static void open(ServerPlayerEntity player, EventGroup group) {
         var numbers = new ArrayList<Integer>();
         var cards = new ArrayList<ChoiceCard>();
         var allConditional = true;
@@ -44,17 +44,17 @@ public final class EventChoice {
         });
     }
 
-    private static Component subtitle(EventGroup group) {
-        return Component.empty()
-                .append(Component.translatable(GROUP_ID_KEY, group.number()))
-                .append(Component.translatable(HINT_KEY));
+    private static Text subtitle(EventGroup group) {
+        return Text.empty()
+                .append(Text.translatable(GROUP_ID_KEY, group.number()))
+                .append(Text.translatable(HINT_KEY));
     }
 
-    private static ChoiceCard card(RandomEvent event, ServerPlayer player) {
+    private static ChoiceCard card(RandomEvent event, ServerPlayerEntity player) {
         var context = EventContext.of(player, event);
         return ChoiceSupport.card(event.title(), ItemStack.EMPTY, event.description())
                 .withTextTooltip()
-                .withBadge(Component.translatable(CARD_ID_KEY, event.number()))
+                .withBadge(Text.translatable(CARD_ID_KEY, event.number()))
                 .withUnmet(event.unmet(context))
                 .withEnabled(event.available(context));
     }

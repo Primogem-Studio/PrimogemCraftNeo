@@ -1,7 +1,7 @@
 package net.per.primogemcraft.item.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.text.Text;
+import net.minecraft.sound.SoundCategory;
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.system.curio.CurioContext;
 import net.per.primogemcraft.system.curio.CurioForm;
@@ -15,7 +15,7 @@ public class FissionCuckooClockReplicaItem extends CurioItem {
     private static final float VOLUME = 1.0F;
     private static final float PITCH = 1.0F;
 
-    public FissionCuckooClockReplicaItem(Properties properties) {
+    public FissionCuckooClockReplicaItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.FUSION, properties);
     }
 
@@ -29,15 +29,15 @@ public class FissionCuckooClockReplicaItem extends CurioItem {
         var player = context.player();
         var stack = context.stack();
         var remaining = FissionCuckooClockItem.replicas(player) - 1;
-        player.hurt(player.damageSources().generic(), (float) (player.getMaxHealth() * HEALTH_COST));
+        player.damage(player.getDamageSources().generic(), (float) (player.getMaxHealth() * HEALTH_COST));
         FissionCuckooClockItem.resetSplit(player);
         if (remaining <= 0) {
-            context.announce(Component.translatable(EMPTY_KEY));
+            context.announce(Text.translatable(EMPTY_KEY));
         } else {
-            context.announce(Component.translatable(CLEARED_KEY));
+            context.announce(Text.translatable(CLEARED_KEY));
         }
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundSource.PLAYERS, VOLUME, PITCH);
-        stack.shrink(1);
+        player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), PGCSounds.CURIO_BROKEN.get(), SoundCategory.PLAYERS, VOLUME, PITCH);
+        stack.decrement(1);
         FissionCuckooClockItem.holdEffect(player);
     }
 }

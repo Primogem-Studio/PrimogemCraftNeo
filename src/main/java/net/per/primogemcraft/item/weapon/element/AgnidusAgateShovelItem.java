@@ -1,19 +1,19 @@
 package net.per.primogemcraft.item.weapon.element;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SingleRecipeInput;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.Formatting;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.ActionResult;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.recipe.RecipeType;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.block.Blocks;
+import net.minecraft.util.math.Vec3d;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.system.element.Element;
 import net.per.primogemcraft.system.weapon.WeaponDescription;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AgnidusAgateShovelItem extends WishWeaponShovelItem {
-    private static final Tier TIER = new WeaponTier(1561, 8.0F, 14, WeaponTier.DIAMOND_INCORRECT,
+    private static final ToolMaterial TIER = new WeaponTier(1561, 8.0F, 14, WeaponTier.DIAMOND_INCORRECT,
             PGCItems.PRIMOGEM, PGCItems.AGNIDUS_AGATE_SLIVER);
 
     private static final float ATTACK_DAMAGE = 3.0F;
@@ -43,8 +43,8 @@ public class AgnidusAgateShovelItem extends WishWeaponShovelItem {
     private static final String SMELTING_TEXT = "smelting";
     private static final String REFINEMENT_TEXT = "refinement";
 
-    public AgnidusAgateShovelItem(Properties properties) {
-        super(TIER, properties.fireResistant(), ATTACK_DAMAGE, ATTACK_SPEED);
+    public AgnidusAgateShovelItem(Settings properties) {
+        super(TIER, properties.fireproof(), ATTACK_DAMAGE, ATTACK_SPEED);
     }
 
     @Override
@@ -54,35 +54,35 @@ public class AgnidusAgateShovelItem extends WishWeaponShovelItem {
         var descriptions = new ArrayList<WeaponDescription>();
         if (sealed) descriptions.add(WeaponDescription.note(REFINEMENT_TEXT));
         descriptions.add(WeaponDescription.of(SNEAK_USE_BLOCK, SMELTING_TEXT,
-                WishReports.percent(ElementWeapons.scaled(refinement, TRIGGER_CHANCE, true, sealed), ChatFormatting.AQUA),
-                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN_TICKS, false, sealed), ChatFormatting.AQUA)));
+                WishReports.percent(ElementWeapons.scaled(refinement, TRIGGER_CHANCE, true, sealed), Formatting.AQUA),
+                WishReports.number(ElementWeapons.seconds(refinement, COOLDOWN_TICKS, false, sealed), Formatting.AQUA)));
         return List.copyOf(descriptions);
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
-        var result = super.useOn(context);
+    public ActionResult useOnBlock(ItemUsageContext context) {
+        var result = super.useOnBlock(context);
         var player = context.getPlayer();
-        if (!(context.getLevel() instanceof ServerLevel server) || player == null || !player.isShiftKeyDown()) return result;
-        var pos = context.getClickedPos();
-        var input = new SingleRecipeInput(new ItemStack(server.getBlockState(pos).getBlock()));
-        var smelted = server.getRecipeManager().getRecipeFor(RecipeType.SMELTING, input, server)
-                .map(recipe -> recipe.value().getResultItem(server.registryAccess()).copy())
+        if (!(context.getWorld() instanceof ServerWorld server) || player == null || !player.isSneaking()) return result;
+        var pos = context.getBlockPos();
+        var input = new SimpleInventory(new ItemStack(server.getBlockState(pos).getBlock()));
+        var smelted = server.getRecipeManager().getFirstMatch(RecipeType.SMELTING, input, server)
+                .map(recipe -> recipe.getOutput(server.getRegistryManager()).copy())
                 .orElse(ItemStack.EMPTY);
-        if (smelted.isEmpty() || smelted.is(Blocks.AIR.asItem())) return result;
-        var stack = context.getItemInHand();
-        server.playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
+        if (smelted.isEmpty() || smelted.isOf(Blocks.AIR.asItem())) return result;
+        var stack = context.getStack();
+        server.playSound(null, pos, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, SOUND_VOLUME, SOUND_PITCH);
         if (server.getRandom().nextDouble() < ElementWeapons.scaled(player, stack, Element.PYRO, TRIGGER_CHANCE, true)) {
-            smelted.setCount(Mth.nextInt(server.getRandom(), 1, MAX_OUTPUT));
-            var center = Vec3.atCenterOf(pos);
+            smelted.setCount(MathHelper.nextInt(server.getRandom(), 1, MAX_OUTPUT));
+            var center = Vec3d.ofCenter(pos);
             var dropped = new ItemEntity(server, center.x, center.y, center.z, smelted);
-            dropped.setPickUpDelay(PICKUP_DELAY);
-            server.addFreshEntity(dropped);
+            dropped.setPickupDelay(PICKUP_DELAY);
+            server.spawnEntity(dropped);
         }
-        server.destroyBlock(pos, false);
-        stack.hurtAndBreak(DURABILITY_LOSS, server, player, item -> {
+        server.breakBlock(pos, false);
+        stack.damage(DURABILITY_LOSS, player, item -> {
         });
-        player.getCooldowns().addCooldown(stack.getItem(), ElementWeapons.ticks(player, stack, Element.PYRO, COOLDOWN_TICKS, false));
-        return InteractionResult.SUCCESS;
+        player.getItemCooldownManager().set(stack.getItem(), ElementWeapons.ticks(player, stack, Element.PYRO, COOLDOWN_TICKS, false));
+        return ActionResult.SUCCESS;
     }
 }

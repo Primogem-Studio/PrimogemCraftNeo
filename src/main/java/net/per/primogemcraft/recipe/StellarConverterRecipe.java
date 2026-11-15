@@ -1,21 +1,26 @@
 package net.per.primogemcraft.recipe;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeInput;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.Level;
+import com.google.gson.JsonObject;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.RecipeType;
+import net.minecraft.world.World;
 import net.per.primogemcraft.registry.PGCRecipeSerializers;
 import net.per.primogemcraft.registry.PGCRecipeTypes;
 
-public record StellarConverterRecipe(ItemStack first, ItemStack second, int cost) implements Recipe<RecipeInput> {
+/**
+ * 星髓转换器配方（Yarn 1.20.1）。
+ * 界面内双向转换，不走原版合成台匹配。
+ */
+public record StellarConverterRecipe(Identifier id, ItemStack first, ItemStack second, int cost)
+        implements Recipe<Inventory> {
+
     public record Conversion(ItemStack input, ItemStack output, int cost) {
     }
 
@@ -27,28 +32,32 @@ public record StellarConverterRecipe(ItemStack first, ItemStack second, int cost
     }
 
     @Override
-    public boolean matches(RecipeInput input, Level level) {
+    public boolean matches(Inventory input, World world) {
         return false;
     }
 
     @Override
-    public ItemStack assemble(RecipeInput input, HolderLookup.Provider registries) {
+    public ItemStack craft(Inventory input, DynamicRegistryManager registries) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
+    public boolean fits(int width, int height) {
         return false;
     }
 
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider registries) {
+    public ItemStack getOutput(DynamicRegistryManager registries) {
         return ItemStack.EMPTY;
     }
 
-    @Override
-    public boolean isSpecial() {
+    public boolean isIgnoredInBook() {
         return true;
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
     }
 
     @Override
@@ -62,37 +71,35 @@ public record StellarConverterRecipe(ItemStack first, ItemStack second, int cost
     }
 
     private static boolean matches(ItemStack expected, ItemStack stack) {
-        return ItemStack.isSameItemSameComponents(expected, stack) && stack.getCount() >= expected.getCount();
+        return ItemStack.areItemsEqual(expected, stack) && java.util.Objects.equals(expected.getNbt(), stack.getNbt()) && stack.getCount() >= expected.getCount();
     }
 
     public static class Serializer implements RecipeSerializer<StellarConverterRecipe> {
-        private static final MapCodec<StellarConverterRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                ItemStack.STRICT_CODEC.fieldOf("first").forGetter(StellarConverterRecipe::first),
-                ItemStack.STRICT_CODEC.fieldOf("second").forGetter(StellarConverterRecipe::second),
-                Codec.INT.fieldOf("cost").forGetter(StellarConverterRecipe::cost)
-        ).apply(instance, StellarConverterRecipe::new));
-
-        private static final StreamCodec<RegistryFriendlyByteBuf, StellarConverterRecipe> STREAM_CODEC =
-                StreamCodec.of(Serializer::encode, Serializer::decode);
 
         @Override
-        public MapCodec<StellarConverterRecipe> codec() {
-            return CODEC;
+        public StellarConverterRecipe read(Identifier id, JsonObject json) {
+            var first = readStack(JsonHelper.getObject(json, "first"));
+            var second = readStack(JsonHelper.getObject(json, "second"));
+            var cost = JsonHelper.getInt(json, "cost", 0);
+            return new StellarConverterRecipe(id, first, second, cost);
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, StellarConverterRecipe> streamCodec() {
-            return STREAM_CODEC;
+        public StellarConverterRecipe read(Identifier id, PacketByteBuf buffer) {
+            return new StellarConverterRecipe(id, buffer.readItemStack(), buffer.readItemStack(), buffer.readVarInt());
         }
 
-        private static StellarConverterRecipe decode(RegistryFriendlyByteBuf buffer) {
-            return new StellarConverterRecipe(ItemStack.STREAM_CODEC.decode(buffer), ItemStack.STREAM_CODEC.decode(buffer), buffer.readInt());
+        @Override
+        public void write(PacketByteBuf buffer, StellarConverterRecipe recipe) {
+            buffer.writeItemStack(recipe.first);
+            buffer.writeItemStack(recipe.second);
+            buffer.writeVarInt(recipe.cost);
         }
 
-        private static void encode(RegistryFriendlyByteBuf buffer, StellarConverterRecipe recipe) {
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.first);
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.second);
-            buffer.writeInt(recipe.cost);
+        private static ItemStack readStack(JsonObject json) {
+            var item = net.minecraft.registry.Registries.ITEM.get(new Identifier(JsonHelper.getString(json, "item")));
+            var count = JsonHelper.getInt(json, "count", 1);
+            return new ItemStack(item, count);
         }
     }
 }

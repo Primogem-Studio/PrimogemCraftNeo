@@ -1,10 +1,10 @@
 package net.per.primogemcraft.system.element.effect;
 
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
 
-public class HiddenEffect extends MobEffect {
+public class HiddenEffect extends StatusEffect {
     public HiddenEffect() {
-        super(MobEffectCategory.NEUTRAL, -1);
+        super(StatusEffectCategory.NEUTRAL, -1);
     }
 }

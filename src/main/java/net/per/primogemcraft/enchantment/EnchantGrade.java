@@ -1,6 +1,6 @@
 package net.per.primogemcraft.enchantment;
 
-import net.minecraft.util.RandomSource;
+import net.minecraft.util.math.random.Random;
 
 import java.util.Locale;
 
@@ -35,7 +35,7 @@ public enum EnchantGrade {
         return column;
     }
 
-    public int rollLevel(RandomSource random) {
+    public int rollLevel(Random random) {
         return minLevel + random.nextInt(maxLevel - minLevel + 1);
     }
 

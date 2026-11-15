@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "primogemcraft:agnidus_agate_ore",
+    "primogemcraft:shivada_jade_ore",
+    "primogemcraft:deepslate_prithiva_topaz_ore",
+    "primogemcraft:prithiva_topaz_ore",
+    "primogemcraft:vayuda_turquoise_ore",
+    "primogemcraft:vajrada_amethyst_ore",
+    "primogemcraft:varunada_lazurite_ore",
+    "primogemcraft:nagadus_emerald_ore"
+  ]
+}

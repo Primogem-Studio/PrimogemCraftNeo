@@ -1,32 +1,32 @@
 package net.per.primogemcraft.entity.misc;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ActionResult;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MovementType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.per.primogemcraft.compat.network.PayloadRegistrar;
 import net.per.primogemcraft.network.ParticleBurstPayload;
 import net.per.primogemcraft.registry.PGCEntities;
 import net.per.primogemcraft.registry.PGCItems;
@@ -43,13 +43,13 @@ import java.util.List;
 import java.util.UUID;
 
 public class WishEntity extends Entity {
-    private static final EntityDataAccessor<Integer> DATA_BANNER = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> DATA_RARITY = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> DATA_CAPTURING_RADIANCE = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_COLORFUL = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> DATA_SUNGLASSES = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> DATA_CAPTURE_STATE = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> DATA_RADIANCE_VISIBLE = SynchedEntityData.defineId(WishEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final TrackedData<Integer> DATA_BANNER = DataTracker.registerData(WishEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> DATA_RARITY = DataTracker.registerData(WishEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Boolean> DATA_CAPTURING_RADIANCE = DataTracker.registerData(WishEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> DATA_COLORFUL = DataTracker.registerData(WishEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> DATA_SUNGLASSES = DataTracker.registerData(WishEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Integer> DATA_CAPTURE_STATE = DataTracker.registerData(WishEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Boolean> DATA_RADIANCE_VISIBLE = DataTracker.registerData(WishEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final double SINGLE_SPAWN_HEIGHT = 10.0D;
     private static final double RING_SPAWN_HEIGHT = 6.0D;
     private static final double RING_SPAWN_RADIUS = 3.0D;
@@ -70,34 +70,43 @@ public class WishEntity extends Entity {
     private UUID owner;
     private boolean resolved;
     private int age;
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
     private boolean waitingForChoice;
     private boolean choiceAnswered;
     private int selectedChoice = NO_CHOICE;
     private List<ItemStack> previews = List.of();
     private List<ItemStack> starglitter = List.of();
 
-    public WishEntity(EntityType<? extends WishEntity> entityType, Level level) {
+    public WishEntity(EntityType<? extends WishEntity> entityType, World level) {
         super(entityType, level);
     }
 
-    public static void spawn(ServerLevel level, ServerPlayer player, WishResult result, double x, double y, double z) {
+    public static void spawn(ServerWorld level, ServerPlayerEntity player, WishResult result, double x, double y, double z) {
         var wish = new WishEntity(PGCEntities.WISH_ENTITY.get(), level);
-        wish.owner = player.getUUID();
-        wish.entityData.set(DATA_BANNER, result.banner().ordinal());
-        wish.entityData.set(DATA_RARITY, result.rarity().ordinal());
-        wish.entityData.set(DATA_CAPTURING_RADIANCE, result.capturingRadiance());
-        wish.entityData.set(DATA_COLORFUL, result.colorful());
-        wish.entityData.set(DATA_SUNGLASSES, result.sunglasses());
-        wish.moveTo(x, y, z, 0.0F, 0.0F);
-        var dir = player.position().subtract(wish.position()).normalize();
-        wish.setYRot((float) (Mth.atan2(-dir.x, dir.z) * Mth.RAD_TO_DEG));
-        level.addFreshEntity(wish);
+        wish.owner = player.getUuid();
+        wish.dataTracker.set(DATA_BANNER, result.banner().ordinal());
+        wish.dataTracker.set(DATA_RARITY, result.rarity().ordinal());
+        wish.dataTracker.set(DATA_CAPTURING_RADIANCE, result.capturingRadiance());
+        wish.dataTracker.set(DATA_COLORFUL, result.colorful());
+        wish.dataTracker.set(DATA_SUNGLASSES, result.sunglasses());
+        wish.refreshPositionAndAngles(x, y, z, 0.0F, 0.0F);
+        var dir = player.getPos().subtract(wish.getPos()).normalize();
+        wish.setYaw((float) (MathHelper.atan2(-dir.x, dir.z) * MathHelper.DEGREES_PER_RADIAN));
+        level.spawnEntity(wish);
     }
 
-    public static void spawnRing(ServerLevel level, ServerPlayer player, List<WishResult> results) {
+    public static void spawnRing(ServerWorld level, ServerPlayerEntity player, List<WishResult> results) {
         var count = results.size();
         if (count == 1) {
-            spawn(level, player, results.getFirst(), player.getX(), player.getY() + SINGLE_SPAWN_HEIGHT, player.getZ());
+            spawn(level, player, results.get(0), player.getX(), player.getY() + SINGLE_SPAWN_HEIGHT, player.getZ());
             return;
         }
 
@@ -116,7 +125,7 @@ public class WishEntity extends Entity {
         spawnOnCircle(level, player, results, 0, count, RING_SPAWN_RADIUS, 0.0D);
     }
 
-    private static void spawnDisc(ServerLevel level, ServerPlayer player, List<WishResult> results) {
+    private static void spawnDisc(ServerWorld level, ServerPlayerEntity player, List<WishResult> results) {
         var count = results.size();
         var rings = Math.max(MIN_DISC_RINGS, (int) Math.round(Math.sqrt(count / DISC_RING_CAPACITY)));
         var radius = Math.max(TEN_PULL_RADIUS, RING_SPAWN_RADIUS + (count - TEN_PULL) * DISC_RADIUS_PER_WISH);
@@ -132,7 +141,7 @@ public class WishEntity extends Entity {
         }
     }
 
-    private static void spawnOnCircle(ServerLevel level, ServerPlayer player, List<WishResult> results, int first, int points, double radius, double stagger) {
+    private static void spawnOnCircle(ServerWorld level, ServerPlayerEntity player, List<WishResult> results, int first, int points, double radius, double stagger) {
         for (var index = 0; index < points; index++) {
             var angle = 2.0D * Math.PI * index / points + stagger;
             var x = player.getX() + radius * Math.sin(angle);
@@ -142,35 +151,35 @@ public class WishEntity extends Entity {
     }
 
     public WishBanner banner() {
-        return WishBanner.values()[entityData.get(DATA_BANNER)];
+        return WishBanner.values()[dataTracker.get(DATA_BANNER)];
     }
 
     public WishRarity rarity() {
-        return WishRarity.values()[entityData.get(DATA_RARITY)];
+        return WishRarity.values()[dataTracker.get(DATA_RARITY)];
     }
 
     public boolean isCapturingRadiance() {
-        return entityData.get(DATA_CAPTURING_RADIANCE);
+        return dataTracker.get(DATA_CAPTURING_RADIANCE);
     }
 
     public boolean isRadianceVisible() {
-        return entityData.get(DATA_RADIANCE_VISIBLE);
+        return dataTracker.get(DATA_RADIANCE_VISIBLE);
     }
 
     public boolean isColorful() {
-        return entityData.get(DATA_COLORFUL);
+        return dataTracker.get(DATA_COLORFUL);
     }
 
     public WishRarity displayRarity() {
-        if (!entityData.get(DATA_SUNGLASSES)) return rarity();
+        if (!dataTracker.get(DATA_SUNGLASSES)) return rarity();
         return switch (rarity()) {
-            case BLUE -> WishRarity.BLUE;
+            case BLUE -> WishRarity.PURPLE;
             case PURPLE, GOLD -> WishRarity.GOLD;
         };
     }
 
     public CaptureState captureState() {
-        return CaptureState.values()[entityData.get(DATA_CAPTURE_STATE)];
+        return CaptureState.values()[dataTracker.get(DATA_CAPTURE_STATE)];
     }
 
     public boolean isChoosing() {
@@ -178,7 +187,7 @@ public class WishEntity extends Entity {
     }
 
     public boolean isOwnedBy(Entity entity) {
-        return owner != null && owner.equals(entity.getUUID());
+        return owner != null && owner.equals(entity.getUuid());
     }
 
     public void clear() {
@@ -188,22 +197,22 @@ public class WishEntity extends Entity {
         selectedChoice = NO_CHOICE;
         previews = List.of();
         starglitter = List.of();
-        entityData.set(DATA_CAPTURE_STATE, CaptureState.NONE.ordinal());
+        dataTracker.set(DATA_CAPTURE_STATE, CaptureState.NONE.ordinal());
         if (owner != null) ChoiceRegistry.cancel(owner, NO_CHOICE);
         discard();
     }
 
-    public void resolve(ServerLevel level) {
+    public void resolve(ServerWorld level) {
         resolve(level, true);
     }
 
-    public boolean resolve(ServerLevel level, boolean playRevealSound) {
+    public boolean resolve(ServerWorld level, boolean playRevealSound) {
         if (resolved) return false;
-        var table = level.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTable()));
-        var params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, position()).withOptionalParameter(LootContextParams.THIS_ENTITY, this).create(LootContextParamSets.CHEST);
-        for (var stack : table.getRandomItems(params)) spawnAtLocation(stack);
+        var table = level.getServer().getLootManager().getLootTable(lootTable());
+        var params = new LootContextParameterSet.Builder(level).add(LootContextParameters.ORIGIN, getPos()).addOptional(LootContextParameters.THIS_ENTITY, this).build(LootContextTypes.CHEST);
+        for (var stack : table.generateLoot(params)) dropStack(stack);
         if (playRevealSound)
-            level.playSound(null, getX(), getY(), getZ(), rarity().sound(), SoundSource.NEUTRAL, 1.0F, 1.0F);
+            level.playSound(null, getX(), getY(), getZ(), rarity().sound(), SoundCategory.NEUTRAL, 1.0F, 1.0F);
         clear();
         return true;
     }
@@ -212,7 +221,7 @@ public class WishEntity extends Entity {
     public void tick() {
         super.tick();
         applyDescent();
-        if (!(level() instanceof ServerLevel serverLevel)) return;
+        if (!(getWorld() instanceof ServerWorld serverLevel)) return;
         age++;
         if (isCapturingRadiance()) {
             tickCapture(serverLevel);
@@ -222,36 +231,36 @@ public class WishEntity extends Entity {
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand) {
-        if (!(level() instanceof ServerLevel serverLevel)) return InteractionResult.SUCCESS;
+    public ActionResult interact(PlayerEntity player, Hand hand) {
+        if (!(getWorld() instanceof ServerWorld serverLevel)) return ActionResult.SUCCESS;
 
         if (!isOwnedBy(player)) {
-            player.displayClientMessage(WishReports.notOwner(), true);
-            return InteractionResult.SUCCESS;
+            player.sendMessage(WishReports.notOwner(), true);
+            return ActionResult.SUCCESS;
         }
 
         if (isChoosing()) {
-            if (player instanceof ServerPlayer serverPlayer) {
+            if (player instanceof ServerPlayerEntity serverPlayer) {
                 giveUp(serverLevel, serverPlayer);
             }
-            return InteractionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
         if (isCapturingRadiance()) {
             if (captureState() == CaptureState.READY) {
-                entityData.set(DATA_CAPTURE_STATE, CaptureState.CHOOSING.ordinal());
+                dataTracker.set(DATA_CAPTURE_STATE, CaptureState.CHOOSING.ordinal());
                 openChoice(serverLevel);
-                if (player instanceof ServerPlayer serverPlayer) Advancements.grant(serverPlayer, "capture_tomorrows_starlight");
+                if (player instanceof ServerPlayerEntity serverPlayer) Advancements.grant(serverPlayer, "capture_tomorrows_starlight");
             }
-            return InteractionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
         resolve(serverLevel);
-        return InteractionResult.SUCCESS;
+        return ActionResult.SUCCESS;
     }
 
     @Override
-    public boolean isPickable() {
+    public boolean canHit() {
         return true;
     }
 
@@ -261,50 +270,50 @@ public class WishEntity extends Entity {
     }
 
     @Override
-    public AABB getBoundingBoxForCulling() {
-        return super.getBoundingBoxForCulling().inflate(CULL_MARGIN, 0.0D, CULL_MARGIN).expandTowards(0.0D, CULL_MARGIN, 0.0D);
+    public Box getVisibilityBoundingBox() {
+        return super.getVisibilityBoundingBox().expand(CULL_MARGIN, 0.0D, CULL_MARGIN).expand(0.0D, CULL_MARGIN, 0.0D);
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA_BANNER, WishBanner.ACQUAINT.ordinal());
-        builder.define(DATA_RARITY, WishRarity.BLUE.ordinal());
-        builder.define(DATA_CAPTURING_RADIANCE, false);
-        builder.define(DATA_COLORFUL, false);
-        builder.define(DATA_SUNGLASSES, false);
-        builder.define(DATA_CAPTURE_STATE, CaptureState.NONE.ordinal());
-        builder.define(DATA_RADIANCE_VISIBLE, false);
+    protected void initDataTracker() {
+        this.dataTracker.startTracking(DATA_BANNER, WishBanner.ACQUAINT.ordinal());
+        this.dataTracker.startTracking(DATA_RARITY, WishRarity.BLUE.ordinal());
+        this.dataTracker.startTracking(DATA_CAPTURING_RADIANCE, false);
+        this.dataTracker.startTracking(DATA_COLORFUL, false);
+        this.dataTracker.startTracking(DATA_SUNGLASSES, false);
+        this.dataTracker.startTracking(DATA_CAPTURE_STATE, CaptureState.NONE.ordinal());
+        this.dataTracker.startTracking(DATA_RADIANCE_VISIBLE, false);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
-        if (compound.hasUUID("owner")) owner = compound.getUUID("owner");
-        entityData.set(DATA_BANNER, compound.getInt("banner"));
-        entityData.set(DATA_RARITY, compound.getInt("rarity"));
-        entityData.set(DATA_CAPTURING_RADIANCE, compound.getBoolean("capturing_radiance"));
-        entityData.set(DATA_COLORFUL, compound.getBoolean("colorful"));
-        entityData.set(DATA_SUNGLASSES, compound.getBoolean("sunglasses"));
+    protected void readCustomDataFromNbt(NbtCompound compound) {
+        if (compound.containsUuid("owner")) owner = compound.getUuid("owner");
+        dataTracker.set(DATA_BANNER, compound.getInt("banner"));
+        dataTracker.set(DATA_RARITY, compound.getInt("rarity"));
+        dataTracker.set(DATA_CAPTURING_RADIANCE, compound.getBoolean("capturing_radiance"));
+        dataTracker.set(DATA_COLORFUL, compound.getBoolean("colorful"));
+        dataTracker.set(DATA_SUNGLASSES, compound.getBoolean("sunglasses"));
         age = compound.getInt("age");
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
-        if (owner != null) compound.putUUID("owner", owner);
-        compound.putInt("banner", entityData.get(DATA_BANNER));
-        compound.putInt("rarity", entityData.get(DATA_RARITY));
-        compound.putBoolean("capturing_radiance", entityData.get(DATA_CAPTURING_RADIANCE));
-        compound.putBoolean("colorful", entityData.get(DATA_COLORFUL));
-        compound.putBoolean("sunglasses", entityData.get(DATA_SUNGLASSES));
+    protected void writeCustomDataToNbt(NbtCompound compound) {
+        if (owner != null) compound.putUuid("owner", owner);
+        compound.putInt("banner", dataTracker.get(DATA_BANNER));
+        compound.putInt("rarity", dataTracker.get(DATA_RARITY));
+        compound.putBoolean("capturing_radiance", dataTracker.get(DATA_CAPTURING_RADIANCE));
+        compound.putBoolean("colorful", dataTracker.get(DATA_COLORFUL));
+        compound.putBoolean("sunglasses", dataTracker.get(DATA_SUNGLASSES));
         compound.putInt("age", age);
     }
 
     public void applyDisplay(WishRarity rarity) {
-        entityData.set(DATA_RARITY, rarity.ordinal());
+        dataTracker.set(DATA_RARITY, rarity.ordinal());
     }
 
-    private void tickCapture(ServerLevel level) {
+    private void tickCapture(ServerWorld level) {
         switch (captureState()) {
-            case NONE -> entityData.set(DATA_CAPTURE_STATE, CaptureState.PREPARING.ordinal());
+            case NONE -> dataTracker.set(DATA_CAPTURE_STATE, CaptureState.PREPARING.ordinal());
             case PREPARING -> {
                 if (age >= CAPTURE_CONVERT_DELAY) convert(level);
             }
@@ -314,41 +323,41 @@ public class WishEntity extends Entity {
         cullWhenStranded(level);
     }
 
-    private void convert(ServerLevel level) {
-        entityData.set(DATA_CAPTURE_STATE, CaptureState.READY.ordinal());
-        entityData.set(DATA_RADIANCE_VISIBLE, true);
-        PacketDistributor.sendToPlayersNear(level, null, getX(), getY(), getZ(), CULL_RADIUS, ParticleBurstPayload.at(CAPTURE_PARTICLE_KIND, this));
-        level.playSound(null, getX(), getY(), getZ(), PGCSounds.CAPTURING_RADIANCE.get(), SoundSource.NEUTRAL, 1.0F, 1.0F);
+    private void convert(ServerWorld level) {
+        dataTracker.set(DATA_CAPTURE_STATE, CaptureState.READY.ordinal());
+        dataTracker.set(DATA_RADIANCE_VISIBLE, true);
+        PayloadRegistrar.sendToPlayersNear(level, null, getX(), getY(), getZ(), CULL_RADIUS, ParticleBurstPayload.at(CAPTURE_PARTICLE_KIND, this));
+        level.playSound(null, getX(), getY(), getZ(), PGCSounds.CAPTURING_RADIANCE.get(), SoundCategory.NEUTRAL, 1.0F, 1.0F);
     }
 
-    private void tickChoice(ServerLevel level) {
+    private void tickChoice(ServerWorld level) {
         if (choiceAnswered) {
-            entityData.set(DATA_CAPTURE_STATE, CaptureState.NONE.ordinal());
-            grantChoice(level, level.getEntity(owner) instanceof ServerPlayer player ? player : null);
+            dataTracker.set(DATA_CAPTURE_STATE, CaptureState.NONE.ordinal());
+            grantChoice(level, level.getPlayerByUuid(owner) instanceof ServerPlayerEntity player ? player : null);
             return;
         }
 
         if (!waitingForChoice || age % 5 != 0) return;
 
-        if (!(level.getEntity(owner) instanceof ServerPlayer player) || !player.isAlive()) {
+        if (!(level.getPlayerByUuid(owner) instanceof ServerPlayerEntity player) || !player.isAlive()) {
             giveUp(level, null);
         }
     }
 
-    private void openChoice(ServerLevel level) {
-        if (!(level.getEntity(owner) instanceof ServerPlayer player)) return;
+    private void openChoice(ServerWorld level) {
+        if (!(level.getPlayerByUuid(owner) instanceof ServerPlayerEntity player)) return;
 
         rollRewards(level);
         if (previews.size() < CAPTURE_CHOICE_COUNT) {
             grantStarglitter(player);
-            level.playSound(null, getX(), getY(), getZ(), PGCSounds.WISH_GOLD.get(), SoundSource.NEUTRAL, 1.0F, 1.0F);
+            level.playSound(null, getX(), getY(), getZ(), PGCSounds.WISH_GOLD.get(), SoundCategory.NEUTRAL, 1.0F, 1.0F);
             clear();
             return;
         }
 
         waitingForChoice = true;
         choiceAnswered = false;
-        ChoiceRegistry.open(player, Component.translatable("wish.primogemcraft.capturing_radiance"), Component.translatable("wish.primogemcraft.capturing_radiance.choice_hint"), ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, ChoiceSupport.DEFAULT_CARDS, ChoiceSupport.spin(ChoiceSpinSpeed.FAST), cards(), index -> {
+        ChoiceRegistry.open(player, Text.translatable("wish.primogemcraft.capturing_radiance"), Text.translatable("wish.primogemcraft.capturing_radiance.choice_hint"), ChoiceVisual.ITEM_MODEL, ChoiceSupport.BACKGROUND, ChoiceSupport.DEFAULT_CARDS, ChoiceSupport.spin(ChoiceSpinSpeed.FAST), cards(), index -> {
             selectedChoice = index;
             choiceAnswered = true;
             waitingForChoice = false;
@@ -362,35 +371,35 @@ public class WishEntity extends Entity {
         return List.copyOf(cards);
     }
 
-    private void giveUp(ServerLevel level, ServerPlayer player) {
-        if (player != null) ChoiceRegistry.cancel(player.getUUID(), NO_CHOICE);
+    private void giveUp(ServerWorld level, ServerPlayerEntity player) {
+        if (player != null) ChoiceRegistry.cancel(player.getUuid(), NO_CHOICE);
         resolve(level, false);
     }
 
-    private void grantChoice(ServerLevel level, ServerPlayer player) {
+    private void grantChoice(ServerWorld level, ServerPlayerEntity player) {
         if (player != null) {
             if (selectedChoice >= 0 && selectedChoice < previews.size()) {
                 var prize = previews.get(selectedChoice);
-                player.getInventory().placeItemBackInInventory(prize.copy());
-                player.displayClientMessage(Component.translatable("message.primogemcraft.wish.capturing_radiance_choice", prize.getHoverName()), false);
+                player.getInventory().insertStack(prize.copy());
+                player.sendMessage(Text.translatable("message.primogemcraft.wish.capturing_radiance_choice", prize.getName()), false);
             }
             grantStarglitter(player);
         }
-        level.playSound(null, getX(), getY(), getZ(), PGCSounds.WISH_GOLD.get(), SoundSource.NEUTRAL, 1.0F, 1.0F);
+        level.playSound(null, getX(), getY(), getZ(), PGCSounds.WISH_GOLD.get(), SoundCategory.NEUTRAL, 1.0F, 1.0F);
         clear();
     }
 
-    private void grantStarglitter(ServerPlayer player) {
-        for (var stack : starglitter) player.getInventory().placeItemBackInInventory(stack.copy());
+    private void grantStarglitter(ServerPlayerEntity player) {
+        for (var stack : starglitter) player.getInventory().insertStack(stack.copy());
     }
 
-    private void rollRewards(ServerLevel level) {
-        var table = level.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTable()));
-        var params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, position()).withOptionalParameter(LootContextParams.THIS_ENTITY, this).create(LootContextParamSets.CHEST);
+    private void rollRewards(ServerWorld level) {
+        var table = level.getServer().getLootManager().getLootTable(lootTable());
+        var params = new LootContextParameterSet.Builder(level).add(LootContextParameters.ORIGIN, getPos()).addOptional(LootContextParameters.THIS_ENTITY, this).build(LootContextTypes.CHEST);
 
         var ordinary = new ArrayList<ItemStack>();
         var glitter = new ArrayList<ItemStack>();
-        for (var stack : table.getRandomItems(params)) {
+        for (var stack : table.generateLoot(params)) {
             if (isStarglitter(stack)) glitter.add(stack);
             else ordinary.add(stack);
         }
@@ -399,30 +408,30 @@ public class WishEntity extends Entity {
         starglitter = List.copyOf(glitter);
     }
 
-    private static List<ItemStack> ordinaryRolls(LootTable table, LootParams params) {
+    private static List<ItemStack> ordinaryRolls(LootTable table, LootContextParameterSet params) {
         var ordinary = new ArrayList<ItemStack>();
-        for (var stack : table.getRandomItems(params)) {
+        for (var stack : table.generateLoot(params)) {
             if (!isStarglitter(stack)) ordinary.add(stack);
         }
         return ordinary;
     }
 
     private static boolean isStarglitter(ItemStack stack) {
-        return stack.is(PGCItems.MASTERLESS_STARGLITTER.get());
+        return stack.isOf(PGCItems.MASTERLESS_STARGLITTER.get());
     }
 
     private void applyDescent() {
-        var movement = getDeltaMovement();
-        setDeltaMovement(movement.x, -DESCENT_SPEED, movement.z);
-        move(MoverType.SELF, getDeltaMovement());
-        if (onGround()) setDeltaMovement(Vec3.ZERO);
+        var movement = getVelocity();
+        setVelocity(movement.x, -DESCENT_SPEED, movement.z);
+        move(MovementType.SELF, getVelocity());
+        if (isOnGround()) setVelocity(Vec3d.ZERO);
     }
 
-    private void cullWhenStranded(ServerLevel level) {
-        if (getY() < level.getMinBuildHeight() - CULL_MARGIN) clear();
+    private void cullWhenStranded(ServerWorld level) {
+        if (getY() < level.getBottomY() - CULL_MARGIN) clear();
     }
 
-    private ResourceLocation lootTable() {
+    private Identifier lootTable() {
         return rarity().lootTable();
     }
 

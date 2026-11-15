@@ -1,11 +1,11 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.util.Advancements;
 import net.per.primogemcraft.util.PGCTimer;
@@ -27,13 +27,13 @@ public class LotteryCurioItem extends CurioItem {
     private static final String BANNED_KEY = "message.primogemcraft.curio.lottery.banned";
 
     public static final String BAN_TIMER = "curio/lottery_ban";
-    public static final ResourceLocation BREAKS = ResourceLocation.fromNamespaceAndPath(MOD_ID, "lottery_breaks");
+    public static final Identifier BREAKS = Identifier.of(MOD_ID, "lottery_breaks");
 
     private final double odds;
     private final Consumer<CurioContext> win;
     private final Consumer<CurioContext> lose;
 
-    public LotteryCurioItem(CurioForm form, double odds, Consumer<CurioContext> win, Consumer<CurioContext> lose, Properties properties) {
+    public LotteryCurioItem(CurioForm form, double odds, Consumer<CurioContext> win, Consumer<CurioContext> lose, Settings properties) {
         super(CurioTrigger.ACTIVE, form, 1, () -> new ItemStack(PGCItems.DAMAGED_COSMIC_BIG_LOTTO.get()), properties);
         this.odds = odds;
         this.win = win;
@@ -45,7 +45,7 @@ public class LotteryCurioItem extends CurioItem {
         var signal = impact.signal();
         if (signal != CurioSignal.BLOCK_BROKEN && signal != CurioSignal.CONTAINER_BROKEN) return;
         if (!PGCTimer.isDone(context.player(), BAN_TIMER)) {
-            context.announce(Component.translatable(BANNED_KEY));
+            context.announce(Text.translatable(BANNED_KEY));
             return;
         }
         if (!context.ready(GATE, GATE_TICKS)) return;
@@ -54,7 +54,7 @@ public class LotteryCurioItem extends CurioItem {
         var output = signal == CurioSignal.CONTAINER_BROKEN ? context.withProduction(ContainerCurioItem.jarProduction(context.player())) : context;
         if (context.chance(lucky ? Math.min(odds + odds * LUCKY_BONUS, LUCKY_CAP) : odds)) {
             win.accept(output);
-            context.player().level().playSound(null, context.player().getX(), context.player().getY(), context.player().getZ(), SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.PLAYERS, 1.0F, 1.0F);
+            context.player().getWorld().playSound(null, context.player().getX(), context.player().getY(), context.player().getZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.PLAYERS, 1.0F, 1.0F);
             return;
         }
         lose.accept(output);
@@ -64,7 +64,7 @@ public class LotteryCurioItem extends CurioItem {
         context.damage(1);
     }
 
-    private static boolean lucky(ServerPlayer player) {
-        return player.getInventory().contains(stack -> !stack.isEmpty() && stack.is(PGCItems.UNLUCKY_VOUCHER.get()));
+    private static boolean lucky(ServerPlayerEntity player) {
+        return net.per.primogemcraft.compat.item.Inventories120.any(player.getInventory(), stack -> !stack.isEmpty() && stack.isOf(PGCItems.UNLUCKY_VOUCHER.get()));
     }
 }

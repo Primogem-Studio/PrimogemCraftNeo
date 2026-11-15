@@ -1,10 +1,10 @@
 package net.per.primogemcraft.system.curio;
 
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 public enum CurioGrade {
     B("b"),
@@ -34,11 +34,11 @@ public enum CurioGrade {
     public static CurioGrade of(ItemStack stack) {
         var form = Curios.formOf(stack);
         if (form == null) return null;
-        for (var grade : values()) if (stack.is(grade.tag(form))) return grade;
+        for (var grade : values()) if (stack.isIn(grade.tag(form))) return grade;
         return null;
     }
 
     private static TagKey<Item> common(String path) {
-        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", path));
+        return TagKey.of(RegistryKeys.ITEM, Identifier.of("c", path));
     }
 }

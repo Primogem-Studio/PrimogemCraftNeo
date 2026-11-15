@@ -1,15 +1,12 @@
 package net.per.primogemcraft.registry;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.UUIDUtil;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.component.ItemContainerContents;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.Uuids;
+import net.minecraft.util.Identifier;
+import net.per.primogemcraft.compat.component.DataComponentType;
+import net.per.primogemcraft.compat.component.ItemContainerContents;
+import net.per.primogemcraft.compat.registries.DeferredHolder;
 import net.per.primogemcraft.component.CustomBar;
 import net.per.primogemcraft.component.PastDelay;
 import net.per.primogemcraft.component.WeaponCharge;
@@ -19,33 +16,74 @@ import net.per.primogemcraft.system.weapon.WeaponState;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
+/**
+ * 物品数据组件注册表（1.20.1 兼容版）。
+ *
+ * <p>1.21 把这些组件注册进 {@code Registries.DATA_COMPONENT_TYPE}；1.20.1 没有
+ * 数据组件系统，组件数据统一落在物品 NBT 的 {@code primogemcraft_components}
+ * 子标签下（见 {@link net.per.primogemcraft.compat.component.StackComponents}）。
+ * 因此这里不再进入真实注册表，而是用「本地持有者」承载各组件的名称与 Codec，
+ * 各组件原有的 {@code Codec} 定义原样复用。
+ *
+ * <p>{@link #REGISTRY} 保留为一个空操作的注册入口，使模组构造器里的
+ * {@code PGCDataComponents.REGISTRY.register(modBus)} 调用无需改写。
+ */
 public class PGCDataComponents {
-    public static final DeferredRegister.DataComponents REGISTRY = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, MOD_ID);
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> BOW_SHOT_TIME = REGISTRY.registerComponentType("bow_shot_time", builder -> builder.networkSynchronized(ByteBufCodecs.VAR_LONG));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BOW_DRAW_DURATION = REGISTRY.registerComponentType("bow_draw_duration", builder -> builder.networkSynchronized(ByteBufCodecs.VAR_INT));
+    /** 空操作注册入口：1.20.1 没有数据组件注册表，组件在类加载时即构建完成。 */
+    public static final Registry REGISTRY = new Registry();
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WISH_VALUE = REGISTRY.registerComponentType("wish_value", builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WISH_VALUE_DIVISOR = REGISTRY.registerComponentType("wish_value_divisor", builder -> builder.persistent(Codec.intRange(1, 10)).networkSynchronized(ByteBufCodecs.VAR_INT));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ELEMENT_TYPE = REGISTRY.registerComponentType("element_type", builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<CustomBar>> CUSTOM_BAR = REGISTRY.registerComponentType("custom_bar", builder -> builder.persistent(CustomBar.CODEC).networkSynchronized(CustomBar.STREAM_CODEC));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<ResourceLocation>>> CURIO_MARKS = REGISTRY.registerComponentType("curio_marks", builder -> builder.persistent(ResourceLocation.CODEC.listOf()).networkSynchronized(ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list())));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<UUID>>> REWARD_BOOK_LEARNERS = REGISTRY.registerComponentType("reward_book_learners", builder -> builder.persistent(UUIDUtil.CODEC.listOf()).networkSynchronized(UUIDUtil.STREAM_CODEC.apply(ByteBufCodecs.list())));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CURIO_COUNTER = REGISTRY.registerComponentType("curio_counter", builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> LOTTO_COUNT = REGISTRY.registerComponentType("lotto_count", builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> TICKET_PROGRESS = REGISTRY.registerComponentType("ticket_progress", builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BlockPos>> RECALL_POSITION = REGISTRY.registerComponentType("recall_position", builder -> builder.persistent(BlockPos.CODEC).networkSynchronized(BlockPos.STREAM_CODEC));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BlockPos>> ENCOUNTER_POSITION = REGISTRY.registerComponentType("encounter_position", builder -> builder.persistent(BlockPos.CODEC).networkSynchronized(BlockPos.STREAM_CODEC));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ResourceLocation>> COMPASS_TARGET = REGISTRY.registerComponentType("compass_target", builder -> builder.persistent(ResourceLocation.CODEC).networkSynchronized(ResourceLocation.STREAM_CODEC));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BANKBOOK_FRAGMENTS = REGISTRY.registerComponentType("bankbook_fragments", builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BANKBOOK_MODE = REGISTRY.registerComponentType("bankbook_mode", builder -> builder.persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<WeaponState>> WEAPON_STATE = REGISTRY.registerComponentType("weapon_state", builder -> builder.persistent(WeaponState.CODEC).networkSynchronized(WeaponState.STREAM_CODEC));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<WeaponRecovery>> WEAPON_RECOVERY = REGISTRY.registerComponentType("weapon_recovery", builder -> builder.persistent(WeaponRecovery.CODEC).networkSynchronized(WeaponRecovery.STREAM_CODEC));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<WeaponCharge>> WEAPON_CHARGE = REGISTRY.registerComponentType("weapon_charge", builder -> builder.persistent(WeaponCharge.CODEC).networkSynchronized(WeaponCharge.STREAM_CODEC));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PastDelay>> PAST_DELAY = REGISTRY.registerComponentType("past_delay", builder -> builder.persistent(PastDelay.CODEC).networkSynchronized(PastDelay.STREAM_CODEC));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<FootprintsOfFateItem.Roll>> FOOTPRINTS_ROLL = REGISTRY.registerComponentType("footprints_roll", builder -> builder.persistent(FootprintsOfFateItem.Roll.CODEC).networkSynchronized(FootprintsOfFateItem.Roll.STREAM_CODEC));
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContainerContents>> POUCH_CONTENTS = REGISTRY.registerComponentType("pouch_contents", builder -> builder.persistent(ItemContainerContents.CODEC).networkSynchronized(ItemContainerContents.STREAM_CODEC));
+    public static final class Registry {
+        public void register(Object bus) {
+        }
+    }
+
+    private static <T> DeferredHolder<DataComponentType<?>, DataComponentType<T>> component(
+            String name, UnaryOperator<DataComponentType.Builder<T>> builder) {
+        var type = builder.apply(DataComponentType.<T>builder().name(name)).build();
+        return DeferredHolder.local(new Identifier(MOD_ID, name), type);
+    }
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WISH_VALUE =
+            component("wish_value", b -> b.persistent(Codec.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ELEMENT_TYPE =
+            component("element_type", b -> b.persistent(Codec.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<CustomBar>> CUSTOM_BAR =
+            component("custom_bar", b -> b.persistent(CustomBar.CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<Identifier>>> CURIO_MARKS =
+            component("curio_marks", b -> b.persistent(Identifier.CODEC.listOf()));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<UUID>>> REWARD_BOOK_LEARNERS =
+            component("reward_book_learners", b -> b.persistent(Uuids.CODEC.listOf()));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CURIO_COUNTER =
+            component("curio_counter", b -> b.persistent(Codec.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> LOTTO_COUNT =
+            component("lotto_count", b -> b.persistent(Codec.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> TICKET_PROGRESS =
+            component("ticket_progress", b -> b.persistent(Codec.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BlockPos>> RECALL_POSITION =
+            component("recall_position", b -> b.persistent(BlockPos.CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BlockPos>> ENCOUNTER_POSITION =
+            component("encounter_position", b -> b.persistent(BlockPos.CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Identifier>> COMPASS_TARGET =
+            component("compass_target", b -> b.persistent(Identifier.CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BANKBOOK_FRAGMENTS =
+            component("bankbook_fragments", b -> b.persistent(Codec.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BANKBOOK_MODE =
+            component("bankbook_mode", b -> b.persistent(Codec.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<WeaponState>> WEAPON_STATE =
+            component("weapon_state", b -> b.persistent(WeaponState.CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<WeaponRecovery>> WEAPON_RECOVERY =
+            component("weapon_recovery", b -> b.persistent(WeaponRecovery.CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<WeaponCharge>> WEAPON_CHARGE =
+            component("weapon_charge", b -> b.persistent(WeaponCharge.CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<PastDelay>> PAST_DELAY =
+            component("past_delay", b -> b.persistent(PastDelay.CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<FootprintsOfFateItem.Roll>> FOOTPRINTS_ROLL =
+            component("footprints_roll", b -> b.persistent(FootprintsOfFateItem.Roll.CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<ItemContainerContents>> POUCH_CONTENTS =
+            component("pouch_contents", b -> b.persistent(ItemContainerContents.CODEC));
 }

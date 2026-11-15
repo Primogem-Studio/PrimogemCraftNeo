@@ -7,8 +7,8 @@ import net.per.primogemcraft.system.curio.CurioTrigger;
 public class SpaceTimePrismItem extends CurioItem {
     private static final int REFINEMENT_BONUS = 1;
 
-    public SpaceTimePrismItem(Properties properties) {
-        super(CurioTrigger.ACTIVE, CurioForm.NORMAL, properties.fireResistant());
+    public SpaceTimePrismItem(Settings properties) {
+        super(CurioTrigger.ACTIVE, CurioForm.NORMAL, properties.fireproof());
     }
 
     @Override

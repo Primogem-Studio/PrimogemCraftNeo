@@ -1,94 +1,63 @@
 package net.per.primogemcraft.system.curio.compat;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.per.primogemcraft.item.misc.OtherworldBankbook;
-import net.per.primogemcraft.registry.PGCItems;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.per.primogemcraft.system.curio.CurioContext;
-import net.per.primogemcraft.system.curio.CurioForm;
 import net.per.primogemcraft.system.curio.CurioItem;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.type.capability.ICurioItem;
+import net.per.primogemcraft.system.curio.Curios;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
-
+/**
+ * 饰品桥接（Fabric）。
+ * <p>直接使用模组自身的 Curios 系统，不依赖外部 Curios/Accessories API。
+ */
 public final class CuriosBridge {
-    private static final ResourceLocation PREDICATE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "curio");
     private static final String TIMER_PREFIX = "curio_equipped_";
 
     private CuriosBridge() {
     }
 
     public static void register() {
-        CuriosApi.registerCurioPredicate(PREDICATE, result -> result.stack().is(CurioForm.ANY) || OtherworldBankbook.isBankbook(result.stack()) || result.stack().is(PGCItems.VIOLANE.get()) || result.stack().is(PGCItems.COLORFUL_SUNGLASSES.get()));
-        CuriosApi.registerCurio(PGCItems.COLORFUL_SUNGLASSES.get(), new ICurioItem() {
-            @Override
-            public List<Component> getSlotsTooltip(List<Component> tooltips, Item.TooltipContext context, ItemStack stack) {
-                return List.of();
-            }
-        });
+        // 模组自身 Curios 系统已在 PGCItems 注册时完成初始化
     }
 
-    public static List<ItemStack> equipped(Player player) {
+    public static List<ItemStack> equipped(PlayerEntity player) {
+        if (!(player instanceof ServerPlayerEntity serverPlayer)) return List.of();
         var stacks = new ArrayList<ItemStack>();
-        CuriosApi.getCuriosInventory(player).ifPresent(handler -> {
-            var equipped = handler.getEquippedCurios();
-            for (var slot = 0; slot < equipped.getSlots(); slot++) {
-                var stack = equipped.getStackInSlot(slot);
-                if (!stack.isEmpty()) stacks.add(stack);
-            }
-        });
+        for (var context : Curios.held(serverPlayer)) {
+            stacks.add(context.stack());
+        }
         return stacks;
     }
 
-    public static boolean equip(ServerPlayer player, ItemStack stack) {
-        var handler = CuriosApi.getCuriosInventory(player).orElse(null);
-        if (handler == null) return false;
-        var accepted = CuriosApi.getItemStackSlots(stack, player.level()).keySet();
-        for (var entry : handler.getCurios().entrySet()) {
-            if (!accepted.contains(entry.getKey())) continue;
-            var slots = entry.getValue().getStacks();
-            for (var index = 0; index < slots.getSlots(); index++) {
-                if (!slots.getStackInSlot(index).isEmpty()) continue;
-                handler.setEquippedCurio(entry.getKey(), index, stack.copy());
-                return true;
-            }
-        }
-        return false;
+    public static boolean equip(ServerPlayerEntity player, ItemStack stack) {
+        return Curios.equip(player, stack);
     }
 
-    public static int consume(ServerPlayer player, Set<Item> pending) {
+    public static int consume(ServerPlayerEntity player, Set<Item> pending) {
         var consumed = 0;
-        var handler = CuriosApi.getCuriosInventory(player).orElse(null);
-        if (handler == null) return 0;
-        var equipped = handler.getEquippedCurios();
-        for (var slot = 0; slot < equipped.getSlots() && !pending.isEmpty(); slot++) {
-            var stack = equipped.getStackInSlot(slot);
+        for (var context : Curios.held(player)) {
+            var stack = context.stack();
             if (stack.isEmpty() || !pending.contains(stack.getItem())) continue;
-            if (equipped.extractItem(slot, 1, false).isEmpty()) continue;
+            stack.decrement(1);
             pending.remove(stack.getItem());
             consumed++;
+            if (pending.isEmpty()) break;
         }
         return consumed;
     }
 
-    public static void tick(ServerPlayer player) {
-        CuriosApi.getCuriosInventory(player).ifPresent(handler -> {
-            var equipped = handler.getEquippedCurios();
-            for (var slot = 0; slot < equipped.getSlots(); slot++) {
-                if (!(equipped.getStackInSlot(slot).getItem() instanceof CurioItem curio)) continue;
-                var stack = equipped.getStackInSlot(slot);
-                var context = CurioContext.of(player, stack, curio.form());
-                if (context.ready(TIMER_PREFIX + slot, curio.presenceInterval())) curio.presence(context);
-            }
-        });
+    public static void tick(ServerPlayerEntity player) {
+        var contexts = Curios.held(player);
+        for (var index = 0; index < contexts.size(); index++) {
+            var context = contexts.get(index);
+            if (!(context.stack().getItem() instanceof CurioItem curio)) continue;
+            if (context.ready(TIMER_PREFIX + index, curio.presenceInterval())) curio.presence(context);
+        }
     }
 }

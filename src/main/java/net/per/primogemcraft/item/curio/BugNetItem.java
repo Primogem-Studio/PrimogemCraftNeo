@@ -6,7 +6,7 @@ public class BugNetItem extends CurioItem {
     private static final int PARASITE_LEVEL = 1;
     private static final int PARASITE_TICKS = 200;
 
-    public BugNetItem(Properties properties) {
+    public BugNetItem(Settings properties) {
         super(CurioTrigger.ACTIVE, CurioForm.NORMAL, properties);
     }
 
