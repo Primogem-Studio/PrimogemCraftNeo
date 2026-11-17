@@ -27,6 +27,7 @@ public class ZiplineBaseBlockEntity extends BlockEntity {
             anchorId = anchor.getUuid();
             markDirty();
         }
+        // anchor.bind 自身对同一底座是幂等的，这里不再每刻触发存档写入
         anchor.bind(pos);
     }
 

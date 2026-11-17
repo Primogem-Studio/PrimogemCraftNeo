@@ -49,12 +49,17 @@ public class ZiplineAnchorEntity extends Entity {
     }
 
     public void bind(BlockPos base) {
-        if (dataTracker.get(BASE).isEmpty()) {
+        // 已绑定到同一底座时直接返回：本方法由底座方块实体每刻调用，
+        // 重复写方块状态与同步数据会造成大量区块更新与刷盘。
+        var current = dataTracker.get(BASE);
+        if (current.isPresent() && current.get().equals(base)) return;
+        if (current.isEmpty()) {
             var facing = Direction.fromRotation(-getYaw());
             for (var index = 0; index < 9; index++) {
                 var part = base.add(index % 3 - 1, 0, index / 3 - 1);
                 var oldState = getWorld().getBlockState(part);
-                if (oldState.isOf(PGCBlocks.ZIPLINE_BASE.get())) getWorld().setBlockState(part, oldState.with(ZiplineBaseBlock.FACING, facing), 2);
+                if (oldState.isOf(PGCBlocks.ZIPLINE_BASE.get()) && oldState.get(ZiplineBaseBlock.FACING) != facing)
+                    getWorld().setBlockState(part, oldState.with(ZiplineBaseBlock.FACING, facing), 2);
             }
         }
         dataTracker.set(BASE, Optional.of(base.toImmutable()));
@@ -62,6 +67,7 @@ public class ZiplineAnchorEntity extends Entity {
         if (state.isOf(PGCBlocks.ZIPLINE_BASE.get())) setYaw(-state.get(ZiplineBaseBlock.FACING).asRotation());
         var pos = ZiplineSpace.pos(getWorld(), Vec3d.ofBottomCenter(base));
         updatePosition(pos.x, pos.y, pos.z);
+        setBoundingBox(calculateBoundingBox());
     }
 
     @Override
@@ -93,12 +99,16 @@ public class ZiplineAnchorEntity extends Entity {
 
     @Override
     public boolean shouldSave() {
-        return !temporary() && dataTracker.get(BASE).isEmpty() && super.shouldSave();
+        return !temporary() && super.shouldSave();
     }
 
     public static ZiplineAnchorEntity find(World world, BlockPos center) {
-        var pos = ZiplineSpace.pos(world, Vec3d.ofBottomCenter(center));
-        return world.getEntitiesByClass(ZiplineAnchorEntity.class, new Box(pos, pos).expand(8),
+        // 与原版一致：只在底座正上方向 ANCHOR_HEIGHT 延伸的窄柱内查找。
+        // 原先各方向扩张 8 格会扫到邻近滑索，且每次查找都要遍历大量实体。
+        var origin = ZiplineSpace.pos(world, Vec3d.ofBottomCenter(center));
+        var bounds = new Box(origin.x - 0.5, origin.y, origin.z - 0.5,
+                origin.x + 0.5, origin.y + ANCHOR_HEIGHT, origin.z + 0.5);
+        return world.getEntitiesByClass(ZiplineAnchorEntity.class, bounds,
                 anchor -> !anchor.temporary() && anchor.basePosition().equals(center)).stream().findFirst().orElse(null);
     }
 
@@ -132,17 +142,8 @@ public class ZiplineAnchorEntity extends Entity {
                     || carrier.isRemoved() || !carrier.hasPassengers())) discard();
             return;
         }
-        if (getWorld().isClient()) {
-            setBoundingBox(calculateBoundingBox());
-        } else {
-            var base = basePosition();
-            if (getWorld().isChunkLoaded(base) && getWorld().getBlockState(base).isOf(PGCBlocks.ZIPLINE_BASE.get())) {
-                if (!(getWorld().getBlockEntity(base) instanceof ZiplineBaseBlockEntity))
-                    getWorld().setBlockState(base, getWorld().getBlockState(base)); getWorld().updateListeners(base, getWorld().getBlockState(base), getWorld().getBlockState(base), 3);
-                if (getWorld().getBlockEntity(base) instanceof ZiplineBaseBlockEntity blockEntity) blockEntity.bind(this);
-            }
-            if (age % 20 == 0 && !intact()) discard();
-        }
+        // 原版仅在服务端每秒校验底座完整性；包围盒在 bind 时确定，无需每刻重算。
+        if (!getWorld().isClient() && age % 20 == 0 && !intact()) discard();
     }
 
     @Override
@@ -151,8 +152,9 @@ public class ZiplineAnchorEntity extends Entity {
         return ActionResult.success(getWorld().isClient());
     }
 
+    /** 原版 isPickable()：能否被准星选中。Yarn 对应 canHit()，不是 isCollidable()。 */
     @Override
-    public boolean isCollidable() {
+    public boolean canHit() {
         return !temporary();
     }
 
