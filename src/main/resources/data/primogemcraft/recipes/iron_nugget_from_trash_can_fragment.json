@@ -6,7 +6,5 @@
   "ingredient": {
     "item": "primogemcraft:trash_can_fragment"
   },
-  "result": {
-    "item": "minecraft:iron_nugget"
-  }
+  "result": "minecraft:iron_nugget"
 }

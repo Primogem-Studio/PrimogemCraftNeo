@@ -6,7 +6,5 @@
   "ingredient": {
     "item": "primogemcraft:white_iron_ore"
   },
-  "result": {
-    "item": "primogemcraft:enhancement_ore"
-  }
+  "result": "primogemcraft:enhancement_ore"
 }

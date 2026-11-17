@@ -1,7 +1,7 @@
 {
   "sources": [
     {
-      "type": "forge:paletted_permutations",
+      "type": "minecraft:paletted_permutations",
       "textures": [
         "trims/models/armor/coast",
         "trims/models/armor/coast_leggings",

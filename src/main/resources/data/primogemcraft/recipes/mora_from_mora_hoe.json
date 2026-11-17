@@ -6,7 +6,5 @@
   "ingredient": {
     "item": "primogemcraft:mora_hoe"
   },
-  "result": {
-    "item": "primogemcraft:mora"
-  }
+  "result": "primogemcraft:mora"
 }

@@ -36,8 +36,15 @@ public final class StackComponents {
     public static <T> T get(ItemStack stack, DataComponentType<T> type) {
         if (stack == null || stack.isEmpty() || type == null) return null;
         CompoundTag root = stack.getTagElement(ROOT);
-        if (root == null || !root.contains(type.name())) return null;
-        return decode(type, root.get(type.name()));
+        if (root == null || !root.contains(type.name())) {
+            // 1.21 的默认组件语义：物品自身未写入时回落到该物品登记的默认值。
+            return net.per.primogemcraft.compat.event.ModifyDefaultComponentsEvent.DefaultComponents
+                    .get(stack.getItem(), type);
+        }
+        T decoded = decode(type, root.get(type.name()));
+        return decoded != null ? decoded
+                : net.per.primogemcraft.compat.event.ModifyDefaultComponentsEvent.DefaultComponents
+                        .get(stack.getItem(), type);
     }
 
     /**
@@ -46,7 +53,9 @@ public final class StackComponents {
     public static <T> boolean has(ItemStack stack, DataComponentType<T> type) {
         if (stack == null || stack.isEmpty() || type == null) return false;
         CompoundTag root = stack.getTagElement(ROOT);
-        return root != null && root.contains(type.name());
+        if (root != null && root.contains(type.name())) return true;
+        return net.per.primogemcraft.compat.event.ModifyDefaultComponentsEvent.DefaultComponents
+                .get(stack.getItem(), type) != null;
     }
 
     /**

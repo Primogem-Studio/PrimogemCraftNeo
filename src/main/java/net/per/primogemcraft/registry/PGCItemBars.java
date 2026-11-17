@@ -30,9 +30,9 @@ public final class PGCItemBars {
         return entries;
     }
 
-    private static void modifyDefaultComponents() {
+    public static void modifyDefaultComponents() {
         for (var entry : entries())
-            net.per.primogemcraft.compat.event.ModifyDefaultComponentsEvent.modify(entry.item(), PGCDataComponents.CUSTOM_BAR.get(), entry.bar());
+            ModifyDefaultComponentsEvent.modify(entry.item(), PGCDataComponents.CUSTOM_BAR.get(), entry.bar());
     }
 
     private static List<Entry> build() {

@@ -6,7 +6,5 @@
   "ingredient": {
     "item": "primogemcraft:wondrous_encounter_block"
   },
-  "result": {
-    "item": "primogemcraft:wondrous_encounter"
-  }
+  "result": "primogemcraft:wondrous_encounter"
 }

@@ -18,9 +18,15 @@ public final class WeaponTooltips {
     private WeaponTooltips() {
     }
 
-    @SubscribeEvent
-    public static void registerFactories(RegisterClientTooltipComponentFactoriesEvent event) {
-        event.register(WeaponTooltip.class, WeaponTooltipRenderer::new);
+    @Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static final class Factories {
+        private Factories() {
+        }
+
+        @SubscribeEvent
+        public static void registerFactories(RegisterClientTooltipComponentFactoriesEvent event) {
+            event.register(WeaponTooltip.class, WeaponTooltipRenderer::new);
+        }
     }
 
     @SubscribeEvent

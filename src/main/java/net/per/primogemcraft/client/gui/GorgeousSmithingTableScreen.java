@@ -438,8 +438,7 @@ public class GorgeousSmithingTableScreen extends AbstractContainerScreen<Gorgeou
         var cell = layout.weaponCell;
         well(graphics, layout.weaponWell);
         if (weaponRows.isEmpty()) {
-            graphics.drawCenteredString(font, Component.translatable(EMPTY_WEAPONS_KEY),
-                    layout.weaponWell.centerX(), layout.weaponWell.centerY() - 4, SCRIM_TEXT);
+            drawPanelMessage(graphics, Component.translatable(EMPTY_WEAPONS_KEY), layout.weaponWell, SCRIM_TEXT);
             return;
         }
 
@@ -471,8 +470,7 @@ public class GorgeousSmithingTableScreen extends AbstractContainerScreen<Gorgeou
         var cell = layout.materialCell;
         well(graphics, layout.materialWell);
         if (materialRows.isEmpty()) {
-            graphics.drawCenteredString(font, Component.translatable(NO_MATERIALS_KEY),
-                    layout.materialWell.centerX(), layout.materialWell.centerY() - 4, SCRIM_TEXT);
+            drawPanelMessage(graphics, Component.translatable(NO_MATERIALS_KEY), layout.materialWell, SCRIM_TEXT);
             return;
         }
 
@@ -501,7 +499,7 @@ public class GorgeousSmithingTableScreen extends AbstractContainerScreen<Gorgeou
         var panel = layout.previewPanel;
         var weapon = menu.selectedWeapon();
         if (weapon.isEmpty()) {
-            graphics.drawCenteredString(font, Component.translatable(NO_WEAPON_KEY), panel.centerX(), panel.centerY() - 4, SCRIM_TEXT);
+            drawPanelMessage(graphics, Component.translatable(NO_WEAPON_KEY), panel, SCRIM_TEXT);
             return;
         }
 
@@ -550,7 +548,7 @@ public class GorgeousSmithingTableScreen extends AbstractContainerScreen<Gorgeou
         var panel = layout.levelPanel;
         var weapon = menu.selectedWeapon();
         if (weapon.isEmpty()) {
-            graphics.drawCenteredString(font, Component.translatable(NO_WEAPON_KEY), panel.centerX(), panel.centerY() - 4, SCRIM_TEXT);
+            drawPanelMessage(graphics, Component.translatable(NO_WEAPON_KEY), panel, SCRIM_TEXT);
             return;
         }
 
@@ -872,6 +870,16 @@ public class GorgeousSmithingTableScreen extends AbstractContainerScreen<Gorgeou
 
     private void drawRight(GuiGraphics graphics, Component text, int right, int y) {
         graphics.drawString(font, text, right - font.width(text), y, GorgeousSmithingTableScreen.MUTED_COLOR, false);
+    }
+
+    private void drawPanelMessage(GuiGraphics graphics, Component text, Rect panel, int color) {
+        var lines = font.split(text, Math.max(1, panel.width() - TEXT_INSET * 2));
+        var shown = Math.min(lines.size(), Math.max(1, panel.height() / (font.lineHeight + 2)));
+        var y = panel.centerY() - (shown * (font.lineHeight + 2) - 2) / 2;
+        for (var index = 0; index < shown; index++) {
+            graphics.drawCenteredString(font, lines.get(index), panel.centerX(), y, color);
+            y += font.lineHeight + 2;
+        }
     }
 
     private FormattedCharSequence ellipsized(Component text, int width) {

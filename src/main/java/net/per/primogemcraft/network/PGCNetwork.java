@@ -1,6 +1,7 @@
 package net.per.primogemcraft.network;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.per.primogemcraft.compat.network.PayloadRegistrar;
 import net.per.primogemcraft.compat.network.RegisterPayloadHandlersEvent;
 import net.per.primogemcraft.client.ChoiceParticles;
 import net.per.primogemcraft.client.ItemActivationFx;
@@ -13,10 +14,8 @@ import net.per.primogemcraft.system.choice.ChoiceRegistry;
 import net.per.primogemcraft.system.element.AnemoEffectMode;
 
 public final class PGCNetwork {
-    private static final String PROTOCOL_VERSION = "1.1";
-
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {
-        var registrar = event.registrar(PROTOCOL_VERSION);
+        var registrar = event.registrar(PayloadRegistrar.protocolVersion());
         registrar.playToServer(ZiplineControlPayload.TYPE, ZiplineControlPayload.STREAM_CODEC, (payload, context) -> {
             if (context.player().getVehicle() instanceof ZiplineCarrierEntity carrier) {
                 if (payload.targetId() == -1) carrier.release();

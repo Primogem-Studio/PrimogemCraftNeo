@@ -6,12 +6,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -30,13 +34,13 @@ public final class PayloadRegistrar {
     private static final ResourceLocation CHANNEL_ID =
             new ResourceLocation(net.per.primogemcraft.PrimogemCraft.MOD_ID, "payloads");
 
-    private static volatile String protocolVersion = "1.0";
+    private static final String PROTOCOL_VERSION = "1.1";
 
     private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             CHANNEL_ID,
-            () -> protocolVersion,
-            version -> version.equals(protocolVersion),
-            version -> version.equals(protocolVersion));
+            () -> PROTOCOL_VERSION,
+            PROTOCOL_VERSION::equals,
+            PROTOCOL_VERSION::equals);
 
     private int nextIndex = 0;
 
@@ -49,20 +53,17 @@ public final class PayloadRegistrar {
     }
 
     public static String protocolVersion() {
-        return protocolVersion;
+        return PROTOCOL_VERSION;
     }
 
-    static void setProtocolVersion(String version) {
-        if (version != null && !version.isBlank()) protocolVersion = version;
-    }
 
-    // ------------------------------------------------------------ 注册（实例方法）
 
     /** 对应 1.21 的 {@code registrar.playToServer(...)}。 */
     public <T extends CustomPacketPayload> void playToServer(
             CustomPacketPayload.Type<T> type,
             StreamCodec<RegistryFriendlyByteBuf, T> codec,
             PlayPayloadHandler<T> handler) {
+        if (FMLEnvironment.dist == Dist.CLIENT) ClientHandlerBridge.hold(type.payloadClass(), handler);
         register(type, codec, handler, NetworkDirection.PLAY_TO_SERVER);
     }
 
@@ -71,29 +72,31 @@ public final class PayloadRegistrar {
             CustomPacketPayload.Type<T> type,
             StreamCodec<RegistryFriendlyByteBuf, T> codec,
             PlayPayloadHandler<T> handler) {
+        if (FMLEnvironment.dist == Dist.CLIENT) ClientHandlerBridge.hold(type.payloadClass(), handler);
         register(type, codec, handler, NetworkDirection.PLAY_TO_CLIENT);
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends CustomPacketPayload> void register(
             CustomPacketPayload.Type<T> type,
             StreamCodec<RegistryFriendlyByteBuf, T> codec,
             PlayPayloadHandler<T> handler,
             NetworkDirection direction) {
+        var resolved = (PlayPayloadHandler<T>) ClientHandlerBridge.resolve(type.payloadClass(), handler);
         CHANNEL.registerMessage(
                 nextIndex++,
                 type.payloadClass(),
                 (payload, buffer) -> codec.encode(RegistryFriendlyByteBuf.wrap(buffer), payload),
                 buffer -> codec.decode(RegistryFriendlyByteBuf.wrap(buffer)),
                 (payload, contextSupplier) -> {
-                    // SimpleChannel 已在网络线程解出载荷，这里切到主线程再交给业务处理器
-                    NetworkEvent.Context forgeContext = contextSupplier.get();
-                    forgeContext.enqueueWork(() -> handler.accept(payload, new Context(forgeContext)));
+                    var forgeContext = contextSupplier.get();
+                    forgeContext.enqueueWork(() -> resolved.accept(payload, new Context(forgeContext)));
                     forgeContext.setPacketHandled(true);
                 },
                 Optional.of(direction));
     }
 
-    // ------------------------------------------------------------ 发送（静态方法）
+
 
     /** 对应 1.21 的 {@code PacketDistributor.sendToServer(payload)}。 */
     public static void sendToServer(CustomPacketPayload... payloads) {
@@ -152,6 +155,25 @@ public final class PayloadRegistrar {
     private static final class ClientHolder {
         static Player localPlayer() {
             return Minecraft.getInstance().player;
+        }
+    }
+
+    /**
+     * 把注册时立即捕获客户端类的处理器换成惰性占位，使专用服务端只解析编解码器。
+     */
+    private static final class ClientHandlerBridge {
+        private static final Map<Class<?>, PlayPayloadHandler<?>> HANDLERS = new HashMap<>();
+
+        static <T extends CustomPacketPayload> void hold(Class<T> type, PlayPayloadHandler<T> handler) {
+            HANDLERS.put(type, handler);
+        }
+
+        static <T extends CustomPacketPayload> PlayPayloadHandler<?> resolve(
+                Class<T> type, PlayPayloadHandler<T> fallback) {
+            if (FMLEnvironment.dist != Dist.CLIENT) return (payload, context) -> {
+            };
+            var held = HANDLERS.remove(type);
+            return held != null ? held : fallback;
         }
     }
 

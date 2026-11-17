@@ -130,7 +130,6 @@ public class PGCClientEvents {
                 PGCItems.DENDRO_CORE_SPAWN_EGG.get());
     }
 
-    /** 1.20.1 没有 RegisterMenuScreensEvent，改用 MenuScreens.register（客户端 setup 阶段）。 */
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {

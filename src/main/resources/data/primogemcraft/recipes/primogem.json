@@ -6,7 +6,5 @@
   "ingredient": {
     "item": "primogemcraft:colorful_sunglasses"
   },
-  "result": {
-    "item": "primogemcraft:primogem"
-  }
+  "result": "primogemcraft:primogem"
 }

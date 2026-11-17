@@ -17,10 +17,6 @@ public final class GorgeousSmithingTableLayout {
     private static final int TITLE_HEIGHT = 18;
     private static final int ACTION_FRAME_PAD = 4;
     private static final int ACTION_FRAME_TOP_PAD = 3;
-    private static final int PREVIEW_COLUMN_SHARE = 24;
-    private static final int SHARE = 100;
-    private static final int MIN_PREVIEW_WIDTH = 76;
-    private static final int MAX_PREVIEW_WIDTH = 240;
     private static final int PREVIEW_MIN_HEIGHT = 64;
     private static final float PREVIEW_HEIGHT_SHARE = 0.62F;
     private static final float PREVIEW_RISE = 0.24F;
@@ -42,6 +38,8 @@ public final class GorgeousSmithingTableLayout {
     private static final int GRID_RIGHT_INSET = 3;
     private static final int GRID_PAD = 3;
     private static final int SLOT_WELL_PAD = 4;
+    private static final int MIN_SIDE_WIDTH = GorgeousSmithingTableMenu.MATERIAL_SLOT_COUNT * SLOT_CELL
+            + GAP + FILL_BUTTON_SIZE + SLOT_WELL_PAD * 2 + PAD * 2;
 
     public final Rect weaponPanel;
     public final Rect weaponWell;
@@ -80,8 +78,8 @@ public final class GorgeousSmithingTableLayout {
     public GorgeousSmithingTableLayout(int width, int height) {
         var contentY = MARGIN;
         var contentHeight = Math.max(1, height - MARGIN * 2);
-        var middleWidth = Mth.clamp(Math.round((float) (width * PREVIEW_COLUMN_SHARE) / SHARE), MIN_PREVIEW_WIDTH, MAX_PREVIEW_WIDTH);
-        var sideWidth = Math.max(1, (width - MARGIN * 2 - middleWidth - GAP * 2) / 2);
+        var sideWidth = Math.max(MIN_SIDE_WIDTH, (width - MARGIN * 2 - GAP * 2) / 3);
+        var middleWidth = Math.max(1, width - MARGIN * 2 - GAP * 2 - sideWidth * 2);
         var middleX = width / 2 - middleWidth / 2;
         var leftX = middleX - GAP - sideWidth;
         var rightX = middleX + middleWidth + GAP;
@@ -106,7 +104,8 @@ public final class GorgeousSmithingTableLayout {
         var previewHeight = Math.max(PREVIEW_MIN_HEIGHT, Math.round(contentHeight * PREVIEW_HEIGHT_SHARE));
         var previewY = contentY + Math.round((contentHeight - previewHeight) * PREVIEW_RISE);
         previewPanel = new Rect(middleX, previewY, middleWidth, previewHeight);
-        previewItemScale = Mth.clamp(middleWidth / PREVIEW_ITEM_UNIT, MIN_ITEM_SCALE, MAX_ITEM_SCALE);
+        previewItemScale = Mth.clamp(Math.min(middleWidth / PREVIEW_ITEM_UNIT, (previewHeight - 67) / 16),
+                MIN_ITEM_SCALE, MAX_ITEM_SCALE);
         var hintY = previewY + previewHeight + GAP;
         hintArea = new Rect(middleX, hintY, middleWidth, Math.max(0, contentY + contentHeight - hintY));
 

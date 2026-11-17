@@ -6,7 +6,5 @@
   "ingredient": {
     "item": "primogemcraft:rusty_iron_fence"
   },
-  "result": {
-    "item": "minecraft:iron_nugget"
-  }
+  "result": "minecraft:iron_nugget"
 }

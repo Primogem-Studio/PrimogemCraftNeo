@@ -42,12 +42,20 @@ public class PrimogemCraft {
         PGCRecipeSerializers.REGISTRY.register(modBus);
         PGCRecipeTypes.REGISTRY.register(modBus);
         PGCLootConditions.REGISTRY.register(modBus);
+        PGCLootModifiers.REGISTRY.register(modBus);
         PGCCreativeTabs.REGISTRY.register(modBus);
         GenshinCraftIntegration.register(modBus);
-        // Elixir Dan 无任何 1.20.1 版本，其联动（collab/elixir）已移除。
         TaczIntegration.register();
         TeyvatDelightIntegration.register(modBus);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PGCConfig.SPEC);
         PGCNetwork.registerPayloads(new RegisterPayloadHandlersEvent());
+        modBus.addListener(this::onCommonSetup);
+    }
+
+    private void onCommonSetup(net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            net.per.primogemcraft.item.weapon.element.ElementTools.onModifyDefaultComponents();
+            PGCItemBars.modifyDefaultComponents();
+        });
     }
 }

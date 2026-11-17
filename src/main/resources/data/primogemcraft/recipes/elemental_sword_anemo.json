@@ -10,7 +10,6 @@
     "item": "primogemcraft:unfettered_metal"
   },
   "result": {
-    "item": "primogemcraft:philosophies_of_prosperity",
-    "nbt": "{primogemcraft_components:{element_type:1}}"
+    "item": "primogemcraft:philosophies_of_prosperity"
   }
 }

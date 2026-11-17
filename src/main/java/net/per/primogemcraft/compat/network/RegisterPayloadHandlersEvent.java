@@ -16,7 +16,10 @@ public final class RegisterPayloadHandlersEvent {
      * 但通过实例引用调用同样合法，因此调用点无需改写。
      */
     public PayloadRegistrar registrar(String version) {
-        PayloadRegistrar.setProtocolVersion(version);
+        if (!PayloadRegistrar.protocolVersion().equals(version)) {
+            throw new IllegalStateException("Payload protocol version " + version
+                    + " does not match channel version " + PayloadRegistrar.protocolVersion());
+        }
         return new PayloadRegistrar();
     }
 }

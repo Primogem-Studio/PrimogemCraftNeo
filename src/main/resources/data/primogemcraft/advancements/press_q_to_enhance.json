@@ -20,13 +20,11 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "#primogemcraft:weapon"
-            ],
             "count": {
               "min": 1,
               "max": 64
-            }
+            },
+            "tag": "primogemcraft:weapon"
           }
         ]
       }

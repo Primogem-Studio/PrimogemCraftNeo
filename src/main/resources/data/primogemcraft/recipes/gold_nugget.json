@@ -6,7 +6,5 @@
   "ingredient": {
     "tag": "c:mora"
   },
-  "result": {
-    "item": "minecraft:gold_nugget"
-  }
+  "result": "minecraft:gold_nugget"
 }

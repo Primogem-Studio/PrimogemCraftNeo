@@ -10,7 +10,6 @@
     "item": "primogemcraft:eternal_metal"
   },
   "result": {
-    "item": "primogemcraft:philosophies_of_prosperity",
-    "nbt": "{primogemcraft_components:{element_type:3}}"
+    "item": "primogemcraft:philosophies_of_prosperity"
   }
 }
