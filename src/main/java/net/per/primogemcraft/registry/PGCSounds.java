@@ -54,6 +54,7 @@ public class PGCSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> MARCH_7TH_STARTLED = register("march_7th_startled");
     public static final DeferredHolder<SoundEvent, SoundEvent> EXPERIENCE_BOOK = register("experience_book");
     public static final DeferredHolder<SoundEvent, SoundEvent> LOTTERY_DRAW = register("lottery_draw");
+    public static final DeferredHolder<SoundEvent, SoundEvent> THUNDERING_PULSE_FIRE_ARROW = register("thundering_pulse_fire_arrow");
 
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
         return REGISTRY.register(name, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(MOD_ID, name)));

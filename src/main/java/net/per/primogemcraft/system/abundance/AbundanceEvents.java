@@ -68,7 +68,7 @@ public final class AbundanceEvents {
             convert(level, zombie);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
     public static void onLivingDeath(LivingDeathEvent event) {
         var entity = event.getEntity();
         if (!entity.hasEffect(PGCEffects.ABUNDANCE.get())) return;

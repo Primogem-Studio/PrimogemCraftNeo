@@ -26,6 +26,7 @@ public final class WeaponTooltips {
         @SubscribeEvent
         public static void registerFactories(RegisterClientTooltipComponentFactoriesEvent event) {
             event.register(WeaponTooltip.class, WeaponTooltipRenderer::new);
+            event.register(WeaponTutorialRenderer.Content.class, WeaponTutorialRenderer::new);
         }
     }
 
@@ -39,5 +40,7 @@ public final class WeaponTooltips {
         var permanent = stacks.permanent() && stacks.visible() ? stacks : WeaponStacks.NONE;
         event.getTooltipElements().add(NAME_INDEX, Either.right(
                 new WeaponTooltip(state.level(), state.refinements(), extra, permanent.value(), permanent.capacity())));
+        if (net.per.primogemcraft.system.wish.WishTooltips.showsTutorial()) event.getTooltipElements().add(Either.right(
+                new WeaponTutorialRenderer.Content(stack.getItem().getDefaultInstance())));
     }
 }

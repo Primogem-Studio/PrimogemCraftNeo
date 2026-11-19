@@ -6,6 +6,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
@@ -37,6 +38,8 @@ import net.per.primogemcraft.system.curio.*;
 import net.per.primogemcraft.system.curio.effect.LottoPunishmentEffect;
 import net.per.primogemcraft.system.curio.effect.PrescriptionEffect;
 import net.per.primogemcraft.system.element.Element;
+import net.per.primogemcraft.system.weapon.BowAttackCycle;
+import net.per.primogemcraft.system.weapon.WishWeaponBowItem;
 import net.per.primogemcraft.system.wish.WishBanner;
 import net.per.primogemcraft.util.EffectSpecs;
 import net.per.primogemcraft.util.PlayerItems;
@@ -51,6 +54,17 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 public class PGCItems {
     public static final DeferredRegister.Items REGISTRY = DeferredRegister.createItems(MOD_ID);
+
+    public static final DeferredItem<WishWeaponBowItem> EXAMPLE_WISH_BOW = REGISTRY.registerItem("example_wish_bow", properties ->
+            new WishWeaponBowItem(properties,
+                    new BowAttackCycle(8, 16, 5), 3.0F,
+                    ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/item/example_wish_bow.png"),
+                    ResourceLocation.fromNamespaceAndPath("minecraft", "textures/entity/projectiles/arrow.png"), SoundEvents.ARROW_SHOOT));
+
+    public static final DeferredItem<ThunderingPulseItem> THUNDERING_PULSE = fiveStarWeapon("thundering_pulse", ThunderingPulseItem::new);
+    public static final DeferredItem<SkywardHarpItem> SKYWARD_HARP = fiveStarWeapon("skyward_harp", SkywardHarpItem::new);
+    public static final DeferredItem<TheViridescentHuntItem> THE_VIRIDESCENT_HUNT = REGISTRY.registerItem("the_viridescent_hunt", TheViridescentHuntItem::new);
+    public static final DeferredItem<SlingshotItem> SLINGSHOT = REGISTRY.registerItem("slingshot", SlingshotItem::new);
 
     private static final int FROSTED_SLIME_JUMP_TICKS = 100;
     private static final int PRAISE_OF_HIGH_MORALS_TICKS = 1200;
@@ -139,7 +153,7 @@ public class PGCItems {
     public static final DeferredItem<ElementalMoltenBeadItem> ELEMENTAL_MOLTEN_BEAD = REGISTRY.registerItem("elemental_molten_bead",
             properties -> new ElementalMoltenBeadItem(properties.stacksTo(1).fireResistant()));
     public static final DeferredItem<DescribedItem> ELEMENTAL_MOLTEN_BEAD_FRAGMENT = described("elemental_molten_bead_fragment", Rarity.EPIC);
-    public static final DeferredItem<DescribedItem> ELEMENTAL_DISSOLVING_BEAD_DUST = described("elemental_dissolving_bead_dust", Rarity.RARE);
+    public static final DeferredItem<DescribedItem> ELEMENTAL_MOLTEN_BEAD_DUST = described("elemental_molten_bead_dust", Rarity.RARE);
     public static final DeferredItem<DescribedItem> ELEMENTAL_CRYSTAL_DUST = described("elemental_crystal_dust");
     public static final DeferredItem<DescribedItem> PRIMOGEM_DUST = described("primogem_dust");
     public static final DeferredItem<DescribedItem> DIAMOND_SHARD = described("diamond_shard");
@@ -564,6 +578,7 @@ public class PGCItems {
     public static final DeferredItem<WishFateItem> ACQUAINT_FATE = REGISTRY.registerItem("acquaint_fate", properties -> new WishFateItem(properties.rarity(Rarity.UNCOMMON), WishBanner.ACQUAINT));
     public static final DeferredItem<WishFateItem> INTERTWINED_FATE = REGISTRY.registerItem("intertwined_fate", properties -> new WishFateItem(properties.rarity(Rarity.UNCOMMON), WishBanner.INTERTWINED));
     public static final DeferredItem<WishCoreItem> WISH_CORE = REGISTRY.registerItem("wish_core", properties -> new WishCoreItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final DeferredItem<WishCoreItem> TEN_PULL_WISH_CORE = REGISTRY.registerItem("ten_pull_wish_core", properties -> new WishCoreItem(properties.stacksTo(1).rarity(Rarity.UNCOMMON), WishCoreItem.TEN_PULL_CAPACITY));
     public static final DeferredItem<DescribedItem> UNBUFFED_WISH_CORE = described("unbuffed_wish_core");
     public static final DeferredItem<WishingStaffItem> WISHING_STAFF = REGISTRY.registerItem("wishing_staff", WishingStaffItem::new);
     public static final DeferredItem<WishDataExporterItem> WISH_DATA_EXPORTER = REGISTRY.registerItem("wish_data_exporter", WishDataExporterItem::new);

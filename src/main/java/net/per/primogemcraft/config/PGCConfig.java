@@ -1,6 +1,7 @@
 package net.per.primogemcraft.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.per.primogemcraft.system.element.Element;
 
 import java.util.List;
 
@@ -29,10 +30,31 @@ public final class PGCConfig {
     public static final int DEFAULT_GENSHINCRAFT_BUBBLE_HEAL = 20;
     public static final int DEFAULT_GENSHINCRAFT_FREEZE_DAMAGE_SCALE = 25;
     public static final double DEFAULT_GENSHINCRAFT_GEO_WEAKNESS_AMPLIFIER = 5.0D;
+    public static final double DEFAULT_ELEMENT_DAMAGE_MULTIPLIER = 1.0D;
 
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
     public static final ForgeConfigSpec.DoubleValue ZIPLINE_SPEED = BUILDER.defineInRange("zipline_speed_blocks_per_second", DEFAULT_ZIPLINE_SPEED, 0.1D, 100.0D);
+
+    public static final ForgeConfigSpec.DoubleValue ANEMO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("anemo_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+    public static final ForgeConfigSpec.DoubleValue GEO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("geo_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+    public static final ForgeConfigSpec.DoubleValue ELECTRO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("electro_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+    public static final ForgeConfigSpec.DoubleValue DENDRO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("dendro_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+    public static final ForgeConfigSpec.DoubleValue HYDRO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("hydro_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+    public static final ForgeConfigSpec.DoubleValue PYRO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("pyro_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+    public static final ForgeConfigSpec.DoubleValue CRYO_DAMAGE_MULTIPLIER = BUILDER.defineInRange("cryo_damage_multiplier", DEFAULT_ELEMENT_DAMAGE_MULTIPLIER, 0.0D, 1000.0D);
+
+    public static ForgeConfigSpec.DoubleValue elementDamageMultiplier(Element element) {
+        return switch (element) {
+            case ANEMO -> ANEMO_DAMAGE_MULTIPLIER;
+            case GEO -> GEO_DAMAGE_MULTIPLIER;
+            case ELECTRO -> ELECTRO_DAMAGE_MULTIPLIER;
+            case DENDRO -> DENDRO_DAMAGE_MULTIPLIER;
+            case HYDRO -> HYDRO_DAMAGE_MULTIPLIER;
+            case PYRO -> PYRO_DAMAGE_MULTIPLIER;
+            case CRYO -> CRYO_DAMAGE_MULTIPLIER;
+        };
+    }
 
     public static final ForgeConfigSpec.IntValue CAPTURING_RADIANCE_CHANCE = BUILDER.defineInRange("capturing_radiance_chance", DEFAULT_CAPTURING_RADIANCE_CHANCE, 0, 100);
     public static final ForgeConfigSpec.IntValue WEAPON_MAX_LEVEL = BUILDER.defineInRange("weapon_max_level", DEFAULT_WEAPON_MAX_LEVEL, 1, 1000);

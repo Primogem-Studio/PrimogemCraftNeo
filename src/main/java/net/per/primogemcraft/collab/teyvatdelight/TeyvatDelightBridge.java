@@ -15,9 +15,12 @@ final class TeyvatDelightBridge {
     }
 
     static void register(IEventBus modBus) {
-        // 1.20.1 没有 ModifyDefaultComponentsEvent，也无法给其他模组的物品设默认组件；
-        // 星级与品质改为在玩家取用物品时按需写入（见 applyDefaults）。
         MinecraftForge.EVENT_BUS.addListener(TeyvatDelightBridge::addFoodTooltip);
+        MinecraftForge.EVENT_BUS.addListener(TeyvatDelightBridge::addReloadListeners);
+    }
+
+    private static void addReloadListeners(net.minecraftforge.event.AddReloadListenerEvent event) {
+        event.addListener(new CurrencyExchange());
     }
 
     /**

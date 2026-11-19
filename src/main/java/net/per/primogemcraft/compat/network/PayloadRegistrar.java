@@ -42,7 +42,7 @@ public final class PayloadRegistrar {
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals);
 
-    private int nextIndex = 0;
+    private static int nextIndex = 0;
 
     /** 由 {@link RegisterPayloadHandlersEvent#registrar(String)} 创建。 */
     PayloadRegistrar() {
@@ -124,6 +124,11 @@ public final class PayloadRegistrar {
         var target = PacketDistributor.NEAR.with(
                 () -> new PacketDistributor.TargetPoint(excluded, x, y, z, radius, level.dimension()));
         for (CustomPacketPayload payload : payloads) CHANNEL.send(target, payload);
+    }
+
+    public static void sendToPlayersTrackingEntity(net.minecraft.world.entity.Entity entity, CustomPacketPayload... payloads) {
+        var tracking = PacketDistributor.TRACKING_ENTITY.with(() -> entity);
+        for (CustomPacketPayload payload : payloads) CHANNEL.send(tracking, payload);
     }
 
     /**

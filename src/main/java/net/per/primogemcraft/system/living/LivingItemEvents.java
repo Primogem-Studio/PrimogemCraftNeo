@@ -21,6 +21,12 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 @Mod.EventBusSubscriber(modid = MOD_ID)
 public final class LivingItemEvents {
     @SubscribeEvent
+    public static void onProjectileSpawn(net.minecraftforge.event.entity.EntityJoinLevelEvent event) {
+        if (!event.getLevel().isClientSide() && event.getEntity() instanceof net.minecraft.world.entity.projectile.Projectile projectile
+                && projectile.getOwner() instanceof LivingItemUsePlayer player) projectile.setOwner(player.owner());
+    }
+
+    @SubscribeEvent
     public static void onOwnerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer owner)) return;
         var previousLevel = owner.serverLevel().getServer().getLevel(event.getFrom());

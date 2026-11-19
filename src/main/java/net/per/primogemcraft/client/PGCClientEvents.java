@@ -58,6 +58,12 @@ public class PGCClientEvents {
     }
 
     @SubscribeEvent
+    public static void registerCurioRenderers(FMLClientSetupEvent event) {
+        if (net.per.primogemcraft.system.curio.compat.CuriosIntegration.loaded())
+            event.enqueueWork(ColorfulSunglassesCurioRenderer::register);
+    }
+
+    @SubscribeEvent
     public static void registerModelProperties(FMLClientSetupEvent event) {
         event.enqueueWork(() -> ItemProperties.registerGeneric(
                 WEAPON_RECOVERY_PROPERTY,
@@ -114,6 +120,8 @@ public class PGCClientEvents {
     @SubscribeEvent
     public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAbove(VanillaGuiOverlay.EXPERIENCE_BAR.id(), SPEAR_CHARGE_LAYER.getPath(), JadeWingedSpearOverlay.INSTANCE);
+        event.registerAboveAll("sky_target",
+                (gui, graphics, partialTick, width, height) -> SkyTargetOverlay.render(graphics, partialTick));
     }
 
     @SubscribeEvent

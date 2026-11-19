@@ -1,8 +1,8 @@
 package net.per.primogemcraft.system.wish;
 
-import net.per.primogemcraft.compat.component.StackComponents;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.per.primogemcraft.compat.component.StackComponents;
 import net.per.primogemcraft.registry.PGCDataComponents;
 
 public final class WishValue {
@@ -10,6 +10,10 @@ public final class WishValue {
 
     public static int get(ItemStack stack) {
         return StackComponents.getOrDefault(stack, PGCDataComponents.WISH_VALUE, 0);
+    }
+
+    public static double perPull(ItemStack stack) {
+        return get(stack) / (double) Math.max(1, StackComponents.getOrDefault(stack, PGCDataComponents.WISH_VALUE_DIVISOR, 1));
     }
 
     public static int absorb(ItemStack core, Player player, int limit, boolean whole) {

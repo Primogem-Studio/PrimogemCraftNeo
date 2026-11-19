@@ -191,7 +191,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "primogemcraft:elemental_dissolving_bead_dust",
+          "name": "primogemcraft:elemental_molten_bead_dust",
           "weight": 3,
           "functions": [
             {

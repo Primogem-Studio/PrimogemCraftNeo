@@ -8,14 +8,14 @@
   ],
   "key": {
     "a": {
-      "item": "primogemcraft:elemental_dissolving_bead_dust"
+      "item": "primogemcraft:elemental_molten_bead_dust"
     },
     "b": {
       "item": "primogemcraft:elemental_molten_bead_fragment"
     }
   },
   "result": {
-    "item": "primogemcraft:elemental_molten_bead_fragment",
-    "count": 2
+    "count": 2,
+    "item": "primogemcraft:elemental_molten_bead_fragment"
   }
 }

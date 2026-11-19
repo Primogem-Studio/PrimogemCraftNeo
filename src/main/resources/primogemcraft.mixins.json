@@ -4,6 +4,7 @@
   "package": "net.per.primogemcraft.mixin",
   "plugin": "net.per.primogemcraft.mixin.MixinPlugin",
   "compatibilityLevel": "JAVA_17",
+  "refmap": "primogemcraft.mixins.refmap.json",
   "mixins": [
     "ItemStackMixin",
     "PowderSnowBlockMixin"

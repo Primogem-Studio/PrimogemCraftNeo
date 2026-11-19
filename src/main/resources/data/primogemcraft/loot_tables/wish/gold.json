@@ -39,6 +39,8 @@
         {"type":"minecraft:item","name":"minecraft:netherite_boots","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}},{"function":"minecraft:enchant_with_levels","levels":{"min":0,"max":30}}]},
         {"type":"minecraft:item","name":"minecraft:netherite_pickaxe","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}},{"function":"minecraft:enchant_with_levels","levels":{"min":0,"max":30}}]},
         {"type":"minecraft:item","name":"primogemcraft:firearm_fragment","weight":2,"functions":[{"function":"minecraft:set_count","count":{"min":10,"max":30}}]},
+        {"type":"minecraft:item","name":"primogemcraft:thundering_pulse","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
+        {"type":"minecraft:item","name":"primogemcraft:skyward_harp","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
         {"type":"minecraft:item","name":"primogemcraft:mistsplitter_reforged","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
         {"type":"minecraft:item","name":"primogemcraft:hewn_edge_blade","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},
         {"type":"minecraft:item","name":"primogemcraft:splendor_of_tranquil_waters","weight":1,"functions":[{"function":"minecraft:set_count","count":{"min":1,"max":1}}]},

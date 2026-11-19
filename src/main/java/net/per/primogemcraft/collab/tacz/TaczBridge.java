@@ -35,6 +35,7 @@ public final class TaczBridge {
 
     static void register() {
         MinecraftForge.EVENT_BUS.register(TaczBridge.class);
+        MinecraftForge.EVENT_BUS.register(SkyTargeting.class);
     }
 
     @SubscribeEvent

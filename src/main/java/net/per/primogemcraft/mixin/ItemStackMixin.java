@@ -13,8 +13,6 @@ import java.util.function.Consumer;
 
 @Mixin(ItemStack.class)
 public class ItemStackMixin {
-    /**
-     * 1.21 鐨勭鍚嶆槸 hurtAndBreak(int, ServerLevel, LivingEntity, Consumer<Item>)锛?     * 1.20.1 涓?hurtAndBreak(int, T extends LivingEntity, Consumer<T>)锛屾棤 ServerLevel 鍙傛暟銆?     * 鐩爣涓栫晫鐢卞疄浣撹嚜韬彁渚涖€?     */
     @Inject(
             method = "hurtAndBreak(ILnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;setDamageValue(I)V", shift = At.Shift.AFTER),

@@ -32,7 +32,8 @@ public final class WishMaterialValues {
         if (!event.isAttack()) return;
         var minecraft = Minecraft.getInstance();
         var player = minecraft.player;
-        if (minecraft.screen != null || player == null || !player.getMainHandItem().is(PGCItems.WISH_CORE.get())) return;
+        if (minecraft.screen != null || player == null
+                || !(player.getMainHandItem().getItem() instanceof net.per.primogemcraft.item.misc.WishCoreItem)) return;
         var source = player.getOffhandItem();
         var value = source.isEmpty() ? 0 : values.getOrDefault(BuiltInRegistries.ITEM.getKey(source.getItem()), 1);
         player.displayClientMessage(WishReports.offhandValue(value), false);

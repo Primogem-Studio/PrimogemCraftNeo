@@ -7,15 +7,27 @@ import net.per.primogemcraft.client.ChoiceParticles;
 import net.per.primogemcraft.client.ItemActivationFx;
 import net.per.primogemcraft.client.WishMaterialValues;
 import net.per.primogemcraft.client.WishLootItems;
+import net.per.primogemcraft.client.SkyTargetOverlay;
 import net.per.primogemcraft.client.gui.ChoiceClientHandler;
 import net.per.primogemcraft.entity.misc.ZiplineCarrierEntity;
 import net.per.primogemcraft.item.misc.LuckySpecialTicketItem;
+import net.per.primogemcraft.item.weapon.ThunderingPulseItem;
 import net.per.primogemcraft.system.choice.ChoiceRegistry;
 import net.per.primogemcraft.system.element.AnemoEffectMode;
+import net.per.primogemcraft.system.wish.WishCoreTransfer;
 
 public final class PGCNetwork {
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {
+        net.per.primogemcraft.collab.teyvatdelight.StellarShopNetwork.register(event);
         var registrar = event.registrar(PayloadRegistrar.protocolVersion());
+        registrar.playToClient(SkyTargetPayload.TYPE, SkyTargetPayload.STREAM_CODEC, (payload, context) -> SkyTargetOverlay.update(payload));
+        registrar.playToClient(SkyBulletPayload.TYPE, SkyBulletPayload.STREAM_CODEC, (payload, context) -> SkyTargetOverlay.updateBullet(payload));
+        registrar.playToServer(ThunderingPulsePayload.TYPE, ThunderingPulsePayload.STREAM_CODEC, (payload, context) -> {
+            if (context.player() instanceof ServerPlayer player) ThunderingPulseItem.dash(player);
+        });
+        registrar.playToServer(WishCoreTransferPayload.TYPE, WishCoreTransferPayload.STREAM_CODEC, (payload, context) -> {
+            if (context.player() instanceof ServerPlayer player) WishCoreTransfer.transfer(player, payload.containerId());
+        });
         registrar.playToServer(ZiplineControlPayload.TYPE, ZiplineControlPayload.STREAM_CODEC, (payload, context) -> {
             if (context.player().getVehicle() instanceof ZiplineCarrierEntity carrier) {
                 if (payload.targetId() == -1) carrier.release();

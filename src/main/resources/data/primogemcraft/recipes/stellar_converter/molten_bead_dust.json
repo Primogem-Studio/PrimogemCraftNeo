@@ -1,0 +1,12 @@
+{
+  "type": "primogemcraft:stellar_converter",
+  "first": {
+    "count": 1,
+    "item": "primogemcraft:elemental_molten_bead_dust"
+  },
+  "second": {
+    "count": 2,
+    "item": "primogemcraft:elemental_molten_bead_dust"
+  },
+  "cost": 330
+}

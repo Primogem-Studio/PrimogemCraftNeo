@@ -26,7 +26,15 @@ public final class CuriosBridge {
     }
 
     public static void register() {
-        CuriosApi.registerCurioPredicate(PREDICATE, result -> result.stack().is(CurioForm.ANY) || OtherworldBankbook.isBankbook(result.stack()) || result.stack().is(PGCItems.VIOLANE.get()));
+        CuriosApi.registerCurioPredicate(PREDICATE, result -> result.stack().is(CurioForm.ANY)
+                || OtherworldBankbook.isBankbook(result.stack()) || result.stack().is(PGCItems.VIOLANE.get())
+                || result.stack().is(PGCItems.COLORFUL_SUNGLASSES.get()));
+        CuriosApi.registerCurio(PGCItems.COLORFUL_SUNGLASSES.get(), new top.theillusivec4.curios.api.type.capability.ICurioItem() {
+            @Override
+            public List<net.minecraft.network.chat.Component> getSlotsTooltip(List<net.minecraft.network.chat.Component> tooltips, ItemStack stack) {
+                return List.of();
+            }
+        });
     }
 
     public static List<ItemStack> equipped(Player player) {

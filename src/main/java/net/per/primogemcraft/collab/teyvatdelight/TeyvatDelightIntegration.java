@@ -10,4 +10,8 @@ public final class TeyvatDelightIntegration {
     public static void register(IEventBus modBus) {
         if (ModList.get().isLoaded("teyvatdelight")) TeyvatDelightBridge.register(modBus);
     }
+
+    public static boolean supportsShop() {
+        return ModList.get().isLoaded("teyvatdelight");
+    }
 }

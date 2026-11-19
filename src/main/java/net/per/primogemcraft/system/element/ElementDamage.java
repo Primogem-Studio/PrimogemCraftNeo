@@ -12,7 +12,11 @@ import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
  * with it the hit becomes GenshinCraft's own elemental damage source, and either way
  * {@link #elementOf(DamageSource)} reads the element back.
  */
+@net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = net.per.primogemcraft.PrimogemCraft.MOD_ID)
 public final class ElementDamage {
+    private static final java.util.Map<DamageSource, Element> SOURCES =
+            java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
+
     private ElementDamage() {
     }
 
@@ -21,7 +25,23 @@ public final class ElementDamage {
     }
 
     public static DamageSource of(Element element, Holder<DamageType> type, Entity direct, Entity causing, ElementStyle style, ElementDamageOptions options) {
-        return GenshinCraftIntegration.replace(new ElementDamageSource(type, element, options, direct, causing), element, style, options);
+        var original = new ElementDamageSource(type, element, options, direct, causing);
+        var source = GenshinCraftIntegration.replace(original, element, style, options);
+        if (source != original) SOURCES.put(source, element);
+        return source;
+    }
+
+    public static boolean isExternallyManaged() {
+        return GenshinCraftIntegration.managesElementDamage();
+    }
+
+    @net.minecraftforge.eventbus.api.SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.HIGHEST)
+    public static void onHurt(net.minecraftforge.event.entity.living.LivingHurtEvent event) {
+        if (event.getEntity().level().isClientSide() || !isExternallyManaged()) return;
+        var element = SOURCES.get(event.getSource());
+        if (element == null) return;
+        var multiplier = net.per.primogemcraft.config.PGCConfig.elementDamageMultiplier(element).get();
+        if (multiplier != 1.0D) event.setAmount((float) Math.min(Float.MAX_VALUE, event.getAmount() * multiplier));
     }
 
     public static DamageSource of(Element element, DamageSource origin) {

@@ -21,6 +21,8 @@ public final class NineSliceButton {
     private static final Skin NORMAL = new Skin(texture("u_button"), 2, 2, 2, 6);
     private static final Skin HIGHLIGHT = new Skin(texture("u_button_press"), 2, 2, 2, 4);
     private static final Skin DISABLED = new Skin(texture("u_button_no"), 2, 2, 2, 6);
+    private static final Skin TEYVAT_NORMAL = new Skin(teyvatTexture("u_button"), 2, 2, 2, 6);
+    private static final Skin TEYVAT_HIGHLIGHT = new Skin(teyvatTexture("u_button_press"), 2, 2, 2, 4);
 
     private NineSliceButton() {
     }
@@ -34,6 +36,24 @@ public final class NineSliceButton {
                             boolean enabled, boolean hover, boolean selected) {
         var highlighted = enabled && (hover || selected);
         var skin = enabled ? highlighted ? HIGHLIGHT : NORMAL : DISABLED;
+        draw(graphics, font, x, y, width, height, text, enabled, hover, highlighted ? TEXT_HOVER_COLOR : TEXT_COLOR, skin);
+    }
+
+    public static void drawTeyvat(GuiGraphics graphics, Font font, int x, int y, int width, int height,
+                                  Component text, boolean enabled, boolean hover) {
+        drawTeyvat(graphics, font, x, y, width, height, text, enabled, hover, false);
+    }
+
+    public static void drawTeyvat(GuiGraphics graphics, Font font, int x, int y, int width, int height,
+                                  Component text, boolean enabled, boolean hover, boolean selected) {
+        var highlighted = enabled && (hover || selected);
+        var skin = enabled ? highlighted ? TEYVAT_HIGHLIGHT : TEYVAT_NORMAL : DISABLED;
+        draw(graphics, font, x, y, width, height, text, enabled, hover,
+                !enabled ? TEXT_COLOR : highlighted ? 0xFFFFFFFF : 0xFF000000, skin);
+    }
+
+    private static void draw(GuiGraphics graphics, Font font, int x, int y, int width, int height, Component text,
+                             boolean enabled, boolean hover, int textColor, Skin skin) {
         var bottom = fit(skin, height, font.lineHeight);
         skin(graphics, skin, x, y, width, height, bottom);
         var faceWidth = Math.max(1, width - skin.left() - skin.right());
@@ -41,7 +61,7 @@ public final class NineSliceButton {
         var sink = enabled && hover && leftPressed() ? PRESS_SINK : 0;
         var textX = x + skin.left() + (faceWidth - font.width(text)) / 2;
         var textY = y + skin.top() + (faceHeight - font.lineHeight) / 2 + TEXT_DROP + sink;
-        graphics.drawString(font, text, textX, textY, highlighted ? TEXT_HOVER_COLOR : TEXT_COLOR, false);
+        graphics.drawString(font, text, textX, textY, textColor, false);
     }
 
     public static void draw(GuiGraphics graphics, Font font, int x, int y, int width, int height, Component text, boolean enabled) {
@@ -63,6 +83,10 @@ public final class NineSliceButton {
 
     private static ResourceLocation texture(String name) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/widget/" + name + ".png");
+    }
+
+    private static ResourceLocation teyvatTexture(String name) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/gui/widget_teyvat/" + name + ".png");
     }
 
     private static void skin(GuiGraphics graphics, Skin skin, int x, int y, int width, int height, int bottomInset) {

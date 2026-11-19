@@ -40,9 +40,16 @@ public class PGCJEIPlugin implements IModPlugin {
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(new ItemStack(PGCItems.WISH_CORE.get()), WISH_MATERIALS);
+        registration.addRecipeCatalyst(new ItemStack(PGCItems.TEN_PULL_WISH_CORE.get()), WISH_MATERIALS);
         registration.addRecipeCatalyst(new ItemStack(PGCItems.ACQUAINT_FATE.get()), WISH);
         registration.addRecipeCatalyst(new ItemStack(PGCItems.INTERTWINED_FATE.get()), WISH);
         registration.addRecipeCatalyst(new ItemStack(PGCItems.STELLAR_CONVERTER.get()), CONVERSION);
+    }
+
+    @Override
+    public void registerRecipeTransferHandlers(mezz.jei.api.registration.IRecipeTransferRegistration registration) {
+        registration.addRecipeTransferHandler(new WishCoreTransferHandler(registration.getTransferHelper()),
+                mezz.jei.api.constants.RecipeTypes.ANVIL);
     }
 
     @Override
@@ -52,6 +59,12 @@ public class PGCJEIPlugin implements IModPlugin {
             registration.addRecipes(CONVERSION, level.getRecipeManager().getAllRecipesFor(PGCRecipeTypes.STELLAR_CONVERTER.get())
                     .stream().map(holder -> holder).toList());
         }
+        var core = net.per.primogemcraft.system.wish.WishCoreAnvil.exampleCore();
+        var fates = new ItemStack(PGCItems.INTERTWINED_FATE.get(), net.per.primogemcraft.system.wish.WishCoreAnvil.FATE_COUNT);
+        registration.addRecipes(mezz.jei.api.constants.RecipeTypes.ANVIL, java.util.List.of(
+                registration.getVanillaRecipeFactory().createAnvilRecipe(fates, java.util.List.of(core),
+                        java.util.List.of(net.per.primogemcraft.system.wish.WishCoreAnvil.assemble(fates, core)),
+                        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(MOD_ID, "ten_pull_wish_core_anvil"))));
     }
 
     @Override

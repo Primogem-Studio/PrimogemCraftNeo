@@ -6,6 +6,7 @@ import net.per.primogemcraft.compat.registries.DeferredHolder;
 import net.per.primogemcraft.compat.registries.DeferredRegister;
 import net.per.primogemcraft.recipe.ShapedWithComponentsRecipe;
 import net.per.primogemcraft.recipe.StellarConverterRecipe;
+import net.per.primogemcraft.recipe.TenPullWishCoreRecipe;
 import net.per.primogemcraft.recipe.WeaponRecoveryRecipe;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
@@ -21,4 +22,7 @@ public class PGCRecipeSerializers {
 
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ShapedWithComponentsRecipe>> SHAPED_WITH_COMPONENTS =
             REGISTRY.register("crafting_shaped_with_components", ShapedWithComponentsRecipe.Serializer::new);
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TenPullWishCoreRecipe>> TEN_PULL_WISH_CORE =
+            REGISTRY.register("ten_pull_wish_core", TenPullWishCoreRecipe.Serializer::new);
 }

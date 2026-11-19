@@ -43,4 +43,18 @@ public interface StreamCodecs {
                 if (value != null) buffer.writeItem(value);
             },
             buffer -> buffer.readBoolean() ? buffer.readItem() : null);
+
+    static <V> StreamCodec<RegistryFriendlyByteBuf, java.util.List<V>> list(StreamCodec<RegistryFriendlyByteBuf, V> element) {
+        return StreamCodec.of(
+                (buffer, value) -> {
+                    buffer.writeVarInt(value.size());
+                    for (var item : value) element.encode(buffer, item);
+                },
+                buffer -> {
+                    var size = buffer.readVarInt();
+                    var result = new java.util.ArrayList<V>(size);
+                    for (var index = 0; index < size; index++) result.add(element.decode(buffer));
+                    return java.util.List.copyOf(result);
+                });
+    }
 }

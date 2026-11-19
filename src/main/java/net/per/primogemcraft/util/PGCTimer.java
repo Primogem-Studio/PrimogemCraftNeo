@@ -1,9 +1,9 @@
 package net.per.primogemcraft.util;
 
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.event.TickEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +22,9 @@ public final class PGCTimer {
     }
 
     public static boolean isDone(Entity entity, String name) {
-        Map<String, Integer> timers = TIMERS.get(entity);
+        var timers = TIMERS.get(entity);
         if (timers == null) return true;
-        Integer remaining = timers.get(name);
+        var remaining = timers.get(name);
         return remaining == null || remaining <= 0;
     }
 
@@ -44,6 +44,7 @@ public final class PGCTimer {
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
         TIMERS.values().forEach(timers -> timers.entrySet().removeIf(entry -> entry.setValue(entry.getValue() - 1) <= 0));
     }
 }

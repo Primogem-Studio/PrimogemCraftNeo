@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "craft_to_teyvat_primogem": { "cost": 3, "reward": 1, "daily_limit": 3 },
+  "teyvat_to_craft_primogem": { "cost": 1, "reward": 3, "daily_limit": -1 },
+  "craft_to_teyvat_mora": { "cost": 21, "reward": 3, "daily_limit": 5 },
+  "teyvat_to_craft_mora": { "cost": 3, "reward": 21, "daily_limit": -1 }
+}

@@ -10,6 +10,7 @@ import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
 import net.per.primogemcraft.collab.tacz.TaczIntegration;
 import net.per.primogemcraft.collab.teyvatdelight.TeyvatDelightIntegration;
 import net.per.primogemcraft.compat.network.RegisterPayloadHandlersEvent;
+import net.per.primogemcraft.config.PGCClientConfig;
 import net.per.primogemcraft.config.PGCConfig;
 import net.per.primogemcraft.network.PGCNetwork;
 import net.per.primogemcraft.system.zipline.ZiplineAssembly;
@@ -48,6 +49,7 @@ public class PrimogemCraft {
         TaczIntegration.register();
         TeyvatDelightIntegration.register(modBus);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, PGCConfig.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, PGCClientConfig.SPEC);
         PGCNetwork.registerPayloads(new RegisterPayloadHandlersEvent());
         modBus.addListener(this::onCommonSetup);
     }

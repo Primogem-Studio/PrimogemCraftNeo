@@ -51,6 +51,8 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.fluids.FluidType;
 import net.per.primogemcraft.collab.genshincraft.GenshinCraftIntegration;
 import net.per.primogemcraft.entity.misc.LivingItemDrop;
+import net.per.primogemcraft.system.living.LivingItemUsePlayer;
+import net.per.primogemcraft.system.weapon.WishWeaponBowItem;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -97,6 +99,7 @@ public class LivingItemEntity extends PathfinderMob {
     private float infiniteMaxHealth = INFINITE_HEALTH;
     private boolean durationHealthInitialized;
     private int attackCooldown;
+    private LivingItemUsePlayer usePlayer;
     private int attackInterval = 20;
     private int useCooldown;
     private int scanCooldown;
@@ -475,6 +478,7 @@ public class LivingItemEntity extends PathfinderMob {
             return;
         }
         syncInvisibility(owner);
+        if (usePlayer != null) tickCarriedItemUse(owner);
         if (useCooldown > 0) {
             useCooldown--;
         } else {
@@ -570,20 +574,16 @@ public class LivingItemEntity extends PathfinderMob {
 
     private void updateCombat(Player owner, LivingEntity target) {
         hoverTarget = null;
-        lookAt(target, 30.0F, 30.0F);
         var stack = getCarriedStack();
+        if (usePlayer == null || !(stack.getItem() instanceof WishWeaponBowItem)) lookAt(target, 30.0F, 30.0F);
         if (isBowLike(stack)) {
-            if (attackCooldown > 0) {
-                attackCooldown--;
-                entityData.set(DATA_SWING, attackCooldown);
-            } else if (bowShot(owner, target)) {
-                entityData.set(DATA_SWING, 0);
+            if (usePlayer == null && attackCooldown-- <= 0) {
+                useAsPlayer(owner, stack);
                 attackCooldown = Math.max(10, attackInterval);
-            } else {
-                attackCooldown = 5;
             }
             return;
         }
+        if (usePlayer != null) return;
         if (attackCooldown > 0 && --attackCooldown > 0) return;
         var distanceSquared = target.getBoundingBox().distanceToSqr(position());
         if (distanceSquared > attackRange * attackRange) {
@@ -784,12 +784,11 @@ public class LivingItemEntity extends PathfinderMob {
 
     private void attemptRightClick(Player owner) {
         var stack = getCarriedStack();
-        if (stack.isEmpty() || owner == null) return;
+        if (stack.isEmpty() || owner == null || usePlayer != null) return;
         var item = stack.getItem();
         if (owner.getCooldowns().isOnCooldown(item)) return;
         var focus = getTarget() != null ? getTarget() : owner;
         if (isBowLike(stack)) {
-            if (focus != owner) bowShot(owner, focus);
             return;
         }
         if (item == Items.WATER_BUCKET || item == Items.LAVA_BUCKET || item == Items.POWDER_SNOW_BUCKET) {
@@ -874,6 +873,14 @@ public class LivingItemEntity extends PathfinderMob {
     }
 
     private void useAsPlayer(Player owner, ItemStack stack) {
+        if (!(level() instanceof ServerLevel serverLevel)) return;
+        if (stack.getItem() instanceof WishWeaponBowItem) {
+            usePlayer = new LivingItemUsePlayer(serverLevel, this, owner);
+            usePlayer.aim(this, getTarget() != null ? getTarget() : owner);
+            usePlayer.useCarriedItem(true);
+            syncCarriedItemUse();
+            return;
+        }
         var slot = owner.getInventory().selected;
         var previous = owner.getInventory().getItem(slot);
         owner.getInventory().setItem(slot, stack);
@@ -881,6 +888,7 @@ public class LivingItemEntity extends PathfinderMob {
         try {
             result = stack.getItem().use(level(), owner, InteractionHand.MAIN_HAND).getObject();
         } finally {
+            owner.stopUsingItem();
             owner.getInventory().setItem(slot, previous);
         }
         if (result.isEmpty()) {
@@ -893,6 +901,37 @@ public class LivingItemEntity extends PathfinderMob {
             entityData.set(DATA_ITEM, result.copy());
     }
 
+    private void tickCarriedItemUse(Player owner) {
+        if (usePlayer.level() != level() || usePlayer.owner() != owner) {
+            stopCarriedItemUse();
+            return;
+        }
+        if (isBowLike(getCarriedStack()) && (getTarget() == null || !getTarget().isAlive()
+                || !isValidTarget(getTarget(), owner))) {
+            stopCarriedItemUse();
+            return;
+        }
+        usePlayer.aim(this, getTarget() != null ? getTarget() : owner);
+        usePlayer.useCarriedItem(false);
+        entityData.set(DATA_SWING, Math.max(1, BOW_DRAW_TICKS - usePlayer.getTicksUsingItem()));
+        syncCarriedItemUse();
+    }
+
+    private void syncCarriedItemUse() {
+        if (!ItemStack.matches(getCarriedStack(), usePlayer.getMainHandItem()))
+            entityData.set(DATA_ITEM, usePlayer.getMainHandItem().copy());
+        if (!usePlayer.isUsingItem()) stopCarriedItemUse();
+        if (getCarriedStack().isEmpty()) revertToItem();
+    }
+
+    private void stopCarriedItemUse() {
+        if (usePlayer == null) return;
+        usePlayer.stopUsingItem();
+        entityData.set(DATA_ITEM, usePlayer.getMainHandItem().copy());
+        usePlayer = null;
+        entityData.set(DATA_SWING, 0);
+    }
+
     private static boolean canRightClick(ItemStack stack) {
         return stack.is(TAG_RIGHT_CLICK);
     }
@@ -903,37 +942,8 @@ public class LivingItemEntity extends PathfinderMob {
         return animation == UseAnim.BOW || animation == UseAnim.CROSSBOW;
     }
 
-    private static ItemStack findArrow(Player owner) {
-        var inventory = owner.getInventory();
-        for (var stack : inventory.items) {
-            if (isArrow(stack)) return stack;
-        }
-        for (var stack : inventory.offhand) {
-            if (isArrow(stack)) return stack;
-        }
-        return ItemStack.EMPTY;
-    }
-
-    private static boolean isArrow(ItemStack stack) {
-        var item = stack.getItem();
-        return item == Items.ARROW || item == Items.SPECTRAL_ARROW || item == Items.TIPPED_ARROW;
-    }
-
-    private boolean bowShot(Player owner, LivingEntity target) {
-        var ammo = findArrow(owner);
-        if (ammo == null || ammo.isEmpty()) return false;
-        var arrowStack = ammo.copy();
-        ammo.shrink(1);
-        var arrow = ProjectileUtil.getMobArrow(owner, arrowStack, 2.5F);
-        var y = getY() + getBbHeight() * 0.8;
-        arrow.setPos(getX(), y, getZ());
-        var to = new Vec3(target.getX() - getX(), target.getEyeY() - y, target.getZ() - getZ());
-        arrow.shoot(to.x, to.y, to.z, 2.2F, 0.8F);
-        level().addFreshEntity(arrow);
-        return true;
-    }
-
     private boolean tryThrowSelf() {
+        stopCarriedItemUse();
         var stack = getCarriedStack();
         if (stack.isEmpty()) return false;
         var owner = getOwner();
@@ -975,6 +985,7 @@ public class LivingItemEntity extends PathfinderMob {
 
     private void revert() {
         if (reverted) return;
+        stopCarriedItemUse();
         reverted = true;
         playDisappearEffects();
         var stack = getCarriedStack();

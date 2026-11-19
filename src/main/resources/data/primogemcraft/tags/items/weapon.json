@@ -2,6 +2,10 @@
   "replace": false,
   "values": [
     {
+      "id": "#primogemcraft:weapon/bow",
+      "required": false
+    },
+    {
       "id": "#primogemcraft:weapon/one_handed_sword",
       "required": false
     },

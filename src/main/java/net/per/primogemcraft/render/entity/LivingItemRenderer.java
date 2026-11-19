@@ -42,6 +42,19 @@ public class LivingItemRenderer extends EntityRenderer<LivingItemEntity> {
         if (entity.isInvisible()) return;
         var stack = entity.getCarriedStack();
         if (stack.isEmpty()) return;
+        if (stack.getItem() instanceof net.per.primogemcraft.system.weapon.WishWeaponBowItem) {
+            poseStack.pushPose();
+            poseStack.translate(0.0, entity.getBbHeight() * 0.8 - 0.1, 0.0);
+            poseStack.mulPose(net.per.primogemcraft.client.LivingItemBowPose.rotation(entityYaw,
+                    net.minecraft.util.Mth.lerp(partialTick, entity.xRotO, entity.getXRot())));
+            poseStack.translate(-0.5, -0.5, -0.5);
+            net.minecraftforge.client.extensions.common.IClientItemExtensions.of(stack).getCustomRenderer()
+                    .renderByItem(stack, ItemDisplayContext.THIRD_PERSON_RIGHT_HAND, poseStack, bufferSource,
+                            packedLight, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY);
+            poseStack.popPose();
+            super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
+            return;
+        }
         poseStack.pushPose();
         var model = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(stack);
         var swing = entity.getSwingTicks();
@@ -55,7 +68,8 @@ public class LivingItemRenderer extends EntityRenderer<LivingItemEntity> {
         } else {
             applySwingPose(entity, stack, poseStack);
         }
-        if (stack.getItem() instanceof BlockItem || model.getTransforms() == ItemTransforms.NO_TRANSFORMS) {
+        if (stack.getItem() instanceof BlockItem || model.getTransforms() == ItemTransforms.NO_TRANSFORMS
+                && !(model instanceof SeparateTransformsModel.Baked)) {
             displayContext = ItemDisplayContext.NONE;
             poseStack.translate(0.0, 0.15, 0.0);
         }
