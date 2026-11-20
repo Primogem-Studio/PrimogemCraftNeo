@@ -21,4 +21,7 @@ public class PGCRecipeSerializers {
 
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ShapedWithComponentsRecipe>> SHAPED_WITH_COMPONENTS =
             REGISTRY.register("crafting_shaped_with_components", ShapedWithComponentsRecipe.Serializer::new);
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<net.per.primogemcraft.recipe.TenPullWishCoreRecipe>> TEN_PULL_WISH_CORE =
+            REGISTRY.register("ten_pull_wish_core", net.per.primogemcraft.recipe.TenPullWishCoreRecipe.Serializer::new);
 }

@@ -1,0 +1,57 @@
+package net.per.primogemcraft.item.weapon;
+
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Rarity;
+import net.minecraft.util.math.Vec3d;
+import net.per.primogemcraft.entity.misc.SkywardHarpVortexEntity;
+import net.per.primogemcraft.system.weapon.BowAttackCycle;
+import net.per.primogemcraft.system.weapon.ViridescentHuntStats;
+import net.per.primogemcraft.system.weapon.WeaponDescription;
+import net.per.primogemcraft.system.weapon.WeaponEnhancement;
+import net.per.primogemcraft.system.weapon.WishWeaponBowItem;
+import net.per.primogemcraft.system.wish.WishReports;
+import net.per.primogemcraft.system.wish.WishTooltips;
+import net.per.primogemcraft.util.PGCTimer;
+
+import java.util.List;
+
+import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
+
+public final class TheViridescentHuntItem extends WishWeaponBowItem {
+    private static final String COOLDOWN = "the_viridescent_hunt_cyclone";
+
+    public TheViridescentHuntItem(Settings properties) {
+        super(properties.fireproof().rarity(Rarity.EPIC), new BowAttackCycle(8, 16, 5), 3.0F,
+                new Identifier(MOD_ID, "textures/item/the_viridescent_hunt.png"),
+                new Identifier("minecraft", "textures/entity/projectiles/arrow.png"), SoundEvents.ENTITY_ARROW_SHOOT);
+    }
+
+    @Override
+    public List<WeaponDescription> descriptions(ItemStack stack) {
+        var refinement = WeaponEnhancement.refinementOf(WishTooltips.viewer(), stack);
+        return List.of(WeaponDescription.of("passive", "cyclone",
+                WishReports.percent(ViridescentHuntStats.damageRatio(refinement), Formatting.AQUA),
+                WishReports.number(ViridescentHuntStats.cooldown(refinement) / 20.0D, Formatting.AQUA)));
+    }
+
+    @Override
+    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        if (attacker instanceof PlayerEntity player) trySpawnCyclone(player, stack, target.getBoundingBox().getCenter());
+        return super.postHit(stack, target, attacker);
+    }
+
+    public static void trySpawnCyclone(PlayerEntity owner, ItemStack weapon, Vec3d position) {
+        if (!(owner.getWorld() instanceof ServerWorld level) || !owner.isAlive() || owner.isSpectator()
+                || !PGCTimer.isDone(owner, COOLDOWN)
+                || owner.getRandom().nextDouble() >= ViridescentHuntStats.TRIGGER_CHANCE) return;
+        var refinement = WeaponEnhancement.refinementOf(owner, weapon);
+        PGCTimer.set(owner, COOLDOWN, ViridescentHuntStats.cooldown(refinement));
+        SkywardHarpVortexEntity.spawnWindEye(level, owner, position, ViridescentHuntStats.damageRatio(refinement));
+    }
+}

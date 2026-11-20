@@ -1,0 +1,687 @@
+.\gradlew.bat : F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ColorfulSunglassesCurioRende
+rer.java:18: error: package top.theillusivec4.curios.api does not exist
+所在位置 行:1 字符: 192
++ ... 21'; $out = .\gradlew.bat compileJava --console=plain -q 2>&1 | Out-S ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (F:\MCR\NPGC\Pri... does not exist:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+import top.theillusivec4.curios.api.SlotContext;
+                                   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ColorfulSunglassesCurioRenderer.java:19: err
+or: package top.theillusivec4.curios.api.client does not exist
+import top.theillusivec4.curios.api.client.CuriosRendererRegistry;
+                                          ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ColorfulSunglassesCurioRenderer.java:20: err
+or: package top.theillusivec4.curios.api.client does not exist
+import top.theillusivec4.curios.api.client.ICurioRenderer;
+                                          ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ColorfulSunglassesCurioRenderer.java:24: err
+or: cannot find symbol
+public final class ColorfulSunglassesCurioRenderer implements ICurioRenderer {
+                                                              ^
+  symbol: class ICurioRenderer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ColorfulSunglassesCurioRenderer.java:27: err
+or: cannot find symbol
+    private final HumanoidModel<LivingEntity> model = new HumanoidModel<>(Minecraft.getInstance().getEntityModels().bak
+eLayer(ModelLayers.PLAYER_OUTER_ARMOR));
+                  ^
+  symbol:   class HumanoidModel
+  location: class ColorfulSunglassesCurioRenderer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ColorfulSunglassesCurioRenderer.java:34: err
+or: cannot find symbol
+    public <T extends LivingEntity, M extends EntityModel<T>> void render(ItemStack stack, SlotContext slotContext,
+                                                                                           ^
+  symbol:   class SlotContext
+  location: class ColorfulSunglassesCurioRenderer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:3: er
+ror: package com.guoche.teyvatdelight.entity.katheryne does not exist
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneMenu;
+                                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:4: er
+ror: package com.guoche.teyvatdelight.entity.katheryne does not exist
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneSnapshot;
+                                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:5: er
+ror: package com.guoche.teyvatdelight.registry does not exist
+import com.guoche.teyvatdelight.registry.ModItems;
+                                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:261: 
+error: package KatheryneSnapshot does not exist
+    private record Page(Text title, Function<KatheryneCollaboration, List<KatheryneSnapshot.Sale>> rows,
+                                                                                           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:39: e
+rror: cannot find symbol
+    private final KatheryneMenu menu;
+                  ^
+  symbol:   class KatheryneMenu
+  location: class KatheryneCollaboration
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:41: e
+rror: package KatheryneSnapshot does not exist
+    private List<KatheryneSnapshot.Sale> shopRows = List.of();
+                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:42: e
+rror: package KatheryneSnapshot does not exist
+    private List<KatheryneSnapshot.Sale> taskRows = List.of();
+                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:43: e
+rror: package KatheryneSnapshot does not exist
+    private List<KatheryneSnapshot.Sale> exchangeRows = List.of();
+                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:57: e
+rror: cannot find symbol
+    public KatheryneCollaboration(KatheryneMenu menu) {
+                                  ^
+  symbol:   class KatheryneMenu
+  location: class KatheryneCollaboration
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:64: e
+rror: package KatheryneSnapshot does not exist
+                                    Function<KatheryneCollaboration, List<KatheryneSnapshot.Sale>> rows,
+                                                                                           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:89: e
+rror: package KatheryneSnapshot does not exist
+    public List<KatheryneSnapshot.Sale> rows() {
+                                 ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:172: 
+error: package KatheryneSnapshot does not exist
+    private List<KatheryneSnapshot.Sale> shopRows() {
+                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:187: 
+error: package KatheryneSnapshot does not exist
+    private List<KatheryneSnapshot.Sale> createExchangeRows() {
+                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:203: 
+error: package KatheryneSnapshot does not exist
+    private List<KatheryneSnapshot.Sale> createShopRows() {
+                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:211: 
+error: package KatheryneSnapshot does not exist
+    private List<KatheryneSnapshot.Sale> createTaskRows() {
+                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaboration.java:243: 
+error: package KatheryneSnapshot does not exist
+    private static KatheryneSnapshot.StackAmount icon(Text name) {
+                                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:3: error: package com.guoche.teyvatdelight.entity.katheryne does not exist
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneMenu;
+                                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:4: error: package com.guoche.teyvatdelight.entity.katheryne does not exist
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneSnapshot;
+                                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:5: error: package com.guoche.teyvatdelight.client.katheryne does not exist
+import com.guoche.teyvatdelight.client.katheryne.KatheryneScreen;
+                                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:6: error: package com.guoche.teyvatdelight.entity.katheryne does not exist
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneNetwork;
+                                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:17: error: package net.minecraftforge.client.event does not exist
+import net.minecraftforge.client.event.ScreenEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:22: error: cannot find symbol
+public final class KatheryneCollaborationScreen extends HandledScreen<KatheryneMenu> {
+                                                                      ^
+  symbol: class KatheryneMenu
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:31: error: cannot find symbol
+    private final KatheryneScreen parent;
+                  ^
+  symbol:   class KatheryneScreen
+  location: class KatheryneCollaborationScreen
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:33: error: cannot find symbol
+    private final List<Button> purchases = new ArrayList<>();
+                       ^
+  symbol:   class Button
+  location: class KatheryneCollaborationScreen
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:39: error: cannot find symbol
+    private KatheryneSnapshot renderedSnapshot;
+            ^
+  symbol:   class KatheryneSnapshot
+  location: class KatheryneCollaborationScreen
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:41: error: cannot find symbol
+    private KatheryneCollaborationScreen(KatheryneScreen parent, PlayerInventory inventory) {
+                                         ^
+  symbol:   class KatheryneScreen
+  location: class KatheryneCollaborationScreen
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:49: error: package ScreenEvent.Init does not exist
+    public static void addEntry(ScreenEvent.Init.Post event) {
+                                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:256: error: package KatheryneSnapshot does not exist
+    private static List<Text> stackLines(List<KatheryneSnapshot.StackAmount> stacks) {
+                                                               ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\KatheryneCollaborationScreen.java
+:271: error: package KatheryneSnapshot does not exist
+    private void renderAmount(DrawContext graphics, KatheryneSnapshot.StackAmount amount, int x, int y, boolean count, 
+int mouseX, int mouseY) {
+                                                                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\TeyvatButton.java:12: error: cann
+ot find symbol
+public final class TeyvatButton extends Button {
+                                        ^
+  symbol: class Button
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\TeyvatButton.java:15: error: cann
+ot find symbol
+    public TeyvatButton(int x, int y, int width, int height, Text title, OnPress action, BooleanSupplier selected) {
+                                                                         ^
+  symbol:   class OnPress
+  location: class TeyvatButton
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\TeyvatCollaborationClient.java:3:
+ error: package net.minecraftforge.api.distmarker does not exist
+import net.minecraftforge.api.distmarker.Dist;
+                                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\TeyvatCollaborationClient.java:4:
+ error: package net.minecraftforge.eventbus.api does not exist
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\TeyvatCollaborationClient.java:5:
+ error: package net.minecraftforge.fml.common does not exist
+import net.minecraftforge.fml.common.Mod;
+                                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\TeyvatCollaborationClient.java:6:
+ error: package net.minecraftforge.fml.event.lifecycle does not exist
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+                                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\TeyvatCollaborationClient.java:7:
+ error: package net.minecraftforge.common does not exist
+import net.minecraftforge.common.MinecraftForge;
+                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\TeyvatCollaborationClient.java:13
+: error: package Mod does not exist
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\TeyvatCollaborationClient.java:19
+: error: cannot find symbol
+    public static void setup(FMLClientSetupEvent event) {
+                             ^
+  symbol:   class FMLClientSetupEvent
+  location: class TeyvatCollaborationClient
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:4: error: package com.
+tacz.guns.entity does not exist
+import com.tacz.guns.entity.EntityKineticBullet;
+                           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:11: error: package net
+.minecraftforge.api.distmarker does not exist
+import net.minecraftforge.api.distmarker.Dist;
+                                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:12: error: package net
+.minecraftforge.client.event does not exist
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:13: error: package net
+.minecraftforge.client.event does not exist
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:14: error: package net
+.minecraftforge.eventbus.api does not exist
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:15: error: package net
+.minecraftforge.fml does not exist
+import net.minecraftforge.fml.ModList;
+                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:16: error: package net
+.minecraftforge.fml.common does not exist
+import net.minecraftforge.fml.common.Mod;
+                                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:26: error: package Mod
+ does not exist
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:58: error: package Cli
+entPlayerNetworkEvent does not exist
+    public static void disconnected(ClientPlayerNetworkEvent.LoggingOut event) {
+                                                            ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:73: error: cannot find
+ symbol
+    public static void projectTarget(RenderLevelStageEvent event) {
+                                     ^
+  symbol:   class RenderLevelStageEvent
+  location: class SkyTargetOverlay
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ThunderingPulseInput.java:4: error: package 
+net.minecraftforge.api.distmarker does not exist
+import net.minecraftforge.api.distmarker.Dist;
+                                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ThunderingPulseInput.java:5: error: package 
+net.minecraftforge.client.event does not exist
+import net.minecraftforge.client.event.InputEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ThunderingPulseInput.java:6: error: package 
+net.minecraftforge.eventbus.api does not exist
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ThunderingPulseInput.java:7: error: package 
+net.minecraftforge.fml.common does not exist
+import net.minecraftforge.fml.common.Mod;
+                                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ThunderingPulseInput.java:14: error: package
+ Mod does not exist
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ThunderingPulseInput.java:17: error: package
+ InputEvent does not exist
+    public static void input(InputEvent.InteractionKeyMappingTriggered event) {
+                                       ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WeaponTutorialRenderer.java:19: error: canno
+t find symbol
+public final class WeaponTutorialRenderer implements ClientTooltipComponent {
+                                                     ^
+  symbol: class ClientTooltipComponent
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:4: error: package net.min
+ecraftforge.api.distmarker does not exist
+import net.minecraftforge.api.distmarker.Dist;
+                                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:5: error: package net.min
+ecraftforge.client.event does not exist
+import net.minecraftforge.client.event.EntityRenderersEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:6: error: package net.min
+ecraftforge.client.event does not exist
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:7: error: package net.min
+ecraftforge.eventbus.api does not exist
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:8: error: package net.min
+ecraftforge.fml.common does not exist
+import net.minecraftforge.fml.common.Mod;
+                                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:15: error: package Mod do
+es not exist
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:18: error: cannot find sy
+mbol
+    public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+                                               ^
+  symbol:   class RegisterClientReloadListenersEvent
+  location: class WishBowClient
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:23: error: package Entity
+RenderersEvent does not exist
+    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+                                                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowRenderer.java:3: error: cannot find s
+ymbol
+import com.mojang.blaze3d.platform.NativeImage;
+                                  ^
+  symbol:   class NativeImage
+  location: package com.mojang.blaze3d.platform
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowRenderer.java:24: error: cannot find 
+symbol
+public final class WishBowRenderer extends BlockEntityWithoutLevelRenderer {
+                                           ^
+  symbol: class BlockEntityWithoutLevelRenderer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:34: error: pac
+kage net.minecraftforge.event does not exist
+import net.minecraftforge.event.ForgeEventFactory;
+                               ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:44: error: pac
+kage javax.annotation does not exist
+import javax.annotation.Nullable;
+                       ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowRenderer.java:32: error: cannot find 
+symbol
+    public void renderByItem(ItemStack stack, ItemDisplayContext context, MatrixStack poses, VertexConsumerProvider buf
+fers, int light, int overlay) {
+                                              ^
+  symbol:   class ItemDisplayContext
+  location: class WishBowRenderer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:154: error: pa
+ckage net.minecraftforge.client.extensions.common does not exist
+    public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExt
+ensions> consumer) {
+                                                                                                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:159: error: ca
+nnot find symbol
+    public UseAnim getUseAnimation(ItemStack stack) {
+           ^
+  symbol:   class UseAnim
+  location: class WishWeaponBowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\jei\WishCoreTransferHandler.java:37: error: 
+cannot find symbol
+    public Optional<MenuType<AnvilScreenHandler>> getMenuType() {
+                    ^
+  symbol:   class MenuType
+  location: class WishCoreTransferHandler
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:3: error: package com
+.tacz.guns.api.entity does not exist
+import com.tacz.guns.api.entity.IGunOperator;
+                               ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:5: error: package com
+.tacz.guns.api.item does not exist
+import com.tacz.guns.api.item.IGun;
+                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:6: error: package com
+.tacz.guns.entity does not exist
+import com.tacz.guns.entity.EntityKineticBullet;
+                           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:16: error: package ne
+t.minecraftforge.event does not exist
+import net.minecraftforge.event.TickEvent;
+                               ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:17: error: package ne
+t.minecraftforge.event.entity does not exist
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:18: error: package ne
+t.minecraftforge.event.entity.player does not exist
+import net.minecraftforge.event.entity.player.PlayerEvent;
+                                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:19: error: package ne
+t.minecraftforge.eventbus.api does not exist
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:33: error: cannot fin
+d symbol
+    private static final DustParticleOptions TRAIL = new DustParticleOptions(new Vector3f(0.35F, 0.9F, 1), 0.7F);
+                         ^
+  symbol:   class DustParticleOptions
+  location: class SkyTargeting
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:35: error: cannot fin
+d symbol
+    private static final Map<EntityKineticBullet, LivingEntity> BULLETS = new WeakHashMap<>();
+                             ^
+  symbol:   class EntityKineticBullet
+  location: class SkyTargeting
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:61: error: package Ti
+ckEvent does not exist
+    public static void tickPlayer(TickEvent.PlayerTickEvent event) {
+                                           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:83: error: cannot fin
+d symbol
+    public static void bulletSpawned(EntityJoinLevelEvent event) {
+                                     ^
+  symbol:   class EntityJoinLevelEvent
+  location: class SkyTargeting
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:93: error: cannot fin
+d symbol
+    public static void bulletHit(EntityHurtByGunEvent.Post event) {
+                                                     ^
+  symbol:   class Post
+  location: class EntityHurtByGunEvent
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:99: error: package Pl
+ayerEvent does not exist
+    public static void loggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+                                            ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:104: error: package T
+ickEvent does not exist
+    public static void tickLevel(TickEvent.LevelTickEvent event) {
+                                          ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:136: error: cannot fi
+nd symbol
+    private static void guide(EntityKineticBullet bullet, LivingEntity target) {
+                              ^
+  symbol:   class EntityKineticBullet
+  location: class SkyTargeting
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\teyvatdelight\CurrencyExchange.java:18: erro
+r: cannot find symbol
+final class CurrencyExchange extends SimpleJsonResourceReloadListener {
+                                     ^
+  symbol: class SimpleJsonResourceReloadListener
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\teyvatdelight\StellarShop.java:3: error: pac
+kage com.guoche.teyvatdelight.entity.katheryne does not exist
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneData;
+                                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\teyvatdelight\StellarShop.java:4: error: pac
+kage com.guoche.teyvatdelight.entity.katheryne does not exist
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneMenu;
+                                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\teyvatdelight\StellarShop.java:5: error: pac
+kage com.guoche.teyvatdelight.entity.katheryne does not exist
+import com.guoche.teyvatdelight.entity.katheryne.KatheryneRules;
+                                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\teyvatdelight\StellarShop.java:109: error: c
+annot find symbol
+    private static void sync(ServerPlayerEntity player, KatheryneMenu menu) {
+                                                        ^
+  symbol:   class KatheryneMenu
+  location: class StellarShop
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\teyvatdelight\StellarShop.java:155: error: c
+annot find symbol
+    private static void exchange(ServerPlayerEntity player, KatheryneMenu menu, int index, StellarShopNetwork.Action ac
+tion) {
+                                                            ^
+  symbol:   class KatheryneMenu
+  location: class StellarShop
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\teyvatdelight\StellarShop.java:182: error: c
+annot find symbol
+    private static void fail(ServerPlayerEntity player, KatheryneMenu menu, String message) {
+                                                        ^
+  symbol:   class KatheryneMenu
+  location: class StellarShop
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:45: error: cannot 
+find symbol
+public final class WishArrowEntity extends Arrow {
+                                           ^
+  symbol: class Arrow
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:20: error: pac
+kage net.minecraftforge.event does not exist
+import net.minecraftforge.event.TickEvent;
+                               ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:21: error: pac
+kage net.minecraftforge.event.server does not exist
+import net.minecraftforge.event.server.ServerStoppedEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:22: error: pac
+kage net.minecraftforge.eventbus.api does not exist
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:23: error: pac
+kage net.minecraftforge.fml.common does not exist
+import net.minecraftforge.fml.common.Mod;
+                                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:36: error: pac
+kage javax.annotation does not exist
+import javax.annotation.Nullable;
+                       ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:42: error: pac
+kage Mod does not exist
+@Mod.EventBusSubscriber(modid = MOD_ID)
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:133: error: pa
+ckage TickEvent does not exist
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+                                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:161: error: ca
+nnot find symbol
+    public static void onServerStopped(ServerStoppedEvent event) {
+                                       ^
+  symbol:   class ServerStoppedEvent
+  location: class ThunderingPulseItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\recipe\TenPullWishCoreRecipe.java:35: error: cannot
+ find symbol
+    public ItemStack assemble(RecipeInputInventory input, RegistryAccess registries) {
+                                                          ^
+  symbol:   class RegistryAccess
+  location: class TenPullWishCoreRecipe
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\SkywardHarpVortexRenderer.java:18: er
+ror: cannot find symbol
+    private static final RenderType RENDER_TYPE = RenderType.entityTranslucentEmissive(TEXTURE);
+                         ^
+  symbol:   class RenderType
+  location: class SkywardHarpVortexRenderer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\WishArrowRenderer.java:18: error: can
+not find symbol
+public final class WishArrowRenderer extends ArrowRenderer<WishArrowEntity> {
+                                             ^
+  symbol: class ArrowRenderer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\living\LivingItemUsePlayer.java:14: error: p
+ackage net.minecraftforge.common does not exist
+import net.minecraftforge.common.ForgeHooks;
+                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\living\LivingItemUsePlayer.java:15: error: p
+ackage net.minecraftforge.common.util does not exist
+import net.minecraftforge.common.util.FakePlayer;
+                                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\living\LivingItemUsePlayer.java:19: error: c
+annot find symbol
+public final class LivingItemUsePlayer extends FakePlayer {
+                                               ^
+  symbol: class FakePlayer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\living\LivingItemUsePlayer.java:107: error: 
+cannot find symbol
+    public ItemCooldowns getCooldowns() {
+           ^
+  symbol:   class ItemCooldowns
+  location: class LivingItemUsePlayer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\TeyvatCollaborationClient.java:13
+: error: cannot find symbol
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+                                                ^
+  symbol: variable Dist
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\gui\teyvat\TeyvatCollaborationClient.java:18
+: error: cannot find symbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class TeyvatCollaborationClient
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:26: error: cannot find
+ symbol
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+                                                ^
+  symbol: variable Dist
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:57: error: cannot find
+ symbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class SkyTargetOverlay
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\SkyTargetOverlay.java:72: error: cannot find
+ symbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class SkyTargetOverlay
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ThunderingPulseInput.java:14: error: cannot 
+find symbol
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
+                                                ^
+  symbol: variable Dist
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\ThunderingPulseInput.java:16: error: cannot 
+find symbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class ThunderingPulseInput
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:15: error: cannot find sy
+mbol
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+                                                ^
+  symbol: variable Dist
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:15: error: package Mod.Ev
+entBusSubscriber does not exist
+@Mod.EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+                                                                                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:17: error: cannot find sy
+mbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class WishBowClient
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:22: error: cannot find sy
+mbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class WishBowClient
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:57: error: can
+not find symbol
+    @Nullable
+     ^
+  symbol:   class Nullable
+  location: class WishWeaponBowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:63: error: can
+not find symbol
+                             @Nullable SoundEvent attackSound, WeaponModifier... passives) {
+                              ^
+  symbol:   class Nullable
+  location: class WishWeaponBowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:115: error: ca
+nnot find symbol
+    public void appendTooltip(ItemStack stack, @Nullable World level, List<Text> tooltip, TooltipContext flag) {
+                                                ^
+  symbol:   class Nullable
+  location: class WishWeaponBowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:261: error: ca
+nnot find symbol
+                       @Nullable LivingEntity target) {
+                        ^
+  symbol:   class Nullable
+  location: class WishWeaponBowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:298: error: ca
+nnot find symbol
+                                   float inaccuracy, float angle, @Nullable LivingEntity target) {
+                                                                   ^
+  symbol:   class Nullable
+  location: class WishWeaponBowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:60: error: cannot fin
+d symbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class SkyTargeting
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:82: error: cannot fin
+d symbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class SkyTargeting
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:92: error: cannot fin
+d symbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class SkyTargeting
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:98: error: cannot fin
+d symbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class SkyTargeting
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\tacz\SkyTargeting.java:103: error: cannot fi
+nd symbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class SkyTargeting
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:118: error: ca
+nnot find symbol
+                                   float inaccuracy, float angle, @Nullable LivingEntity target) {
+                                                                   ^
+  symbol:   class Nullable
+  location: class ThunderingPulseItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:132: error: ca
+nnot find symbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class ThunderingPulseItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:160: error: ca
+nnot find symbol
+    @SubscribeEvent
+     ^
+  symbol:   class SubscribeEvent
+  location: class ThunderingPulseItem
+139 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 26s

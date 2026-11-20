@@ -29,6 +29,20 @@ public final class WishWeaponTooltips {
         return tooltip;
     }
 
+    /** v1.1.0：弓类武器需要在描述后插入被动说明行。 */
+    public static List<Text> lines(String descriptionPrefix, List<WeaponDescription> descriptions,
+                                   List<Text> passiveLines) {
+        var tooltip = new ArrayList<Text>();
+        if (WishTooltips.showsDetails()) {
+            for (var effect : descriptions) tooltip.addAll(effect.lines(descriptionPrefix));
+            tooltip.addAll(passiveLines);
+        } else {
+            tooltip.add(Text.translatable(DETAILS_KEY));
+        }
+        if (!WishTooltips.showsTutorial()) tooltip.add(Text.translatable(TUTORIAL_KEY));
+        return tooltip;
+    }
+
     private static List<Text> hintLines() {
         if (!WishTooltips.showsTutorial()) return List.of(Text.translatable(TUTORIAL_KEY));
         var lines = new ArrayList<Text>(TUTORIAL_LINES);

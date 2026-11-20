@@ -31,6 +31,21 @@ public class PGCEntities {
 
     public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(RegistryKeys.ENTITY_TYPE, MOD_ID);
 
+    // v1.1.0 弓系统
+    public static final DeferredHolder<EntityType<?>, EntityType<net.per.primogemcraft.entity.misc.SkywardHarpVortexEntity>> SKYWARD_HARP_VORTEX =
+            REGISTRY.register("skyward_harp_vortex", () -> EntityType.Builder
+                    .<net.per.primogemcraft.entity.misc.SkywardHarpVortexEntity>create(
+                            net.per.primogemcraft.entity.misc.SkywardHarpVortexEntity::new, SpawnGroup.MISC)
+                    .setDimensions(5.0F, 5.0F).makeFireImmune().disableSaving().disableSummon()
+                    .maxTrackingRange(10).trackingTickInterval(20).build("skyward_harp_vortex"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<net.per.primogemcraft.entity.misc.WishArrowEntity>> WISH_ARROW =
+            REGISTRY.register("wish_arrow", () -> EntityType.Builder
+                    .<net.per.primogemcraft.entity.misc.WishArrowEntity>create(
+                            net.per.primogemcraft.entity.misc.WishArrowEntity::new, SpawnGroup.MISC)
+                    .setDimensions(0.5F, 0.5F).disableSaving().disableSummon()
+                    .maxTrackingRange(8).trackingTickInterval(1).build("wish_arrow"));
+
     public static final DeferredHolder<EntityType<?>, EntityType<ZiplineAnchorEntity>> ZIPLINE_ANCHOR =
             REGISTRY.register("zipline_anchor", () -> EntityType.Builder.create(ZiplineAnchorEntity::new, SpawnGroup.MISC)
                     .setDimensions(3.0F, 6.5F).makeFireImmune().maxTrackingRange(10).trackingTickInterval(20).build("zipline_anchor"));

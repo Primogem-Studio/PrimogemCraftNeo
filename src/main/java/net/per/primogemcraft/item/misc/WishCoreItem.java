@@ -27,8 +27,18 @@ public class WishCoreItem extends Item {
     private static final float FEED_VOLUME = 0.5F;
     private static final float FEED_PITCH_STEP = 0.05F;
 
+    /** 十连祈愿核心的容量上限（单抽为 WishValue.CAPACITY）。 */
+    public static final int TEN_PULL_CAPACITY = 300;
+
+    private final int capacity;
+
     public WishCoreItem(Settings properties) {
+        this(properties, WishValue.CAPACITY);
+    }
+
+    public WishCoreItem(Settings properties, int capacity) {
         super(properties);
+        this.capacity = capacity;
     }
 
     @Override
@@ -61,7 +71,7 @@ public class WishCoreItem extends Item {
     }
 
     private void feed(ServerPlayerEntity player, ItemStack stack) {
-        var bar = StackComponents.getOrDefault(stack, PGCDataComponents.CUSTOM_BAR, new CustomBar(0, WishValue.CAPACITY, true));
+        var bar = StackComponents.getOrDefault(stack, PGCDataComponents.CUSTOM_BAR, new CustomBar(0, capacity, true));
         if (bar.remaining() <= 0) {
             player.sendMessage(Text.translatable("message.primogemcraft.wish.core_full", WishReports.number(bar.denominator(), Formatting.RED)), true);
             return;

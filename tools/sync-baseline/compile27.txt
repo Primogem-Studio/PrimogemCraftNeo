@@ -1,0 +1,80 @@
+.\gradlew.bat : F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WeaponTutorialRenderer.java:
+33: error: Content is not abstract and does not override abstract method getWidth(TextRenderer) in TooltipComponent
+所在位置 行:1 字符: 219
++ ... 21'; $out = .\gradlew.bat compileJava --console=plain -q 2>&1 | Out-S ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (F:\MCR\NPGC\Pri...ooltipComponent:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    public record Content(ItemStack weapon) implements TooltipComponent {
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowRenderer.java:48: error: cannot find 
+symbol
+                        .overlay(overlay).light(light).normal(pose.normal(), quad.normalX(), quad.normalY(), quad.norma
+lZ())
+                                                                  ^
+  symbol:   method normal()
+  location: variable pose of type Entry
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\jei\WishCoreTransferHandler.java:47: warning
+: [removal] transferRecipe(C,R,IRecipeSlotsView,PlayerEntity,boolean,boolean) in IRecipeTransferHandler has been deprec
+ated and marked for removal
+    public IRecipeTransferError transferRecipe(AnvilScreenHandler menu, IJeiAnvilRecipe recipe, IRecipeSlotsView slots,
+                                ^
+  where C,R are type-variables:
+    C extends ScreenHandler declared in interface IRecipeTransferHandler
+    R extends Object declared in interface IRecipeTransferHandler
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\jei\WishCoreTransferHandler.java:50: warning
+: [removal] transferRecipe(C,R,IRecipeSlotsView,PlayerEntity,boolean,boolean) in IRecipeTransferHandler has been deprec
+ated and marked for removal
+            return fallback.transferRecipe(menu, recipe, slots, player, maxTransfer, doTransfer);
+                           ^
+  where C,R are type-variables:
+    C extends ScreenHandler declared in interface IRecipeTransferHandler
+    R extends Object declared in interface IRecipeTransferHandler
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\rei\WishCoreTransferHandler.java:24: error: 
+cannot find symbol
+                entry.getType().equals(VanillaEntryTypes.ITEM) && entry.<ItemStack>castValue().is(PGCItems.TEN_PULL_WIS
+H_CORE.get())))
+                                                                                              ^
+  symbol:   method is(WishCoreItem)
+  location: class ItemStack
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\SkywardHarpVortexRenderer.java:28: er
+ror: cannot find symbol
+        poseStack.multiply(entityRenderDispatcher.cameraOrientation());
+                           ^
+  symbol:   variable entityRenderDispatcher
+  location: class SkywardHarpVortexRenderer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\SkywardHarpVortexRenderer.java:51: er
+ror: cannot find symbol
+                .overlayCoords(OverlayTexture.DEFAULT_UV).uv2(LightmapTextureManager.FULL_BRIGHT)
+                                                                                    ^
+  symbol:   variable FULL_BRIGHT
+  location: class LightmapTextureManager
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\SkywardHarpVortexRenderer.java:50: er
+ror: cannot find symbol
+        consumer.vertex(pose.getMatrices(), x, y, 0.0F).color(255, 255, 255, alpha).uv(u, v)
+                            ^
+  symbol:   method getMatrices()
+  location: variable pose of type Entry
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\WishArrowRenderer.java:60: error: can
+not find symbol
+                .overlayCoords(OverlayTexture.DEFAULT_UV)
+                ^
+  symbol:   method overlayCoords(int)
+  location: interface VertexConsumer
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+7 errors
+2 warnings
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 9s

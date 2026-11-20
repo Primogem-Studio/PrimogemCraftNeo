@@ -52,6 +52,13 @@ public class PGCDataComponents {
             component("wish_value", b -> b.persistent(Codec.INT));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ELEMENT_TYPE =
             component("element_type", b -> b.persistent(Codec.INT));
+    // v1.1.0 弓系统与十连祈愿核心
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Long>> BOW_SHOT_TIME =
+            component("bow_shot_time", b -> b.persistent(Codec.LONG));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> BOW_DRAW_DURATION =
+            component("bow_draw_duration", b -> b.persistent(Codec.INT));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> WISH_VALUE_DIVISOR =
+            component("wish_value_divisor", b -> b.persistent(Codec.intRange(1, 10)));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<CustomBar>> CUSTOM_BAR =
             component("custom_bar", b -> b.persistent(CustomBar.CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<Identifier>>> CURIO_MARKS =

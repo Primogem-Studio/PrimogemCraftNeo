@@ -18,11 +18,24 @@ with MOJMAP.open(encoding='utf-8') as f:
 
 yarn_classes = {}
 with TINY.open(encoding='utf-8') as f:
-    f.readline()
+    header = f.readline().rstrip('\n').split('\t')
+    # tiny v2 头形如 tiny\t2\t0\t<ns1>\t<ns2>...
+    namespaces = header[3:]
+    if 'named' not in namespaces:
+        raise SystemExit(f"mappings.tiny has no 'named' namespace: {namespaces}")
+    named_col = 1 + namespaces.index('named')
+    # mojmap 的 obf 名对应 official 命名空间；若表里没有 official，
+    # 则第一列即 intermediary，无法与 mojmap 对接，需换用含 official 的表。
+    if 'official' not in namespaces:
+        raise SystemExit(
+            f"mappings.tiny lacks 'official' namespace ({namespaces}); "
+            "mojmap obf names cannot be joined. Use the loom yarn mappings.tiny "
+            "which contains official/intermediary/named.")
+    obf_col = 1 + namespaces.index('official')
     for line in f:
         parts = line.rstrip('\n').split('\t')
-        if parts[0] == 'c':
-            yarn_classes[parts[1]] = parts[3]
+        if parts and parts[0] == 'c' and len(parts) > max(obf_col, named_col):
+            yarn_classes[parts[obf_col]] = parts[named_col]
 
 classes = {}
 for moj, obf in moj_classes.items():

@@ -19,6 +19,7 @@ public enum WeaponType {
     CLAYMORE("weapon/claymore", 1.6D, EntityAttributes.GENERIC_ATTACK_DAMAGE),
     SHIELD("weapon/shield", 1.0D, EntityAttributes.GENERIC_ARMOR),
     TOOL("weapon/tool", 0.7D, EntityAttributes.GENERIC_ATTACK_DAMAGE),
+    BOW("weapon/bow", 1.0D / 3.0D, EntityAttributes.GENERIC_ATTACK_DAMAGE),
     OTHER("weapon", 1.0D, EntityAttributes.GENERIC_ATTACK_DAMAGE);
 
     private static final List<WeaponType> TYPES = List.of(values());
@@ -47,6 +48,7 @@ public enum WeaponType {
     }
 
     public static WeaponType of(ItemStack stack) {
+        if (stack.getItem() instanceof WishWeaponBowItem) return BOW;
         for (var type : TYPES) if (stack.isIn(type.tag)) return type;
         return OTHER;
     }

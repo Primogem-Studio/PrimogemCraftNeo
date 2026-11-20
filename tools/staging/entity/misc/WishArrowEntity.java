@@ -1,0 +1,289 @@
+package net.per.primogemcraft.entity.misc;
+
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.util.Identifier;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.world.RaycastContext;
+import net.minecraft.world.World;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
+import net.per.primogemcraft.compat.item.Enchantments120;
+import net.per.primogemcraft.entity.mob.LivingItemEntity;
+import net.per.primogemcraft.item.weapon.SkywardHarpItem;
+import net.per.primogemcraft.item.weapon.TheViridescentHuntItem;
+import net.per.primogemcraft.registry.PGCEntities;
+import net.per.primogemcraft.system.element.Element;
+import net.per.primogemcraft.system.element.ElementDamage;
+import net.per.primogemcraft.system.element.ElementDamageOptions;
+import net.per.primogemcraft.system.element.ElementStyle;
+import net.per.primogemcraft.system.weapon.BowRefinement;
+import net.per.primogemcraft.system.weapon.SkywardHarpStats;
+import net.per.primogemcraft.system.weapon.WeaponDamage;
+import net.per.primogemcraft.system.weapon.WeaponEnhancement;
+import net.per.primogemcraft.util.PGCTimer;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public final class WishArrowEntity extends Arrow {
+    private static final TrackedData<String> TEXTURE = DataTracker.defineId(WishArrowEntity.class, TrackedDataHandlerRegistry.STRING);
+    private static final TrackedData<Boolean> EMPOWERED = DataTracker.defineId(WishArrowEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> ANEMO = DataTracker.defineId(WishArrowEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> FIRE_ARROW = DataTracker.defineId(WishArrowEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final Identifier DEFAULT_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "textures/entity/projectiles/arrow.png");
+
+    private double targetRange = BowRefinement.targetRange(1);
+    private LivingEntity target;
+    private ItemStack weapon = ItemStack.EMPTY;
+    private ItemStack ammunition = ItemStack.EMPTY;
+    private float speed;
+    private boolean spectral;
+    private byte empowermentPiercing;
+    private float empowermentDamageBonus;
+    private int splitArrows;
+    private int vortexDuration;
+    private boolean splitArrow;
+    private final Set<Integer> piercedTargets = new HashSet<>();
+
+    public WishArrowEntity(EntityType<? extends WishArrowEntity> type, Level level) {
+        super(type, level);
+        pickup = Pickup.DISALLOWED;
+        setNoGravity(true);
+    }
+
+    public WishArrowEntity(ServerWorld level, Player owner, LivingEntity shooter, ItemStack ammunition, ItemStack weapon,
+                           float damage, float speed, Identifier texture) {
+        this(PGCEntities.WISH_ARROW.get(), level);
+        setOwner(owner);
+        setPos(shooter.getX(), shooter.getEyeY() - 0.1D, shooter.getZ());
+        this.ammunition = ammunition.copyWithCount(1);
+        this.weapon = weapon.copy();
+        entityData.set(ANEMO, weapon.getItem() instanceof SkywardHarpItem);
+        setBaseDamage(damage);
+        this.speed = speed;
+        targetRange = BowRefinement.targetRange(WeaponEnhancement.refinementOf(owner, weapon));
+        spectral = ammunition.is(Items.SPECTRAL_ARROW);
+        entityData.set(TEXTURE, texture.toString());
+        setEffectsFromItem(ammunition);
+        var piercing = Enchantments120.level(weapon, Enchantments.PIERCING);
+        if (piercing > 0) setPierceLevel((byte) piercing);
+    }
+
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(TEXTURE, DEFAULT_TEXTURE.toString());
+        entityData.define(EMPOWERED, false);
+        entityData.define(ANEMO, false);
+        entityData.define(FIRE_ARROW, false);
+    }
+
+    public Identifier texture() {
+        return Identifier.parse(entityData.get(TEXTURE));
+    }
+
+    public boolean isEmpowered() {
+        return entityData.get(EMPOWERED);
+    }
+
+    public boolean isAnemo() {
+        return entityData.get(ANEMO);
+    }
+
+    public boolean isFireArrow() {
+        return entityData.get(FIRE_ARROW);
+    }
+
+    public void makeFireArrow() {
+        entityData.set(FIRE_ARROW, true);
+        setSecondsOnFire(5);
+    }
+
+    public void configureSkywardHarp(int splits, int duration) {
+        splitArrows = splits;
+        vortexDuration = duration;
+    }
+
+    public void empower(int piercing, float damageBonus) {
+        entityData.set(EMPOWERED, true);
+        empowermentPiercing = (byte) Math.max(1, Math.min(127, piercing));
+        empowermentDamageBonus = damageBonus;
+    }
+
+    @Override
+    public byte getPierceLevel() {
+        return (byte) Math.max(super.getPierceLevel(), empowermentPiercing);
+    }
+
+    public ItemStack getWeaponItem() {
+        return weapon;
+    }
+
+    @Override
+    protected ItemStack getPickupItem() {
+        return ammunition.copy();
+    }
+
+    @Override
+    public void tick() {
+        if (!level().isClient()) {
+            if (!(getOwner() instanceof Player owner) || !owner.isAlive() || owner.isSpectator()
+                    || tickCount >= 100 || inGround) {
+                discard();
+                return;
+            }
+            if (target != null && (piercedTargets.contains(target.getId()) || !canTarget(owner, target)
+                    || target.getBoundingBox().getCenter().distanceToSqr(position()) > targetRange * targetRange)) target = null;
+            if (target == null && tickCount % 5 == 0) target = findTarget(owner);
+            var direction = getDeltaMovement().normalize();
+            if (target != null && hasLineOfSight(target)) {
+                var desired = target.getBoundingBox().getCenter().subtract(position()).normalize();
+                direction = direction.lerp(desired, 0.3D).normalize();
+            }
+            setDeltaMovement(direction.scale(speed));
+            hasImpulse = true;
+            if (splitArrows > 0) {
+                for (var index = 0; index < splitArrows; index++) {
+                    var arrow = new WishArrowEntity((ServerWorld) level(), owner, owner, ammunition, weapon,
+                            (float) getBaseDamage(), speed, texture());
+                    arrow.splitArrow = true;
+                    arrow.setPos(position());
+                    var spread = (index - (splitArrows - 1) / 2.0D) * 12.0D;
+                    if (splitArrows == 1) spread = owner.getRandom().nextBoolean() ? 12.0D : -12.0D;
+                    var movement = getDeltaMovement().yRot((float) Math.toRadians(spread));
+                    arrow.shoot(movement.x, movement.y, movement.z, speed, 0.0F);
+                    level().addFreshEntity(arrow);
+                }
+                splitArrows = 0;
+            }
+        }
+        super.tick();
+        if (inGround) discard();
+    }
+
+    private boolean hasLineOfSight(LivingEntity candidate) {
+        return level().clip(new ClipContext(position(), candidate.getBoundingBox().getCenter(),
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() == HitResult.Type.MISS;
+    }
+
+    private LivingEntity findTarget(Player owner) {
+        LivingEntity chosen = null;
+        var bestScore = Double.NEGATIVE_INFINITY;
+        for (var candidate : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(targetRange))) {
+            if (piercedTargets.contains(candidate.getId()) || !canTarget(owner, candidate) || !hasLineOfSight(candidate)) continue;
+            var offset = candidate.getBoundingBox().getCenter().subtract(position());
+            var direction = getDeltaMovement().lengthSqr() > 0.0D ? getDeltaMovement().normalize() : owner.getLookAngle();
+            var alignment = direction.dot(offset.normalize());
+            if (alignment < 0.8D || offset.lengthSqr() > targetRange * targetRange) continue;
+            var score = alignment - offset.length() / (targetRange * 10.0D);
+            if (score > bestScore) {
+                bestScore = score;
+                chosen = candidate;
+            }
+        }
+        return chosen;
+    }
+
+    public static boolean canTarget(Player owner, LivingEntity candidate) {
+        return candidate != owner && candidate.isAlive() && !candidate.isSpectator() && candidate.isPickable()
+                && !candidate.isInvulnerable() && !owner.isAlliedTo(candidate)
+                && !(candidate instanceof TamableAnimal tame && tame.isOwnedBy(owner))
+                && !(candidate instanceof LivingItemEntity item && owner.getUuid().equals(item.getOwnerUuid()))
+                && (!(candidate instanceof Player player) || (!player.isCreative() && owner.canHarmPlayer(player)));
+    }
+
+    @Override
+    protected boolean canHitEntity(Entity entity) {
+        return !piercedTargets.contains(entity.getId()) && super.canHitEntity(entity) && (!(entity instanceof LivingEntity living)
+                || getOwner() instanceof Player owner && canTarget(owner, living));
+    }
+
+    @Override
+    protected void onHitEntity(EntityHitResult hit) {
+        if (!level().isClient()) {
+            var victim = hit.getEntity();
+            if (!piercedTargets.add(victim.getId())) return;
+            spawnVortex(hit.getLocation());
+            var owner = getOwner();
+            var source = damageSources().arrow(this, owner == null ? this : owner);
+            if (owner instanceof LivingEntity living) living.setLastHurtMob(victim);
+            var fireTicks = victim.getRemainingFireTicks();
+            if (isEmpowered() || isFireArrow())
+                source = ElementDamage.of(Element.PYRO, source, ElementStyle.NORMAL, ElementDamageOptions.REACTING);
+            else if (isAnemo())
+                source = ElementDamage.of(Element.ANEMO, source, ElementStyle.NORMAL, ElementDamageOptions.REACTING);
+            if (isOnFire() && !isEmpowered() && !isFireArrow() && victim.getType() != EntityType.ENDERMAN)
+                victim.setSecondsOnFire(5);
+            var finalDamage = (float) getBaseDamage();
+            if (victim instanceof LivingEntity living)
+                finalDamage += EnchantmentHelper.getDamageBonus(weapon, living.getMobType());
+            if (splitArrow) finalDamage *= 0.5F;
+            if (isEmpowered()) finalDamage *= 1.0F + empowermentDamageBonus;
+            var hurt = victim instanceof LivingEntity living
+                    ? WeaponDamage.extraHit(living, source, finalDamage) : victim.hurt(source, finalDamage);
+            if (hurt) {
+                if (isEmpowered()) victim.setSecondsOnFire(5);
+                if (victim instanceof LivingEntity living) {
+                    if (weapon.getItem() instanceof TheViridescentHuntItem && owner instanceof Player player)
+                        TheViridescentHuntItem.trySpawnCyclone(player, weapon, living.getBoundingBox().getCenter());
+                    var knockback = Enchantments120.level(weapon, Enchantments.PUNCH_ARROWS);
+                    var resistance = Math.max(0.0D, 1.0D - living.getAttributeValue(EntityAttributes.KNOCKBACK_RESISTANCE));
+                    var push = getDeltaMovement().multiply(1.0D, 0.0D, 1.0D).normalize().scale(knockback * 0.6D * resistance);
+                    if (push.lengthSqr() > 0.0D) living.push(push.x, 0.1D, push.z);
+                    if (owner instanceof LivingEntity attacker) {
+                        EnchantmentHelper.doPostDamageEffects(attacker, living);
+                        EnchantmentHelper.doPostHurtEffects(living, attacker);
+                    }
+                    doPostHurtEffects(living);
+                    if (spectral) living.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200), owner);
+                    if (!splitArrow && weapon.getItem() instanceof SkywardHarpItem && owner instanceof Player player) {
+                        var refinement = WeaponEnhancement.refinementOf(player, weapon);
+                        if (SkywardHarpItem.triggers(refinement, player)) {
+                            PGCTimer.set(player, SkywardHarpItem.COOLDOWN, Math.max(40, 80 - 10 * (refinement - 1)));
+                            var areaDamage = (float) (player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) * 1.25D);
+                            for (var nearby : level().getEntitiesOfClass(LivingEntity.class, victim.getBoundingBox().inflate(2.0D)))
+                                if (nearby != victim && canTarget(player, nearby))
+                                    WeaponDamage.extraHit(nearby, source, areaDamage);
+                        }
+                    }
+                }
+            } else {
+                victim.setRemainingFireTicks(fireTicks);
+            }
+        }
+        target = null;
+        if (piercedTargets.size() >= Math.max(1, getPierceLevel())) discard();
+    }
+
+    @Override
+    protected void onHitBlock(BlockHitResult hit) {
+        spawnVortex(hit.getLocation());
+        super.onHitBlock(hit);
+        discard();
+    }
+
+    private void spawnVortex(Vec3d location) {
+        if (vortexDuration > 0 && level() instanceof ServerWorld serverLevel && getOwner() instanceof Player owner) {
+            var refinement = WeaponEnhancement.refinementOf(owner, weapon);
+            SkywardHarpVortexEntity.spawn(serverLevel, owner, location, SkywardHarpStats.vortexRadius(refinement), vortexDuration);
+            vortexDuration = 0;
+        }
+    }
+}

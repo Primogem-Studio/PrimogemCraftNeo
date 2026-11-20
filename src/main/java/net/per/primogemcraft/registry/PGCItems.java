@@ -313,6 +313,23 @@ public class PGCItems {
     public static final DeferredItem<PhilosophiesOfGoldItem> PHILOSOPHIES_OF_GOLD = REGISTRY.registerItem("philosophies_of_gold", PhilosophiesOfGoldItem::new);
     public static final DeferredItem<PhilosophiesOfProsperityItem> PHILOSOPHIES_OF_PROSPERITY = REGISTRY.registerItem("philosophies_of_prosperity", PhilosophiesOfProsperityItem::new);
 
+    // v1.1.0 弓系统
+    public static final DeferredItem<net.per.primogemcraft.system.weapon.WishWeaponBowItem> EXAMPLE_WISH_BOW =
+            REGISTRY.registerItem("example_wish_bow", properties ->
+                    new net.per.primogemcraft.system.weapon.WishWeaponBowItem(properties,
+                            new net.per.primogemcraft.system.weapon.BowAttackCycle(8, 16, 5), 3.0F,
+                            new Identifier(MOD_ID, "textures/item/example_wish_bow.png"),
+                            new Identifier("minecraft", "textures/entity/projectiles/arrow.png"),
+                            net.minecraft.sound.SoundEvents.ENTITY_ARROW_SHOOT));
+    public static final DeferredItem<net.per.primogemcraft.item.weapon.ThunderingPulseItem> THUNDERING_PULSE =
+            fiveStarWeapon("thundering_pulse", net.per.primogemcraft.item.weapon.ThunderingPulseItem::new);
+    public static final DeferredItem<net.per.primogemcraft.item.weapon.SkywardHarpItem> SKYWARD_HARP =
+            fiveStarWeapon("skyward_harp", net.per.primogemcraft.item.weapon.SkywardHarpItem::new);
+    public static final DeferredItem<net.per.primogemcraft.item.weapon.TheViridescentHuntItem> THE_VIRIDESCENT_HUNT =
+            REGISTRY.registerItem("the_viridescent_hunt", net.per.primogemcraft.item.weapon.TheViridescentHuntItem::new);
+    public static final DeferredItem<net.per.primogemcraft.item.weapon.SlingshotItem> SLINGSHOT =
+            REGISTRY.registerItem("slingshot", net.per.primogemcraft.item.weapon.SlingshotItem::new);
+
     public static final DeferredItem<PrimogemSwordItem> PRIMOGEM_SWORD = REGISTRY.registerItem("primogem_sword", PrimogemSwordItem::new);
     public static final DeferredItem<PrimogemPickaxeItem> PRIMOGEM_PICKAXE = REGISTRY.registerItem("primogem_pickaxe", PrimogemPickaxeItem::new);
     public static final DeferredItem<PrimogemAxeItem> PRIMOGEM_AXE = REGISTRY.registerItem("primogem_axe", PrimogemAxeItem::new);
@@ -574,6 +591,8 @@ public class PGCItems {
     public static final DeferredItem<WishFateItem> ACQUAINT_FATE = REGISTRY.registerItem("acquaint_fate", properties -> new WishFateItem(properties.rarity(Rarity.UNCOMMON), WishBanner.ACQUAINT));
     public static final DeferredItem<WishCoreItem> WISH_CORE = REGISTRY.registerItem("wish_core", properties -> new WishCoreItem(properties.maxCount(1).rarity(Rarity.UNCOMMON)));
     public static final DeferredItem<DescribedItem> UNBUFFED_WISH_CORE = described("unbuffed_wish_core");
+    public static final DeferredItem<WishCoreItem> TEN_PULL_WISH_CORE = REGISTRY.registerItem("ten_pull_wish_core",
+            properties -> new WishCoreItem(properties.maxCount(1).rarity(Rarity.UNCOMMON), WishCoreItem.TEN_PULL_CAPACITY));
     public static final DeferredItem<WishingStaffItem> WISHING_STAFF = REGISTRY.registerItem("wishing_staff", WishingStaffItem::new);
     public static final DeferredItem<WishDataExporterItem> WISH_DATA_EXPORTER = REGISTRY.registerItem("wish_data_exporter", WishDataExporterItem::new);
     public static final DeferredItem<StarRailSpecialPassItem> STAR_RAIL_SPECIAL_PASS = REGISTRY.registerItem("star_rail_special_pass", StarRailSpecialPassItem::new);

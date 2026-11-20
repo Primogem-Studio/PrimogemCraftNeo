@@ -95,6 +95,27 @@ public final class PGCConfig {
         }
     }
 
+    /** 布尔配置项，存储与其余配置项共用同一 JSON 文件。 */
+    public static final class BoolValue implements Supplier<Boolean> {
+        private final String key;
+        private final boolean defaultValue;
+
+        BoolValue(String key, boolean defaultValue) {
+            this.key = key;
+            this.defaultValue = defaultValue;
+        }
+
+        @Override
+        public Boolean get() {
+            if (DATA.has(key)) return DATA.get(key).getAsBoolean();
+            return defaultValue;
+        }
+
+        public void set(boolean value) {
+            DATA.addProperty(key, value);
+        }
+    }
+
     public static final class IntValue implements Supplier<Integer> {
         private final String key;
         private final int defaultValue;

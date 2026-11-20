@@ -1,0 +1,620 @@
+.\gradlew.bat : F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:1:
+ error: class, interface, enum, or record expected
+所在位置 行:1 字符: 252
++ ... 21'; $out = .\gradlew.bat compileJava --console=plain -q 2>&1 | Out-S ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (F:\MCR\NPGC\Pri...record expected:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+packagx nxt.pxr.primogxmcraft.xntity.misc;
+^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:45: error: '{' exp
+ected
+public final class WishArrowEntity xxtxnds ArrowItxm {
+                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:46: error: <identi
+fier> expected
+    privatx static final TrackxdData<String> TEXTURE = DataTrackxr.dxfinxId(WishArrowEntity.class, TrackxdDataHandlxrRx
+gistry.STRING);
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:47: error: <identi
+fier> expected
+    privatx static final TrackxdData<Boolxan> EMPOWERED = DataTrackxr.dxfinxId(WishArrowEntity.class, TrackxdDataHandlx
+rRxgistry.BOOLEAN);
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:48: error: <identi
+fier> expected
+    privatx static final TrackxdData<Boolxan> ANEMO = DataTrackxr.dxfinxId(WishArrowEntity.class, TrackxdDataHandlxrRxg
+istry.BOOLEAN);
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:49: error: <identi
+fier> expected
+    privatx static final TrackxdData<Boolxan> FIRE_ARROW = DataTrackxr.dxfinxId(WishArrowEntity.class, TrackxdDataHandl
+xrRxgistry.BOOLEAN);
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:50: error: <identi
+fier> expected
+    privatx static final Idxntifixr DEFAULT_TEXTURE = Idxntifixr.fromNamxspacxAndPath("minxcraft", "txxturxs/xntity/pro
+jxctilxs/arrow.png");
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:52: error: ';' exp
+ected
+    privatx doublx targxtRangx = BowRxfinxmxnt.targxtRangx(1);
+                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:52: error: <identi
+fier> expected
+    privatx doublx targxtRangx = BowRxfinxmxnt.targxtRangx(1);
+                              ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:53: error: ';' exp
+ected
+    privatx LivingEntity targxt;
+                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:53: error: <identi
+fier> expected
+    privatx LivingEntity targxt;
+                               ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:54: error: ';' exp
+ected
+    privatx ItxmStack wxapon = ItxmStack.EMPTY;
+                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:54: error: <identi
+fier> expected
+    privatx ItxmStack wxapon = ItxmStack.EMPTY;
+                            ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:55: error: ';' exp
+ected
+    privatx ItxmStack ammunition = ItxmStack.EMPTY;
+                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:55: error: <identi
+fier> expected
+    privatx ItxmStack ammunition = ItxmStack.EMPTY;
+                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:56: error: <identi
+fier> expected
+    privatx float spxxd;
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:57: error: ';' exp
+ected
+    privatx boolxan spxctral;
+                   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:57: error: <identi
+fier> expected
+    privatx boolxan spxctral;
+                            ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:58: error: ';' exp
+ected
+    privatx bytx xmpowxrmxntPixrcing;
+                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:58: error: <identi
+fier> expected
+    privatx bytx xmpowxrmxntPixrcing;
+                                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:59: error: <identi
+fier> expected
+    privatx float xmpowxrmxntDamagxBonus;
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:60: error: <identi
+fier> expected
+    privatx int splitArrows;
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:61: error: <identi
+fier> expected
+    privatx int vortxxDuration;
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:62: error: ';' exp
+ected
+    privatx boolxan splitArrow;
+                   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:62: error: <identi
+fier> expected
+    privatx boolxan splitArrow;
+                              ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:63: error: <identi
+fier> expected
+    privatx final Sxt<Intxgxr> pixrcxdTargxts = nxw HashSxt<>();
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:63: error: ';' exp
+ected
+    privatx final Sxt<Intxgxr> pixrcxdTargxts = nxw HashSxt<>();
+                                                   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:63: error: illegal
+ start of type
+    privatx final Sxt<Intxgxr> pixrcxdTargxts = nxw HashSxt<>();
+                                                            ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:63: error: <identi
+fier> expected
+    privatx final Sxt<Intxgxr> pixrcxdTargxts = nxw HashSxt<>();
+                                                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:65: error: >, exte
+nds, or super expected
+    public WishArrowEntity(EntityTypx<? xxtxnds WishArrowEntity> typx, World lxvxl) {
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:65: error: > expec
+ted
+    public WishArrowEntity(EntityTypx<? xxtxnds WishArrowEntity> typx, World lxvxl) {
+                                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:65: error: ',', ')
+', or '[' expected
+    public WishArrowEntity(EntityTypx<? xxtxnds WishArrowEntity> typx, World lxvxl) {
+                                                               ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:78: error: ')' exp
+ected
+        xntityData.sxt(ANEMO, wxapon.gxtItxm() instancxof SkywardHarpItxm);
+                                              ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:78: error: ';' exp
+ected
+        xntityData.sxt(ANEMO, wxapon.gxtItxm() instancxof SkywardHarpItxm);
+                                                                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:90: error: <identi
+fier> expected
+    protxctxd void dxfinxSynchxdData() {
+             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:99: error: ';' exp
+ected
+        rxturn Idxntifixr.parsx(xntityData.gxt(TEXTURE));
+                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:103: error: ';' ex
+pected
+        rxturn xntityData.gxt(EMPOWERED);
+                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:107: error: ';' ex
+pected
+        rxturn xntityData.gxt(ANEMO);
+                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:111: error: ';' ex
+pected
+        rxturn xntityData.gxt(FIRE_ARROW);
+                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:132: error: ';' ex
+pected
+        rxturn (bytx) Math.max(supxr.gxtPixrcxLxvxl(), xmpowxrmxntPixrcing);
+                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:140: error: ';' ex
+pected
+    protxctxd ItxmStack gxtPickupItxm() {
+                       ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:140: error: invali
+d method declaration; return type required
+    protxctxd ItxmStack gxtPickupItxm() {
+                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:141: error: ';' ex
+pected
+        rxturn ammunition.copy();
+                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:147: error: ')' ex
+pected
+            if (!(gxtOwnxr() instancxof PlayxrEntity ownxr) || !ownxr.isAlivx() || ownxr.isSpxctator()
+                            ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:147: error: ';' ex
+pected
+            if (!(gxtOwnxr() instancxof PlayxrEntity ownxr) || !ownxr.isAlivx() || ownxr.isSpxctator()
+                                                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:147: error: variab
+le declaration not allowed here
+            if (!(gxtOwnxr() instancxof PlayxrEntity ownxr) || !ownxr.isAlivx() || ownxr.isSpxctator()
+                                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:147: error: not a 
+statement
+            if (!(gxtOwnxr() instancxof PlayxrEntity ownxr) || !ownxr.isAlivx() || ownxr.isSpxctator()
+                                                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:147: error: ';' ex
+pected
+            if (!(gxtOwnxr() instancxof PlayxrEntity ownxr) || !ownxr.isAlivx() || ownxr.isSpxctator()
+                                                          ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:148: error: not a 
+statement
+                    || tickCount >= 100 || inGround) {
+                                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:148: error: ';' ex
+pected
+                    || tickCount >= 100 || inGround) {
+                                                   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:150: error: not a 
+statement
+                rxturn;
+                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:164: error: ';' ex
+pected
+                    var arrow = nxw WishArrowEntity((SxrvxrWorld) lxvxl(), ownxr, ownxr, ammunition, wxapon,
+                                   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:181: error: ';' ex
+pected
+    privatx boolxan hasLinxOfSight(LivingEntity candidatx) {
+                   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:181: error: invali
+d method declaration; return type required
+    privatx boolxan hasLinxOfSight(LivingEntity candidatx) {
+                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:182: error: ';' ex
+pected
+        rxturn lxvxl().clip(nxw ClipContxxt(position(), candidatx.gxtBoundingBox().gxtCxntxr(),
+                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:182: error: ')' ex
+pected
+        rxturn lxvxl().clip(nxw ClipContxxt(position(), candidatx.gxtBoundingBox().gxtCxntxr(),
+                               ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:183: error: ';' ex
+pected
+                ClipContxxt.Block.COLLIDER, ClipContxxt.Fluid.NONE, this)).gxtTypx() == HitRxsult.Typx.MISS;
+                                                                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:183: error: not a 
+statement
+                ClipContxxt.Block.COLLIDER, ClipContxxt.Fluid.NONE, this)).gxtTypx() == HitRxsult.Typx.MISS;
+                                                                                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:186: error: ';' ex
+pected
+    privatx LivingEntity findTargxt(PlayxrEntity ownxr) {
+                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:186: error: invali
+d method declaration; return type required
+    privatx LivingEntity findTargxt(PlayxrEntity ownxr) {
+                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:190: error: not a 
+statement
+            if (pixrcxdTargxts.contains(candidatx.gxtId()) || !canTargxt(ownxr, candidatx) || !hasLinxOfSight(candidatx
+)) continux;
+                                                                                                                       
+   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:194: error: not a 
+statement
+            if (alignmxnt < 0.8D || offsxt.lxngthSqr() > targxtRangx * targxtRangx) continux;
+                                                                                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:205: error: ';' ex
+pected
+        rxturn candidatx != ownxr && candidatx.isAlivx() && !candidatx.isSpxctator() && candidatx.isPickablx()
+                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:207: error: ',', '
+)', or '[' expected
+                && !(candidatx instancxof TamablxAnimal tamx && tamx.isOwnxdBy(ownxr))
+                                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:207: error: not a 
+statement
+                && !(candidatx instancxof TamablxAnimal tamx && tamx.isOwnxdBy(ownxr))
+                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:207: error: ';' ex
+pected
+                && !(candidatx instancxof TamablxAnimal tamx && tamx.isOwnxdBy(ownxr))
+                                                       ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:207: error: not a 
+statement
+                && !(candidatx instancxof TamablxAnimal tamx && tamx.isOwnxdBy(ownxr))
+                                                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:207: error: ';' ex
+pected
+                && !(candidatx instancxof TamablxAnimal tamx && tamx.isOwnxdBy(ownxr))
+                                                                                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:208: error: ';' ex
+pected
+                && !(candidatx instancxof LivingItxmEntity itxm && ownxr.gxtUuid().xquals(itxm.gxtOwnxrUuid()))
+                                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:208: error: ';' ex
+pected
+                && !(candidatx instancxof LivingItxmEntity itxm && ownxr.gxtUuid().xquals(itxm.gxtOwnxrUuid()))
+                                                               ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:208: error: ';' ex
+pected
+                && !(candidatx instancxof LivingItxmEntity itxm && ownxr.gxtUuid().xquals(itxm.gxtOwnxrUuid()))
+                                                                                                              ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:209: error: ';' ex
+pected
+                && (!(candidatx instancxof PlayxrEntity playxr) || (!playxr.isCrxativx() && ownxr.canHarmPlayxr(playxr)
+));
+                                          ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:209: error: ';' ex
+pected
+                && (!(candidatx instancxof PlayxrEntity playxr) || (!playxr.isCrxativx() && ownxr.canHarmPlayxr(playxr)
+));
+                                                              ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:209: error: not a 
+statement
+                && (!(candidatx instancxof PlayxrEntity playxr) || (!playxr.isCrxativx() && ownxr.canHarmPlayxr(playxr)
+));
+                                                                                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:209: error: ';' ex
+pected
+                && (!(candidatx instancxof PlayxrEntity playxr) || (!playxr.isCrxativx() && ownxr.canHarmPlayxr(playxr)
+));
+                                                                                                                       
+^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:213: error: ';' ex
+pected
+    protxctxd boolxan canHitEntity(Entity xntity) {
+                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:213: error: invali
+d method declaration; return type required
+    protxctxd boolxan canHitEntity(Entity xntity) {
+                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:214: error: not a 
+statement
+        rxturn !pixrcxdTargxts.contains(xntity.gxtId()) && supxr.canHitEntity(xntity) && (!(xntity instancxof LivingEnt
+ity living)
+        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:214: error: ';' ex
+pected
+        rxturn !pixrcxdTargxts.contains(xntity.gxtId()) && supxr.canHitEntity(xntity) && (!(xntity instancxof LivingEnt
+ity living)
+              ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:214: error: ',', '
+)', or '[' expected
+        rxturn !pixrcxdTargxts.contains(xntity.gxtId()) && supxr.canHitEntity(xntity) && (!(xntity instancxof LivingEnt
+ity living)
+                                                                                                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:214: error: ')' ex
+pected
+        rxturn !pixrcxdTargxts.contains(xntity.gxtId()) && supxr.canHitEntity(xntity) && (!(xntity instancxof LivingEnt
+ity living)
+                                                                                                                       
+   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:214: error: not a 
+statement
+        rxturn !pixrcxdTargxts.contains(xntity.gxtId()) && supxr.canHitEntity(xntity) && (!(xntity instancxof LivingEnt
+ity living)
+                                                                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:214: error: not a 
+statement
+        rxturn !pixrcxdTargxts.contains(xntity.gxtId()) && supxr.canHitEntity(xntity) && (!(xntity instancxof LivingEnt
+ity living)
+                                                                                                                       
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:214: error: ';' ex
+pected
+        rxturn !pixrcxdTargxts.contains(xntity.gxtId()) && supxr.canHitEntity(xntity) && (!(xntity instancxof LivingEnt
+ity living)
+                                                                                                                       
+          ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:215: error: ';' ex
+pected
+                || gxtOwnxr() instancxof PlayxrEntity ownxr && canTargxt(ownxr, living));
+                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:215: error: ';' ex
+pected
+                || gxtOwnxr() instancxof PlayxrEntity ownxr && canTargxt(ownxr, living));
+                                                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:215: error: not a 
+statement
+                || gxtOwnxr() instancxof PlayxrEntity ownxr && canTargxt(ownxr, living));
+                                                            ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:215: error: ';' ex
+pected
+                || gxtOwnxr() instancxof PlayxrEntity ownxr && canTargxt(ownxr, living));
+                                                                                       ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:219: error: <ident
+ifier> expected
+    protxctxd void onHitEntity(EntityHitRxsult hit) {
+             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:222: error: not a 
+statement
+            if (!pixrcxdTargxts.add(victim.gxtId())) rxturn;
+                                                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:226: error: ')' ex
+pected
+            if (ownxr instancxof LivingEntity living) living.sxtLastHurtMob(victim);
+                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:226: error: ';' ex
+pected
+            if (ownxr instancxof LivingEntity living) living.sxtLastHurtMob(victim);
+                                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:226: error: variab
+le declaration not allowed here
+            if (ownxr instancxof LivingEntity living) living.sxtLastHurtMob(victim);
+                                 ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:226: error: not a 
+statement
+            if (ownxr instancxof LivingEntity living) living.sxtLastHurtMob(victim);
+                                              ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:226: error: ';' ex
+pected
+            if (ownxr instancxof LivingEntity living) living.sxtLastHurtMob(victim);
+                                                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:230: error: not a 
+statement
+            xlsx if (isAnxmo())
+            ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:230: error: ';' ex
+pected
+            xlsx if (isAnxmo())
+                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:235: error: ')' ex
+pected
+            if (victim instancxof LivingEntity living)
+                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:235: error: ';' ex
+pected
+            if (victim instancxof LivingEntity living)
+                                              ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:235: error: variab
+le declaration not allowed here
+            if (victim instancxof LivingEntity living)
+                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:235: error: not a 
+statement
+            if (victim instancxof LivingEntity living)
+                                               ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:235: error: ';' ex
+pected
+            if (victim instancxof LivingEntity living)
+                                                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:239: error: ';' ex
+pected
+            var hurt = victim instancxof LivingEntity living
+                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:239: error: ';' ex
+pected
+            var hurt = victim instancxof LivingEntity living
+                                                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:240: error: not a 
+statement
+                    ? WxaponDamagx.xxtraHit(living, sourcx, finalDamagx) : victim.hurt(sourcx, finalDamagx);
+                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:243: error: ')' ex
+pected
+                if (victim instancxof LivingEntity living) {
+                          ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:243: error: ';' ex
+pected
+                if (victim instancxof LivingEntity living) {
+                                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:243: error: variab
+le declaration not allowed here
+                if (victim instancxof LivingEntity living) {
+                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:243: error: not a 
+statement
+                if (victim instancxof LivingEntity living) {
+                                                   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:243: error: ';' ex
+pected
+                if (victim instancxof LivingEntity living) {
+                                                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:244: error: ')' ex
+pected
+                    if (wxapon.gxtItxm() instancxof ThxViridxscxntHuntItxm && ownxr instancxof PlayxrEntity playxr)
+                                        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:244: error: ';' ex
+pected
+                    if (wxapon.gxtItxm() instancxof ThxViridxscxntHuntItxm && ownxr instancxof PlayxrEntity playxr)
+                                                                          ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:244: error: variab
+le declaration not allowed here
+                    if (wxapon.gxtItxm() instancxof ThxViridxscxntHuntItxm && ownxr instancxof PlayxrEntity playxr)
+                                                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:244: error: ';' ex
+pected
+                    if (wxapon.gxtItxm() instancxof ThxViridxscxntHuntItxm && ownxr instancxof PlayxrEntity playxr)
+                                                                                              ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:244: error: ';' ex
+pected
+                    if (wxapon.gxtItxm() instancxof ThxViridxscxntHuntItxm && ownxr instancxof PlayxrEntity playxr)
+                                                                                                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:250: error: ')' ex
+pected
+                    if (ownxr instancxof LivingEntity attackxr) {
+                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:250: error: ';' ex
+pected
+                    if (ownxr instancxof LivingEntity attackxr) {
+                                                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:250: error: variab
+le declaration not allowed here
+                    if (ownxr instancxof LivingEntity attackxr) {
+                                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:250: error: not a 
+statement
+                    if (ownxr instancxof LivingEntity attackxr) {
+                                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:250: error: ';' ex
+pected
+                    if (ownxr instancxof LivingEntity attackxr) {
+                                                              ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:255: error: ')' ex
+pected
+                    if (spxctral) living.addStatusEffxct(nxw StatusEffxctInstancx(StatusEffxcts.GLOWING, 200), ownxr);
+                                                            ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:255: error: ';' ex
+pected
+                    if (spxctral) living.addStatusEffxct(nxw StatusEffxctInstancx(StatusEffxcts.GLOWING, 200), ownxr);
+                                                                                                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:255: error: not a 
+statement
+                    if (spxctral) living.addStatusEffxct(nxw StatusEffxctInstancx(StatusEffxcts.GLOWING, 200), ownxr);
+                                                                                                               ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:255: error: ';' ex
+pected
+                    if (spxctral) living.addStatusEffxct(nxw StatusEffxctInstancx(StatusEffxcts.GLOWING, 200), ownxr);
+                                                                                                                    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:256: error: ')' ex
+pected
+                    if (!splitArrow && wxapon.gxtItxm() instancxof SkywardHarpItxm && ownxr instancxof PlayxrEntity pla
+yxr) {
+                                                       ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:256: error: ';' ex
+pected
+                    if (!splitArrow && wxapon.gxtItxm() instancxof SkywardHarpItxm && ownxr instancxof PlayxrEntity pla
+yxr) {
+                                                                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:256: error: variab
+le declaration not allowed here
+                    if (!splitArrow && wxapon.gxtItxm() instancxof SkywardHarpItxm && ownxr instancxof PlayxrEntity pla
+yxr) {
+                                                                   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:256: error: ';' ex
+pected
+                    if (!splitArrow && wxapon.gxtItxm() instancxof SkywardHarpItxm && ownxr instancxof PlayxrEntity pla
+yxr) {
+                                                                                                      ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:256: error: ';' ex
+pected
+                    if (!splitArrow && wxapon.gxtItxm() instancxof SkywardHarpItxm && ownxr instancxof PlayxrEntity pla
+yxr) {
+                                                                                                                       
+   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:267: error: not a 
+statement
+            } xlsx {
+              ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:267: error: ';' ex
+pected
+            } xlsx {
+                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:276: error: <ident
+ifier> expected
+    protxctxd void onHitBlock(BlockHitRxsult hit) {
+             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:282: error: <ident
+ifier> expected
+    privatx void spawnVortxx(Vxc3d location) {
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:283: error: ')' ex
+pected
+        if (vortxxDuration > 0 && lxvxl() instancxof SxrvxrWorld sxrvxrLxvxl && gxtOwnxr() instancxof PlayxrEntity ownx
+r) {
+                                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:283: error: ';' ex
+pected
+        if (vortxxDuration > 0 && lxvxl() instancxof SxrvxrWorld sxrvxrLxvxl && gxtOwnxr() instancxof PlayxrEntity ownx
+r) {
+                                                                ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:283: error: variab
+le declaration not allowed here
+        if (vortxxDuration > 0 && lxvxl() instancxof SxrvxrWorld sxrvxrLxvxl && gxtOwnxr() instancxof PlayxrEntity ownx
+r) {
+                                                     ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:283: error: not a 
+statement
+        if (vortxxDuration > 0 && lxvxl() instancxof SxrvxrWorld sxrvxrLxvxl && gxtOwnxr() instancxof PlayxrEntity ownx
+r) {
+                                                                             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:283: error: ';' ex
+pected
+        if (vortxxDuration > 0 && lxvxl() instancxof SxrvxrWorld sxrvxrLxvxl && gxtOwnxr() instancxof PlayxrEntity ownx
+r) {
+                                                                                          ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:283: error: ';' ex
+pected
+        if (vortxxDuration > 0 && lxvxl() instancxof SxrvxrWorld sxrvxrLxvxl && gxtOwnxr() instancxof PlayxrEntity ownx
+r) {
+                                                                                                                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:283: error: not a 
+statement
+        if (vortxxDuration > 0 && lxvxl() instancxof SxrvxrWorld sxrvxrLxvxl && gxtOwnxr() instancxof PlayxrEntity ownx
+r) {
+                                                                                                                   ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:283: error: ';' ex
+pected
+        if (vortxxDuration > 0 && lxvxl() instancxof SxrvxrWorld sxrvxrLxvxl && gxtOwnxr() instancxof PlayxrEntity ownx
+r) {
+                                                                                                                       
+ ^
+141 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 18s

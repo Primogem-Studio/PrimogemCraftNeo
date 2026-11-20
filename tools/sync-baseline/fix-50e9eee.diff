@@ -1,0 +1,384 @@
+﻿commit 50e9eee159bf35b97e79380c8ad4aa89b5275320
+Author: Lumine139637659 <123864592+Lumine139637659@users.noreply.github.com>
+Date:   Sun Nov 15 19:15:46 2026 +0800
+
+    修复崩溃报告暴露的三类移植缺陷
+    
+    崩溃直接原因（8 处、4 个文件）：
+    - canReplace(null) 误用了需要放置上下文的重载，改为 isReplaceable()
+      原版 canBeReplaced() 是无参方法，批量改名时选错重载并补 null 掩盖，
+      编译通过但一执行就 NPE。涉及协议源石剑、滑索指令、摩拉物品、活体物品实体。
+    
+    铁砧配方损坏（日志 42 次报错）：
+    - WeaponTier 的修复材料改为延迟求值，避免在物品注册完成前取到 null
+    - 把 INTERTWINED_FATE、MORA_PILE 声明提前到引用它们的武器之前
+      Fabric 注册器立即求值，而 Forge 是延迟的，静态字段因此过早构造 Ingredient
+    
+    其余两处：
+    - mayBuild() 被误译为 isCreative()，改为 canModifyBlocks()
+      原写法导致生存模式玩家无法放置滑索，创造模式测试发现不了
+    - 乱码注释吞掉 LivingItemEntity 的属性清理代码，已恢复
+      该缺失会导致活体物品攻击属性不断叠加
+    
+    验证：客户端实测四个修复材料正常、滑索放置成功、铁砧报错归零；
+    服务端数据包验证摩拉堆放置与配方加载无异常。
+    
+    文档新增 4.3-4.6 四节，记录重载错配、注册时序、语义误译、编码损坏。
+
+diff --git a/.gitignore b/.gitignore
+index 85189b7..8ddb855 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -21,10 +21,12 @@ runs/
+ remappedSrc/
+ .fabric/
+ 
+-# ---- 日志 ----
++# ---- 日志与诊断产物 ----
+ *.log
+ logs/
+ crash-reports/
++crash-analysis/
++threaddump*.txt
+ 
+ # ---- 系统文件 ----
+ .DS_Store
+diff --git a/docs/移植常见问题.md b/docs/移植常见问题.md
+index 5d73e05..3dc77b3 100644
+--- a/docs/移植常见问题.md
++++ b/docs/移植常见问题.md
+@@ -175,7 +175,120 @@ HandledScreens.register(PGCMenus.CONTAINER_WINDOW.get(), ContainerWindowScreen::
+ 
+ **自查：** 统计 `HandledScreen` 子类数量与 `HandledScreens.register` 调用数量，必须相等。
+ 
+-### 4.3 隐藏槽位的物品要自己画
++### 4.3 同名不同义的重载错配 ★★
++
++**这是目前造成实际崩溃的问题，也是最容易批量犯错的一类。**
++
++**症状：** 玩家潜行右键放置滑索时客户端崩溃
++```
++NullPointerException: Cannot invoke "...method_8041()" because "$$1" is null
++  at ...AbstractBlock$AbstractBlockState.canReplace
++  at ...ProtocolOriginiumSwordItem.useOnBlock(...:61)
++```
++
++**根因：** Forge 的 `BlockState.canBeReplaced()` 是**无参**方法，判断材质能否被替换。
++Yarn 里名字最像的 `canReplace(ItemPlacementContext)` 却是**另一个重载**，
++需要放置上下文，内部会直接解引用该参数。
++
++批量改名时按名字相似度选中了 `canReplace`，再给参数补 `null` 让它编译通过——
++于是编译期完全正常，一执行就 NPE。
++
++正确对应是 **`isReplaceable()`**（无参，读 `replaceable` 字段）。
++
++| Forge | 错误的 Yarn 写法 | 正确写法 |
++|---|---|---|
++| `state.canBeReplaced()` | `state.canReplace(null)` ✗ | `state.isReplaceable()` ✓ |
++
++**本项目踩坑范围：** 8 处、4 个文件（协议源石剑、滑索指令、摩拉物品、活体物品实体）。
++一处崩溃暴露后，全局搜索才发现另外 7 处同样有问题。
++
++**教训：补 null 让编译通过是危险信号。**
++原方法无参而目标方法有参时，几乎一定是选错了重载，不要靠传 null 掩盖。
++应当回到原版 jar 用 `javap` 核对签名与字节码：
++
++```powershell
++javap -cp <minecraft-merged-yarn.jar> 'net.minecraft.block.AbstractBlock$AbstractBlockState'
++# canReplace(ItemPlacementContext) → 转发到 Block.canReplace(state, context)
++# isReplaceable()                  → 直接读 replaceable 字段
++```
++
++**自查：** 全局搜索 `\(null\)` 实参，逐个确认原版对应方法是否真的接受 null。
++
++### 4.4 注册时序：静态字段过早求值 ★★
++
++**症状：** 日志刷 42 条铁砧报错，不崩溃但附魔合并功能损坏
++```
++ERROR: Could not set anvil recipe for: (1 intertwined_fate_pickaxe ... and 1 enchanted_book ...)
++NullPointerException: Cannot invoke "...Item.getRegistryEntry()" because "$$0" is null
++  at ...ItemStack.<init>
++  at ...WeaponTier.lambda$new$1(WeaponTier.java:41)
++```
++
++**根因：** Forge 的 `DeferredRegister` 把 supplier 存起来，**注册事件触发时才求值**；
++本项目的 Fabric 版 `DeferredRegister.register` 是**立即** `Registry.register(...)`。
++
++于是武器类的 `private static final ToolMaterial TIER = new WeaponTier(..., PGCItems.X)`
++在 `PGCItems` 类初始化期间就构造了 `Ingredient`。若 `PGCItems.X` 声明在该武器**之后**，
++此时它还是 null，`Ingredient.ofItems(null)` 拿到空物品，
++原版把 null 物品替换成空气，最终在铁砧配方构建时 NPE。
++
++**两个修法要同时做：**
++
++1. **延迟求值**（兜底，不依赖声明顺序）
++```java
++this(..., () -> {
++    var items = new ItemConvertible[repairIngredient.length];
++    for (var i = 0; i < repairIngredient.length; i++) items[i] = repairIngredient[i].get();
++    return Ingredient.ofItems(items);
++});
++```
++
++2. **调整声明顺序**（治本）：把被静态字段引用的物品声明提到引用者之前。
++本项目把 `INTERTWINED_FATE`、`MORA_PILE` 从 L570/L589 提到 L78/L79。
++
++**自查：** 搜索所有 `static final` 字段里对注册物品的引用，
++确认被引用物品的声明行号**小于**引用者。跨类引用尤其危险，因为类初始化顺序不直观。
++
++### 4.5 语义相近但含义不同的方法 ★
++
++**症状：** 生存模式玩家无法放置滑索，创造模式正常。**不报错**。
++
++**根因：** Forge 的 `player.mayBuild()` 判断**建造权限**（对应 Yarn 的 `canModifyBlocks()`，
++读 `abilities.allowModifyWorld`），被错译成 `player.isCreative()`（判断**是否创造模式**）。
++
++两者在创造模式下都为 true，所以开发时用创造模式测试**完全发现不了**。
++
++| Forge | 错误的 Yarn 写法 | 正确写法 |
++|---|---|---|
++| `player.mayBuild()` | `player.isCreative()` ✗ | `player.canModifyBlocks()` ✓ |
++
++**自查：** 凡是权限判定，务必确认原版语义。用**生存模式**跑一遍交互测试。
++
++### 4.6 编码损坏的注释吞掉代码 ★
++
++**症状：** 活体物品的攻击属性修正不断叠加，越打越疼。
++
++**根因：** 移植脚本处理中文注释时编码损坏，产生的乱码字符里包含了吞掉换行的字节，
++导致注释与下一行代码**合并成一行**，整行代码被注释掉：
++
++```java
++// 1.20.1 娣囶噣銈伴崳銊ф暏 UUID 閺嶅洩鐦?            if (modifier.getName().startsWith(...)) instance.removeModifier(...);
++```
++
++编译通过（注释合法），但属性清理逻辑**从未执行**。
++
++**自查：**
++```
++搜索 //.*\S.*;\s*$        → 注释行里出现分号结尾的代码
++搜索 /\*\*.*\*/.*\S       → 块注释后紧跟代码
++搜索常见乱码字符           → 定位编码损坏的文件
++```
++
++本项目还在 `StackComponents.java`、`EffectSpecs.java` 发现同类乱码（仅注释，未吞代码）。
++
++**预防：** 批量脚本统一用 UTF-8 读写，处理中文注释后抽查含注释的代码行。
++
++### 4.7 隐藏槽位的物品要自己画
+ 
+ **症状：** 界面打开了，但格子里的物品不显示。
+ 
+@@ -185,12 +298,12 @@ HandledScreens.register(PGCMenus.CONTAINER_WINDOW.get(), ContainerWindowScreen::
+ 
+ **修法：** 在 `drawBackground` 末尾遍历槽位自行 `drawItem` + `drawItemInSlot`。
+ 
+-### 4.4 提示框重复绘制
++### 4.8 提示框重复绘制
+ 
+ Yarn 侧父类会自动调 `drawMouseoverTooltip`。若移植时保留了 Forge 的自定义提示框逻辑，
+ 会出现两个提示框叠加。**覆写 `drawMouseoverTooltip` 为空**，统一由自己的方法负责。
+ 
+-### 4.5 数据驱动机制不通用
++### 4.9 数据驱动机制不通用
+ 
+ Forge 的 JSON 驱动注入在 Fabric 下**静默失效**（不报错，功能就是没有）：
+ 
+@@ -204,7 +317,7 @@ Forge 的 JSON 驱动注入在 Fabric 下**静默失效**（不报错，功能
+ **自查：** 列出 `data/<modid>/loot_modifiers/` 与 `data/<modid>/forge/biome_modifier/` 下所有 JSON，
+ 逐个确认已有代码等价实现。
+ 
+-### 4.6 事件系统需要改用 Mixin
++### 4.10 事件系统需要改用 Mixin
+ 
+ Forge 的事件总线在 Fabric 下没有对应物，部分只能靠 Mixin 注入原版方法。
+ 本项目四个 Mixin：
+diff --git a/src/main/java/net/per/primogemcraft/command/debug/Zipline.java b/src/main/java/net/per/primogemcraft/command/debug/Zipline.java
+index 4b4640e..c333080 100644
+--- a/src/main/java/net/per/primogemcraft/command/debug/Zipline.java
++++ b/src/main/java/net/per/primogemcraft/command/debug/Zipline.java
+@@ -162,7 +162,7 @@ public final class Zipline {
+             for (var y = surface.getY() + 1; y <= center.getY() + 6; y++) {
+                 var position = new BlockPos(surface.getX(), y, surface.getZ());
+                 var state = level.getBlockState(position);
+-                if (level.isOutOfHeightLimit(position) || !state.canReplace(null) || !state.getFluidState().isEmpty()
++                if (level.isOutOfHeightLimit(position) || !state.isReplaceable() || !state.getFluidState().isEmpty()
+                         || level.getBlockEntity(position) != null) return false;
+                 if (y <= center.getY()) original.put(position, state);
+             }
+diff --git a/src/main/java/net/per/primogemcraft/compat/component/StackComponents.java b/src/main/java/net/per/primogemcraft/compat/component/StackComponents.java
+index e755228..3f02c22 100644
+--- a/src/main/java/net/per/primogemcraft/compat/component/StackComponents.java
++++ b/src/main/java/net/per/primogemcraft/compat/component/StackComponents.java
+@@ -115,7 +115,7 @@ public final class StackComponents {
+ 
+     // ------------------------------------------------------------------ holder 閲嶈浇
+ 
+-    /** 璋冪敤鐐瑰父鐩存帴浼犳敞鍐屾寔鏈夎€咃紙PGCDataComponents.X锛夛紝杩欓噷鎻愪緵绛変环閲嶈浇銆?*/
++    /** 调用点常直接传注册持有者（PGCDataComponents.X），这里提供等价重载。 */
+     public static <T> T get(ItemStack stack,
+                             net.per.primogemcraft.compat.registries.DeferredHolder<DataComponentType<?>, DataComponentType<T>> holder) {
+         return get(stack, holder.get());
+diff --git a/src/main/java/net/per/primogemcraft/entity/mob/LivingItemEntity.java b/src/main/java/net/per/primogemcraft/entity/mob/LivingItemEntity.java
+index beb4d2a..76bd9b4 100644
+--- a/src/main/java/net/per/primogemcraft/entity/mob/LivingItemEntity.java
++++ b/src/main/java/net/per/primogemcraft/entity/mob/LivingItemEntity.java
+@@ -214,7 +214,8 @@ public class LivingItemEntity extends PathAwareEntity {
+ 
+     private void clearItemModifiers(EntityAttributeInstance instance) {
+         for (var modifier : List.copyOf(instance.getModifiers())) {
+-            // 1.20.1 娣囶噣銈伴崳銊ф暏 UUID 閺嶅洩鐦戦敍娑欐拱濡紕绮嶉崘娆忓弳閺冭埖濡搁崜宥囩磻缂傛牞绻橀崥宥囆?            if (modifier.getName().startsWith(MODIFIER_PREFIX)) instance.removeModifier(modifier.getId());
++            // 1.20.1 修饰器用 UUID 标识；本模组写入时把前缀编进名称
++            if (modifier.getName().startsWith(MODIFIER_PREFIX)) instance.removeModifier(modifier.getId());
+         }
+     }
+ 
+@@ -551,7 +552,7 @@ public class LivingItemEntity extends PathAwareEntity {
+         var x = owner.getX() + Math.cos(angle) * radius;
+         var z = owner.getZ() + Math.sin(angle) * radius;
+         var y = owner.getY() + 2.2 + random.nextDouble() * 1.2;
+-        if (!getWorld().getBlockState(BlockPos.ofFloored(x, y, z)).canReplace(null)) y += 1.0;
++        if (!getWorld().getBlockState(BlockPos.ofFloored(x, y, z)).isReplaceable()) y += 1.0;
+         return new Vec3d(x, y, z);
+     }
+ 
+@@ -625,7 +626,7 @@ public class LivingItemEntity extends PathAwareEntity {
+         var x = target.getX() + Math.cos(orbitAngle) * radius;
+         var z = target.getZ() + Math.sin(orbitAngle) * radius;
+         var y = target.getY() + 1.0;
+-        if (!getWorld().getBlockState(BlockPos.ofFloored(x, y, z)).canReplace(null)) y += 1.0;
++        if (!getWorld().getBlockState(BlockPos.ofFloored(x, y, z)).isReplaceable()) y += 1.0;
+         return new Vec3d(x, y, z);
+     }
+ 
+@@ -841,7 +842,7 @@ public class LivingItemEntity extends PathAwareEntity {
+         var world = getWorld();
+         if (world.isClient()) return;
+         var pos = focus.getBlockPos();
+-        if (!world.getBlockState(pos).canReplace(null)) pos = pos.up();
++        if (!world.getBlockState(pos).isReplaceable()) pos = pos.up();
+         BlockState state = null;
+         if (item == Items.WATER_BUCKET) {
+             state = Fluids.WATER.getDefaultState().getBlockState();
+@@ -850,7 +851,7 @@ public class LivingItemEntity extends PathAwareEntity {
+         } else if (item == Items.POWDER_SNOW_BUCKET) {
+             state = Blocks.POWDER_SNOW.getDefaultState();
+         }
+-        if (state != null && world.getBlockState(pos).canReplace(null)) {
++        if (state != null && world.getBlockState(pos).isReplaceable()) {
+             world.setBlockState(pos, state);
+             world.playSound(null, pos, SoundEvents.ITEM_BUCKET_EMPTY, net.minecraft.sound.SoundCategory.BLOCKS, 1.0F, 1.0F);
+             dataTracker.set(DATA_ITEM, new ItemStack(Items.BUCKET));
+@@ -977,7 +978,7 @@ public class LivingItemEntity extends PathAwareEntity {
+                 z = spawn.getZ() + 0.5;
+             }
+             var pos = BlockPos.ofFloored(x, y, z);
+-            while (!getWorld().getBlockState(pos).canReplace(null) && pos.getY() < getWorld().getTopY() - 1)
++            while (!getWorld().getBlockState(pos).isReplaceable() && pos.getY() < getWorld().getTopY() - 1)
+                 pos = pos.up();
+             var drop = new LivingItemDrop(getWorld(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack, owner != null ? owner.getUuid() : null);
+             getWorld().spawnEntity(drop);
+diff --git a/src/main/java/net/per/primogemcraft/item/misc/MoraItem.java b/src/main/java/net/per/primogemcraft/item/misc/MoraItem.java
+index 3a65855..c99387e 100644
+--- a/src/main/java/net/per/primogemcraft/item/misc/MoraItem.java
++++ b/src/main/java/net/per/primogemcraft/item/misc/MoraItem.java
+@@ -28,7 +28,7 @@ public class MoraItem extends Item {
+         if (context.getStack().isEmpty()) return ActionResult.PASS;
+         if (level.getBlockState(clicked).getBlock() instanceof MoraPileBlock) return ActionResult.PASS;
+         var target = clicked.offset(context.getSide());
+-        if (!level.getBlockState(target).canReplace(null)) return ActionResult.PASS;
++        if (!level.getBlockState(target).isReplaceable()) return ActionResult.PASS;
+         if (level.isClient()) return ActionResult.SUCCESS;
+         var facing = player == null ? Direction.NORTH : player.getMovementDirection().getOpposite();
+         if (!level.setBlockState(target, PGCBlocks.MORA_PILE.get().getDefaultState().with(MoraPileBlock.FACING, facing), Block.NOTIFY_ALL)) {
+diff --git a/src/main/java/net/per/primogemcraft/item/tool/ProtocolOriginiumSwordItem.java b/src/main/java/net/per/primogemcraft/item/tool/ProtocolOriginiumSwordItem.java
+index 7b50cb1..8a6ceda 100644
+--- a/src/main/java/net/per/primogemcraft/item/tool/ProtocolOriginiumSwordItem.java
++++ b/src/main/java/net/per/primogemcraft/item/tool/ProtocolOriginiumSwordItem.java
+@@ -51,14 +51,14 @@ public class ProtocolOriginiumSwordItem extends SwordItem {
+         if (level.getBlockState(context.getBlockPos()).isOf(PGCBlocks.ZIPLINE_BASE.get())) return ActionResult.PASS;
+         if (!player.isSneaking()) return ActionResult.PASS;
+         if (!player.isCreative() && player.getItemCooldownManager().isCoolingDown(this)) return ActionResult.FAIL;
+-        if (context.getSide() != Direction.UP || !player.isCreative()) return ActionResult.FAIL;
++        if (context.getSide() != Direction.UP || !player.canModifyBlocks()) return ActionResult.FAIL;
+         var center = context.getBlockPos().up();
+         for (var x = -1; x <= 1; x++) {
+             for (var z = -1; z <= 1; z++) {
+                 for (var y = 0; y < 7; y++) {
+                     var position = center.add(x, y, z);
+                     if (!level.isChunkLoaded(position) || !level.getWorldBorder().contains(position)
+-                            || level.isOutOfHeightLimit(position) || !level.getBlockState(position).canReplace(null)
++                            || level.isOutOfHeightLimit(position) || !level.getBlockState(position).isReplaceable()
+                             || !level.canPlayerModifyAt(player, position) || !player.canPlaceOn(position, Direction.UP, context.getStack())) {
+                         if (!level.isClient()) player.sendMessage(Text.translatable("message.primogemcraft.zipline_no_space"), true);
+                         return ActionResult.FAIL;
+diff --git a/src/main/java/net/per/primogemcraft/registry/PGCItems.java b/src/main/java/net/per/primogemcraft/registry/PGCItems.java
+index 2ea1b84..f3cc579 100644
+--- a/src/main/java/net/per/primogemcraft/registry/PGCItems.java
++++ b/src/main/java/net/per/primogemcraft/registry/PGCItems.java
+@@ -73,6 +73,11 @@ public class PGCItems {
+             java.util.Map.entry("the_village_no_longer_young", new int[]{10, 250}),
+             java.util.Map.entry("village_surrounded_by_green", new int[]{10, 250}));
+ 
++    // 修复材料必须先于引用它们的武器类声明：武器类的静态 TIER 字段在本类初始化期间构造，
++    // 若此时材料尚未注册，Ingredient 会拿到 null 并被原版替换成空气，导致铁砧配方损坏。
++    public static final DeferredItem<WishFateItem> INTERTWINED_FATE = REGISTRY.registerItem("intertwined_fate", properties -> new WishFateItem(properties.rarity(Rarity.UNCOMMON), WishBanner.INTERTWINED));
++    public static final DeferredItem<BlockItem> MORA_PILE = REGISTRY.registerSimpleBlockItem("mora_pile", PGCBlocks.MORA_PILE);
++
+     public static final DeferredItem<PrimogemItem> PRIMOGEM = REGISTRY.registerItem("primogem",
+             properties -> new PrimogemItem(properties.fireproof().rarity(Rarity.RARE).food(food(9, 0.4F))));
+     public static final DeferredItem<MoraItem> MORA = REGISTRY.registerItem("mora", MoraItem::new);
+@@ -567,7 +572,6 @@ public class PGCItems {
+     public static final DeferredItem<WaxSealItem> WISDOM_WAX_SEAL = waxSeal("wisdom_wax_seal", Element.DENDRO);
+ 
+     public static final DeferredItem<WishFateItem> ACQUAINT_FATE = REGISTRY.registerItem("acquaint_fate", properties -> new WishFateItem(properties.rarity(Rarity.UNCOMMON), WishBanner.ACQUAINT));
+-    public static final DeferredItem<WishFateItem> INTERTWINED_FATE = REGISTRY.registerItem("intertwined_fate", properties -> new WishFateItem(properties.rarity(Rarity.UNCOMMON), WishBanner.INTERTWINED));
+     public static final DeferredItem<WishCoreItem> WISH_CORE = REGISTRY.registerItem("wish_core", properties -> new WishCoreItem(properties.maxCount(1).rarity(Rarity.UNCOMMON)));
+     public static final DeferredItem<DescribedItem> UNBUFFED_WISH_CORE = described("unbuffed_wish_core");
+     public static final DeferredItem<WishingStaffItem> WISHING_STAFF = REGISTRY.registerItem("wishing_staff", WishingStaffItem::new);
+@@ -586,7 +590,6 @@ public class PGCItems {
+     public static final DeferredItem<BlockItem> PRIMOGEM_ORE = REGISTRY.registerSimpleBlockItem("primogem_ore", PGCBlocks.PRIMOGEM_ORE);
+     public static final DeferredItem<BlockItem> OTHERWORLD_LOG_PLANKS = REGISTRY.registerSimpleBlockItem("otherworld_log_planks", PGCBlocks.OTHERWORLD_LOG_PLANKS);
+     public static final DeferredItem<BlockItem> INTERTWINED_FATE_BLOCK = REGISTRY.registerSimpleBlockItem("intertwined_fate_block", PGCBlocks.INTERTWINED_FATE_BLOCK);
+-    public static final DeferredItem<BlockItem> MORA_PILE = REGISTRY.registerSimpleBlockItem("mora_pile", PGCBlocks.MORA_PILE);
+     public static final DeferredItem<BlockItem> MORA_BLOCK = REGISTRY.registerSimpleBlockItem("mora_block", PGCBlocks.MORA_BLOCK);
+     public static final DeferredItem<BlockItem> OTHERWORLD_WOOD_STAIRS = REGISTRY.registerSimpleBlockItem("otherworld_wood_stairs", PGCBlocks.OTHERWORLD_WOOD_STAIRS);
+     public static final DeferredItem<BlockItem> OTHERWORLD_LOG_SLAB = REGISTRY.registerSimpleBlockItem("otherworld_log_slab", PGCBlocks.OTHERWORLD_LOG_SLAB);
+diff --git a/src/main/java/net/per/primogemcraft/system/weapon/WeaponTier.java b/src/main/java/net/per/primogemcraft/system/weapon/WeaponTier.java
+index 185482b..f3eb680 100644
+--- a/src/main/java/net/per/primogemcraft/system/weapon/WeaponTier.java
++++ b/src/main/java/net/per/primogemcraft/system/weapon/WeaponTier.java
+@@ -38,7 +38,13 @@ public final class WeaponTier implements ToolMaterial {
+     }
+ 
+     public WeaponTier(int uses, float speed, int enchantmentValue, TagKey<Block> incorrectBlocks, DeferredItem<?>... repairIngredient) {
+-        this(uses, speed, enchantmentValue, incorrectBlocks, () -> Ingredient.ofItems(repairIngredient));
++        // 延迟到首次取用时才解析物品：武器类的静态字段在 PGCItems 类初始化期间构造，
++        // 此时被引用的物品可能尚未注册，立即求值会拿到 null 并被原版替换成空气。
++        this(uses, speed, enchantmentValue, incorrectBlocks, () -> {
++            var items = new net.minecraft.item.ItemConvertible[repairIngredient.length];
++            for (var index = 0; index < repairIngredient.length; index++) items[index] = repairIngredient[index].get();
++            return Ingredient.ofItems(items);
++        });
+     }
+ 
+     private WeaponTier(int uses, float speed, int enchantmentValue, TagKey<Block> incorrectBlocks, Supplier<Ingredient> repairIngredient) {
+diff --git a/src/main/java/net/per/primogemcraft/util/EffectSpecs.java b/src/main/java/net/per/primogemcraft/util/EffectSpecs.java
+index 3bc750b..e21261c 100644
+--- a/src/main/java/net/per/primogemcraft/util/EffectSpecs.java
++++ b/src/main/java/net/per/primogemcraft/util/EffectSpecs.java
+@@ -4,9 +4,11 @@ import net.minecraft.entity.effect.StatusEffect;
+ import net.minecraft.entity.effect.StatusEffectInstance;
+ 
+ /**
+- * 鏁堟灉瀹炰緥鏋勯€犺緟鍔┿€? *
+- * <p>1.21 鐨?{@code StatusEffects.*} 鏄?{@code MobEffect}锛?.20.1 鏄８
+- * {@code MobEffect}锛屾晠杩欓噷鐩存帴鎺ユ敹 MobEffect銆? */
++ * 效果实例构造辅助。
++ *
++ * <p>1.21 的 {@code StatusEffects.*} 是 {@code Holder<MobEffect>}，1.20.1 是
++ * {@code MobEffect}，故这里直接接收 MobEffect。
++ */
+ public final class EffectSpecs {
+     private EffectSpecs() {
+     }

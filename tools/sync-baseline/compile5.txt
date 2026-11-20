@@ -1,0 +1,108 @@
+.\gradlew.bat : F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowRenderer.java:3: erro
+r: cannot find symbol
+所在位置 行:1 字符: 1004
++ ... fab; $out = .\gradlew.bat compileJava --console=plain -q 2>&1 | Out-S ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (F:\MCR\NPGC\Pri...not find symbol:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+import com.mojang.blaze3d.platform.NativeImage;
+                                  ^
+  symbol:   class NativeImage
+  location: package com.mojang.blaze3d.platform
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowRenderer.java:24: error: cannot find 
+symbol
+public final class WishBowRenderer extends BlockEntityWithoutLevelRenderer {
+                                           ^
+  symbol: class BlockEntityWithoutLevelRenderer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:43: error: pac
+kage javax.annotation does not exist
+import javax.annotation.Nullable;
+                       ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowRenderer.java:32: error: cannot find 
+symbol
+    public void renderByItem(ItemStack stack, ItemDisplayContext context, MatrixStack poses, VertexConsumerProvider buf
+fers, int light, int overlay) {
+                                              ^
+  symbol:   class ItemDisplayContext
+  location: class WishBowRenderer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:152: error: ca
+nnot find symbol
+    public UseAnim getUseAnimation(ItemStack stack) {
+           ^
+  symbol:   class UseAnim
+  location: class WishWeaponBowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\jei\WishCoreTransferHandler.java:37: error: 
+cannot find symbol
+    public Optional<MenuType<AnvilScreenHandler>> getMenuType() {
+                    ^
+  symbol:   class MenuType
+  location: class WishCoreTransferHandler
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\teyvatdelight\CurrencyExchange.java:18: erro
+r: cannot find symbol
+final class CurrencyExchange extends SimpleJsonResourceReloadListener {
+                                     ^
+  symbol: class SimpleJsonResourceReloadListener
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:45: error: cannot 
+find symbol
+public final class WishArrowEntity extends ArrowItem {
+                                           ^
+  symbol: class ArrowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:34: error: pac
+kage javax.annotation does not exist
+import javax.annotation.Nullable;
+                       ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\living\LivingItemUsePlayer.java:17: error: c
+annot find symbol
+public final class LivingItemUsePlayer extends FakePlayer {
+                                               ^
+  symbol: class FakePlayer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:56: error: can
+not find symbol
+    @Nullable
+     ^
+  symbol:   class Nullable
+  location: class WishWeaponBowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:62: error: can
+not find symbol
+                             @Nullable SoundEvent attackSound, WeaponModifier... passives) {
+                              ^
+  symbol:   class Nullable
+  location: class WishWeaponBowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:114: error: ca
+nnot find symbol
+    public void appendTooltip(ItemStack stack, @Nullable World level, List<Text> tooltip, TooltipContext flag) {
+                                                ^
+  symbol:   class Nullable
+  location: class WishWeaponBowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:254: error: ca
+nnot find symbol
+                       @Nullable LivingEntity target) {
+                        ^
+  symbol:   class Nullable
+  location: class WishWeaponBowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:291: error: ca
+nnot find symbol
+                                   float inaccuracy, float angle, @Nullable LivingEntity target) {
+                                                                   ^
+  symbol:   class Nullable
+  location: class WishWeaponBowItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:115: error: ca
+nnot find symbol
+                                   float inaccuracy, float angle, @Nullable LivingEntity target) {
+                                                                   ^
+  symbol:   class Nullable
+  location: class ThunderingPulseItem
+16 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 26s

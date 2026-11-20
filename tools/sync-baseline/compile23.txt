@@ -1,0 +1,319 @@
+.\gradlew.bat : F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WeaponTutorialRenderer.java:
+33: error: Content is not abstract and does not override abstract method getWidth(TextRenderer) in TooltipComponent
+所在位置 行:1 字符: 227
++ ... 21'; $out = .\gradlew.bat compileJava --console=plain -q 2>&1 | Out-S ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (F:\MCR\NPGC\Pri...ooltipComponent:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    public record Content(ItemStack weapon) implements TooltipComponent {
+           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WeaponTutorialRenderer.java:54: error: metho
+d does not override or implement a method from a supertype
+    @Override
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowClient.java:41: error: cannot find sy
+mbol
+                        WishBowClientExtensions.clearMeshes();
+                        ^
+  symbol: variable WishBowClientExtensions
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowRenderer.java:34: error: cannot find 
+symbol
+        var level = MinecraftClient.getInstance().level;
+                                                 ^
+  symbol:   variable level
+  location: class MinecraftClient
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowRenderer.java:43: error: cannot find 
+symbol
+        var vertices = ItemRenderer.getFoilBufferDirect(buffers, RenderLayer.getEntityCutout(bow.texture()), true, stac
+k.hasGlint());
+                                   ^
+  symbol:   method getFoilBufferDirect(VertexConsumerProvider,RenderLayer,boolean,boolean)
+  location: class ItemRenderer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowRenderer.java:44: error: cannot find 
+symbol
+        var pose = poses.last();
+                        ^
+  symbol:   method last()
+  location: variable poses of type MatrixStack
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowRenderer.java:71: error: method does 
+not override or implement a method from a supertype
+    @Override
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:185: error: me
+thod does not override or implement a method from a supertype
+    @Override
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:198: error: me
+thod does not override or implement a method from a supertype
+    @Override
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:215: error: me
+thod does not override or implement a method from a supertype
+    @Override
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\weapon\WishWeaponBowItem.java:290: error: ca
+nnot find symbol
+        var direction = forward.multiply(Math.cos(radians)).add(up.scale(Math.sin(radians))).normalize();
+                                                                  ^
+  symbol:   method scale(double)
+  location: variable up of type Vec3d
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\jei\WishCoreTransferHandler.java:47: warning
+: [removal] transferRecipe(C,R,IRecipeSlotsView,PlayerEntity,boolean,boolean) in IRecipeTransferHandler has been deprec
+ated and marked for removal
+    public IRecipeTransferError transferRecipe(AnvilScreenHandler menu, IJeiAnvilRecipe recipe, IRecipeSlotsView slots,
+                                ^
+  where C,R are type-variables:
+    C extends ScreenHandler declared in interface IRecipeTransferHandler
+    R extends Object declared in interface IRecipeTransferHandler
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\jei\WishCoreTransferHandler.java:50: warning
+: [removal] transferRecipe(C,R,IRecipeSlotsView,PlayerEntity,boolean,boolean) in IRecipeTransferHandler has been deprec
+ated and marked for removal
+            return fallback.transferRecipe(menu, recipe, slots, player, maxTransfer, doTransfer);
+                           ^
+  where C,R are type-variables:
+    C extends ScreenHandler declared in interface IRecipeTransferHandler
+    R extends Object declared in interface IRecipeTransferHandler
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\rei\WishCoreTransferHandler.java:24: error: 
+cannot find symbol
+                entry.getType().equals(VanillaEntryTypes.ITEM) && entry.<ItemStack>castValue().is(PGCItems.TEN_PULL_WIS
+H_CORE.get())))
+                                                                                              ^
+  symbol:   method is(WishCoreItem)
+  location: class ItemStack
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\SkywardHarpVortexEntity.java:86: error:
+ cannot find symbol
+            target.setVelocity(target.getVelocity().scale(0.5D).add(offset.multiply(Math.min(0.35D, distance * 0.15D) /
+ distance)));
+                                                   ^
+  symbol:   method scale(double)
+  location: class Vec3d
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\SkywardHarpVortexEntity.java:92: error:
+ method does not override or implement a method from a supertype
+    @Override
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:140: error: method
+ does not override or implement a method from a supertype
+    @Override
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:190: error: method
+ getEntitiesByClass in interface EntityView cannot be applied to given types;
+        for (var candidate : getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(targetRange))) {
+                                       ^
+  required: Class<T>,Box,Predicate<? super T>
+  found:    Class<LivingEntity>,Box
+  reason: cannot infer type-variable(s) T
+    (actual and formal argument lists differ in length)
+  where T is a type-variable:
+    T extends Entity declared in method <T>getEntitiesByClass(Class<T>,Box,Predicate<? super T>)
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:219: error: method
+ does not override or implement a method from a supertype
+    @Override
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:227: error: incomp
+atible types: Entity cannot be converted to LivingEntity
+            if (owner instanceof LivingEntity living) living.setAttacker(victim);
+                                                                         ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:241: error: 'void'
+ type not allowed here
+                    ? WeaponDamage.extraHit(living, source, finalDamage) : victim.damage(source, finalDamage);
+                                           ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:255: error: method
+ applyDamageEffects in class Entity cannot be applied to given types;
+                    applyDamageEffects(living);
+                    ^
+  required: LivingEntity,Entity
+  found:    LivingEntity
+  reason: actual and formal argument lists differ in length
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:262: error: method
+ getEntitiesByClass in interface EntityView cannot be applied to given types;
+                            for (var nearby : getWorld().getEntitiesByClass(LivingEntity.class, victim.getBoundingBox()
+.expand(2.0D)))
+                                                        ^
+  required: Class<T>,Box,Predicate<? super T>
+  found:    Class<LivingEntity>,Box
+  reason: cannot infer type-variable(s) T
+    (actual and formal argument lists differ in length)
+  where T is a type-variable:
+    T extends Entity declared in method <T>getEntitiesByClass(Class<T>,Box,Predicate<? super T>)
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\TheViridescentHuntItem.java:43: error: 
+method does not override or implement a method from a supertype
+    @Override
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\TheViridescentHuntItem.java:46: error: 
+cannot find symbol
+        return super.hurtEnemy(stack, target, attacker);
+                    ^
+  symbol: method hurtEnemy(ItemStack,LivingEntity,LivingEntity)
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:77: error: can
+not find symbol
+        player.setVelocity(player.getRotationVector().scale(ThunderingPulseStats.dashSpeed(refinement)));
+                                                     ^
+  symbol:   method scale(double)
+  location: class Vec3d
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:154: error: ca
+nnot find symbol
+            fireArrow.shoot(direction.x, direction.y, direction.z, pending.velocity(), 0.0F);
+                     ^
+  symbol:   method shoot(double,double,double,float,float)
+  location: variable fireArrow of type WishArrowEntity
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:157: error: ca
+nnot find symbol
+                        PGCSounds.THUNDERING_PULSE_FIRE_ARROW.get(), SoundCategory.PLAYERS, 1.0F, 1.0F);
+                                 ^
+  symbol:   variable THUNDERING_PULSE_FIRE_ARROW
+  location: class PGCSounds
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\recipe\TenPullWishCoreRecipe.java:39: error: cannot
+ find symbol
+        if (firstTag != null) result.getOrCreateNbt().merge(firstTag);
+                                                     ^
+  symbol:   method merge(NbtCompound)
+  location: class NbtCompound
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\recipe\TenPullWishCoreRecipe.java:56: error: cannot
+ find symbol
+        return PGCRecipeSerializers.TEN_PULL_WISH_CORE.get();
+                                   ^
+  symbol:   variable TEN_PULL_WISH_CORE
+  location: class PGCRecipeSerializers
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\recipe\TenPullWishCoreRecipe.java:59: error: Serial
+izer is not abstract and does not override abstract method write(PacketByteBuf,TenPullWishCoreRecipe) in RecipeSerializ
+er
+    public static class Serializer implements RecipeSerializer<TenPullWishCoreRecipe> {
+                  ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\recipe\TenPullWishCoreRecipe.java:60: error: method
+ does not override or implement a method from a supertype
+        @Override
+        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\recipe\TenPullWishCoreRecipe.java:65: error: method
+ does not override or implement a method from a supertype
+        @Override
+        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\recipe\TenPullWishCoreRecipe.java:70: error: method
+ does not override or implement a method from a supertype
+        @Override
+        ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\SkywardHarpVortexRenderer.java:16: er
+ror: SkywardHarpVortexRenderer is not abstract and does not override abstract method getTexture(SkywardHarpVortexEntity
+) in EntityRenderer
+public final class SkywardHarpVortexRenderer extends EntityRenderer<SkywardHarpVortexEntity> {
+             ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\SkywardHarpVortexRenderer.java:28: er
+ror: cannot find symbol
+        poseStack.multiply(entityRenderDispatcher.cameraOrientation());
+                           ^
+  symbol:   variable entityRenderDispatcher
+  location: class SkywardHarpVortexRenderer
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\SkywardHarpVortexRenderer.java:44: er
+ror: method does not override or implement a method from a supertype
+    @Override
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\SkywardHarpVortexRenderer.java:51: er
+ror: cannot find symbol
+                .overlayCoords(OverlayTexture.DEFAULT_UV).uv2(LightmapTextureManager.FULL_BRIGHT)
+                                                                                    ^
+  symbol:   variable FULL_BRIGHT
+  location: class LightmapTextureManager
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\SkywardHarpVortexRenderer.java:50: er
+ror: cannot find symbol
+        consumer.vertex(pose.getMatrices(), x, y, 0.0F).color(255, 255, 255, alpha).uv(u, v)
+                            ^
+  symbol:   method getMatrices()
+  location: variable pose of type Entry
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\WishArrowRenderer.java:61: error: can
+not find symbol
+                .uv2(LightmapTextureManager.FULL_BRIGHT)
+                                           ^
+  symbol:   variable FULL_BRIGHT
+  location: class LightmapTextureManager
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\render\entity\WishArrowRenderer.java:57: error: can
+not find symbol
+        consumer.vertex(pose.getMatrices(), x, y, z)
+                            ^
+  symbol:   method getMatrices()
+  location: variable pose of type Entry
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\living\LivingItemUsePlayer.java:72: error: c
+annot find symbol
+                if (result.getObject() != stack) setStackInHand(Hand.MAIN_HAND, result.getObject());
+                          ^
+  symbol:   method getObject()
+  location: variable result of type TypedActionResult<ItemStack>
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\living\LivingItemUsePlayer.java:72: error: c
+annot find symbol
+                if (result.getObject() != stack) setStackInHand(Hand.MAIN_HAND, result.getObject());
+                                                                                      ^
+  symbol:   method getObject()
+  location: variable result of type TypedActionResult<ItemStack>
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\living\LivingItemUsePlayer.java:84: error: m
+ethod getPullProgress in class CrossbowItem cannot be applied to given types;
+                var releaseTicks = stack.getItem() instanceof CrossbowItem ? CrossbowItem.getPullProgress(stack) + 1
+                                                                                         ^
+  required: int,ItemStack
+  found:    ItemStack
+  reason: actual and formal argument lists differ in length
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\living\LivingItemUsePlayer.java:87: error: c
+annot find symbol
+                        && (stack.getItem().useOnRelease(stack) || duration > 1200) && heldTicks >= releaseTicks) stopU
+singItem();
+                                           ^
+  symbol:   method useOnRelease(ItemStack)
+  location: class Item
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\living\LivingItemUsePlayer.java:93: error: m
+ethod setStack in class PlayerInventory cannot be applied to given types;
+                var remainder = getInventory().setStack(index);
+                                              ^
+  required: int,ItemStack
+  found:    int
+  reason: actual and formal argument lists differ in length
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\living\LivingItemUsePlayer.java:99: error: m
+ethod does not override or implement a method from a supertype
+    @Override
+    ^
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\living\LivingItemUsePlayer.java:101: error: 
+cannot find symbol
+        return owner.getProjectile(weapon);
+                    ^
+  symbol:   method getProjectile(ItemStack)
+  location: variable owner of type PlayerEntity
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\wish\WishCoreTransfer.java:58: error: cannot
+ find symbol
+                    items.set(index, remainder.split(Math.min(remainder.getCount(), menu.getSlot(index).getMaxCount(rem
+ainder))));
+                                                                                                       ^
+  symbol:   method getMaxCount(ItemStack)
+  location: class Slot
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\wish\WishCoreTransfer.java:68: error: cannot
+ find symbol
+        if (!(player.currentScreenHandler instanceof AnvilScreenHandler menu) || menu.syncId != containerId || !menu.st
+illValid(player)) return;
+                                                                                                                    ^
+  symbol:   method stillValid(ServerPlayerEntity)
+  location: variable menu of type AnvilScreenHandler
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\wish\WishCoreTransfer.java:72: error: cannot
+ find symbol
+            if (index != 2) menu.getSlot(index).set(items.get(index));
+                                               ^
+  symbol:   method set(ItemStack)
+  location: class Slot
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\system\wish\WishCoreTransfer.java:73: error: cannot
+ find symbol
+        menu.createResult();
+            ^
+  symbol:   method createResult()
+  location: variable menu of type AnvilScreenHandler
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+50 errors
+2 warnings
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 9s

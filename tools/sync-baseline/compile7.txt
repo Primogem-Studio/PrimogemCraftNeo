@@ -1,0 +1,121 @@
+.\gradlew.bat : F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\client\WishBowRenderer.java:3: erro
+r: cannot find symbol
+所在位置 行:1 字符: 249
++ ... 21'; $out = .\gradlew.bat compileJava --console=plain -q 2>&1 | Out-S ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (F:\MCR\NPGC\Pri...not find symbol:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+import com.mojang.blaze3d.platform.NativeImage;
+                                  ^
+  symbol:   class NativeImage
+  location: package com.mojang.blaze3d.platform
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\collab\teyvatdelight\CurrencyExchange.java:18: erro
+r: cannot find symbol
+final class CurrencyExchange extends SimpleJsonResourceReloadListener {
+                                     ^
+  symbol: class SimpleJsonResourceReloadListener
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:46: error: cannot 
+find symbol
+    private static final EntityDataAccessor<String> TEXTURE = SynchedEntityData.defineId(WishArrowEntity.class, EntityD
+ataSerializers.STRING);
+                         ^
+  symbol:   class EntityDataAccessor
+  location: class WishArrowEntity
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:47: error: cannot 
+find symbol
+    private static final EntityDataAccessor<Boolean> EMPOWERED = SynchedEntityData.defineId(WishArrowEntity.class, Enti
+tyDataSerializers.BOOLEAN);
+                         ^
+  symbol:   class EntityDataAccessor
+  location: class WishArrowEntity
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:48: error: cannot 
+find symbol
+    private static final EntityDataAccessor<Boolean> ANEMO = SynchedEntityData.defineId(WishArrowEntity.class, EntityDa
+taSerializers.BOOLEAN);
+                         ^
+  symbol:   class EntityDataAccessor
+  location: class WishArrowEntity
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:49: error: cannot 
+find symbol
+    private static final EntityDataAccessor<Boolean> FIRE_ARROW = SynchedEntityData.defineId(WishArrowEntity.class, Ent
+ityDataSerializers.BOOLEAN);
+                         ^
+  symbol:   class EntityDataAccessor
+  location: class WishArrowEntity
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:65: error: cannot 
+find symbol
+    public WishArrowEntity(EntityType<? extends WishArrowEntity> type, Level level) {
+                                                                       ^
+  symbol:   class Level
+  location: class WishArrowEntity
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:71: error: cannot 
+find symbol
+    public WishArrowEntity(ServerWorld level, Player owner, LivingEntity shooter, ItemStack ammunition, ItemStack weapo
+n,
+                                              ^
+  symbol:   class Player
+  location: class WishArrowEntity
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:186: error: cannot
+ find symbol
+    private LivingEntity findTarget(Player owner) {
+                                    ^
+  symbol:   class Player
+  location: class WishArrowEntity
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\entity\misc\WishArrowEntity.java:204: error: cannot
+ find symbol
+    public static boolean canTarget(Player owner, LivingEntity candidate) {
+                                    ^
+  symbol:   class Player
+  location: class WishArrowEntity
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:161: error: ca
+nnot find symbol
+    private record PendingArrow(ServerWorld level, LivingEntity shooter, Player owner, ItemStack weapon,
+                                                                         ^
+  symbol:   class Player
+  location: class PendingArrow
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:83: error: can
+not find symbol
+    public TypedActionResult<ItemStack> use(Level level, Player player, Hand hand) {
+                                            ^
+  symbol:   class Level
+  location: class ThunderingPulseItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:83: error: can
+not find symbol
+    public TypedActionResult<ItemStack> use(Level level, Player player, Hand hand) {
+                                                         ^
+  symbol:   class Player
+  location: class ThunderingPulseItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:102: error: ca
+nnot find symbol
+    protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammunition, bo
+olean critical) {
+                                          ^
+  symbol:   class Level
+  location: class ThunderingPulseItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:102: error: ca
+nnot find symbol
+    protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammunition, bo
+olean critical) {
+              ^
+  symbol:   class Projectile
+  location: class ThunderingPulseItem
+F:\MCR\NPGC\PrimogemCraftFabric\src\main\java\net\per\primogemcraft\item\weapon\ThunderingPulseItem.java:114: error: ca
+nnot find symbol
+    protected void shootProjectile(LivingEntity shooter, Projectile projectile, int index, float velocity,
+                                                         ^
+  symbol:   class Projectile
+  location: class ThunderingPulseItem
+16 errors
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+BUILD FAILED in 32s
