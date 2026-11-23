@@ -28,16 +28,16 @@
   "reload": {
     "type": "magazine",
     "feed": {
-      "empty": 2.9,
-      "tactical": 2.9
+      "empty": 2.25,
+      "tactical": 1.55
     },
     "cooldown": {
-      "empty": 3.0,
-      "tactical": 3.0
+      "empty": 2.6,
+      "tactical": 2.0
     }
   },
   "draw_time": 0.35,
-  "put_away_time": 0.4,
+  "put_away_time": 0.57,
   "aim_time": 0.2,
   "sprint_time": 0.3,
   "fire_mode": ["auto", "semi"],
