@@ -1,8 +1,8 @@
 {
-  "version": "1.1",
+  "version": "1.2",
   "name": "原石枪械",
-  "desc": "包含一把异世界枪械",
+  "desc": "来自原石工艺：重生PrimogemCraftNew内置，包含一把异世界枪械",
   "license": "CC BY-NC-ND 4.0",
-  "author": ["PepperMO/Pepperme"],
-  "date": "2024-08-04"
+  "authors": ["PepperMO","PrimogemStudio"],
+  "date": "2026-11-24"
 }
