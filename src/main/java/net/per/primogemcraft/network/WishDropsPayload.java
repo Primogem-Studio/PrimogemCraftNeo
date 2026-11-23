@@ -7,15 +7,15 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
-public record WishDropsPayload(Map<ResourceLocation, List<ResourceLocation>> drops) implements CustomPacketPayload {
+public record WishDropsPayload(Map<ResourceLocation, Map<ResourceLocation, Double>> drops) implements CustomPacketPayload {
     public static final Type<WishDropsPayload> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(MOD_ID, "wish_drops"));
     public static final StreamCodec<RegistryFriendlyByteBuf, WishDropsPayload> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.map(LinkedHashMap::new, ResourceLocation.STREAM_CODEC, ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list())),
+            ByteBufCodecs.map(LinkedHashMap::new, ResourceLocation.STREAM_CODEC,
+                    ByteBufCodecs.map(LinkedHashMap::new, ResourceLocation.STREAM_CODEC, ByteBufCodecs.DOUBLE)),
             WishDropsPayload::drops, WishDropsPayload::new);
 
     @Override

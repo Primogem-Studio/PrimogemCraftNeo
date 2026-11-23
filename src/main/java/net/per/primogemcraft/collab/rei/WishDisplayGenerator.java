@@ -22,7 +22,7 @@ public class WishDisplayGenerator implements DynamicDisplayGenerator<WishDisplay
         if (stack.isEmpty()) return Optional.empty();
         var displays = new ArrayList<WishDisplay>();
         for (var rarity : WishRarity.values()) {
-            if (WishLootItems.of(rarity).contains(stack.getItem())) {
+            if (WishLootItems.of(rarity).containsKey(stack.getItem())) {
                 displays.add(new WishDisplay(rarity, List.of(EntryIngredients.of(stack.getItem()))));
             }
         }
@@ -49,7 +49,7 @@ public class WishDisplayGenerator implements DynamicDisplayGenerator<WishDisplay
     private static List<WishDisplay> displays() {
         var displays = new ArrayList<WishDisplay>();
         for (var rarity : WishRarity.values()) {
-            for (var item : WishLootItems.of(rarity)) {
+            for (var item : WishLootItems.of(rarity).keySet()) {
                 displays.add(new WishDisplay(rarity, List.of(EntryIngredients.of(item))));
             }
         }

@@ -21,7 +21,7 @@ import static net.per.primogemcraft.PrimogemCraft.MOD_ID;
 
 @EventBusSubscriber(modid = MOD_ID)
 public final class PGCNetwork {
-    private static final String PROTOCOL_VERSION = "1.1";
+    private static final String PROTOCOL_VERSION = "1.2";
 
     @SubscribeEvent
     public static void registerPayloads(RegisterPayloadHandlersEvent event) {

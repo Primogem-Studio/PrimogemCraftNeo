@@ -32,7 +32,7 @@ public class WishRecipeGenerator implements ISimpleRecipeManagerPlugin<WishRecip
         if (stack.isEmpty()) return List.of();
         var recipes = new ArrayList<WishRecipe>();
         for (var rarity : WishRarity.values()) {
-            if (WishLootItems.of(rarity).contains(stack.getItem())) {
+            if (WishLootItems.of(rarity).containsKey(stack.getItem())) {
                 recipes.add(new WishRecipe(rarity, new ItemStack(stack.getItem())));
             }
         }
@@ -43,7 +43,7 @@ public class WishRecipeGenerator implements ISimpleRecipeManagerPlugin<WishRecip
     public List<WishRecipe> getAllRecipes() {
         var recipes = new ArrayList<WishRecipe>();
         for (var rarity : WishRarity.values()) {
-            for (var item : WishLootItems.of(rarity)) recipes.add(new WishRecipe(rarity, new ItemStack(item)));
+            for (var item : WishLootItems.of(rarity).keySet()) recipes.add(new WishRecipe(rarity, new ItemStack(item)));
         }
         return recipes;
     }

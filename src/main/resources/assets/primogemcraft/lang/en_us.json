@@ -1181,6 +1181,8 @@
 
   "rei.category.primogemcraft.conversion": "Converting",
   "rei.category.primogemcraft.wish": "Wish",
+  "rei.primogemcraft.wish.chance": "%s%%",
+  "rei.primogemcraft.wish.chance_variable": "?%%",
   "rei.category.primogemcraft.wish_materials": "Wish Filling",
   "rei.primogemcraft.wish_materials.tooltip.0": "Provides %s Wish Value per item",
   "rei.primogemcraft.tooltip.conversion_cost": "Cost: %s",

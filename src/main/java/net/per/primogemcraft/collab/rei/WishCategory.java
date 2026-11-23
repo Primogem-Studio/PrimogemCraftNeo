@@ -16,6 +16,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
+import net.per.primogemcraft.client.WishLootItems;
 import net.per.primogemcraft.entity.misc.WishEntity;
 import net.per.primogemcraft.registry.PGCEntities;
 import net.per.primogemcraft.registry.PGCItems;
@@ -25,7 +27,7 @@ import java.util.List;
 
 public class WishCategory implements DisplayCategory<WishDisplay> {
     private static final int DISPLAY_WIDTH = 120;
-    private static final int DISPLAY_HEIGHT = 36;
+    private static final int DISPLAY_HEIGHT = 44;
     private static final int ENTITY_CENTER_X = 20;
     private static final int ENTITY_CENTER_Y = 18;
     private static final float ENTITY_SCALE = 30.0F;
@@ -53,6 +55,9 @@ public class WishCategory implements DisplayCategory<WishDisplay> {
         widgets.add(Widgets.createDrawableWidget((graphics, mouseX, mouseY, delta) -> renderEntity(graphics, entity, bounds)));
         widgets.add(Widgets.createArrow(new Point(bounds.x + ARROW_LEFT, bounds.y + ARROW_TOP)));
         widgets.add(Widgets.createSlot(new Point(bounds.x + SLOT_LEFT, bounds.y + SLOT_TOP)).entries(display.getOutputEntries().getFirst()).markOutput());
+        var output = display.getOutputEntries().getFirst().getFirst().<ItemStack>castValue();
+        widgets.add(Widgets.createLabel(new Point(bounds.getCenterX(), bounds.y + 31),
+                WishLootItems.chance(display.rarity(), output.getItem())).color(0xFF404040, 0xFFE0E0E0).noShadow());
         return widgets.build();
     }
 

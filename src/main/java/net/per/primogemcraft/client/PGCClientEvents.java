@@ -33,7 +33,6 @@ import net.per.primogemcraft.render.entity.model.WishEntityModel;
 import net.per.primogemcraft.render.entity.model.XiaoLanternModel;
 import net.per.primogemcraft.system.weapon.WishWeapon;
 import net.per.primogemcraft.system.curio.compat.CuriosIntegration;
-import net.per.primogemcraft.system.wish.WishDrops;
 
 import java.util.List;
 
@@ -146,6 +145,5 @@ public class PGCClientEvents {
     @SubscribeEvent
     public static void registerClientReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener(ZiplineModel.INSTANCE);
-        event.registerReloadListener(new WishDrops());
     }
 }

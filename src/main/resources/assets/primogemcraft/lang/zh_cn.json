@@ -1323,6 +1323,8 @@
 
   "rei.category.primogemcraft.conversion": "转化",
   "rei.category.primogemcraft.wish": "祈愿",
+  "rei.primogemcraft.wish.chance": "%s%%",
+  "rei.primogemcraft.wish.chance_variable": "?%%",
   "rei.category.primogemcraft.wish_materials": "祈愿填充",
   "rei.primogemcraft.wish_materials.tooltip.0": "每个提供 %s 点祈愿值",
   "rei.primogemcraft.tooltip.conversion_cost": "花费：%s",

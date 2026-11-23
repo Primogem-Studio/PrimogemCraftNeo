@@ -1,13 +1,10 @@
 package net.per.primogemcraft.entity.misc;
 
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -21,7 +18,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
@@ -33,6 +29,7 @@ import net.per.primogemcraft.registry.PGCItems;
 import net.per.primogemcraft.registry.PGCSounds;
 import net.per.primogemcraft.system.choice.*;
 import net.per.primogemcraft.system.wish.WishBanner;
+import net.per.primogemcraft.system.wish.WishDrops;
 import net.per.primogemcraft.system.wish.WishRarity;
 import net.per.primogemcraft.system.wish.WishReports;
 import net.per.primogemcraft.system.wish.WishResult;
@@ -199,9 +196,7 @@ public class WishEntity extends Entity {
 
     public boolean resolve(ServerLevel level, boolean playRevealSound) {
         if (resolved) return false;
-        var table = level.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTable()));
-        var params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, position()).withOptionalParameter(LootContextParams.THIS_ENTITY, this).create(LootContextParamSets.CHEST);
-        for (var stack : table.getRandomItems(params)) spawnAtLocation(stack);
+        for (var stack : WishDrops.roll(rarity(), lootParams(level))) spawnAtLocation(stack);
         if (playRevealSound)
             level.playSound(null, getX(), getY(), getZ(), rarity().sound(), SoundSource.NEUTRAL, 1.0F, 1.0F);
         clear();
@@ -385,23 +380,22 @@ public class WishEntity extends Entity {
     }
 
     private void rollRewards(ServerLevel level) {
-        var table = level.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTable()));
-        var params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, position()).withOptionalParameter(LootContextParams.THIS_ENTITY, this).create(LootContextParamSets.CHEST);
+        var params = lootParams(level);
 
         var ordinary = new ArrayList<ItemStack>();
         var glitter = new ArrayList<ItemStack>();
-        for (var stack : table.getRandomItems(params)) {
+        for (var stack : WishDrops.roll(rarity(), params)) {
             if (isStarglitter(stack)) glitter.add(stack);
             else ordinary.add(stack);
         }
 
-        previews = ChoiceSupport.distinct(ordinary, () -> ordinaryRolls(table, params), CAPTURE_CHOICE_COUNT, PREVIEW_ROLL_ATTEMPTS);
+        previews = ChoiceSupport.distinct(ordinary, () -> ordinaryRolls(params), CAPTURE_CHOICE_COUNT, PREVIEW_ROLL_ATTEMPTS);
         starglitter = List.copyOf(glitter);
     }
 
-    private static List<ItemStack> ordinaryRolls(LootTable table, LootParams params) {
+    private List<ItemStack> ordinaryRolls(LootParams params) {
         var ordinary = new ArrayList<ItemStack>();
-        for (var stack : table.getRandomItems(params)) {
+        for (var stack : WishDrops.roll(rarity(), params)) {
             if (!isStarglitter(stack)) ordinary.add(stack);
         }
         return ordinary;
@@ -422,8 +416,9 @@ public class WishEntity extends Entity {
         if (getY() < level.getMinBuildHeight() - CULL_MARGIN) clear();
     }
 
-    private ResourceLocation lootTable() {
-        return rarity().lootTable();
+    private LootParams lootParams(ServerLevel level) {
+        return new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, position())
+                .withParameter(LootContextParams.THIS_ENTITY, this).create(LootContextParamSets.CHEST);
     }
 
     public enum CaptureState {

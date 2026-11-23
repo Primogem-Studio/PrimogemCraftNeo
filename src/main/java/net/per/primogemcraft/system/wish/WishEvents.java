@@ -15,7 +15,7 @@ public class WishEvents {
     @SubscribeEvent
     public static void syncMaterials(OnDatapackSyncEvent event) {
         var payload = new WishMaterialsPayload(WishValueMaterials.displayValues());
-        var drops = new WishDropsPayload(WishDrops.displayItems());
+        var drops = new WishDropsPayload(WishDrops.displayItems(event.getPlayerList().getServer().reloadableRegistries()));
         if (event.getPlayer() != null) PacketDistributor.sendToPlayer(event.getPlayer(), payload, drops);
         else PacketDistributor.sendToAllPlayers(payload, drops);
     }
@@ -23,6 +23,6 @@ public class WishEvents {
     @SubscribeEvent
     public static void addReloadListeners(AddReloadListenerEvent event) {
         event.addListener(new WishValueMaterials());
-        event.addListener(new WishDrops());
+        event.addListener(new WishDrops(event.getServerResources().fullRegistries()));
     }
 }

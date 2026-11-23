@@ -2,7 +2,8 @@
   "type": "neoforge:add_table",
   "conditions": [
     {
-      "condition": "primogemcraft:is_chest"
+      "condition": "primogemcraft:is_chest",
+      "external_only": true
     },
     {
       "condition": "minecraft:random_chance",

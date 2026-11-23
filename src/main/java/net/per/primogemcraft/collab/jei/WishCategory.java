@@ -15,6 +15,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.per.primogemcraft.client.WishLootItems;
 import net.per.primogemcraft.client.gui.GuiAtlas;
 import net.per.primogemcraft.entity.misc.WishEntity;
 import net.per.primogemcraft.registry.PGCEntities;
@@ -53,7 +54,7 @@ public class WishCategory implements IRecipeCategory<WishRecipe> {
 
     @Override
     public int getHeight() {
-        return 36;
+        return 44;
     }
 
     @Override
@@ -67,6 +68,8 @@ public class WishCategory implements IRecipeCategory<WishRecipe> {
         GuiAtlas.sprite(graphics, GuiAtlas.SLOT, 80, 9);
         arrow.draw(graphics, 48, 10);
         var minecraft = Minecraft.getInstance();
+        var chance = WishLootItems.chance(recipe.rarity(), recipe.output().getItem());
+        graphics.drawString(minecraft.font, chance, (getWidth() - minecraft.font.width(chance)) / 2, 31, 0xFF404040, false);
         var level = minecraft.level;
         if (level == null) return;
         if (entity == null || entity.level() != level) entity = new WishEntity(PGCEntities.WISH_ENTITY.get(), level);
